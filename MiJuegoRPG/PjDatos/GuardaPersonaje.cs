@@ -11,9 +11,9 @@ namespace MiJuegoRPG.PjDatos
 {
     public class GuardaPersonaje
     {
-        // Nueva ruta como solicitaste
-        private static readonly string RUTA_POR_DEFECTO = 
-            @"C:\Users\jose.cespedes\Desktop\Programacion\MiJuegoRPG\MiJuegoRPG\PjDatos\Saves.json";
+            private static readonly string RUTA_POR_DEFECTO =
+            Path.Combine( "MiJuegoRPG", "PjDatos", "Saves.json");
+    
 
         // Clase para manejar múltiples personajes
         public class DatosGuardado

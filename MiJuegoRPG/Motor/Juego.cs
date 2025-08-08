@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Text.Json;
+using MiJuegoRPG.Enemigos;
 using MiJuegoRPG.Personaje;
 using MiJuegoRPG.PjDatos;
 
@@ -8,6 +9,11 @@ namespace MiJuegoRPG.Motor
 {
     public class Juego
     {
+        // Atributos base para cada clase
+        private static readonly AtributosBase MagoAtributos = new AtributosBase(2, 10, 3, 5, 4, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15);
+        private static readonly AtributosBase LadronAtributos = new AtributosBase(4, 3, 8, 5, 4, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15);
+        private static readonly AtributosBase GuerreroAtributos = new AtributosBase(10, 2, 3, 5, 4, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15);
+
         private MiJuegoRPG.Personaje.Personaje? jugador;
         private MenuEntreCombate menuEntreCombate;
         
@@ -42,6 +48,32 @@ namespace MiJuegoRPG.Motor
             }
         }
 
+
+                // Dentro de la clase 'Juego'
+        public void ComenzarCombateAleatorio()
+        {
+            if (jugador == null)
+            {
+                Console.WriteLine("No hay personaje para combatir. Creando nuevo personaje...");
+                jugador = CreadorPersonaje.Crear();
+            }
+            
+            // Aquí puedes añadir la lógica para elegir un enemigo aleatorio
+            // Por ahora, crearemos un Goblin por defecto
+            var enemigo = new MiJuegoRPG.Enemigos.Goblin();
+            
+            Console.Clear();
+            Console.WriteLine($"¡Un {enemigo.Nombre} salvaje ha aparecido!");
+
+            // Iniciar el combate por turnos
+            var combate = new CombatePorTurnos(jugador, enemigo);
+            combate.IniciarCombate();
+            
+            // Una vez que el combate termina, puedes volver a mostrar el menú
+            Console.WriteLine("\nEl combate ha terminado. Presiona cualquier tecla para continuar...");
+            Console.ReadKey();
+        }
+
         public void GuardarPersonaje()
         {
             if (jugador == null)
@@ -58,18 +90,31 @@ namespace MiJuegoRPG.Motor
                 var datosPersonaje = new PersonajeData
                 {
                     Nombre = jugador.Nombre,
-                    ClaseNombre = jugador.Clase.Nombre,
-                    Vida = jugador.Vida,
-                    VidaMaxima = jugador.VidaMaxima
+                    Nivel = jugador.Nivel,
+                    Experiencia = jugador.Experiencia,
+                    ExperienciaSiguienteNivel = jugador.ExperienciaSiguienteNivel,
+                    Oro = jugador.Oro,
+                    VidaActual = jugador.Vida,
+                    VidaMaxima = jugador.VidaMaxima,
+                    Atributos = jugador.Atributos,
+                    Clase = jugador.Clase,
+                    Inventario = jugador.Inventario,
+                    Defensa = jugador.Defensa,
+                    EstaVivo = jugador.EstaVivo,
+                    ClaseNombre = jugador.Clase.Nombre
                 };
-
+                // Crear directorio si no existe
                 string directorio = "Guardados";
                 if (!Directory.Exists(directorio))
                 {
                     Directory.CreateDirectory(directorio);
                 }
-
-                string rutaCompleta = Path.Combine(directorio, $"{nombreArchivo}.json");
+                directorio = Path.Combine( "MiJuegoRPG", "PjDatos", "Saves.json");
+                if (!Directory.Exists(directorio))
+                {
+                    Directory.CreateDirectory(directorio);
+                }
+                string rutaCompleta = Path.Combine(AppContext.BaseDirectory, "Guardados", $"{nombreArchivo}.json"); // Ruta completa del archivo
                 string json = JsonSerializer.Serialize(datosPersonaje, new JsonSerializerOptions 
                 { 
                     WriteIndented = true 
@@ -110,7 +155,7 @@ namespace MiJuegoRPG.Motor
                 }
 
                 Console.Write("\nSelecciona un personaje (número): ");
-                if (int.TryParse(Console.ReadLine(), out int seleccion) && 
+                if (int.TryParse(Console.ReadLine(), out int seleccion) &&
                     seleccion > 0 && seleccion <= archivos.Length)
                 {
                     string archivoSeleccionado = archivos[seleccion - 1];
@@ -134,24 +179,28 @@ namespace MiJuegoRPG.Motor
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error al cargar personaje: {ex.Message}");
+                Console.WriteLine($"Error al cargar: {ex.Message}");
             }
         }
 
         private MiJuegoRPG.Personaje.Personaje CrearPersonajeDesdeDatos(PersonajeData datos)
         {
-            // Crear clase basada en el nombre guardado
             Clase clase = datos.ClaseNombre switch
             {
-                "Mago" => new Clase("Mago", new AtributosBase(2, 10, 3, 5, 4, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15), new Personaje.Estadisticas(new AtributosBase(2, 10, 3, 5, 4, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15))),
-                "Ladrón" => new Clase("Ladrón", new AtributosBase(4, 3, 8, 5, 4, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15), new Personaje.Estadisticas(new AtributosBase(4, 3, 8, 5, 4, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15))),
-                _ => new Clase("Guerrero", new AtributosBase(10, 2, 3, 5, 4, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15), new Personaje.Estadisticas(new AtributosBase(10, 2, 3, 5, 4, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15)))
+                "Mago" => new Clase("Mago", MagoAtributos, new Personaje.Estadisticas(MagoAtributos)),
+                "Ladrón" => new Clase("Ladrón", LadronAtributos, new Personaje.Estadisticas(LadronAtributos)),
+                _ => new Clase("Guerrero", GuerreroAtributos, new Personaje.Estadisticas(GuerreroAtributos))
             };
 
             var personaje = new MiJuegoRPG.Personaje.Personaje(datos.Nombre, clase)
             {
-                Vida = datos.Vida,
-                VidaMaxima = datos.VidaMaxima
+                Nivel = datos.Nivel,
+                Experiencia = datos.Experiencia,
+                ExperienciaSiguienteNivel = datos.ExperienciaSiguienteNivel,
+                Oro = datos.Oro,
+                Vida = datos.VidaActual,
+                VidaMaxima = datos.VidaMaxima,
+                Inventario = datos.Inventario
             };
 
             return personaje;
