@@ -12,7 +12,6 @@ namespace MiJuegoRPG.Enemigos
     // Se recomienda extender esta clase para enemigos con habilidades especiales.
     public abstract class Enemigo : ICombatiente
     {
-        
         public string Nombre { get; set; }
         public int Vida { get; set; }
         public int VidaMaxima { get; set; }
@@ -21,6 +20,7 @@ namespace MiJuegoRPG.Enemigos
         public int Nivel { get; set; }
         public int ExperienciaRecompensa { get; set; }
         public int OroRecompensa { get; set; }
+        public int Edad { get; set; }
 
         public bool EstaVivo => Vida > 0;
 
