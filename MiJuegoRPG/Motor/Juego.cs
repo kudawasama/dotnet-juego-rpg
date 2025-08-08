@@ -50,25 +50,25 @@ namespace MiJuegoRPG.Motor
 
 
                 // Dentro de la clase 'Juego'
-        public void ComenzarCombateAleatorio()
+        public void ComenzarCombate()
         {
             if (jugador == null)
             {
                 Console.WriteLine("No hay personaje para combatir. Creando nuevo personaje...");
                 jugador = CreadorPersonaje.Crear();
             }
-            
+
             // Aquí puedes añadir la lógica para elegir un enemigo aleatorio
             // Por ahora, crearemos un Goblin por defecto
             var enemigo = new MiJuegoRPG.Enemigos.Goblin();
-            
+
             Console.Clear();
             Console.WriteLine($"¡Un {enemigo.Nombre} salvaje ha aparecido!");
 
             // Iniciar el combate por turnos
             var combate = new CombatePorTurnos(jugador, enemigo);
             combate.IniciarCombate();
-            
+
             // Una vez que el combate termina, puedes volver a mostrar el menú
             Console.WriteLine("\nEl combate ha terminado. Presiona cualquier tecla para continuar...");
             Console.ReadKey();

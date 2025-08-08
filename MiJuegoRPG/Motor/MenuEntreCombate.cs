@@ -39,7 +39,7 @@ namespace MiJuegoRPG.Motor
                     juego.CargarPersonaje();
                     break;
                 case "3":
-                    juego.ComenzarCombateAleatorio();
+                    juego.ComenzarCombate();
                     break;
                 case "4":
                     Environment.Exit(0);
