@@ -1,120 +1,86 @@
 using System;
 using System.IO;
+using System.Text.Json;
 using MiJuegoRPG.Personaje;
-using MiJuegoRPG.Enemigos;
-using MiJuegoRPG.Interfaces;
+using MiJuegoRPG.PjDatos;
 
 namespace MiJuegoRPG.Motor
 {
     public class Juego
     {
         private MiJuegoRPG.Personaje.Personaje? jugador;
-        private MenuEntreCombate MenuEntreCombate;
+        private MenuEntreCombate menuEntreCombate;
         
         public Juego()
         {
-            MenuEntreCombate = new MenuEntreCombate(this);
+            menuEntreCombate = new MenuEntreCombate(this);
         }
-        
+
         public void Iniciar()
         {
-            Console.WriteLine("Bienvenido al juego de texto estilo Satisfy.");
-            Console.WriteLine("¿Deseas crear un nuevo personaje o cargar uno existente?");
-            Console.WriteLine("1. Crear nuevo personaje");
-            Console.WriteLine("2. Cargar personaje guardado");
-            Console.Write("Selecciona una opción (1 o 2): ");
-            var opcion = Console.ReadLine();
+            Console.WriteLine("Bienvenido a Mi Primer Juego.");
+            jugador = CreadorPersonaje.Crear();
+            
+            // Iniciar el bucle principal del juego
+            BuclePrincipal();
+        }
 
-            if (opcion == "2")
+        private void BuclePrincipal()
+        {
+            while (true)
             {
-                CargarPersonaje();
-                if (jugador == null)
+                if (jugador != null)
                 {
-                    Console.WriteLine("Creando nuevo personaje...");
+                    jugador.MostrarEstado();
+                    menuEntreCombate.MostrarMenu();
+                }
+                else
+                {
+                    Console.WriteLine("No hay personaje activo. Creando nuevo personaje...");
                     jugador = CreadorPersonaje.Crear();
                 }
             }
-            else
-            {
-                jugador = CreadorPersonaje.Crear();
-            }
-
-            // Iniciar bucle de juego principal
-            BucleJuegoPrincipal();
-        }
-
-        private void BucleJuegoPrincipal()
-        {
-            while (jugador != null && jugador.EstaVivo)
-            {
-                jugador.MostrarEstado();
-                
-                Console.WriteLine("\n¿Deseas continuar jugando? (s/n)");
-                var respuesta = Console.ReadLine();
-                if (respuesta?.ToLower() != "s")
-                {
-                    break;
-                }
-
-                // Generar enemigo aleatorio
-                var enemigo = GenerarEnemigoAleatorio();
-                Console.WriteLine($"\n¡Un {enemigo.Nombre} aparece!");
-
-                // Iniciar combate
-                var combate = new CombatePorTurnos(jugador, enemigo);
-                combate.IniciarCombate();
-
-                // Mostrar menú entre combates si el jugador sigue vivo
-                if (jugador.EstaVivo)
-                {
-                    MenuEntreCombate.MostrarMenu();
-                }
-            }
-
-            if (jugador != null && !jugador.EstaVivo)
-            {
-                Console.WriteLine("¡Game Over! Tu personaje ha sido derrotado.");
-            }
-            else
-            {
-                Console.WriteLine("¡Gracias por jugar!");
-            }
-        }
-
-        private Enemigo GenerarEnemigoAleatorio()
-        {
-            Random random = new Random();
-            int tipoEnemigo = random.Next(1, 3);
-
-            return tipoEnemigo switch
-            {
-                1 => new Goblin(),
-                2 => new GranGoblin(),
-                _ => new Goblin()
-            };
         }
 
         public void GuardarPersonaje()
         {
-            if (jugador != null)
-            {
-                try
-                {
-                    string rutaDirectorio = @"C:\Users\jose.cespedes\Desktop\Programacion\MiJuegoRPG\PjDatos";
-                    Directory.CreateDirectory(rutaDirectorio);
-
-                    string rutaArchivo = Path.Combine(rutaDirectorio, "Saves.json");
-                    CreadorPersonaje.GuardarPersonaje(jugador, rutaArchivo);
-                    Console.WriteLine("Personaje guardado correctamente.");
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Error al guardar personaje: {ex.Message}");
-                }
-            }
-            else
+            if (jugador == null)
             {
                 Console.WriteLine("No hay personaje para guardar.");
+                return;
+            }
+
+            try
+            {
+                Console.Write("Nombre del archivo (sin extensión): ");
+                string nombreArchivo = Console.ReadLine() ?? jugador.Nombre;
+                
+                var datosPersonaje = new PersonajeData
+                {
+                    Nombre = jugador.Nombre,
+                    ClaseNombre = jugador.Clase.Nombre,
+                    Vida = jugador.Vida,
+                    VidaMaxima = jugador.VidaMaxima
+                };
+
+                string directorio = "Guardados";
+                if (!Directory.Exists(directorio))
+                {
+                    Directory.CreateDirectory(directorio);
+                }
+
+                string rutaCompleta = Path.Combine(directorio, $"{nombreArchivo}.json");
+                string json = JsonSerializer.Serialize(datosPersonaje, new JsonSerializerOptions 
+                { 
+                    WriteIndented = true 
+                });
+                
+                File.WriteAllText(rutaCompleta, json);
+                Console.WriteLine($"Personaje guardado exitosamente en: {rutaCompleta}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error al guardar: {ex.Message}");
             }
         }
 
@@ -122,17 +88,49 @@ namespace MiJuegoRPG.Motor
         {
             try
             {
-                string rutaArchivo = @"C:\Users\jose.cespedes\Desktop\Programacion\MiJuegoRPG\PjDatos\Saves.json";
-
-                if (!File.Exists(rutaArchivo))
+                string directorio = "Guardados";
+                if (!Directory.Exists(directorio))
                 {
-                    Console.WriteLine("No se encontró ningún personaje guardado.");
+                    Console.WriteLine("No hay personajes guardados.");
                     return;
                 }
 
-                jugador = CreadorPersonaje.CargarPersonaje(rutaArchivo);
-                Console.WriteLine("Personaje cargado exitosamente:");
-                CreadorPersonaje.MostrarPersonaje(jugador);
+                var archivos = Directory.GetFiles(directorio, "*.json");
+                if (archivos.Length == 0)
+                {
+                    Console.WriteLine("No se encontraron personajes guardados.");
+                    return;
+                }
+
+                Console.WriteLine("\n=== Personajes Disponibles ===");
+                for (int i = 0; i < archivos.Length; i++)
+                {
+                    string nombreArchivo = Path.GetFileNameWithoutExtension(archivos[i]);
+                    Console.WriteLine($"{i + 1}. {nombreArchivo}");
+                }
+
+                Console.Write("\nSelecciona un personaje (número): ");
+                if (int.TryParse(Console.ReadLine(), out int seleccion) && 
+                    seleccion > 0 && seleccion <= archivos.Length)
+                {
+                    string archivoSeleccionado = archivos[seleccion - 1];
+                    string json = File.ReadAllText(archivoSeleccionado);
+                    var datosPersonaje = JsonSerializer.Deserialize<PersonajeData>(json);
+
+                    if (datosPersonaje != null)
+                    {
+                        jugador = CrearPersonajeDesdeDatos(datosPersonaje);
+                        Console.WriteLine($"¡Personaje {datosPersonaje.Nombre} cargado exitosamente!");
+                    }
+                    else
+                    {
+                        Console.WriteLine("Error: No se pudieron leer los datos del personaje.");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Selección inválida.");
+                }
             }
             catch (Exception ex)
             {
@@ -140,16 +138,23 @@ namespace MiJuegoRPG.Motor
             }
         }
 
-        public void MostrarEstadoJugador()
+        private MiJuegoRPG.Personaje.Personaje CrearPersonajeDesdeDatos(PersonajeData datos)
         {
-            if (jugador != null)
+            // Crear clase basada en el nombre guardado
+            Clase clase = datos.ClaseNombre switch
             {
-                jugador.MostrarEstado();
-            }
-            else
+                "Mago" => new Clase("Mago", new AtributosBase(2, 10, 3, 5, 4, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15), new Personaje.Estadisticas(new AtributosBase(2, 10, 3, 5, 4, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15))),
+                "Ladrón" => new Clase("Ladrón", new AtributosBase(4, 3, 8, 5, 4, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15), new Personaje.Estadisticas(new AtributosBase(4, 3, 8, 5, 4, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15))),
+                _ => new Clase("Guerrero", new AtributosBase(10, 2, 3, 5, 4, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15), new Personaje.Estadisticas(new AtributosBase(10, 2, 3, 5, 4, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15)))
+            };
+
+            var personaje = new MiJuegoRPG.Personaje.Personaje(datos.Nombre, clase)
             {
-                Console.WriteLine("No hay personaje activo.");
-            }
+                Vida = datos.Vida,
+                VidaMaxima = datos.VidaMaxima
+            };
+
+            return personaje;
         }
     }
 }

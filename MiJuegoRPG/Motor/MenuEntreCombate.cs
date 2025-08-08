@@ -5,6 +5,9 @@ using System;
 using MiJuegoRPG.Motor;
 using MiJuegoRPG.Personaje;
 using MiJuegoRPG.Enemigos;
+using MiJuegoRPG.PjDatos;
+using MiJuegoRPG.Interfaces;
+
 
 namespace MiJuegoRPG.Motor
 {
