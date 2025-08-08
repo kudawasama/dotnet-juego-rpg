@@ -20,6 +20,7 @@ namespace MiJuegoRPG.Enemigos
         public int Nivel { get; set; }
         public int ExperienciaRecompensa { get; set; }
         public int OroRecompensa { get; set; }
+        public int Edad { get; set; }
 
         public bool EstaVivo => Vida > 0;
 
