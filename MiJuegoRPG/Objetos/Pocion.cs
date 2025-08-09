@@ -4,12 +4,15 @@ namespace MiJuegoRPG.Objetos
 {
     public class Pocion : Objeto
     {
+        public string TipoObjeto { get; set; } = "Pocion";
         public int Curacion { get; set; }
 
         public Pocion(string nombre, int curacion, Rareza rareza = Rareza.Normal, string categoria = "Consumible") : base(nombre, rareza, categoria)
         {
             Curacion = curacion;
         }
+
+        public Pocion() : base("", Rareza.Normal, "Consumible") { }
 
         public override void Usar(MiJuegoRPG.Personaje.Personaje personaje)
         {

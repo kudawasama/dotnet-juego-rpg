@@ -151,4 +151,39 @@ if (eventoGlobal == "Invasión goblin")
 
 ---
 
+## Menú de Pruebas y Depuración
+
+El juego incluye un menú principal ampliado para probar todas las funciones implementadas:
+
+```
+=== Menú Principal ===
+1. Explorar
+2. Entrenar
+3. Ir a la tienda
+4. Gestionar inventario
+5. Guardar/Cargar
+6. Probar combate
+7. Probar economía
+8. Probar misiones
+9. Probar inventario
+0. Salir
+```
+
+### Explicación de cada opción:
+
+- **1. Explorar:** Genera eventos aleatorios (combate, objetos, mazmorras, NPC, eventos especiales) y aplica efectos reales (combate, objetos al inventario, progreso de atributos, misiones, suerte).
+- **2. Entrenar:** Permite subir atributos específicos del personaje.
+- **3. Ir a la tienda:** (Placeholder) Muestra mensaje, puedes expandir para implementar compras.
+- **4. Gestionar inventario:** (Placeholder) Muestra mensaje, puedes expandir para ver y usar objetos.
+- **5. Guardar/Cargar:** Permite guardar y cargar el personaje en archivos JSON, usando rutas seguras del proyecto.
+- **6. Probar combate:** Inicia un combate de prueba usando el sistema de enemigos y combate.
+- **7. Probar economía:** Muestra cómo varían los precios según eventos globales (ejemplo: feria mágica).
+- **8. Probar misiones:** Muestra un ejemplo de NPC y misión, con recompensas y desbloqueo de rutas.
+- **9. Probar inventario:** Muestra los objetos actuales del inventario del personaje.
+- **0. Salir:** Finaliza el juego.
+
+Este menú permite verificar y depurar fácilmente todas las funcionalidades principales del sistema RPG. Puedes expandir cada opción para agregar más lógica, pruebas o ejemplos según lo necesites.
+
+---
+
 Este sistema te permite expandir el juego fácilmente, agregar nuevas ubicaciones, profesiones, misiones y eventos sin modificar la estructura base.

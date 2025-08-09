@@ -17,17 +17,22 @@ namespace MiJuegoRPG.Objetos
 
     public static class GestorArmas
     {
-        public static string RutaArmasJson = "c:/Users/ASUS/OneDrive/Documentos/GitHub/dotnet-juego-rpg/MiJuegoRPG/PjDatos/armas.json";
+        public static string RutaArmasJson = Path.Combine(
+            Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory)?.Parent?.Parent?.FullName ?? AppDomain.CurrentDomain.BaseDirectory,
+            "MiJuegoRPG", "PjDatos", "armas.json");
         public static List<Arma> ArmasDisponibles = new List<Arma>();
 
         public static void CargarArmas(string rutaArchivo)
         {
-            if (!Path.IsPathRooted(rutaArchivo))
-            {
-                var dir = Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory);
-                string rutaBase = dir?.Parent?.Parent != null ? dir.Parent.Parent.FullName : AppDomain.CurrentDomain.BaseDirectory;
-                rutaArchivo = Path.Combine(rutaBase, "MiJuegoRPG", "PjDatos", rutaArchivo);
-            }
+            // Mostrar la ruta recibida
+            Console.WriteLine($"[GestorArmas] Ruta recibida: {rutaArchivo}");
+            // Forzar ruta a la carpeta del proyecto
+            var dirProyecto = Directory.GetParent(Directory.GetParent(Environment.CurrentDirectory)?.FullName ?? "");
+            string rutaBase = dirProyecto?.FullName ?? Environment.CurrentDirectory;
+            rutaArchivo = Path.Combine(rutaBase, "MiJuegoRPG", "PjDatos", Path.GetFileName(rutaArchivo));
+            Console.WriteLine($"[GestorArmas] Ruta forzada: {rutaArchivo}");
+            // Mostrar la ruta final usada
+            Console.WriteLine($"[GestorArmas] Ruta final usada: {rutaArchivo}");
             try
             {
                 string jsonString = File.ReadAllText(rutaArchivo);

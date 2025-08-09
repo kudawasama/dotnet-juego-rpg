@@ -20,13 +20,15 @@ namespace MiJuegoRPG.Motor
         // Se encarga de leer el archivo JSON y cargar los datos de los enemigos.
         public static void CargarEnemigos(string rutaArchivo)
         {
-            // Si la ruta es relativa, la convertimos a absoluta desde el proyecto
-            if (!Path.IsPathRooted(rutaArchivo))
-            {
-                var dir = Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory);
-                string rutaBase = dir?.Parent?.Parent != null ? dir.Parent.Parent.FullName : AppDomain.CurrentDomain.BaseDirectory;
-                rutaArchivo = Path.Combine(rutaBase, "MiJuegoRPG", "PjDatos", rutaArchivo);
-            }
+            // Mostrar la ruta recibida
+            Console.WriteLine($"[GeneradorEnemigos] Ruta recibida: {rutaArchivo}");
+            // Forzar ruta a la carpeta del proyecto
+            var dirProyecto = Directory.GetParent(Directory.GetParent(Environment.CurrentDirectory)?.FullName ?? "");
+            string rutaBase = dirProyecto?.FullName ?? Environment.CurrentDirectory;
+            rutaArchivo = Path.Combine(rutaBase, "MiJuegoRPG", "PjDatos", Path.GetFileName(rutaArchivo));
+            Console.WriteLine($"[GeneradorEnemigos] Ruta forzada: {rutaArchivo}");
+            // Mostrar la ruta final usada
+            Console.WriteLine($"[GeneradorEnemigos] Ruta final usada: {rutaArchivo}");
             try
             {
                 string jsonString = File.ReadAllText(rutaArchivo);

@@ -4,6 +4,7 @@ namespace MiJuegoRPG.Objetos
 {
     public class Arma : MiJuegoRPG.Objetos.Objeto
     {
+        public string TipoObjeto { get; set; } = "Arma";
         public int Daño { get; set; }
         public int Nivel { get; set; }
 
@@ -23,6 +24,8 @@ namespace MiJuegoRPG.Objetos
             Nivel = nivel;
             Daño = CalcularDaño(dañoBase, nivel, rareza);
         }
+
+        public Arma() : base("", Rareza.Normal, "UnaMano") { }
 
         private int CalcularDaño(int dañoBase, int nivel, Rareza rareza)
         {

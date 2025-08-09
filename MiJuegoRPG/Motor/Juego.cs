@@ -1,16 +1,29 @@
-using System;
-using System.IO;
-using System.Text.Json;
-using MiJuegoRPG.Enemigos;
-using MiJuegoRPG.Personaje;
-using MiJuegoRPG.PjDatos;
-using MiJuegoRPG.Interfaces;
-using MiJuegoRPG.Motor;
+
+        using System;
+        using System.IO;
+        using System.Text.Json;
+        using MiJuegoRPG.Enemigos;
+        using MiJuegoRPG.Personaje;
+        using MiJuegoRPG.PjDatos;
+        using MiJuegoRPG.Interfaces;
+        using MiJuegoRPG.Motor;
+using MiJuegoRPG.Objetos;
+using System.Text.Json.Serialization;
 
 namespace MiJuegoRPG.Motor
 {
     public class Juego
     {
+            // Busca la carpeta raíz del proyecto (donde está el .sln)
+            public static string ObtenerRutaRaizProyecto()
+            {
+                var dir = new DirectoryInfo(Environment.CurrentDirectory);
+                while (dir != null && !File.Exists(Path.Combine(dir.FullName, "MiJuegoRPG.sln")))
+                {
+                    dir = dir.Parent;
+                }
+                return dir?.FullName ?? Environment.CurrentDirectory;
+            }
         // Atributos base para cada clase (mantengo esto por ahora, lo cambiaremos después)
         private static readonly AtributosBase MagoAtributos = new AtributosBase(2, 10, 3, 5, 4, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15);
         private static readonly AtributosBase LadronAtributos = new AtributosBase(4, 3, 8, 5, 4, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15);
@@ -75,17 +88,12 @@ namespace MiJuegoRPG.Motor
         {
             Console.WriteLine("Bienvenido a Mi Primer Juego.\n");
 
-            // Cargar enemigos desde el archivo JSON al inicio del juego.
-            string rutaBase;
-            var dir = Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory);
-            if (dir?.Parent?.Parent != null)
-                rutaBase = dir.Parent.Parent.FullName;
-            else
-                rutaBase = AppDomain.CurrentDomain.BaseDirectory;
-            string rutaArmas = Path.Combine(rutaBase, "MiJuegoRPG", "PjDatos", "armas.json");
+            // Cargar enemigos y armas desde la carpeta PjDatos del proyecto
+            string rutaProyecto = ObtenerRutaRaizProyecto();
+            string rutaArmas = Path.Combine(rutaProyecto, "MiJuegoRPG", "PjDatos", "armas.json");
             Objetos.GestorArmas.CargarArmas(rutaArmas);
 
-            string rutaEnemigos = Path.Combine(rutaBase, "MiJuegoRPG", "PjDatos", "enemigos.json");
+            string rutaEnemigos = Path.Combine(rutaProyecto, "MiJuegoRPG", "PjDatos", "enemigos.json");
             GeneradorEnemigos.CargarEnemigos(rutaEnemigos);
 
             bool personajeCargado = false;
@@ -140,33 +148,29 @@ namespace MiJuegoRPG.Motor
             {
                 Console.Clear();
                 Console.WriteLine("=== Menú Principal ===");
-                Console.WriteLine("1. Explorar");
-                Console.WriteLine("2. Entrenar");
-                Console.WriteLine("3. Ir a la tienda");
-                Console.WriteLine("4. Gestionar inventario");
-                Console.WriteLine("5. Guardar/Cargar");
-                Console.WriteLine("6. Salir");
+                Console.WriteLine("1. Ver ubicación actual");
+                Console.WriteLine("2. Gestionar inventario");
+                Console.WriteLine("3. Guardar/Cargar");
+                Console.WriteLine("4. Revisar misiones activas");
+                Console.WriteLine("0. Salir");
 
                 var opcion = Console.ReadLine();
 
                 switch (opcion)
                 {
                     case "1":
-                        ExplorarSector();
+                        MostrarMenuUbicacion();
                         break;
                     case "2":
-                        Entrenar();
-                        break;
-                    case "3":
-                        IrATienda();
-                        break;
-                    case "4":
                         GestionarInventario();
                         break;
-                    case "5":
+                    case "3":
                         MostrarMenuGuardado();
                         break;
-                    case "6":
+                    case "4":
+                        RevisarMisiones();
+                        break;
+                    case "0":
                         Console.WriteLine("Gracias por jugar. ¡Hasta luego!");
                         return;
                     default:
@@ -263,25 +267,29 @@ namespace MiJuegoRPG.Motor
             switch (evento)
             {
                 case "Encuentro con enemigo":
-                    // Aquí podrías llamar a GeneradorEnemigos y sumar XP de fuerza, resistencia, etc.
                     Console.WriteLine("¡Te enfrentas a un enemigo!");
-                    // jugador.Entrenar("fuerza");
+                    ComenzarCombate();
+                    ProgresionPorActividad("combate");
                     break;
                 case "Descubrir objeto":
-                    Console.WriteLine("Has encontrado un objeto útil.");
-                    // jugador.Entrenar("destreza");
+                    Console.WriteLine("Has encontrado una poción curativa y la agregas a tu inventario.");
+                    if (jugador != null)
+                    {
+                        jugador.Inventario.AgregarObjeto(new Objetos.Pocion("Poción Curativa", 20));
+                        ProgresionPorActividad("exploracion");
+                    }
                     break;
                 case "Encontrar mazmorra":
-                    Console.WriteLine("Has descubierto una mazmorra misteriosa.");
-                    // jugador.Entrenar("resistencia");
+                    Console.WriteLine("Has descubierto una mazmorra misteriosa. Puedes intentar entrar en el futuro.");
+                    ProgresionPorActividad("exploracion");
                     break;
                 case "Encontrar NPC":
-                    Console.WriteLine("Un NPC te ofrece una misión.");
-                    // jugador.Entrenar("carisma");
+                    Console.WriteLine("Un NPC te ofrece una misión: 'Encuentra el mineral raro en la cueva'.");
+                    ProgresionPorActividad("trabajo");
                     break;
                 case "Evento especial":
-                    Console.WriteLine("Ocurre un evento inesperado en el área.");
-                    // jugador.Entrenar("suerte");
+                    Console.WriteLine("Ocurre un evento inesperado en el área. ¡Tu suerte aumenta!");
+                    ProgresionPorActividad("suerte");
                     break;
             }
         }
@@ -323,13 +331,73 @@ namespace MiJuegoRPG.Motor
 
         public void IrATienda()
         {
-            Console.WriteLine("Tienda aún no implementada.");
+            Console.WriteLine("Bienvenido a la tienda. Puedes comprar una poción por 10 monedas de oro.");
+            if (jugador != null && jugador.Oro >= 10)
+            {
+                Console.WriteLine("¿Comprar poción curativa por 10 oro? (s/n)");
+                var opcion = Console.ReadLine();
+                if (opcion != null && opcion.Trim().ToLower() == "s")
+                {
+                    jugador.Oro -= 10;
+                    jugador.Inventario.AgregarObjeto(new Objetos.Pocion("Poción Curativa", 20));
+                    Console.WriteLine("¡Has comprado una poción curativa!");
+                }
+                else
+                {
+                    Console.WriteLine("No compraste nada.");
+                }
+            }
+            else if (jugador != null)
+            {
+                Console.WriteLine("No tienes suficiente oro.");
+            }
+            else
+            {
+                Console.WriteLine("No hay personaje cargado.");
+            }
+            Console.WriteLine("Presiona cualquier tecla para volver al menú...");
             Console.ReadKey();
         }
 
         public void GestionarInventario()
         {
-            Console.WriteLine("Inventario aún no implementado.");
+            if (jugador == null)
+            {
+                Console.WriteLine("No hay personaje cargado.");
+                Console.ReadKey();
+                return;
+            }
+            Console.WriteLine("=== Inventario ===");
+            if (jugador.Inventario.NuevosObjetos.Count == 0)
+            {
+                Console.WriteLine("Tu inventario está vacío.");
+            }
+            else
+            {
+                for (int i = 0; i < jugador.Inventario.NuevosObjetos.Count; i++)
+                {
+                    var obj = jugador.Inventario.NuevosObjetos[i];
+                    Console.WriteLine($"{i + 1}. {obj.Nombre}");
+                }
+                Console.WriteLine("¿Quieres usar una poción? Ingresa el número o presiona Enter para salir.");
+                var opcion = Console.ReadLine();
+                int seleccion;
+                if (int.TryParse(opcion, out seleccion) && seleccion > 0 && seleccion <= jugador.Inventario.NuevosObjetos.Count)
+                {
+                    var obj = jugador.Inventario.NuevosObjetos[seleccion - 1];
+                    if (obj is Objetos.Pocion pocion)
+                    {
+                        jugador.Vida = Math.Min(jugador.Vida + pocion.Curacion, jugador.VidaMaxima);
+                        jugador.Inventario.NuevosObjetos.RemoveAt(seleccion - 1);
+                        Console.WriteLine($"Usaste {pocion.Nombre} y recuperaste {pocion.Curacion} puntos de vida.");
+                    }
+                    else
+                    {
+                        Console.WriteLine($"No puedes usar {obj.Nombre}.");
+                    }
+                }
+            }
+            Console.WriteLine("Presiona cualquier tecla para volver al menú...");
             Console.ReadKey();
         }
 
@@ -347,7 +415,11 @@ namespace MiJuegoRPG.Motor
             {
                 nombreArchivo = "personaje";
             }
-            string rutaCarpeta = @"C:\Users\ASUS\OneDrive\Documentos\GitHub\dotnet-juego-rpg\MiJuegoRPG\PjDatos\PjGuardados";
+            var dirActual = Environment.CurrentDirectory;
+            var dirPadre = Directory.GetParent(dirActual);
+            var dirProyecto = dirPadre != null ? dirPadre.Parent : null;
+            string rutaProyecto = dirProyecto != null ? dirProyecto.FullName : dirActual;
+            string rutaCarpeta = Path.Combine(rutaProyecto, "MiJuegoRPG", "PjDatos", "PjGuardados");
             Directory.CreateDirectory(rutaCarpeta);
             string rutaGuardado = Path.Combine(rutaCarpeta, nombreArchivo + ".json");
             try
@@ -367,8 +439,11 @@ namespace MiJuegoRPG.Motor
         {
             try
             {
-                string rutaPj = @"C:\Users\ASUS\OneDrive\Documentos\GitHub\dotnet-juego-rpg\MiJuegoRPG\PjDatos\PjGuardados";
-                var archivos = Directory.GetFiles(rutaPj, "*.json");
+                // Obtener la ruta raíz del proyecto (no bin)
+                string rutaProyecto = ObtenerRutaRaizProyecto();
+                string rutaPj = Path.Combine(rutaProyecto, "MiJuegoRPG", "PjDatos", "PjGuardados");
+                Console.WriteLine($"[DEBUG] Buscando personajes en: {rutaPj}");
+                var archivos = Directory.Exists(rutaPj) ? Directory.GetFiles(rutaPj, "*.json") : Array.Empty<string>();
                 if (archivos.Length == 0)
                 {
                     Console.WriteLine("No hay personajes guardados.");
@@ -383,7 +458,10 @@ namespace MiJuegoRPG.Motor
                 if (int.TryParse(Console.ReadLine(), out int seleccion) && seleccion > 0 && seleccion <= archivos.Length)
                 {
                     string json = File.ReadAllText(archivos[seleccion - 1]);
-                    jugador = JsonSerializer.Deserialize<MiJuegoRPG.Personaje.Personaje>(json);
+                    var options = new JsonSerializerOptions { WriteIndented = true };
+                    options.Converters.Add(new ObjetoJsonConverter());
+                    options.Converters.Add(new JsonStringEnumConverter());
+                    jugador = JsonSerializer.Deserialize<MiJuegoRPG.Personaje.Personaje>(json, options);
                     Console.WriteLine($"Personaje '{Path.GetFileNameWithoutExtension(archivos[seleccion - 1])}' cargado exitosamente.");
                 }
                 else
@@ -424,7 +502,46 @@ namespace MiJuegoRPG.Motor
             }
             Console.WriteLine($"{i}. Salir de la ciudad");
             var opcion = Console.ReadLine();
-            // Aquí iría la lógica para cada opción, incluyendo explorar, tienda, entrenamiento, etc.
+                int seleccion;
+                if (int.TryParse(opcion, out seleccion))
+                {
+                    if (seleccion == i)
+                    {
+                        // Opción Salir de la ciudad
+                        MostrarMenuRutas();
+                    }
+                    else if (seleccion > 0 && seleccion <= ubicacionActual.EventosPosibles.Count)
+                    {
+                        string eventoElegido = ubicacionActual.EventosPosibles[seleccion - 1];
+                        switch (eventoElegido)
+                        {
+                            case "Tienda":
+                                IrATienda();
+                                break;
+                            case "Escuela de Entrenamiento":
+                                Entrenar();
+                                break;
+                            case "Explorar sector":
+                                ExplorarSector();
+                                break;
+                            case "Descansar en posada":
+                                Console.WriteLine("Has descansado y recuperado energía.");
+                                // Aquí podrías restaurar vida, energía, etc.
+                                break;
+                            default:
+                                Console.WriteLine($"Evento '{eventoElegido}' aún no implementado.");
+                                break;
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("Opción no válida.");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Opción no válida.");
+                }
         }
 
         public void MostrarMenuRutas()
@@ -437,8 +554,53 @@ namespace MiJuegoRPG.Motor
                 Console.WriteLine($"{i}. {ruta.Nombre} {(ruta.Desbloqueada ? "(Desbloqueada)" : "(Bloqueada)")}");
                 i++;
             }
+            Console.WriteLine($"{i}. Volver");
             var opcion = Console.ReadLine();
-            // Aquí iría la lógica para viajar y verificar requisitos
+            int seleccion;
+            if (int.TryParse(opcion, out seleccion))
+            {
+                if (seleccion > 0 && seleccion <= ubicacionActual.Rutas.Count)
+                {
+                    var rutaElegida = ubicacionActual.Rutas[seleccion - 1];
+                    if (rutaElegida.Desbloqueada)
+                    {
+                        var nuevaUbicacion = estadoMundo.Ubicaciones.Find(u => u.Nombre == rutaElegida.Destino);
+                        if (nuevaUbicacion != null)
+                        {
+                            ubicacionActual = nuevaUbicacion;
+                            Console.WriteLine($"Viajaste a {ubicacionActual.Nombre}.");
+                            Console.WriteLine(ubicacionActual.Descripcion);
+                            Console.WriteLine("Presiona cualquier tecla para ver los sectores y eventos disponibles...");
+                            Console.ReadKey();
+                            MostrarMenuUbicacion();
+                            return;
+                        }
+                        else
+                        {
+                            Console.WriteLine("No se encontró la ubicación de destino.");
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("La ruta está bloqueada. No puedes viajar aún.");
+                    }
+                }
+                else if (seleccion == i)
+                {
+                    // Volver
+                    return;
+                }
+                else
+                {
+                    Console.WriteLine("Opción no válida.");
+                }
+            }
+            else
+            {
+                Console.WriteLine("Opción no válida.");
+            }
+            Console.WriteLine("Presiona cualquier tecla para continuar...");
+            Console.ReadKey();
         }
 
         private void ProgresionPorActividad(string actividad)
@@ -487,6 +649,41 @@ namespace MiJuegoRPG.Motor
                 jugador.Titulo = "El Veloz";
                 Console.WriteLine("¡Has desbloqueado la clase Explorador!");
             }
+        }
+
+        // Opción para revisar misiones activas
+        private void RevisarMisiones()
+        {
+            Console.Clear();
+            Console.WriteLine("=== Misiones activas ===");
+            if (jugador == null || jugador.Inventario == null)
+            {
+                Console.WriteLine("No hay personaje cargado.");
+                Console.ReadKey();
+                return;
+            }
+            // Ejemplo: buscar misiones en el inventario del jugador
+            // (En una implementación real, las misiones estarían en una lista propia)
+            var misionesEjemplo = new List<Mision> {
+                new Mision {
+                    Nombre = "Mineral raro para el herrero",
+                    Descripcion = "Encuentra el mineral en la cueva y llévalo al herrero.",
+                    UbicacionNPC = "Ciudad de Albor",
+                    Requisitos = new List<string> { "Mineral raro" },
+                    Estado = "En progreso"
+                }
+            };
+            foreach (var mision in misionesEjemplo)
+            {
+                Console.WriteLine($"Misión: {mision.Nombre}");
+                Console.WriteLine($"Solicitante: Herrero");
+                Console.WriteLine($"Item solicitado: {string.Join(", ", mision.Requisitos)}");
+                Console.WriteLine($"Ubicación del NPC: {mision.UbicacionNPC}");
+                Console.WriteLine($"Estado: {mision.Estado}");
+                Console.WriteLine("---");
+            }
+            Console.WriteLine("Presiona cualquier tecla para volver al menú...");
+            Console.ReadKey();
         }
     }
 }

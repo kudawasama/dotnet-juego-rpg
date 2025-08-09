@@ -38,7 +38,9 @@ namespace MiJuegoRPG.Motor  // Debe ser este espacio de nombres
                     break;
             }
 
-            return new MiJuegoRPG.Personaje.Personaje(nombre, clase);
+            var personaje = new MiJuegoRPG.Personaje.Personaje(nombre);
+            personaje.Clase = clase;
+            return personaje;
         }
 
 
@@ -51,7 +53,12 @@ namespace MiJuegoRPG.Motor  // Debe ser este espacio de nombres
                 string json = JsonSerializer.Serialize(personaje, opciones);
                 
                 // Usar ruta por defecto si no se proporciona una
-                rutaArchivo ??= @"C:\Users\jose.cespedes\Desktop\Programacion\MiJuegoRPG\PjDatos\Saves.json";
+                if (rutaArchivo == null)
+                {
+                    var dir = Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory);
+                    string rutaProyecto = dir?.Parent?.Parent?.FullName ?? AppDomain.CurrentDomain.BaseDirectory;
+                    rutaArchivo = Path.Combine(rutaProyecto, "MiJuegoRPG", "PjDatos", "Saves.json");
+                }
                 
                 // Crear directorio si no existe
                 string directorio = rutaArchivo != null ? Path.GetDirectoryName(rutaArchivo) ?? string.Empty : string.Empty;
@@ -90,8 +97,15 @@ namespace MiJuegoRPG.Motor  // Debe ser este espacio de nombres
         public static void MostrarPersonaje(MiJuegoRPG.Personaje.Personaje personaje)
         {
             Console.WriteLine($"Nombre: {personaje.Nombre}");
-            Console.WriteLine($"Clase: {personaje.Clase.Nombre}");
-            Console.WriteLine($"Atributos: Fuerza={personaje.Atributos.Fuerza}, Inteligencia={personaje.Atributos.Inteligencia}, Agilidad={personaje.Atributos.Agilidad}");
+            Console.WriteLine($"Clase: {(personaje.Clase != null ? personaje.Clase.Nombre : "Sin clase")}");
+            if (personaje.Atributos != null)
+            {
+                Console.WriteLine($"Atributos: Fuerza={personaje.Atributos?.Fuerza}, Inteligencia={personaje.Atributos?.Inteligencia}, Agilidad={personaje.Atributos?.Agilidad}");
+            }
+            else
+            {
+                Console.WriteLine("Atributos: No disponibles");
+            }
             Console.WriteLine($"Vida: {personaje.VidaActual}/{personaje.VidaMaxima}");
         }
 
