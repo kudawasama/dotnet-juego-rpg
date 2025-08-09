@@ -9,13 +9,24 @@ namespace MiJuegoRPG.Personaje
     {
         // Propiedades del personaje
         public string Nombre { get; set; }
-        public Clase Clase { get; set; }
+        public Clase? Clase { get; set; }
         public int Vida { get; set; }
         public int VidaMaxima { get; set; }
         public Inventario Inventario { get; set; }
         public int VidaActual => Vida;
-        public AtributosBase Atributos => Clase.Atributos;
+        public AtributosBase Atributos => Clase != null ? Clase.Atributos : AtributosBase;
 
+        // Nuevo: Atributos base independientes
+        public AtributosBase AtributosBase { get; set; }
+        public string Titulo { get; set; } = "Sin título";
+        public string ClaseDesbloqueada { get; set; } = "Sin clase";
+
+        // Experiencia por atributo
+        public int ExpFuerza { get; set; }
+        public int ExpMagia { get; set; }
+        public int ExpAgilidad { get; set; }
+        public int ExpInteligencia { get; set; }
+        public int ExpResistencia { get; set; }
 
         // Sistema de Experiencia
         public int Nivel { get; set; }
@@ -23,8 +34,16 @@ namespace MiJuegoRPG.Personaje
         public int ExperienciaSiguienteNivel { get; set; }
         public int Oro { get; set; }
 
-           
-
+        // Sistema de profesiones
+        public Dictionary<string, int> Profesiones { get; set; } = new Dictionary<string, int> {
+            { "Herrero", 0 },
+            { "Herbolaria", 0 },
+            { "Domador", 0 },
+            { "Alquimista", 0 },
+            { "Cazador", 0 },
+            { "Explorador", 0 }
+        };
+        public string ProfesionPrincipal { get; set; } = "Sin especialidad";
 
         public int Defensa => Atributos.Defensa;
         public bool EstaVivo => Vida > 0;
@@ -43,20 +62,18 @@ namespace MiJuegoRPG.Personaje
             if (Vida < 0) Vida = 0;
         }
 
-        public Personaje(string nombre, Clase clase)
+        public Personaje(string nombre)
         {
             Nombre = nombre;
-            Clase = clase;
-            VidaMaxima = (int)clase.Estadisticas.Salud;
+            VidaMaxima = 100;
             Vida = VidaMaxima;
             Inventario = new Inventario();
-
-            // Inicializar sistema de experiencia
             Nivel = 1;
             Experiencia = 0;
             ExperienciaSiguienteNivel = CalcularExperienciaNecesaria(Nivel + 1);
             Oro = 0;
-
+            AtributosBase = new AtributosBase();
+            Clase = null;
         }
 
         public void GanarExperiencia(int exp)
@@ -81,15 +98,15 @@ namespace MiJuegoRPG.Personaje
         {
             Nivel++;
             Console.WriteLine($"¡{Nombre} subió al nivel {Nivel}!");
-            
+
             // Aumentar estadísticas al subir de nivel
             int bonusVida = 10 + (Atributos.Vitalidad / 2);
             VidaMaxima += bonusVida;
             Vida = VidaMaxima; // Curar completamente al subir de nivel
-            
+
             // Calcular experiencia para el siguiente nivel
             ExperienciaSiguienteNivel = CalcularExperienciaNecesaria(Nivel + 1);
-            
+
             Console.WriteLine($"Vida máxima aumentó en {bonusVida}! Nueva vida máxima: {VidaMaxima}");
         }
 
@@ -99,34 +116,57 @@ namespace MiJuegoRPG.Personaje
             return nivel * nivel * 200;
         }
 
-  
-        
-
-        public void MostrarEstado()
+        // Método para entrenar atributos y desbloquear clases/títulos
+        public void Entrenar(string atributo)
         {
-            Console.WriteLine($"=== {Nombre} ===");
-            Console.WriteLine($"Clase: {Clase.Nombre}");
-            Console.WriteLine($"Vida: {Vida}/{VidaMaxima}");
-            Console.WriteLine($"Atributos:");
-            Console.WriteLine($"  Fuerza: {Clase.Atributos.Fuerza}");
-            Console.WriteLine($"  Agilidad: {Clase.Atributos.Agilidad}");
-            Console.WriteLine($"  Inteligencia: {Clase.Atributos.Inteligencia}");
-            Console.WriteLine($"  Defensa: {Clase.Atributos.Defensa}");
-            Console.WriteLine($"  Suerte: {Clase.Atributos.Suerte}");
+            switch (atributo.ToLower())
+            {
+                case "fuerza":
+                    AtributosBase.Fuerza += 1;
+                    ExpFuerza += 2;
+                    GanarExperiencia(2);
+                    break;
+                case "resistencia":
+                    AtributosBase.Resistencia += 1;
+                    ExpResistencia += 2;
+                    GanarExperiencia(2);
+                    break;
+                case "inteligencia":
+                    AtributosBase.Inteligencia += 1;
+                    ExpInteligencia += 2;
+                    GanarExperiencia(2);
+                    break;
+                case "destreza":
+                    AtributosBase.Destreza += 1;
+                    ExpAgilidad += 2;
+                    GanarExperiencia(2);
+                    break;
+                case "magia":
+                    ExpMagia += 2;
+                    GanarExperiencia(2);
+                    break;
+                case "suerte":
+                    AtributosBase.Suerte += 1;
+                    GanarExperiencia(2);
+                    break;
+            }
         }
 
-        public void Curar(int cantidadCuracion)
+        // Método para entrenar profesión
+        public void EntrenarProfesion(string profesion)
         {
-            int vidaAnterior = Vida;
-            Vida += cantidadCuracion;
-
-            // Limitar la vida al máximo
-            if (Vida > VidaMaxima)
-                Vida = VidaMaxima;
-
-            int vidaCurada = Vida - vidaAnterior;
-            Console.WriteLine($"{Nombre} se curó {vidaCurada} puntos de vida. Vida actual: {Vida}/{VidaMaxima}");
-
+            if (!Profesiones.ContainsKey(profesion))
+            {
+                Console.WriteLine($"La profesión '{profesion}' no existe.");
+                return;
+            }
+            Profesiones[profesion] += 10;
+            Console.WriteLine($"Has entrenado en {profesion}. Progreso: {Profesiones[profesion]}/100");
+            if (Profesiones[profesion] >= 100 && ProfesionPrincipal == "Sin especialidad")
+            {
+                ProfesionPrincipal = profesion;
+                Console.WriteLine($"¡Ahora eres especialista en {profesion}!");
+            }
         }
     }
 }

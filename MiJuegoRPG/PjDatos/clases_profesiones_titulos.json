@@ -1,0 +1,88 @@
+{
+  "Clases": [
+    {
+      "Nombre": "Guerrero",
+      "Modificadores": { "Fuerza": 5, "Defensa": 3 },
+      "HabilidadesActivas": ["Ataque Poderoso", "Defensa Total"],
+      "HabilidadesPasivas": ["Resistencia Física", "Moral de Batalla"]
+    },
+    {
+      "Nombre": "Mago",
+      "Modificadores": { "Inteligencia": 5, "Magia": 5 },
+      "HabilidadesActivas": ["Bola de Fuego", "Curación"],
+      "HabilidadesPasivas": ["Regeneración de Mana", "Sabiduría"]
+    },
+    {
+      "Nombre": "Ladrón",
+      "Modificadores": { "Agilidad": 5, "Suerte": 3 },
+      "HabilidadesActivas": ["Ataque Furtivo", "Evasión"],
+      "HabilidadesPasivas": ["Sigilo", "Manos Rápidas"]
+    },
+    {
+      "Nombre": "Tanque",
+      "Modificadores": { "Defensa": 7, "Vitalidad": 5 },
+      "HabilidadesActivas": ["Provocar", "Muro de Hierro"],
+      "HabilidadesPasivas": ["Reducción de Daño", "Tenacidad"]
+    }
+  ],
+  "Titulos": [
+    {
+      "Nombre": "El Fuerte",
+      "Modificadores": { "Fuerza": 2 },
+      "HabilidadesPasivas": ["Impulso de Fuerza"]
+    },
+    {
+      "Nombre": "El Sabio",
+      "Modificadores": { "Inteligencia": 2 },
+      "HabilidadesPasivas": ["Conocimiento Arcano"]
+    },
+    {
+      "Nombre": "El Veloz",
+      "Modificadores": { "Agilidad": 2 },
+      "HabilidadesPasivas": ["Reflejos Rápidos"]
+    },
+    {
+      "Nombre": "El Resistente",
+      "Modificadores": { "Resistencia": 2 },
+      "HabilidadesPasivas": ["Piel Dura"]
+    }
+  ],
+  "Profesiones": [
+    {
+      "Nombre": "Herrero",
+      "Modificadores": { "Fuerza": 1, "Destreza": 2 },
+      "HabilidadesActivas": ["Forjar Arma", "Reparar Equipo"],
+      "HabilidadesPasivas": ["Maestría en Forja"]
+    },
+    {
+      "Nombre": "Herbolaria",
+      "Modificadores": { "Inteligencia": 1, "Sabiduría": 2 },
+      "HabilidadesActivas": ["Preparar Poción", "Recolectar Hierbas"],
+      "HabilidadesPasivas": ["Conocimiento Botánico"]
+    },
+    {
+      "Nombre": "Domador",
+      "Modificadores": { "Carisma": 2, "Liderazgo": 1 },
+      "HabilidadesActivas": ["Domar Bestia", "Comandar Mascota"],
+      "HabilidadesPasivas": ["Afinidad Animal"]
+    },
+    {
+      "Nombre": "Alquimista",
+      "Modificadores": { "Inteligencia": 2, "Sabiduría": 1 },
+      "HabilidadesActivas": ["Transmutar Material", "Crear Elixir"],
+      "HabilidadesPasivas": ["Maestría en Alquimia"]
+    },
+    {
+      "Nombre": "Cazador",
+      "Modificadores": { "Agilidad": 2, "Percepcion": 2 },
+      "HabilidadesActivas": ["Rastrear", "Disparo Preciso"],
+      "HabilidadesPasivas": ["Instinto de Caza"]
+    },
+    {
+      "Nombre": "Explorador",
+      "Modificadores": { "Agilidad": 1, "Percepcion": 2 },
+      "HabilidadesActivas": ["Explorar Zona", "Escapada Rápida"],
+      "HabilidadesPasivas": ["Orientación"]
+    }
+  ]
+}

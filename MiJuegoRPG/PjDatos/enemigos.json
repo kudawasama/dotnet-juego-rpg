@@ -1,0 +1,166 @@
+[
+  
+  {
+    "Nombre": "Goblin",
+    "VidaBase": 50,
+    "AtaqueBase": 10,
+    "DefensaBase": 5,
+    "Nivel": 1,
+    "ExperienciaRecompensa": 5,
+    "OroRecompensa": 5,
+    "Familia": "Humanoide",
+    "Rareza": "Comun",
+    "Categoria": "Normal",
+    "ArmaNombre": "Espada Oxidada"
+  },
+  {
+    "Nombre": "Slime",
+    "VidaBase": 40,
+    "AtaqueBase": 8,
+    "DefensaBase": 2,
+    "Nivel": 1,
+    "ExperienciaRecompensa": 3,
+    "OroRecompensa": 2,
+    "Familia": "Bestia",
+    "Rareza": "Comun",
+    "Categoria": "Normal"
+  },
+  {
+    "Nombre": "Murciélago",
+    "VidaBase": 35,
+    "AtaqueBase": 7,
+    "DefensaBase": 3,
+    "Nivel": 2,
+    "ExperienciaRecompensa": 4,
+    "OroRecompensa": 3,
+    "Familia": "Bestia",
+    "Rareza": "Comun",
+    "Categoria": "Normal"
+  },
+  {
+    "Nombre": "Rata Gigante",
+    "VidaBase": 45,
+    "AtaqueBase": 9,
+    "DefensaBase": 4,
+    "Nivel": 2,
+    "ExperienciaRecompensa": 5,
+    "OroRecompensa": 4,
+    "Familia": "Bestia",
+    "Rareza": "Comun",
+    "Categoria": "Normal"
+  },
+  
+  {
+    "Nombre": "Gran Goblin",
+    "VidaBase": 80,
+    "AtaqueBase": 15,
+    "DefensaBase": 8,
+    "Nivel": 3,
+    "ExperienciaRecompensa": 15,
+    "OroRecompensa": 10,
+    "Familia": "Humanoide",
+    "Rareza": "Raro",
+    "Categoria": "Normal"
+  },
+  {
+    "Nombre": "Esqueleto",
+    "VidaBase": 60,
+    "AtaqueBase": 12,
+    "DefensaBase": 6,
+    "Nivel": 3,
+    "ExperienciaRecompensa": 10,
+    "OroRecompensa": 7,
+    "Familia": "NoMuerto",
+    "Rareza": "Comun",
+    "Categoria": "Normal"
+  },
+  {
+    "Nombre": "Lobo",
+    "VidaBase": 70,
+    "AtaqueBase": 14,
+    "DefensaBase": 7,
+    "Nivel": 4,
+    "ExperienciaRecompensa": 12,
+    "OroRecompensa": 8,
+    "Familia": "Bestia",
+    "Rareza": "Comun",
+    "Categoria": "Normal"
+  },
+  {
+    "Nombre": "Bandido",
+    "VidaBase": 65,
+    "AtaqueBase": 13,
+    "DefensaBase": 6,
+    "Nivel": 4,
+    "ExperienciaRecompensa": 13,
+    "OroRecompensa": 12,
+    "Familia": "Humanoide",
+    "Rareza": "Comun",
+    "Categoria": "Normal",
+    "ArmaNombre": "Daga Rota"
+  },
+  
+  {
+    "Nombre": "Golem de Fuego",
+    "VidaBase": 150,
+    "AtaqueBase": 25,
+    "DefensaBase": 20,
+    "Nivel": 5,
+    "ExperienciaRecompensa": 50,
+    "OroRecompensa": 30,
+    "Familia": "Elemental",
+    "Rareza": "Epico",
+    "Categoria": "Elite"
+  },
+  {
+    "Nombre": "Orco",
+    "VidaBase": 120,
+    "AtaqueBase": 22,
+    "DefensaBase": 12,
+    "Nivel": 6,
+    "ExperienciaRecompensa": 30,
+    "OroRecompensa": 18,
+    "Familia": "Humanoide",
+    "Rareza": "Raro",
+    "Categoria": "Normal",
+    "ArmaNombre": "Hacha Pesada"
+  },
+  {
+    "Nombre": "Esqueleto Mago",
+    "VidaBase": 80,
+    "AtaqueBase": 28,
+    "DefensaBase": 8,
+    "Nivel": 7,
+    "ExperienciaRecompensa": 35,
+    "OroRecompensa": 20,
+    "Familia": "NoMuerto",
+    "Rareza": "Raro",
+    "Categoria": "Elite"
+  },
+  
+  {
+    "Nombre": "Troll",
+    "VidaBase": 200,
+    "AtaqueBase": 35,
+    "DefensaBase": 18,
+    "Nivel": 8,
+    "ExperienciaRecompensa": 60,
+    "OroRecompensa": 40,
+    "Familia": "Humanoide",
+    "Rareza": "Epico",
+    "Categoria": "Elite",
+    "ArmaNombre": "Maza Gigante"
+  },
+  {
+    "Nombre": "Dragón Bebé",
+    "VidaBase": 180,
+    "AtaqueBase": 40,
+    "DefensaBase": 22,
+    "Nivel": 10,
+    "ExperienciaRecompensa": 100,
+    "OroRecompensa": 80,
+    "Familia": "Dragon",
+    "Rareza": "Legendario",
+    "Categoria": "Jefe"
+  }
+]
