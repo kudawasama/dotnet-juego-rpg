@@ -1,0 +1,17 @@
+[
+  {
+    "Id": "FuriaBerserker",
+    "Nombre": "Furia Berserker",
+    "Tipo": "Activa",
+    "Categoria": "Especial",
+    "Descripcion": "Aumenta temporalmente el ataque y la velocidad.",
+    "AtributosNecesarios": { "Fuerza": 10, "Agilidad": 8 },
+    "Condiciones": [
+      { "Tipo": "Combate", "Accion": "RecibirDaño", "Cantidad": 200 },
+      { "Tipo": "Mision", "Accion": "CompletarMisionBerserker" }
+    ],
+    "Beneficio": "+30% ataque y velocidad por 3 turnos",
+    "Mejoras": ["+50% si recibes 500 de daño", "Duración aumentada si Agilidad > 12"],
+    "Oculta": true
+  }
+]

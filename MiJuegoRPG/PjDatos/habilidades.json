@@ -1,0 +1,83 @@
+[
+  {
+    "Id": "GolpeFuerte",
+    "Nombre": "Golpe Fuerte",
+    "Tipo": "Activa",
+    "Descripcion": "Golpea fuerte con el puño causando +2 al ataque.",
+    "AtributosNecesarios": { "Fuerza": 7, "Agilidad": 6, "Destreza": 7 },
+    "Condiciones": [
+      { "Tipo": "Entrenamiento", "Accion": "SinArma", "Cantidad": 50 },
+      { "Tipo": "Combate", "Accion": "GolpearVivo", "Cantidad": 10 }
+    ],
+    "Beneficio": "+2 al ataque físico",
+    "Mejoras": ["Aumenta el daño si se entrena 100 veces", "Permite aturdir al objetivo si la Fuerza supera 10"],
+    "Oculta": true
+  },
+  {
+    "Id": "ResistenciaVenenoBasica",
+    "Nombre": "Resistencia al veneno básica",
+    "Tipo": "Pasiva",
+    "Descripcion": "Reduce el daño recibido por veneno.",
+    "AtributosNecesarios": { "Resistencia": 5 },
+    "Condiciones": [
+      { "Tipo": "Supervivencia", "Accion": "SobrevivirVeneno", "Cantidad": 50, "Restriccion": "SinAntidoto" }
+    ],
+    "Beneficio": "+5% Resistencia al veneno",
+    "Mejoras": ["+10% si sobrevives 100 veces", "Inmune al veneno si sobrevives 200 veces"],
+    "Oculta": true
+  },
+  {
+    "Id": "MaestriaEspada",
+    "Nombre": "Maestría con Espada",
+    "Tipo": "Pasiva",
+    "Descripcion": "Aumenta el daño al usar espadas.",
+    "AtributosNecesarios": { "Destreza": 8 },
+    "Condiciones": [
+      { "Tipo": "Combate", "Accion": "DerrotarEnemigosConEspada", "Cantidad": 100 }
+    ],
+    "Beneficio": "+10% daño con espadas",
+    "Mejoras": ["+20% si derrotas 200 enemigos", "Probabilidad de crítico si Destreza > 12"],
+    "Oculta": true
+  },
+  {
+    "Id": "FuriaBerserker",
+    "Nombre": "Furia Berserker",
+    "Tipo": "Activa",
+    "Descripcion": "Aumenta temporalmente el ataque y la velocidad.",
+    "AtributosNecesarios": { "Fuerza": 10, "Agilidad": 8 },
+    "Condiciones": [
+      { "Tipo": "Combate", "Accion": "RecibirDaño", "Cantidad": 200 },
+      { "Tipo": "Mision", "Accion": "CompletarMisionBerserker" }
+    ],
+    "Beneficio": "+30% ataque y velocidad por 3 turnos",
+    "Mejoras": ["+50% si recibes 500 de daño", "Duración aumentada si Agilidad > 12"],
+    "Oculta": true
+  },
+  {
+    "Id": "VisionAguda",
+    "Nombre": "Visión Aguda",
+    "Tipo": "Pasiva",
+    "Descripcion": "Mejora la precisión y la detección de trampas.",
+    "AtributosNecesarios": { "Destreza": 9, "Percepcion": 7 },
+    "Condiciones": [
+      { "Tipo": "Exploracion", "Accion": "DetectarTrampas", "Cantidad": 30 }
+    ],
+    "Beneficio": "+15% precisión y +20% detección de trampas",
+    "Mejoras": ["+30% si detectas 60 trampas", "Detecta trampas mágicas si Percepción > 10"],
+    "Oculta": true
+  },
+  {
+    "Id": "MaestroVeneno",
+    "Nombre": "Maestro del Veneno",
+    "Tipo": "Activa",
+    "Descripcion": "Permite crear y usar venenos avanzados.",
+    "AtributosNecesarios": { "Destreza": 10, "Inteligencia": 8 },
+    "Condiciones": [
+      { "Tipo": "Mision", "Accion": "CompletarMisionVeneno" },
+      { "Tipo": "Supervivencia", "Accion": "SobrevivirVeneno", "Cantidad": 100 }
+    ],
+    "Beneficio": "Permite fabricar venenos raros y aplicar efectos adicionales",
+    "Mejoras": ["Venenos legendarios si sobrevives 200 veces", "Efectos de veneno mejorados si Inteligencia > 12"],
+    "Oculta": true
+  }
+]

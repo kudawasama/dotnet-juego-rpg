@@ -44,7 +44,7 @@ namespace MiJuegoRPG.Personaje
         public double PoderDeManipulacion { get; set; } // Potencia de habilidades de manipulación
 
 
-
+        public Estadisticas() { }
 
 
 

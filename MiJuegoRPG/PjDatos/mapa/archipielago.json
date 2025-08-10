@@ -1,0 +1,12 @@
+[
+  {
+    "Id": "BethrArchipelago",
+    "Nombre": "Bethr Archipelago",
+    "Region": "Sur-Este",
+    "Descripcion": "Archipiélago al sureste, con islas y rutas marítimas.",
+    "NivelMinimo": 6,
+    "NivelMaximo": 14,
+    "Enemigos": ["Pirata", "Serpiente Marina"],
+    "Conexiones": ["Bethr_Isla1", "Bethr_Isla2"]
+  }
+]

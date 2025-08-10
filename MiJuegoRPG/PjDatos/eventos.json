@@ -1,0 +1,102 @@
+[
+  {
+    "Id": "FestivalTitan",
+    "Nombre": "Festival de Titan",
+    "Tipo": "Ciudad",
+    "Categoria": "Celebración",
+    "Rareza": "Común",
+    "Descripcion": "Celebración anual en la ciudad de Titan.",
+    "Unico": false,
+    "Mision": null
+  },
+  {
+    "Id": "InvasionGoblin",
+    "Nombre": "Invasión Goblin",
+    "Tipo": "Excepcional",
+    "Categoria": "Ataque",
+    "Rareza": "Raro",
+    "Descripcion": "Un grupo de goblins invade la ciudad.",
+    "Unico": true,
+    "Mision": "Defender la ciudad de los goblins"
+  },
+  {
+    "Id": "RuinasAntiguas",
+    "Nombre": "Ruinas Antiguas",
+    "Tipo": "Exploración",
+    "Categoria": "Descubrimiento",
+    "Rareza": "Épico",
+    "Descripcion": "Descubre ruinas misteriosas en el bosque.",
+    "Unico": false,
+    "Mision": "Explorar las ruinas y recuperar artefactos"
+  },
+  {
+    "Id": "MercadoNocturno",
+    "Nombre": "Mercado Nocturno",
+    "Tipo": "Ciudad",
+    "Categoria": "Comercio",
+    "Rareza": "Común",
+    "Descripcion": "Mercado especial que aparece solo de noche.",
+    "Unico": false,
+    "Mision": null
+  },
+  {
+    "Id": "DueloCampeones",
+    "Nombre": "Duelo de Campeones",
+    "Tipo": "Ciudad",
+    "Categoria": "Competencia",
+    "Rareza": "Raro",
+    "Descripcion": "Torneo de combate entre los mejores luchadores.",
+    "Unico": false,
+    "Mision": "Ganar el torneo para obtener recompensas"
+  },
+  {
+    "Id": "TesoroOculto",
+    "Nombre": "Tesoro Oculto",
+    "Tipo": "Exploración",
+    "Categoria": "Tesoro",
+    "Rareza": "Legendario",
+    "Descripcion": "Un tesoro legendario escondido en las montañas.",
+    "Unico": true,
+    "Mision": "Encontrar el tesoro antes que otros aventureros"
+  },
+  {
+    "Id": "RescateAldeanos",
+    "Nombre": "Rescate de Aldeanos",
+    "Tipo": "Misión",
+    "Categoria": "Rescate",
+    "Rareza": "Común",
+    "Descripcion": "Salvar a los aldeanos capturados por bandidos.",
+    "Unico": false,
+    "Mision": "Liberar a los aldeanos y escoltarlos a la ciudad"
+  },
+  {
+    "Id": "Meteorito",
+    "Nombre": "Caída de Meteorito",
+    "Tipo": "Excepcional",
+    "Categoria": "Evento Global",
+    "Rareza": "Épico",
+    "Descripcion": "Un meteorito cae cerca de la ciudad, alterando el entorno.",
+    "Unico": true,
+    "Mision": "Investigar el impacto y obtener fragmentos raros"
+  },
+  {
+    "Id": "FiestaCosecha",
+    "Nombre": "Fiesta de la Cosecha",
+    "Tipo": "Ciudad",
+    "Categoria": "Celebración",
+    "Rareza": "Común",
+    "Descripcion": "Fiesta anual para celebrar la cosecha y la prosperidad.",
+    "Unico": false,
+    "Mision": null
+  },
+  {
+    "Id": "PortalDimensional",
+    "Nombre": "Portal Dimensional",
+    "Tipo": "Excepcional",
+    "Categoria": "Misterio",
+    "Rareza": "Legendario",
+    "Descripcion": "Un portal misterioso aparece, conectando a otra dimensión.",
+    "Unico": true,
+    "Mision": "Explorar la dimensión desconocida"
+  }
+]

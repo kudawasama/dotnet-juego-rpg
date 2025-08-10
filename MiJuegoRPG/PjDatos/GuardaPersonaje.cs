@@ -11,9 +11,8 @@ namespace MiJuegoRPG.PjDatos
 {
     public class GuardaPersonaje
     {
-        // Nueva ruta como solicitaste
-        private static readonly string RUTA_POR_DEFECTO = 
-            @"C:\Users\jose.cespedes\Desktop\Programacion\MiJuegoRPG\MiJuegoRPG\PjDatos\Saves.json";
+            // Eliminado: ya no se usa Saves.json
+    
 
         // Clase para manejar múltiples personajes
         public class DatosGuardado
@@ -25,57 +24,62 @@ namespace MiJuegoRPG.PjDatos
         // Guardar personaje (lo agrega a la lista existente)
         public static void GuardarPersonaje(MiJuegoRPG.Personaje.Personaje personaje, string? rutaArchivo = null)
         {
-            rutaArchivo ??= RUTA_POR_DEFECTO;
+            // Eliminado: ya no se usa RUTA_POR_DEFECTO
             
-            // Crear directorio si no existe
-            string directorio = Path.GetDirectoryName(rutaArchivo) ?? string.Empty;
-            if (!string.IsNullOrEmpty(directorio))
+            // Guardar cada personaje en su propio archivo .json
+            var dirProyecto = Directory.GetParent(Directory.GetParent(Environment.CurrentDirectory)?.FullName ?? "");
+            string rutaCarpeta = Path.Combine(dirProyecto?.FullName ?? Environment.CurrentDirectory, "MiJuegoRPG", "PjDatos", "PjGuardados");
+            // Evitar guardar en bin
+            if (rutaCarpeta.Contains("bin"))
             {
-                Directory.CreateDirectory(directorio);
+                rutaCarpeta = Path.Combine(dirProyecto?.FullName ?? Environment.CurrentDirectory, "MiJuegoRPG", "PjDatos", "PjGuardados");
             }
-
-            // Cargar datos existentes o crear nuevos
-            DatosGuardado datos = CargarDatos(rutaArchivo);
-            
-            // Buscar si ya existe un personaje con el mismo nombre
-            var personajeExistente = datos.Personajes.FirstOrDefault(p => p.Nombre == personaje.Nombre);
-            
-            if (personajeExistente != null)
-            {
-                // Actualizar personaje existente
-                var indice = datos.Personajes.IndexOf(personajeExistente);
-                datos.Personajes[indice] = personaje;
-                Console.WriteLine($"Personaje '{personaje.Nombre}' actualizado.");
-            }
-            else
-            {
-                // Agregar nuevo personaje
-                datos.Personajes.Add(personaje);
-                Console.WriteLine($"Nuevo personaje '{personaje.Nombre}' guardado.");
-            }
-
-            datos.FechaUltimaModificacion = DateTime.Now;
-
-            // Guardar archivo
-            var opciones = new JsonSerializerOptions 
-            { 
-                WriteIndented = true,
-                Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
-            };
-            string json = JsonSerializer.Serialize(datos, opciones);
-            File.WriteAllText(rutaArchivo, json);
-            
-            Console.WriteLine($"Datos guardados en: {rutaArchivo}");
-            Console.WriteLine($"Total de personajes: {datos.Personajes.Count}");
+            if (!Directory.Exists(rutaCarpeta))
+                Directory.CreateDirectory(rutaCarpeta);
+            string rutaArchivoFinal = Path.Combine(rutaCarpeta, personaje.Nombre + ".json");
+            var opciones = new JsonSerializerOptions { WriteIndented = true };
+            string json = JsonSerializer.Serialize(personaje, opciones);
+            File.WriteAllText(rutaArchivoFinal, json);
+            Console.WriteLine($"Personaje '{personaje.Nombre}' guardado en: {rutaArchivoFinal}");
         }
 
         // Cargar todos los personajes
         public static List<MiJuegoRPG.Personaje.Personaje> CargarTodosLosPersonajes(string? rutaArchivo = null)
         {
-            rutaArchivo ??= RUTA_POR_DEFECTO;
+            // Eliminado: ya no se usa RUTA_POR_DEFECTO
             
-            DatosGuardado datos = CargarDatos(rutaArchivo);
-            return datos.Personajes;
+            // Cargar todos los archivos .json en PjGuardados
+            var dirProyecto = Directory.GetParent(Directory.GetParent(Environment.CurrentDirectory)?.FullName ?? "");
+            string rutaCarpeta = Path.Combine(dirProyecto?.FullName ?? Environment.CurrentDirectory, "MiJuegoRPG", "PjDatos", "PjGuardados");
+            // Evitar bin
+            if (rutaCarpeta.Contains("bin"))
+            {
+                rutaCarpeta = Path.Combine(dirProyecto?.FullName ?? Environment.CurrentDirectory, "MiJuegoRPG", "PjDatos", "PjGuardados");
+            }
+            List<MiJuegoRPG.Personaje.Personaje> personajes = new List<MiJuegoRPG.Personaje.Personaje>();
+            if (Directory.Exists(rutaCarpeta))
+            {
+                var archivos = Directory.GetFiles(rutaCarpeta, "*.json");
+                foreach (var archivo in archivos)
+                {
+                    try
+                    {
+                        string json = File.ReadAllText(archivo);
+                        var personaje = JsonSerializer.Deserialize<MiJuegoRPG.Personaje.Personaje>(json);
+                        if (personaje != null)
+                            personajes.Add(personaje);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Error al cargar personaje desde {archivo}: {ex.Message}");
+                    }
+                }
+            }
+            else
+            {
+                Console.WriteLine($"No existe la carpeta de personajes guardados: {rutaCarpeta}");
+            }
+            return personajes;
         }
 
         // Cargar personaje específico por nombre
@@ -89,66 +93,44 @@ namespace MiJuegoRPG.PjDatos
         public static void MostrarPersonajesGuardados(string? rutaArchivo = null)
         {
             var personajes = CargarTodosLosPersonajes(rutaArchivo);
-            
             if (personajes.Count == 0)
             {
                 Console.WriteLine("No hay personajes guardados.");
                 return;
             }
-
-            Console.WriteLine("\n=== PERSONAJES GUARDADOS ===");
+            // Oculta mensaje de depuración
             for (int i = 0; i < personajes.Count; i++)
             {
                 var p = personajes[i];
-                Console.WriteLine($"{i + 1}. {p.Nombre} - Nivel {p.Nivel} - Clase: {p.Clase.Nombre}");
+                string nombreClase = p.Clase != null ? p.Clase.Nombre : "Sin clase";
+                Console.WriteLine($"{i + 1}. {p.Nombre}");
             }
         }
 
         // Eliminar personaje
         public static bool EliminarPersonaje(string nombrePersonaje, string? rutaArchivo = null)
         {
-            rutaArchivo ??= RUTA_POR_DEFECTO;
+            // Eliminado: ya no se usa RUTA_POR_DEFECTO
             
-            DatosGuardado datos = CargarDatos(rutaArchivo);
-            var personaje = datos.Personajes.FirstOrDefault(p => p.Nombre.Equals(nombrePersonaje, StringComparison.OrdinalIgnoreCase));
-            
-            if (personaje != null)
+            // Eliminar el archivo individual del personaje
+            var dirProyecto = Directory.GetParent(Directory.GetParent(Environment.CurrentDirectory)?.FullName ?? "");
+            string rutaCarpeta = Path.Combine(dirProyecto?.FullName ?? Environment.CurrentDirectory, "MiJuegoRPG", "PjDatos", "PjGuardados");
+            string rutaArchivoFinal = Path.Combine(rutaCarpeta, nombrePersonaje + ".json");
+            if (File.Exists(rutaArchivoFinal))
             {
-                datos.Personajes.Remove(personaje);
-                datos.FechaUltimaModificacion = DateTime.Now;
-                
-                var opciones = new JsonSerializerOptions { WriteIndented = true };
-                string json = JsonSerializer.Serialize(datos, opciones);
-                File.WriteAllText(rutaArchivo, json);
-                
+                File.Delete(rutaArchivoFinal);
                 Console.WriteLine($"Personaje '{nombrePersonaje}' eliminado.");
                 return true;
             }
-            
-            Console.WriteLine($"No se encontró el personaje '{nombrePersonaje}'.");
-            return false;
+            else
+            {
+                Console.WriteLine($"No se encontró el personaje '{nombrePersonaje}'.");
+                return false;
+            }
         }
 
         // Método privado para cargar datos del archivo
-        private static DatosGuardado CargarDatos(string rutaArchivo)
-        {
-            if (!File.Exists(rutaArchivo))
-            {
-                return new DatosGuardado();
-            }
-
-            try
-            {
-                string json = File.ReadAllText(rutaArchivo);
-                var datos = JsonSerializer.Deserialize<DatosGuardado>(json);
-                return datos ?? new DatosGuardado();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error al cargar datos: {ex.Message}");
-                return new DatosGuardado();
-            }
-        }
+    // Eliminado: ya no se usa Saves.json ni CargarDatos
     }
 }
 

@@ -1,0 +1,52 @@
+[
+  {
+    "Id": "GolpeFuerte",
+    "Nombre": "Golpe Fuerte",
+    "Tipo": "Activa",
+    "Categoria": "Fisica",
+    "Descripcion": "Golpea fuerte con el puño causando +2 al ataque.",
+    "AtributosNecesarios": { "Fuerza": 7, "Agilidad": 6, "Destreza": 7 },
+    "Condiciones": [
+      { "Tipo": "Entrenamiento", "Accion": "SinArma", "Cantidad": 50 },
+      { "Tipo": "Combate", "Accion": "GolpearVivo", "Cantidad": 10 }
+    ],
+    "Beneficio": "+2 al ataque físico",
+    "Mejoras": ["Aumenta el daño si se entrena 100 veces", "Permite aturdir al objetivo si la Fuerza supera 10"],
+    "Oculta": true,
+    "Exp": 0,
+    "Evoluciones": [
+      {
+        "Id": "GolpeContundente",
+        "Nombre": "Golpe Contundente",
+        "Condiciones": [
+          { "Tipo": "NvHabilidad", "Cantidad": 50 },
+          { "Tipo": "NvJugador", "Cantidad": 50 },
+          { "Tipo": "Ataque", "Cantidad": 50 }
+        ],
+        "Beneficio": "+5 al Ataque Fisico",
+        "Mejoras": ["Probabilidad de Aturdir", "Probabilidad de Destruir Defensa"]
+      },
+      {
+        "Id": "GolpeDemoledor",
+        "Nombre": "Golpe Demoledor",
+        "Condiciones": [ { "Tipo": "NvHabilidad", "Cantidad": 100 } ],
+        "Beneficio": "+10 al Ataque Fisico",
+        "Mejoras": ["Aturde con mayor probabilidad", "Destruye defensa con más facilidad"]
+      },
+      {
+        "Id": "GolpeTitanico",
+        "Nombre": "Golpe Titánico",
+        "Condiciones": [ { "Tipo": "NvHabilidad", "Cantidad": 200 } ],
+        "Beneficio": "+20 al Ataque Fisico",
+        "Mejoras": ["Aturde a todos los enemigos en área", "Destruye armaduras legendarias"]
+      },
+      {
+        "Id": "GolpeDivino",
+        "Nombre": "Golpe Divino",
+        "Condiciones": [ { "Tipo": "NvHabilidad", "Cantidad": 500 } ],
+        "Beneficio": "+50 al Ataque Fisico",
+        "Mejoras": ["Aturde y elimina defensas mágicas"]
+      }
+    ]
+  }
+]

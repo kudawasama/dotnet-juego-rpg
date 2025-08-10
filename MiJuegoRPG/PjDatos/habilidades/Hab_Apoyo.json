@@ -1,0 +1,40 @@
+[
+  {
+    "Id": "VisionAguda",
+    "Nombre": "Visión Aguda",
+    "Tipo": "Pasiva",
+    "Categoria": "Apoyo",
+    "Descripcion": "Mejora la precisión y la detección de trampas.",
+    "AtributosNecesarios": { "Destreza": 9, "Percepcion": 7 },
+    "Condiciones": [
+      { "Tipo": "Exploracion", "Accion": "DetectarTrampas", "Cantidad": 30 }
+    ],
+    "Beneficio": "+15% precisión y +20% detección de trampas",
+    "Mejoras": ["+30% si detectas 60 trampas", "Detecta trampas mágicas si Percepción > 10"],
+    "Oculta": true,
+    "Exp": 0,
+    "Evoluciones": [
+      {
+        "Id": "VisionSuperior",
+        "Nombre": "Visión Superior",
+        "Condiciones": [ { "Tipo": "NvHabilidad", "Cantidad": 50 } ],
+        "Beneficio": "+25% precisión y +30% detección de trampas",
+        "Mejoras": ["Detecta trampas ocultas"]
+      },
+      {
+        "Id": "VisionMaestra",
+        "Nombre": "Visión Maestra",
+        "Condiciones": [ { "Tipo": "NvHabilidad", "Cantidad": 100 } ],
+        "Beneficio": "+40% precisión y +50% detección de trampas",
+        "Mejoras": ["Detecta trampas mágicas y legendarias"]
+      },
+      {
+        "Id": "VisionLegendaria",
+        "Nombre": "Visión Legendaria",
+        "Condiciones": [ { "Tipo": "NvHabilidad", "Cantidad": 200 } ],
+        "Beneficio": "Precisión perfecta y detección total de trampas",
+        "Mejoras": ["Detecta trampas en todo el mapa"]
+      }
+    ]
+  }
+]

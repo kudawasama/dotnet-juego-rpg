@@ -1,0 +1,23 @@
+[
+    {
+        "Nombre": "Espada Oxidada",
+        "Daño": 5,
+        "NivelRequerido": 1,
+        "Rareza": "Normal",
+        "Categoria": "UnaMano"
+    },
+    {
+        "Nombre": "Arco del Cazador",
+        "Daño": 8,
+        "NivelRequerido": 2,
+        "Rareza": "Normal",
+        "Categoria": "Arco"
+    },
+    {
+        "Nombre": "Vara de Aprendiz",
+        "Daño": 12,
+        "NivelRequerido": 3,
+        "Rareza": "Normal",
+        "Categoria": "Baston"
+    }
+]

@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace MiJuegoRPG.Personaje
 {
     public class AtributosBase
@@ -16,7 +18,7 @@ namespace MiJuegoRPG.Personaje
         public int Sabiduría { get; set; } //Poder mágico defensivo Defensa mágica, regeneración de MP, resistencia a estados mágicos
         public int Inteligencia { get; set; } //Poder mágico ofensivo Daño mágico, MP, casteo
         public int Fe { get; set; } //Creencia y devoción Mejora de habilidades espirituales, resistencia a efectos negativos
-       
+
 
         // Atributos de Interacción y Percepción
         public int Percepcion { get; set; } //Capacidad de observación y detección Mejora de habilidades de sigilo, detección de trampas
@@ -25,7 +27,8 @@ namespace MiJuegoRPG.Personaje
         public int Carisma { get; set; } //Atractivo personal Mejora de habilidades sociales, influencia en NPCs
         public int Voluntad { get; set; } //Determinación y fuerza de voluntad Resistencia a efectos negativos, mejora de habilidades mentales
 
-
+        [JsonConstructor]
+        public AtributosBase() { }
 
 
         public AtributosBase(int fuerza, int inteligencia, int agilidad, int vitalidad, int suerte, int resistencia, int sabiduria, int carisma, int destreza, int fe, int liderazgo, int percepcion, int persuasión, int voluntad, int defensa)
@@ -41,7 +44,7 @@ namespace MiJuegoRPG.Personaje
             Resistencia = resistencia; // Valor por defecto                
             Sabiduría = sabiduria;
             Fe = fe; // Valor por defecto
-            
+
 
             Carisma = carisma; // Valor por defecto
             Liderazgo = liderazgo; // Valor por defecto
