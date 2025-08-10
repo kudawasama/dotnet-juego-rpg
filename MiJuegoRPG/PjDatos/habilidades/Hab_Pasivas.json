@@ -1,0 +1,40 @@
+[
+  {
+    "Id": "ResistenciaVenenoBasica",
+    "Nombre": "Resistencia al veneno básica",
+    "Tipo": "Pasiva",
+    "Categoria": "Pasiva",
+    "Descripcion": "Reduce el daño recibido por veneno.",
+    "AtributosNecesarios": { "Resistencia": 5 },
+    "Condiciones": [
+      { "Tipo": "Supervivencia", "Accion": "SobrevivirVeneno", "Cantidad": 50, "Restriccion": "SinAntidoto" }
+    ],
+    "Beneficio": "+5% Resistencia al veneno",
+    "Mejoras": ["+10% si sobrevives 100 veces", "Inmune al veneno si sobrevives 200 veces"],
+    "Oculta": true,
+    "Exp": 0,
+    "Evoluciones": [
+      {
+        "Id": "ResistenciaVenenoIntermedia",
+        "Nombre": "Resistencia al veneno intermedia",
+        "Condiciones": [ { "Tipo": "NvHabilidad", "Cantidad": 50 } ],
+        "Beneficio": "+10% Resistencia al veneno",
+        "Mejoras": ["+15% si sobrevives 150 veces"]
+      },
+      {
+        "Id": "ResistenciaVenenoAvanzada",
+        "Nombre": "Resistencia al veneno avanzada",
+        "Condiciones": [ { "Tipo": "NvHabilidad", "Cantidad": 100 } ],
+        "Beneficio": "+20% Resistencia al veneno",
+        "Mejoras": ["Inmune al veneno si sobrevives 300 veces"]
+      },
+      {
+        "Id": "ResistenciaVenenoLegendaria",
+        "Nombre": "Resistencia al veneno legendaria",
+        "Condiciones": [ { "Tipo": "NvHabilidad", "Cantidad": 200 } ],
+        "Beneficio": "Inmune a todos los venenos y toxinas",
+        "Mejoras": ["Regeneración de vida al recibir veneno"]
+      }
+    ]
+  }
+]

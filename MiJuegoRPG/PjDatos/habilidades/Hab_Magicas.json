@@ -1,0 +1,31 @@
+[
+  {
+    "Id": "MaestroVeneno",
+    "Nombre": "Maestro del Veneno",
+    "Tipo": "Activa",
+    "Categoria": "Magica",
+    "Descripcion": "Permite crear y usar venenos avanzados.",
+    "AtributosNecesarios": { "Destreza": 10, "Inteligencia": 8 },
+    "Condiciones": [
+      { "Tipo": "Mision", "Accion": "CompletarMisionVeneno" },
+      { "Tipo": "Supervivencia", "Accion": "SobrevivirVeneno", "Cantidad": 100 }
+    ],
+    "Beneficio": "Permite fabricar venenos raros y aplicar efectos adicionales",
+    "Mejoras": ["Venenos legendarios si sobrevives 200 veces", "Efectos de veneno mejorados si Inteligencia > 12"],
+    "Oculta": true,
+    "Exp": 0,
+    "Evoluciones": [
+      {
+        "Id": "MaestroVenenoAvanzado",
+        "Nombre": "Maestro del Veneno Avanzado",
+        "Condiciones": [
+          { "Tipo": "NvHabilidad", "Cantidad": 50 },
+          { "Tipo": "NvJugador", "Cantidad": 60 },
+          { "Tipo": "Inteligencia", "Cantidad": 12 }
+        ],
+        "Beneficio": "Permite fabricar venenos legendarios y aplicar efectos devastadores",
+        "Mejoras": ["Venenos con efectos múltiples", "Probabilidad de envenenar en área"]
+      }
+    ]
+  }
+]

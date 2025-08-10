@@ -29,6 +29,11 @@ namespace MiJuegoRPG.PjDatos
             // Guardar cada personaje en su propio archivo .json
             var dirProyecto = Directory.GetParent(Directory.GetParent(Environment.CurrentDirectory)?.FullName ?? "");
             string rutaCarpeta = Path.Combine(dirProyecto?.FullName ?? Environment.CurrentDirectory, "MiJuegoRPG", "PjDatos", "PjGuardados");
+            // Evitar guardar en bin
+            if (rutaCarpeta.Contains("bin"))
+            {
+                rutaCarpeta = Path.Combine(dirProyecto?.FullName ?? Environment.CurrentDirectory, "MiJuegoRPG", "PjDatos", "PjGuardados");
+            }
             if (!Directory.Exists(rutaCarpeta))
                 Directory.CreateDirectory(rutaCarpeta);
             string rutaArchivoFinal = Path.Combine(rutaCarpeta, personaje.Nombre + ".json");
@@ -46,6 +51,11 @@ namespace MiJuegoRPG.PjDatos
             // Cargar todos los archivos .json en PjGuardados
             var dirProyecto = Directory.GetParent(Directory.GetParent(Environment.CurrentDirectory)?.FullName ?? "");
             string rutaCarpeta = Path.Combine(dirProyecto?.FullName ?? Environment.CurrentDirectory, "MiJuegoRPG", "PjDatos", "PjGuardados");
+            // Evitar bin
+            if (rutaCarpeta.Contains("bin"))
+            {
+                rutaCarpeta = Path.Combine(dirProyecto?.FullName ?? Environment.CurrentDirectory, "MiJuegoRPG", "PjDatos", "PjGuardados");
+            }
             List<MiJuegoRPG.Personaje.Personaje> personajes = new List<MiJuegoRPG.Personaje.Personaje>();
             if (Directory.Exists(rutaCarpeta))
             {
@@ -83,19 +93,17 @@ namespace MiJuegoRPG.PjDatos
         public static void MostrarPersonajesGuardados(string? rutaArchivo = null)
         {
             var personajes = CargarTodosLosPersonajes(rutaArchivo);
-            
             if (personajes.Count == 0)
             {
                 Console.WriteLine("No hay personajes guardados.");
                 return;
             }
-
-            Console.WriteLine("\n=== PERSONAJES GUARDADOS ===");
+            // Oculta mensaje de depuración
             for (int i = 0; i < personajes.Count; i++)
             {
                 var p = personajes[i];
                 string nombreClase = p.Clase != null ? p.Clase.Nombre : "Sin clase";
-                Console.WriteLine($"{i + 1}. {p.Nombre} - Nivel {p.Nivel} - Clase: {nombreClase}");
+                Console.WriteLine($"{i + 1}. {p.Nombre}");
             }
         }
 

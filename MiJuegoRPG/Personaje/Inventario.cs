@@ -17,6 +17,7 @@ namespace MiJuegoRPG.Personaje
         public void AgregarObjeto(Objeto objeto)
         {
             NuevosObjetos.Add(objeto);
+            Console.WriteLine($"{objeto.Nombre} ha sido agregado al inventario.");
         }
 
         public Inventario()

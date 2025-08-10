@@ -23,14 +23,5 @@ namespace MiJuegoRPG.Motor
         public string RutaDesbloqueada { get; set; }
     }
 
-    public class NPC
-    {
-        public NPC() {
-            Nombre = "";
-            Ubicacion = "";
-        }
-        public string Nombre { get; set; }
-        public string Ubicacion { get; set; }
-        public List<Mision> Misiones { get; set; } = new List<Mision>();
-    }
+    // Eliminada clase NPC duplicada. Usar la versión de NPC.cs
 }

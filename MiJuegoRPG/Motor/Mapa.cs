@@ -15,65 +15,83 @@ namespace MiJuegoRPG.Motor
 
     public class Mapa
     {
-        public string CiudadActual { get; set; }
-        public List<Sector> Sectores { get; set; } = new List<Sector>();
+        private Dictionary<string, PjDatos.SectorData> sectores = new Dictionary<string, PjDatos.SectorData>();
+        public PjDatos.SectorData UbicacionActual { get; private set; }
+        public Dictionary<string, bool> SectoresDescubiertos { get; private set; } = new Dictionary<string, bool>();
 
-        public Mapa(string ciudad)
+        public List<PjDatos.SectorData> ObtenerSectores()
         {
-            CiudadActual = ciudad;
-            InicializarSectores();
+            return new List<PjDatos.SectorData>(sectores.Values);
         }
 
-        private void InicializarSectores()
+        public Mapa(Dictionary<string, PjDatos.SectorData> sectoresDict)
         {
-            Sectores.Add(new Sector {
-                Nombre = "Plaza Central",
-                Descripcion = "El corazón de la ciudad, lleno de vida, rumores y NPCs.",
-                Eventos = new List<string> { "EventoSocial", "Rumores", "HablarNPC", "Descansar" }
-            });
-            Sectores.Add(new Sector {
-                Nombre = "Tienda",
-                Descripcion = "Compra y vende armas, pociones y materiales.",
-                Eventos = new List<string> { "Comprar", "Vender", "Negociar", "BuscarOferta" }
-            });
-            Sectores.Add(new Sector {
-                Nombre = "Escuela de Entrenamiento",
-                Descripcion = "Mejora tus atributos realizando actividades físicas y mentales.",
-                Eventos = new List<string> { "EntrenarFuerza", "EntrenarMagia", "EntrenarAgilidad", "EntrenarInteligencia", "EntrenarResistencia" }
-            });
-            Sectores.Add(new Sector {
-                Nombre = "Biblioteca",
-                Descripcion = "Estudia para mejorar tu inteligencia y aprender habilidades especiales.",
-                Eventos = new List<string> { "Estudiar", "LeerLibro", "DescubrirSecreto" }
-            });
-            Sectores.Add(new Sector {
-                Nombre = "Bosque Exterior",
-                Descripcion = "Un bosque peligroso, ideal para aventuras y recolección de materiales.",
-                EnemigosPosibles = new List<string> { "Goblin", "Slime", "Lobo", "Bandido" },
-                ObjetosPosibles = new List<string> { "Material", "Pocion", "Arma" },
-                Eventos = new List<string> { "Explorar", "EncontrarMazmorra", "RecolectarMaterial" }
-            });
-            Sectores.Add(new Sector {
-                Nombre = "Mazmorra Abandonada",
-                Descripcion = "Un reto para aventureros, con enemigos fuertes y tesoros.",
-                EnemigosPosibles = new List<string> { "Esqueleto", "Golem de Fuego", "Orco" },
-                ObjetosPosibles = new List<string> { "Arma", "Material", "Pocion" },
-                Eventos = new List<string> { "Explorar", "DerrotarJefe", "EncontrarTesoro" }
-            });
-            Sectores.Add(new Sector {
-                Nombre = "Camino a la siguiente ciudad",
-                Descripcion = "Solo puedes avanzar si cumples ciertos requisitos o derrotas al jefe local.",
-                Eventos = new List<string> { "DesbloquearRuta", "DesafiarJefe" }
-            });
+            sectores = sectoresDict ?? new Dictionary<string, PjDatos.SectorData>();
+                PjDatos.SectorData? ubicacionInicial = null;
+                foreach (var sector in sectores.Values)
+                {
+                    if (sector.CiudadInicial)
+                    {
+                        ubicacionInicial = sector;
+                        break;
+                    }
+                }
+                if (ubicacionInicial == null)
+                {
+                    ubicacionInicial = sectores.Count > 0 ? new List<PjDatos.SectorData>(sectores.Values)[0] : null;
+                }
+                if (ubicacionInicial == null)
+                {
+                    throw new InvalidOperationException("No se encontró ninguna ubicación válida en el mapa. Verifica los archivos de mapa.");
+                }
+                UbicacionActual = ubicacionInicial;
+                SectoresDescubiertos[UbicacionActual.Id] = true;
+        }
+
+    // Método de carga por archivo eliminado, ahora se usa el constructor con diccionario
+
+        public void MoverseA(string idSectorDestino)
+        {
+            if (sectores.TryGetValue(idSectorDestino, out var sectorDestino))
+            {
+                if (UbicacionActual.Conexiones.Contains(sectorDestino.Id))
+                {
+                    UbicacionActual = sectorDestino;
+                    Console.WriteLine($"Te has movido a {UbicacionActual.Nombre}.");
+                    if (!SectoresDescubiertos.ContainsKey(UbicacionActual.Id))
+                        SectoresDescubiertos[UbicacionActual.Id] = true;
+                }
+                else
+                {
+                    Console.WriteLine("No puedes viajar directamente a esa ubicación.");
+                }
+            }
+        }
+
+        public List<PjDatos.SectorData> ObtenerSectoresAdyacentes()
+        {
+            var adyacentes = new List<PjDatos.SectorData>();
+            foreach (var idConexion in UbicacionActual.Conexiones)
+            {
+                if (sectores.ContainsKey(idConexion))
+                {
+                    var sector = sectores[idConexion];
+                    if (sector != null)
+                        adyacentes.Add(sector);
+                }
+            }
+            return adyacentes;
         }
 
         public void MostrarMapa()
         {
-            Console.WriteLine($"Mapa de {CiudadActual}:");
-            for (int i = 0; i < Sectores.Count; i++)
+            Console.WriteLine($"Mapa actual:");
+            int idx = 1;
+            foreach (var s in sectores.Values)
             {
-                var s = Sectores[i];
-                Console.WriteLine($"{i + 1}. {s.Nombre} - {(s.Descubierto ? "Descubierto" : "Sin explorar")}");
+                var estado = SectoresDescubiertos.ContainsKey(s.Id) && SectoresDescubiertos[s.Id] ? "Descubierto" : "Sin explorar";
+                Console.WriteLine($"{idx}. {s.Nombre} - {estado}");
+                idx++;
             }
         }
     }

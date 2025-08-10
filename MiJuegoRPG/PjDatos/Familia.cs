@@ -4,6 +4,8 @@ namespace MiJuegoRPG.PjDatos
     {
         Humanoide,
         Bestia,
-        Elemental
+        Elemental,
+        NoMuerto,
+        Dragon
     }
 }

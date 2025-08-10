@@ -1,0 +1,101 @@
+[
+  {
+    "Id": 7,
+    "Nombre": "Eloy el Explorador",
+    "Tipo": "Explorador",
+    "Ubicacion": "Montañas lejanas",
+    "Dialogos": [
+      "Las montañas guardan secretos y tesoros.",
+      "¿Te atreves a explorar conmigo?"
+    ],
+    "Misiones": [7]
+  },
+  {
+    "Id": 8,
+    "Nombre": "Sara la Alquimista",
+    "Tipo": "Alquimista",
+    "Ubicacion": "Laboratorio oculto",
+    "Dialogos": [
+      "La alquimia transforma lo común en extraordinario.",
+      "¿Quieres aprender a crear pociones únicas?"
+    ],
+    "Misiones": [8]
+  },
+  {
+    "Id": 9,
+    "Nombre": "Rufus el Mercader",
+    "Tipo": "Mercader",
+    "Ubicacion": "Mercado central",
+    "Dialogos": [
+      "El comercio mueve el mundo.",
+      "¿Buscas un trato especial?"
+    ],
+    "Misiones": [9]
+  },
+  {
+    "Id": 1,
+    "Nombre": "Aldo el Herborista",
+    "Tipo": "Comerciante",
+    "Ubicacion": "Bosque",
+    "Dialogos": [
+      "¿Buscas flores raras? Tengo justo lo que necesitas.",
+      "Recolectar plantas es mi pasión, ¿quieres aprender?"
+    ],
+    "Misiones": [1]
+  },
+  {
+    "Id": 2,
+    "Nombre": "Bruna la Minera",
+    "Tipo": "Profesión",
+    "Ubicacion": "Mina abandonada",
+    "Dialogos": [
+      "La mina es peligrosa, pero llena de riquezas.",
+      "¿Quieres probar suerte con el pico?"
+    ],
+    "Misiones": [2]
+  },
+  {
+    "Id": 3,
+    "Nombre": "Gustavo el Leñador",
+    "Tipo": "Profesión",
+    "Ubicacion": "Bosque profundo",
+    "Dialogos": [
+      "La madera de este bosque es la mejor.",
+      "Cortar árboles requiere fuerza y paciencia."
+    ],
+    "Misiones": [3]
+  },
+  {
+    "Id": 4,
+    "Nombre": "Lina la Pescadora",
+    "Tipo": "Profesión",
+    "Ubicacion": "Lago cristalino",
+    "Dialogos": [
+      "El mejor momento para pescar es al amanecer.",
+      "¿Quieres aprender a pescar?"
+    ],
+    "Misiones": [4]
+  },
+  {
+    "Id": 5,
+    "Nombre": "Chef Mauro",
+    "Tipo": "Cocinero",
+    "Ubicacion": "Cocina del pueblo",
+    "Dialogos": [
+      "La cocina es arte y ciencia.",
+      "¿Te gustaría preparar una receta especial?"
+    ],
+    "Misiones": [5]
+  },
+  {
+    "Id": 6,
+    "Nombre": "Doña Teresa",
+    "Tipo": "Administradora",
+    "Ubicacion": "Ayuntamiento",
+    "Dialogos": [
+      "Gestionar comercios requiere astucia.",
+      "¿Quieres convertirte en administrador?"
+    ],
+    "Misiones": [6]
+  }
+]

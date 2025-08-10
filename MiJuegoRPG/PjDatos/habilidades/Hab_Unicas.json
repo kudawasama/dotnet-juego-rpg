@@ -1,0 +1,16 @@
+[
+  {
+    "Id": "MaestriaEspada",
+    "Nombre": "Maestría con Espada",
+    "Tipo": "Pasiva",
+    "Categoria": "Unica",
+    "Descripcion": "Aumenta el daño al usar espadas.",
+    "AtributosNecesarios": { "Destreza": 8 },
+    "Condiciones": [
+      { "Tipo": "Combate", "Accion": "DerrotarEnemigosConEspada", "Cantidad": 100 }
+    ],
+    "Beneficio": "+10% daño con espadas",
+    "Mejoras": ["+20% si derrotas 200 enemigos", "Probabilidad de crítico si Destreza > 12"],
+    "Oculta": true
+  }
+]

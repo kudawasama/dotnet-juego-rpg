@@ -22,12 +22,7 @@ namespace MiJuegoRPG.Motor
         {
             // Mostrar la ruta recibida
             Console.WriteLine($"[GeneradorEnemigos] Ruta recibida: {rutaArchivo}");
-            // Forzar ruta a la carpeta del proyecto
-            var dirProyecto = Directory.GetParent(Directory.GetParent(Environment.CurrentDirectory)?.FullName ?? "");
-            string rutaBase = dirProyecto?.FullName ?? Environment.CurrentDirectory;
-            rutaArchivo = Path.Combine(rutaBase, "MiJuegoRPG", "PjDatos", Path.GetFileName(rutaArchivo));
-            Console.WriteLine($"[GeneradorEnemigos] Ruta forzada: {rutaArchivo}");
-            // Mostrar la ruta final usada
+            // Usar la ruta tal como la recibe Juego.cs (ya es la del proyecto)
             Console.WriteLine($"[GeneradorEnemigos] Ruta final usada: {rutaArchivo}");
             try
             {
@@ -119,12 +114,76 @@ namespace MiJuegoRPG.Motor
         // Método para iniciar el combate
         public static void IniciarCombate(MiJuegoRPG.Personaje.Personaje jugador, Enemigo enemigo)
         {
-            Console.Clear();
-            Console.WriteLine($"¡Un {enemigo.Nombre} salvaje ha aparecido!");
-
+            //Console.Clear();
+            // Solo mostrar aparición aquí, no en CombatePorTurnos
             var combate = new CombatePorTurnos(jugador, enemigo);
             combate.IniciarCombate();
-            
+
+            while (true)
+            {
+                Console.WriteLine("\nEl combate ha terminado.");
+                Console.WriteLine("1. Continuar...");
+                Console.WriteLine("2. Volver al menú anterior");
+                Console.Write("Elige una opción: ");
+                var opcion = Console.ReadLine();
+                if (opcion == "1") break;
+                if (opcion == "2") {
+                    // Volver al menú de ubicación si existe
+                    var juego = MiJuegoRPG.Motor.Juego.ObtenerInstanciaActual();
+                    if (juego != null)
+                        juego.MostrarMenuUbicacion();
+                    break;
+                }
+            }
+        }
+        // Devuelve una lista de instancias de todos los enemigos disponibles (apropiados para el nivel del jugador)
+        public static List<ICombatiente> ObtenerTodosLosEnemigos(MiJuegoRPG.Personaje.Personaje? jugador = null)
+        {
+            var lista = new List<ICombatiente>();
+            if (enemigosDisponibles == null || enemigosDisponibles.Count == 0)
+            {
+                lista.Add(new EnemigoEstandar("Goblin", 50, 10, 5, 1, 5, 5));
+                return lista;
+            }
+            var enemigosApropiados = jugador == null
+                ? enemigosDisponibles
+                : enemigosDisponibles.Where(e => e.Nivel <= (jugador.Nivel + 2)).ToList();
+            foreach (var enemigoData in enemigosApropiados)
+            {
+                Objetos.Arma? arma = null;
+                if (!string.IsNullOrWhiteSpace(enemigoData.ArmaNombre))
+                {
+                    arma = Objetos.GestorArmas.BuscarArmaPorNombre(enemigoData.ArmaNombre);
+                }
+                var enemigo = new EnemigoEstandar(
+                    enemigoData.Nombre,
+                    enemigoData.VidaBase,
+                    enemigoData.AtaqueBase,
+                    enemigoData.DefensaBase,
+                    enemigoData.Nivel,
+                    enemigoData.ExperienciaRecompensa,
+                    enemigoData.OroRecompensa
+                );
+                if (arma != null)
+                {
+                    enemigo.ArmaEquipada = arma;
+                }
+                lista.Add(enemigo);
+            }
+            return lista;
+        }
+
+        // Inicia combate contra varios enemigos
+        public static void IniciarCombateMultiple(MiJuegoRPG.Personaje.Personaje jugador, List<ICombatiente> enemigos)
+        {
+            //Console.Clear();
+            Console.WriteLine($"¡Han aparecido {enemigos.Count} enemigos!");
+            foreach (var enemigo in enemigos)
+            {
+                Console.WriteLine($"- {enemigo.Nombre}");
+            }
+            var combate = new CombatePorTurnos(jugador, enemigos);
+            combate.IniciarCombate();
             Console.WriteLine("\nEl combate ha terminado. Presiona cualquier tecla para continuar...");
             Console.ReadKey();
         }

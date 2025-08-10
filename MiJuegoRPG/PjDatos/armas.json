@@ -3,29 +3,21 @@
         "Nombre": "Espada Oxidada",
         "Daño": 5,
         "NivelRequerido": 1,
-        "Valor": 10,
-        "Tipo": "Espada"
+        "Rareza": "Normal",
+        "Categoria": "UnaMano"
     },
     {
         "Nombre": "Arco del Cazador",
         "Daño": 8,
         "NivelRequerido": 2,
-        "Valor": 25,
-        "Tipo": "Arco"
+        "Rareza": "Normal",
+        "Categoria": "Arco"
     },
     {
         "Nombre": "Vara de Aprendiz",
         "Daño": 12,
         "NivelRequerido": 3,
-        "Valor": 50,
-        "Tipo": "Bastón"
+        "Rareza": "Normal",
+        "Categoria": "Baston"
     }
-    
-
-
-
-
-
-
-    
 ]

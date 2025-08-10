@@ -9,41 +9,9 @@ namespace MiJuegoRPG.Motor  // Debe ser este espacio de nombres
     {
         public static MiJuegoRPG.Personaje.Personaje Crear()
         {
-            Console.WriteLine("Nombre de tu personaje:");
-            string nombre = Console.ReadLine() ?? "Héroe Sin Nombre";
-
-            Console.WriteLine("Elige una clase:");
-            Console.WriteLine("1. Guerrero");
-            Console.WriteLine("2. Mago");
-            Console.WriteLine("3. Ladrón");
-
-
-            
-            int eleccion = int.Parse(Console.ReadLine() ?? "1");
-            Clase clase;
-            // AtributosBase(fuerza, inteligencia, agilidad, vitalidad, suerte, resistencia, sabiduria, carisma, destreza, fe, liderazgo, percepcion, persuasión, voluntad, defensa)
-            switch (eleccion)
-            {
-                case 2:
-                    var atributosMago = new AtributosBase(2, 10, 3, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5);
-                    clase = new Clase("Mago", atributosMago, new Estadisticas(atributosMago));
-                    break;
-                case 3:
-                    var atributosLadron = new AtributosBase(4, 3, 8, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5);
-                    clase = new Clase("Ladrón", atributosLadron, new Estadisticas(atributosLadron));
-                    break;
-                default:
-                    var atributosGuerrero = new AtributosBase(10, 2, 3, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5);
-                    clase = new Clase("Guerrero", atributosGuerrero, new Estadisticas(atributosGuerrero));
-                    break;
-            }
-
-            var personaje = new MiJuegoRPG.Personaje.Personaje(nombre);
-            personaje.Clase = clase;
-            return personaje;
+            // Ahora solo crea personaje con clase oculta
+            return CrearSinClase();
         }
-
-
 
         public static void GuardarPersonaje(MiJuegoRPG.Personaje.Personaje personaje, string? rutaArchivo = null)
         {
@@ -51,7 +19,7 @@ namespace MiJuegoRPG.Motor  // Debe ser este espacio de nombres
             {
                 var opciones = new JsonSerializerOptions { WriteIndented = true };
                 string json = JsonSerializer.Serialize(personaje, opciones);
-                
+
                 // Usar ruta por defecto si no se proporciona una
                 if (rutaArchivo == null)
                 {
@@ -59,7 +27,7 @@ namespace MiJuegoRPG.Motor  // Debe ser este espacio de nombres
                     string rutaProyecto = dir?.Parent?.Parent?.FullName ?? AppDomain.CurrentDomain.BaseDirectory;
                     rutaArchivo = Path.Combine(rutaProyecto, "MiJuegoRPG", "PjDatos", "Saves.json");
                 }
-                
+
                 // Crear directorio si no existe
                 string directorio = rutaArchivo != null ? Path.GetDirectoryName(rutaArchivo) ?? string.Empty : string.Empty;
                 if (!string.IsNullOrEmpty(directorio))
@@ -71,7 +39,7 @@ namespace MiJuegoRPG.Motor  // Debe ser este espacio de nombres
                 {
                     throw new ArgumentNullException(nameof(rutaArchivo), "La ruta del archivo no puede ser nula.");
                 }
-                
+
                 File.WriteAllText(rutaArchivo, json);
                 Console.WriteLine($"Personaje guardado en: {rutaArchivo}");
             }
@@ -90,7 +58,7 @@ namespace MiJuegoRPG.Motor  // Debe ser este espacio de nombres
             }
 
             string json = File.ReadAllText(rutaArchivo);
-            return JsonSerializer.Deserialize<MiJuegoRPG.Personaje.Personaje>(json) 
+            return JsonSerializer.Deserialize<MiJuegoRPG.Personaje.Personaje>(json)
                    ?? throw new InvalidOperationException("No se pudo deserializar el personaje.");
         }
 
@@ -109,5 +77,23 @@ namespace MiJuegoRPG.Motor  // Debe ser este espacio de nombres
             Console.WriteLine($"Vida: {personaje.VidaActual}/{personaje.VidaMaxima}");
         }
 
+        // Crea un personaje sin clase inicial, atributos base genéricos
+        public static MiJuegoRPG.Personaje.Personaje CrearSinClase()
+        {
+            Console.WriteLine("Nombre de tu personaje:");
+            string nombre = Console.ReadLine() ?? "Héroe Sin Nombre";
+
+            // Atributos base neutros
+            var atributosBase = new AtributosBase(5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5);
+            var clase = new Clase("Sin clase", atributosBase, new Estadisticas(atributosBase));
+
+            var personaje = new MiJuegoRPG.Personaje.Personaje(nombre);
+            personaje.Clase = clase;
+            personaje.ClaseDesbloqueada = "Sin clase";
+            personaje.Titulo = "Novato";
+            personaje.AtributosBase = atributosBase;
+            personaje.Vida = personaje.VidaMaxima;
+            return personaje;
+        }
     }
 }

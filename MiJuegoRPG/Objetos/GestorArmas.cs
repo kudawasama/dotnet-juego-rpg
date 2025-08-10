@@ -26,12 +26,7 @@ namespace MiJuegoRPG.Objetos
         {
             // Mostrar la ruta recibida
             Console.WriteLine($"[GestorArmas] Ruta recibida: {rutaArchivo}");
-            // Forzar ruta a la carpeta del proyecto
-            var dirProyecto = Directory.GetParent(Directory.GetParent(Environment.CurrentDirectory)?.FullName ?? "");
-            string rutaBase = dirProyecto?.FullName ?? Environment.CurrentDirectory;
-            rutaArchivo = Path.Combine(rutaBase, "MiJuegoRPG", "PjDatos", Path.GetFileName(rutaArchivo));
-            Console.WriteLine($"[GestorArmas] Ruta forzada: {rutaArchivo}");
-            // Mostrar la ruta final usada
+            // Usar la ruta tal como la recibe Juego.cs (ya es la del proyecto)
             Console.WriteLine($"[GestorArmas] Ruta final usada: {rutaArchivo}");
             try
             {

@@ -1,0 +1,12 @@
+[
+  {
+    "Id": "Titan",
+    "Nombre": "Ciudad de Titan",
+    "Region": "Centro",
+    "Descripcion": "Ciudad fortificada, centro político y militar del continente.",
+    "NivelMinimo": 0,
+    "NivelMaximo": 0,
+    "Enemigos": [],
+    "Conexiones": ["Ttn_N_M1", "Ttn_S_M1", "Ttn_E_M1", "Ttn_O_M1"]
+  }
+]
