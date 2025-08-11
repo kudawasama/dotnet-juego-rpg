@@ -135,10 +135,3 @@ namespace MiJuegoRPG.PjDatos
 }
 
 // Ejemplo de clase Personaje
-public class Personaje
-{
-    public required string Nombre { get; set; }
-    public int Nivel { get; set; }
-    public int Poder { get; set; }
-    // Agrega más propiedades según sea necesario
-}

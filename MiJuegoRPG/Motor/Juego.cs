@@ -73,11 +73,17 @@ namespace MiJuegoRPG.Motor
                     break;
             }
             // Mostrar menú según el tipo de sector
+            MostrarMenuPorUbicacion();
+        }
+        // Sincroniza y muestra el menú correcto según la ubicación actual
+        public void MostrarMenuPorUbicacion()
+        {
             if (mapa.UbicacionActual != null)
             {
                 if (mapa.UbicacionActual.Tipo != null && mapa.UbicacionActual.Tipo.Equals("Ciudad", StringComparison.OrdinalIgnoreCase))
                 {
-                    menuPrincipal.MostrarMenuPrincipal();
+                    var menuCiudad = new MenuCiudad(this);
+                    menuCiudad.MostrarMenuPrincipal();
                 }
                 else
                 {
@@ -85,7 +91,7 @@ namespace MiJuegoRPG.Motor
                     menuFueraCiudad.MostrarMenuFueraCiudad();
                 }
             }
-        }
+    }
         public void MostrarMenuViajar()
         {
             //Console.Clear();
@@ -114,8 +120,11 @@ namespace MiJuegoRPG.Motor
                 if (destino.Desbloqueada)
                 {
                     ubicacionActual = destino;
+                    mapa.MoverseA(destino.Id);
                     Console.WriteLine($"Viajaste a {destino.Nombre}.");
                     Console.WriteLine(destino.Descripcion);
+                    MostrarMenuPorUbicacion();
+                    return;
                 }
                 else
                 {
@@ -125,6 +134,7 @@ namespace MiJuegoRPG.Motor
             else if (seleccion == 0)
             {
                 // Volver al menú anterior
+                MostrarMenuPorUbicacion();
                 return;
             }
             else
@@ -133,7 +143,8 @@ namespace MiJuegoRPG.Motor
             }
             Console.WriteLine("Presiona cualquier tecla para continuar...");
             Console.ReadKey();
-        }
+            MostrarMenuPorUbicacion();
+    }
         public static Juego? ObtenerInstanciaActual() => InstanciaActual;
         public static Juego? InstanciaActual { get; private set; }
         // Probabilidades configurables
@@ -177,6 +188,7 @@ public MotorCombate motorCombate;
         {
             // Ejemplo de inicialización básica
             var ciudad = new MiJuegoRPG.Motor.Ubicacion {
+                Id = "albor",
                 Nombre = "Ciudad de Albor",
                 Tipo = "Ciudad",
                 Descripcion = "La ciudad inicial, llena de vida y oportunidades.",
@@ -184,6 +196,7 @@ public MotorCombate motorCombate;
                 EventosPosibles = new List<string> { "Tienda", "Escuela de Entrenamiento", "Explorar sector", "Descansar en posada" }
             };
             var bosque = new MiJuegoRPG.Motor.Ubicacion {
+                Id = "bosque_oscuro",
                 Nombre = "Bosque Oscuro",
                 Tipo = "Ruta",
                 Descripcion = "Un bosque peligroso, ideal para aventureros.",
@@ -191,6 +204,7 @@ public MotorCombate motorCombate;
                 EventosPosibles = new List<string> { "Explorar" }
             };
             var rio = new MiJuegoRPG.Motor.Ubicacion {
+                Id = "rio_plateado",
                 Nombre = "Río Plateado",
                 Tipo = "Ruta",
                 Descripcion = "Un río que requiere barco para cruzar.",
@@ -199,6 +213,7 @@ public MotorCombate motorCombate;
                 EventosPosibles = new List<string> { "Evento especial", "Encuentro enemigo" }
             };
             var ciudadBruma = new MiJuegoRPG.Motor.Ubicacion {
+                Id = "ciudad_bruma",
                 Nombre = "Ciudad Bruma",
                 Tipo = "Ciudad",
                 Descripcion = "Ciudad misteriosa, famosa por su magia.",
@@ -289,7 +304,7 @@ public MotorCombate motorCombate;
             }
             Console.WriteLine("Presiona cualquier tecla para volver al menú principal...");
             Console.ReadKey();
-            menuPrincipal.MostrarMenuPrincipal();
+            MostrarMenuPorUbicacion();
         }
 
         public void MostrarMenuMisionesNPC()
@@ -360,15 +375,11 @@ public MotorCombate motorCombate;
                         string material = materiales[random.Next(materiales.Length)];
                         Console.WriteLine($"Recolectaste: {material}.");
                         if (jugador != null)
-                                jugador.Inventario.AgregarObjeto(new Objetos.Material(material, Objetos.Rareza.Normal));
-                            Console.WriteLine("Presiona cualquier tecla para continuar...");
-                            Console.ReadKey();
+                            jugador.Inventario.AgregarObjeto(new Objetos.Material(material, Objetos.Rareza.Normal));
                     }
                     else
                     {
-                            Console.WriteLine("No encontraste nada útil.");
-                            Console.WriteLine("Presiona cualquier tecla para continuar...");
-                            Console.ReadKey();
+                        Console.WriteLine("No encontraste nada útil.");
                     }
                     break;
                 case "Minar":
@@ -378,15 +389,11 @@ public MotorCombate motorCombate;
                         string mineral = minerales[random.Next(minerales.Length)];
                         Console.WriteLine($"Minaste: {mineral}.");
                         if (jugador != null)
-                                jugador.Inventario.AgregarObjeto(new Objetos.Material(mineral, Objetos.Rareza.Rara));
-                            Console.WriteLine("Presiona cualquier tecla para continuar...");
-                            Console.ReadKey();
+                            jugador.Inventario.AgregarObjeto(new Objetos.Material(mineral, Objetos.Rareza.Rara));
                     }
                     else
                     {
-                            Console.WriteLine("No encontraste minerales.");
-                            Console.WriteLine("Presiona cualquier tecla para continuar...");
-                            Console.ReadKey();
+                        Console.WriteLine("No encontraste minerales.");
                     }
                     break;
                 case "Talar":
@@ -396,18 +403,17 @@ public MotorCombate motorCombate;
                         string madera = maderas[random.Next(maderas.Length)];
                         Console.WriteLine($"Talarte: {madera}.");
                         if (jugador != null)
-                                jugador.Inventario.AgregarObjeto(new Objetos.Material(madera, Objetos.Rareza.Normal));
-                            Console.WriteLine("Presiona cualquier tecla para continuar...");
-                            Console.ReadKey();
+                            jugador.Inventario.AgregarObjeto(new Objetos.Material(madera, Objetos.Rareza.Normal));
                     }
                     else
                     {
-                            Console.WriteLine("No encontraste árboles útiles.");
-                            Console.WriteLine("Presiona cualquier tecla para continuar...");
-                            Console.ReadKey();
+                        Console.WriteLine("No encontraste árboles útiles.");
                     }
                     break;
             }
+            Console.WriteLine("Presiona cualquier tecla para continuar...");
+            Console.ReadKey();
+            MostrarMenuPorUbicacion();
         }
 
         public void Entrenar()
