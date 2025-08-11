@@ -281,5 +281,31 @@ namespace MiJuegoRPG.Personaje
                 Console.WriteLine($"¡Ahora eres especialista en {profesion}!");
             }
         }
+
+        public void GanarExperiencia(int cantidad)
+        {
+            Experiencia += cantidad;
+            Console.WriteLine($"Has ganado {cantidad} puntos de experiencia. Total actual: {Experiencia}");
+            if (Experiencia >= ExperienciaSiguienteNivel)
+            {
+                SubirNivel();
+            }
+        }
+
+        public void GanarOro(int cantidad)
+        {
+            Oro += cantidad;
+            Console.WriteLine($"Has ganado {cantidad} monedas de oro. Total actual: {Oro}");
+        }
+
+        private void SubirNivel()
+        {
+            Nivel++;
+            Experiencia -= ExperienciaSiguienteNivel;
+            ExperienciaSiguienteNivel = CalcularExperienciaNecesaria(Nivel + 1);
+            VidaMaxima += 10;
+            Vida = VidaMaxima;
+            Console.WriteLine($"¡Has subido al nivel {Nivel}! Vida máxima ahora: {VidaMaxima}");
+        }
     }
 }

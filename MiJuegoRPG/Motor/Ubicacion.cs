@@ -6,10 +6,12 @@ namespace MiJuegoRPG.Motor
     public class Ubicacion
     {
         public Ubicacion() {
+            Id = "";
             Nombre = "";
             Tipo = "";
             Descripcion = "";
         }
+        public string Id { get; set; }
         public string Nombre { get; set; }
         public string Tipo { get; set; } // Ciudad, Ruta, Mazmorra, etc.
         public string Descripcion { get; set; }
