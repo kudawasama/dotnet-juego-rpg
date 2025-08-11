@@ -1,7 +1,6 @@
 using System;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using MiJuegoRPG.Objetos;
 
 namespace MiJuegoRPG.Objetos
 {
@@ -34,11 +33,11 @@ namespace MiJuegoRPG.Objetos
             using (var doc = JsonDocument.Parse(json))
             {
                 writer.WriteStartObject();
-                writer.WriteString("TipoObjeto", tipo);
                 foreach (var prop in doc.RootElement.EnumerateObject())
                 {
                     prop.WriteTo(writer);
                 }
+                writer.WriteString("TipoObjeto", tipo);
                 writer.WriteEndObject();
             }
         }

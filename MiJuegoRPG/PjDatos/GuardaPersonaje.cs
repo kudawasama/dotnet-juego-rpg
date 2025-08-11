@@ -38,6 +38,7 @@ namespace MiJuegoRPG.PjDatos
                 Directory.CreateDirectory(rutaCarpeta);
             string rutaArchivoFinal = Path.Combine(rutaCarpeta, personaje.Nombre + ".json");
             var opciones = new JsonSerializerOptions { WriteIndented = true };
+            opciones.Converters.Add(new MiJuegoRPG.Objetos.ObjetoJsonConverter());
             string json = JsonSerializer.Serialize(personaje, opciones);
             File.WriteAllText(rutaArchivoFinal, json);
             Console.WriteLine($"Personaje '{personaje.Nombre}' guardado en: {rutaArchivoFinal}");
@@ -65,7 +66,9 @@ namespace MiJuegoRPG.PjDatos
                     try
                     {
                         string json = File.ReadAllText(archivo);
-                        var personaje = JsonSerializer.Deserialize<MiJuegoRPG.Personaje.Personaje>(json);
+                        var opciones = new JsonSerializerOptions();
+                        opciones.Converters.Add(new MiJuegoRPG.Objetos.ObjetoJsonConverter());
+                        var personaje = JsonSerializer.Deserialize<MiJuegoRPG.Personaje.Personaje>(json, opciones);
                         if (personaje != null)
                             personajes.Add(personaje);
                     }
