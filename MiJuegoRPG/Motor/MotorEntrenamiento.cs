@@ -44,16 +44,14 @@ namespace MiJuegoRPG.Motor
                 };
                 Console.WriteLine($"¿Cuántos minutos deseas entrenar {atributo}? (0 para cancelar)");
                 var minStr = Console.ReadLine();
-                if (int.TryParse(minStr, out int minutos) && minutos > 0)
+                if (int.TryParse(minStr, out int minutos) && minutos > 0) // Verifica si la entrada es un número válido y mayor que 0
                 {
                     for (int i = 0; i < minutos; i++)
                     {
-                        juego.jugador?.Entrenar(atributo);
+                        juego.jugador?.Entrenar(atributo); // Entrena el atributo seleccionado
                         juego.MinutosMundo++;
-                        if ((i+1) % 10 == 0 || i == minutos-1)
-                        {
-                            Console.WriteLine($"Minutos entrenados: {juego.MinutosMundo}");
-                        }
+                        Console.WriteLine($"Reloj mundial: {juego.FormatoRelojMundo} | Minuto {i+1} de entrenamiento");
+                        Thread.Sleep(60000); // Espera 1 minuto real por cada minuto entrenado
                     }
                     Console.WriteLine($"Entrenamiento finalizado. Tiempo total en el mundo: {juego.MinutosMundo} minutos.");
                 }

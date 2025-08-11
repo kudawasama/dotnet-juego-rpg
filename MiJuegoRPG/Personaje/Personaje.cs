@@ -2,6 +2,7 @@ using System;
 using MiJuegoRPG.Enemigos;
 using MiJuegoRPG.Interfaces;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace MiJuegoRPG.Personaje
 {
@@ -47,16 +48,16 @@ namespace MiJuegoRPG.Personaje
         public int ExperienciaSiguienteNivel { get; set; }
         public int Oro { get; set; }
 
-        // Sistema de profesiones
-        public Dictionary<string, int> Profesiones { get; set; } = new Dictionary<string, int> {
-            { "Herrero", 0 },
-            { "Herbolaria", 0 },
-            { "Domador", 0 },
-            { "Alquimista", 0 },
-            { "Cazador", 0 },
-            { "Explorador", 0 }
-        };
-        public string ProfesionPrincipal { get; set; } = "Sin especialidad";
+        // Sistema de profesiones (OBSOLETO, mantener solo si se usa en alguna lógica especial)
+        // public Dictionary<string, int> Profesiones { get; set; } = new Dictionary<string, int> {
+        //     { "Herrero", 0 },
+        //     { "Herbolaria", 0 },
+        //     { "Domador", 0 },
+        //     { "Alquimista", 0 },
+        //     { "Cazador", 0 },
+        //     { "Explorador", 0 }
+        // };
+        // public string ProfesionPrincipal { get; set; } = "Sin especialidad";
 
         public int Defensa => Atributos.Defensa;
         public bool EstaVivo => Vida > 0;
@@ -265,22 +266,22 @@ namespace MiJuegoRPG.Personaje
             }
         }
 
-        // Método para entrenar profesión
-        public void EntrenarProfesion(string profesion)
-        {
-            if (!Profesiones.ContainsKey(profesion))
-            {
-                Console.WriteLine($"La profesión '{profesion}' no existe.");
-                return;
-            }
-            Profesiones[profesion] += 10;
-            Console.WriteLine($"Has entrenado en {profesion}. Progreso: {Profesiones[profesion]}/100");
-            if (Profesiones[profesion] >= 100 && ProfesionPrincipal == "Sin especialidad")
-            {
-                ProfesionPrincipal = profesion;
-                Console.WriteLine($"¡Ahora eres especialista en {profesion}!");
-            }
-        }
+        // Método para entrenar profesión (OBSOLETO, eliminar si no se usa en el juego)
+        // public void EntrenarProfesion(string profesion)
+        // {
+        //     if (!Profesiones.ContainsKey(profesion))
+        //     {
+        //         Console.WriteLine($"La profesión '{profesion}' no existe.");
+        //         return;
+        //     }
+        //     Profesiones[profesion] += 10;
+        //     Console.WriteLine($"Has entrenado en {profesion}. Progreso: {Profesiones[profesion]}/100");
+        //     if (Profesiones[profesion] >= 100 && ProfesionPrincipal == "Sin especialidad")
+        //     {
+        //         ProfesionPrincipal = profesion;
+        //         Console.WriteLine($"¡Ahora eres especialista en {profesion}!");
+        //     }
+        // }
 
         public void GanarExperiencia(int cantidad)
         {
@@ -306,6 +307,63 @@ namespace MiJuegoRPG.Personaje
             VidaMaxima += 10;
             Vida = VidaMaxima;
             Console.WriteLine($"¡Has subido al nivel {Nivel}! Vida máxima ahora: {VidaMaxima}");
+        }
+
+        // Verifica si el personaje puede acceder a una misión según condiciones y progreso
+        public bool PuedeAccederMision(Mision mision)
+        {
+            // Si la misión ya está activa o completada, no mostrarla como accesible
+            if (MisionesActivas != null && MisionesActivas.Any(ms => ms.Id == mision.Id))
+                return false;
+            if (MisionesCompletadas != null && MisionesCompletadas.Any(ms => ms.Id == mision.Id))
+                return false;
+            // Si la misión tiene condiciones, verificar que todas estén cumplidas
+            if (mision.Condiciones != null && mision.Condiciones.Count > 0)
+            {
+                foreach (var condicion in mision.Condiciones)
+                {
+                    // Ejemplo: "Completar BAI-REC-002" => buscar en MisionesCompletadas
+                    var partes = condicion.Split(' ');
+                    if (partes.Length == 2 && partes[0] == "Completar")
+                    {
+                        var idCondicion = partes[1];
+                        if (MisionesCompletadas == null || !MisionesCompletadas.Any(ms => ms.Id == idCondicion))
+                            return false;
+                    }
+                }
+            }
+            // Si no hay condiciones o todas se cumplen, la misión es accesible
+            return true;
+        }
+
+        // Verifica si el personaje cumple un requisito específico (para rutas, misiones, etc.)
+        public bool CumpleRequisito(string clave, object valor)
+        {
+            switch (clave.ToLower())
+            {
+                case "barco":
+                    // Ejemplo: si el requisito es tener barco
+                    // Puedes validar si el jugador tiene un objeto "Barco" en el inventario
+                    return Inventario.Objetos.Any(o => o.Nombre.ToLower().Contains("barco"));
+                case "oro":
+                    // Si el requisito es tener cierta cantidad de oro
+                    if (valor is int oroRequerido)
+                        return Oro >= oroRequerido;
+                    break;
+                case "nivel":
+                    if (valor is int nivelRequerido)
+                        return Nivel >= nivelRequerido;
+                    break;
+                case "fuerza":
+                    if (valor is int fuerzaRequerida)
+                        return AtributosBase.Fuerza >= fuerzaRequerida;
+                    break;
+                // Agrega más casos según los requisitos que uses en el juego
+                default:
+                    // Si el requisito no se reconoce, por defecto no se cumple
+                    return false;
+            }
+            return false;
         }
     }
 }

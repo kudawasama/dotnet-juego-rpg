@@ -8,6 +8,7 @@ using MiJuegoRPG.Interfaces;
 using MiJuegoRPG.Motor;
 using MiJuegoRPG.Objetos;
 using System.Text.Json.Serialization;
+using System.Threading;
 
 namespace MiJuegoRPG.Motor
 {
@@ -19,6 +20,15 @@ namespace MiJuegoRPG.Motor
         public DateTime FechaInicio { get; set; } = DateTime.Now;
         public DateTime FechaActual => FechaInicio.AddMinutes(MinutosMundo);
         public string FormatoRelojMundo => $"[{FechaActual:dd-MM-yyyy} // {FechaActual:HH:mm:ss} hrs]";
+    private Thread hiloTiempo; // Hilo para el control del tiempo
+    private bool tiempoActivo = false;
+    private int velocidadTiempoMs = 1000; // 1 segundo real por cada minuto de juego
+        // Método para ajustar la velocidad del tiempo automático
+        public void AjustarVelocidadTiempo(int milisegundos)
+        {
+            velocidadTiempoMs = milisegundos;
+        }
+
         public void Iniciar()
         {
             //Console.Clear();
@@ -72,9 +82,44 @@ namespace MiJuegoRPG.Motor
                     jugador = MiJuegoRPG.Motor.CreadorPersonaje.Crear();
                     break;
             }
+            IniciarTiempoAutomatico();
             // Mostrar menú según el tipo de sector
             MostrarMenuPorUbicacion();
         }
+
+        // Inicia el hilo de avance automático de tiempo
+        private void IniciarTiempoAutomatico()
+        {
+            tiempoActivo = true;
+            hiloTiempo = new Thread(() =>
+            {
+                while (tiempoActivo)
+                {
+                    AvanzarTiempo(1); // Avanza 1 minuto cada ciclo
+                    Console.WriteLine($"Reloj mundial: {FormatoRelojMundo}");
+                    Thread.Sleep(velocidadTiempoMs); // Espera según velocidad configurada
+                }
+            });
+            hiloTiempo.IsBackground = true;
+            hiloTiempo.Start();
+        }
+
+        // Detiene el hilo de avance automático de tiempo
+        private void DetenerTiempoAutomatico()
+        {
+            tiempoActivo = false;
+            if (hiloTiempo != null && hiloTiempo.IsAlive)
+            {
+                hiloTiempo.Join(1000);
+            }
+        }
+
+            // Método para avanzar el tiempo manualmente
+            public void AvanzarTiempo(int minutos)
+            {
+                MinutosMundo += minutos;
+            }
+        
         // Sincroniza y muestra el menú correcto según la ubicación actual
         public void MostrarMenuPorUbicacion()
         {
@@ -91,7 +136,7 @@ namespace MiJuegoRPG.Motor
                     menuFueraCiudad.MostrarMenuFueraCiudad();
                 }
             }
-    }
+        }
         public void MostrarMenuViajar()
         {
             //Console.Clear();

@@ -1,101 +1,90 @@
 [
   {
-    "Id": 7,
-    "Nombre": "Eloy el Explorador",
-    "Tipo": "Explorador",
-    "Ubicacion": "Montañas lejanas",
-    "Dialogos": [
-      "Las montañas guardan secretos y tesoros.",
-      "¿Te atreves a explorar conmigo?"
-    ],
-    "Misiones": [7]
-  },
-  {
-    "Id": 8,
-    "Nombre": "Sara la Alquimista",
-    "Tipo": "Alquimista",
-    "Ubicacion": "Laboratorio oculto",
-    "Dialogos": [
-      "La alquimia transforma lo común en extraordinario.",
-      "¿Quieres aprender a crear pociones únicas?"
-    ],
-    "Misiones": [8]
-  },
-  {
-    "Id": 9,
-    "Nombre": "Rufus el Mercader",
+    "Id": "BAI-MER-001",
+    "Nombre": "Lina la Mercader",
     "Tipo": "Mercader",
-    "Ubicacion": "Mercado central",
+    "Ubicacion": "Ciudad de Bairan",
     "Dialogos": [
-      "El comercio mueve el mundo.",
-      "¿Buscas un trato especial?"
+      "¡Bienvenido al mercado de Bairan!",
+      "Tengo productos únicos para aventureros."
     ],
-    "Misiones": [9]
+    "Misiones": ["BAI-MER-001"]
   },
   {
-    "Id": 1,
-    "Nombre": "Aldo el Herborista",
-    "Tipo": "Comerciante",
-    "Ubicacion": "Bosque",
+    "Id": "WIN-HER-001",
+    "Nombre": "Gustavo el Herrero",
+    "Tipo": "Herrero",
+    "Ubicacion": "Ciudad de Winston",
     "Dialogos": [
-      "¿Buscas flores raras? Tengo justo lo que necesitas.",
-      "Recolectar plantas es mi pasión, ¿quieres aprender?"
+      "¿Buscas armas de calidad?",
+      "Puedo forjarte algo especial si traes los materiales."
     ],
-    "Misiones": [1]
+    "Misiones": ["WIN-HER-001"]
   },
   {
-    "Id": 2,
-    "Nombre": "Bruna la Minera",
-    "Tipo": "Profesión",
-    "Ubicacion": "Mina abandonada",
-    "Dialogos": [
-      "La mina es peligrosa, pero llena de riquezas.",
-      "¿Quieres probar suerte con el pico?"
-    ],
-    "Misiones": [2]
-  },
-  {
-    "Id": 3,
-    "Nombre": "Gustavo el Leñador",
-    "Tipo": "Profesión",
-    "Ubicacion": "Bosque profundo",
-    "Dialogos": [
-      "La madera de este bosque es la mejor.",
-      "Cortar árboles requiere fuerza y paciencia."
-    ],
-    "Misiones": [3]
-  },
-  {
-    "Id": 4,
-    "Nombre": "Lina la Pescadora",
-    "Tipo": "Profesión",
-    "Ubicacion": "Lago cristalino",
-    "Dialogos": [
-      "El mejor momento para pescar es al amanecer.",
-      "¿Quieres aprender a pescar?"
-    ],
-    "Misiones": [4]
-  },
-  {
-    "Id": 5,
-    "Nombre": "Chef Mauro",
+    "Id": "ZIR-COC-001",
+    "Nombre": "Mauro el Cocinero",
     "Tipo": "Cocinero",
-    "Ubicacion": "Cocina del pueblo",
+    "Ubicacion": "Ciudad de Zircon",
     "Dialogos": [
-      "La cocina es arte y ciencia.",
-      "¿Te gustaría preparar una receta especial?"
+      "¿Quieres probar mi receta secreta?",
+      "Solo los valientes se atreven con mi cocina."
     ],
-    "Misiones": [5]
+    "Misiones": ["ZIR-COC-001"]
   },
   {
-    "Id": 6,
-    "Nombre": "Doña Teresa",
-    "Tipo": "Administradora",
-    "Ubicacion": "Ayuntamiento",
+    "Id": "AET-MAG-001",
+    "Nombre": "Sara la Maga",
+    "Tipo": "Maga",
+    "Ubicacion": "Ciudad de Aethel",
     "Dialogos": [
-      "Gestionar comercios requiere astucia.",
-      "¿Quieres convertirte en administrador?"
+      "La magia es el arte de lo imposible.",
+      "¿Te gustaría aprender un hechizo nuevo?"
     ],
-    "Misiones": [6]
+    "Misiones": ["AET-MAG-001"]
+  },
+  {
+    "Id": "MOR-GUA-001",
+    "Nombre": "Rufus el Guardia",
+    "Tipo": "Guardia",
+    "Ubicacion": "Ciudad de Morholt",
+    "Dialogos": [
+      "La seguridad de Morholt es mi deber.",
+      "¿Has visto algo sospechoso?"
+    ],
+    "Misiones": ["MOR-GUA-001"]
+  },
+  {
+    "Id": "LAI-AGR-001",
+    "Nombre": "Bruna la Agricultora",
+    "Tipo": "Agricultora",
+    "Ubicacion": "Ciudad de Laito",
+    "Dialogos": [
+      "Los cultivos de Laito son los mejores de la región.",
+      "¿Quieres aprender sobre agricultura?"
+    ],
+    "Misiones": ["LAI-AGR-001"]
+  },
+  {
+    "Id": "ROK-MIN-001",
+    "Nombre": "Aldo el Minero",
+    "Tipo": "Minero",
+    "Ubicacion": "Ciudad de Rok",
+    "Dialogos": [
+      "Las minas de Rok esconden grandes tesoros.",
+      "La minería requiere paciencia y fuerza."
+    ],
+    "Misiones": ["ROK-MIN-001"]
+  },
+  {
+    "Id": "RAV-COM-001",
+    "Nombre": "Teresa la Comerciante",
+    "Tipo": "Comerciante",
+    "Ubicacion": "Ciudad de Raven",
+    "Dialogos": [
+      "El comercio en Raven es muy competitivo.",
+      "¿Buscas algo especial?"
+    ],
+    "Misiones": ["RAV-COM-001"]
   }
 ]

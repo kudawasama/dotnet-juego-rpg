@@ -5,11 +5,19 @@ namespace MiJuegoRPG.Motor
 {
     public class MenuCiudad
     {
+        private Juego juego;
+        private MenusJuego menusJuego;
+
+        public MenuCiudad(Juego juego, MenusJuego menusJuego)
+        {
+            this.juego = juego;
+            this.menusJuego = menusJuego;
+        }
+
         public void MostrarMenuPrincipal()
         {
             while (true)
             {
-                //Console.Clear();
                 Console.WriteLine("=== Menú Principal de la Ciudad ===");
                 Console.WriteLine($"Ubicación actual: {juego.mapa.UbicacionActual.Nombre}");
                 Console.WriteLine("1. Explorar sector actual");
@@ -20,38 +28,52 @@ namespace MiJuegoRPG.Motor
                 Console.WriteLine("6. Guardar/Cargar Personaje");
                 Console.WriteLine("7. Ver misiones y hablar con NPCs");
                 Console.WriteLine("8. Ver mapa");
-                Console.WriteLine("9. Salir del juego");
+                Console.WriteLine("9. Menú principal fijo");
+                Console.WriteLine("10. Salir del juego");
                 Console.Write("Seleccione una opción: ");
                 var opcion = Console.ReadLine();
                 switch (opcion)
                 {
                     case "1":
+                        juego.AvanzarTiempo();
                         MostrarMenuExplorarSector();
                         break;
                     case "2":
+                        juego.AvanzarTiempo();
                         MostrarMenuViajarMapa();
                         break;
                     case "3":
+                        juego.AvanzarTiempo();
                         juego.Entrenar();
                         break;
                     case "4":
+                        juego.AvanzarTiempo();
                         juego.IrATienda();
                         break;
                     case "5":
+                        juego.AvanzarTiempo();
                         juego.GestionarInventario();
                         break;
                     case "6":
+                        juego.AvanzarTiempo();
                         juego.MostrarMenuGuardado();
                         break;
                     case "7":
+                        juego.AvanzarTiempo();
                         juego.MostrarMenuMisionesNPC();
                         break;
                     case "8":
+                        juego.AvanzarTiempo();
                         juego.mapa.MostrarMapa();
                         Console.WriteLine("Presiona cualquier tecla para continuar...");
                         Console.ReadKey();
                         break;
                     case "9":
+                        juego.AvanzarTiempo();
+                        menusJuego.MostrarMenuPrincipalFijo();
+                        break;
+                    case "10":
+                        juego.AvanzarTiempo();
                         Environment.Exit(0);
                         return;
                     default:
@@ -97,12 +119,26 @@ namespace MiJuegoRPG.Motor
                     var destino = juego.mapa.ObtenerSectores().Find(s => s.Id == destinoId);
                     if (destino != null)
                     {
+                        // Validar requisitos de ruta
+                        if (destino.Requisitos != null && destino.Requisitos.Count > 0)
+                        {
+                            foreach (var req in destino.Requisitos)
+                            {
+                                if (!juego.jugador.CumpleRequisito(req.Key, req.Value))
+                                {
+                                    Console.WriteLine($"No cumples el requisito: {req.Key} para viajar a {destino.Nombre}.");
+                                    Console.WriteLine("Presiona cualquier tecla para volver...");
+                                    Console.ReadKey();
+                                    return;
+                                }
+                            }
+                        }
                         juego.mapa.MoverseA(destino.Id);
                         Console.WriteLine($"Viajaste a {destino.Nombre}.");
                         Console.WriteLine(destino.Descripcion);
                         if (destino.Tipo == null || !destino.Tipo.Equals("Ciudad", StringComparison.OrdinalIgnoreCase))
                         {
-                            var menuFueraCiudad = new MenuFueraCiudad(juego);
+                            var menuFueraCiudad = new MenuFueraCiudad(juego, menusJuego);
                             menuFueraCiudad.MostrarMenuFueraCiudad();
                         }
                         else
@@ -158,13 +194,27 @@ namespace MiJuegoRPG.Motor
             if (int.TryParse(opcion, out int seleccion) && seleccion > 0 && seleccion <= adyacentes.Count)
             {
                 var destino = adyacentes[seleccion - 1];
+                // Validar requisitos de ruta
+                if (destino.Requisitos != null && destino.Requisitos.Count > 0)
+                {
+                    foreach (var req in destino.Requisitos)
+                    {
+                        if (!juego.jugador.CumpleRequisito(req.Key, req.Value))
+                        {
+                            Console.WriteLine($"No cumples el requisito: {req.Key} para viajar a {destino.Nombre}.");
+                            Console.WriteLine("Presiona cualquier tecla para volver...");
+                            Console.ReadKey();
+                            return;
+                        }
+                    }
+                }
                 juego.mapa.MoverseA(destino.Id);
                 Console.WriteLine($"Viajaste a {destino.Nombre}.");
                 Console.WriteLine(destino.Descripcion);
                 // Si el destino no es ciudad, mostrar menú fuera de ciudad
                 if (destino.Tipo == null || !destino.Tipo.Equals("Ciudad", StringComparison.OrdinalIgnoreCase))
                 {
-                    var menuFueraCiudad = new MenuFueraCiudad(juego);
+                    var menuFueraCiudad = new MenuFueraCiudad(juego, menusJuego);
                     menuFueraCiudad.MostrarMenuFueraCiudad();
                 }
                 else
@@ -174,23 +224,5 @@ namespace MiJuegoRPG.Motor
                 }
             }
         }
-    
-
-        private Juego juego;
-
-        public MenuCiudad(Juego juego)
-        {
-            this.juego = juego;
-        }
-
-    // Eliminado MostrarMenu() duplicado
-
-
-    // Métodos delegados directamente a Juego
-
-            // Este es el menú de guardado que ya tenías, pero encapsulado en un método.
-    // Menú de guardado/carga ahora se gestiona desde Juego
-
-    // Métodos de guardado/carga eliminados, delegados a Juego
     }
 }
