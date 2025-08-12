@@ -36,23 +36,23 @@ namespace MiJuegoRPG.Motor
             switch (opcion)
             {
                 case "1":
-                    juego.AvanzarTiempo();
+                    juego.AvanzarTiempo(1);
                     juego.GuardarPersonaje();
                     break;
                 case "2":
-                    juego.AvanzarTiempo();
+                    juego.AvanzarTiempo(1);
                     juego.CargarPersonaje();
                     break;
                 case "3":
-                    juego.AvanzarTiempo();
+                    juego.AvanzarTiempo(1);
                     juego.ComenzarCombate();
                     break;
                 case "4":
-                    juego.AvanzarTiempo();
+                    juego.AvanzarTiempo(1);
                     menusJuego.MostrarMenuPrincipalFijo();
                     break;
                 case "5":
-                    juego.AvanzarTiempo();
+                    juego.AvanzarTiempo(1);
                     Environment.Exit(0);
                     break;
                 default:

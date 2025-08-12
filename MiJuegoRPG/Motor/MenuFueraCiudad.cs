@@ -35,11 +35,11 @@ namespace MiJuegoRPG.Motor
                 switch (opcion)
                 {
                     case "1":
-                        juego.AvanzarTiempo();
+                        juego.AvanzarTiempo(1);
                         juego.ExplorarSector();
                         break;
                     case "2":
-                        juego.AvanzarTiempo();
+                        juego.AvanzarTiempo(1);
                         juego.ComenzarCombate();
                         break;
                     case "3":
@@ -72,7 +72,7 @@ namespace MiJuegoRPG.Motor
                             }
                         }
                     case "4":
-                        juego.AvanzarTiempo();
+                        juego.AvanzarTiempo(1);
                         var ciudadDesbloqueada = juego.estadoMundo.Ubicaciones.Find(u => u.Tipo == "Ciudad" && u.Desbloqueada);
                         if (ciudadDesbloqueada != null)
                         {
@@ -94,25 +94,25 @@ namespace MiJuegoRPG.Motor
                         }
                         break;
                     case "5":
-                        juego.AvanzarTiempo();
+                        juego.AvanzarTiempo(1);
                         juego.GestionarInventario();
                         break;
                     case "6":
-                        juego.AvanzarTiempo();
+                        juego.AvanzarTiempo(1);
                         juego.MostrarMenuGuardado();
                         break;
                     case "7":
-                        juego.AvanzarTiempo();
+                        juego.AvanzarTiempo(1);
                         juego.mapa.MostrarMapa();
                         Console.WriteLine("Presiona cualquier tecla para continuar...");
                         Console.ReadKey();
                         break;
                     case "8":
-                        juego.AvanzarTiempo();
+                        juego.AvanzarTiempo(1);
                         menusJuego.MostrarMenuPrincipalFijo();
                         break;
                     case "9":
-                        juego.AvanzarTiempo();
+                        juego.AvanzarTiempo(1);
                         Environment.Exit(0);
                         return;
                     default:

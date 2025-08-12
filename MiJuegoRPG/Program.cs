@@ -11,23 +11,59 @@ class Program
         try
         {
             Juego juego = new Juego();
-            juego.Iniciar();
-            
-            // Después de que termine el juego, preguntar si quiere guardar
-            Console.WriteLine("\n¿Deseas guardar tu personaje? (s/n):");
-            string respuesta = Console.ReadLine() ?? string.Empty;
-            
-            if (respuesta?.ToLower() == "s" || respuesta?.ToLower() == "si")
+
+            Console.WriteLine("¡Bienvenido a Mi Juego RPG!");
+            Console.WriteLine("1. Crear personaje nuevo");
+            Console.WriteLine("2. Cargar personaje guardado");
+            Console.WriteLine("0. Salir");
+            Console.Write("Selecciona una opción: ");
+            string opcion = Console.ReadLine() ?? "1";
+
+            switch (opcion)
             {
-                juego.GuardarPersonaje();
-                Console.WriteLine("¡Personaje guardado exitosamente!");
+                case "2":
+                    juego.CargarPersonaje();
+                    if (juego.jugador == null)
+                    {
+                        Console.WriteLine("No se pudo cargar el personaje. Se creará uno nuevo.");
+                        juego.CrearPersonaje();
+                    }
+                    break;
+                case "1":
+                    juego.CrearPersonaje();
+                    break;
+                case "0":
+                    Console.WriteLine("¡Hasta pronto!");
+                    return;
+                default:
+                    juego.CrearPersonaje();
+                    break;
+            }
+
+            juego.Iniciar();
+
+            // Preguntar si quiere guardar solo si el personaje fue creado o cargado correctamente
+            if (juego.jugador != null)
+            {
+                Console.WriteLine("\n¿Deseas guardar tu personaje? (s/n):");
+                string respuesta = Console.ReadLine() ?? string.Empty;
+
+                if (respuesta.ToLower() == "s" || respuesta.ToLower() == "si")
+                {
+                    juego.GuardarPersonaje();
+                    Console.WriteLine("¡Personaje guardado exitosamente!");
+                }
+            }
+            else
+            {
+                Console.WriteLine("No hay personaje para guardar.");
             }
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Error en el juego: {ex.Message}");
         }
-        
+
         Console.WriteLine("Presiona cualquier tecla para salir...");
         Console.ReadKey();
     }

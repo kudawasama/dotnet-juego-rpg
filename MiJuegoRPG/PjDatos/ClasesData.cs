@@ -103,7 +103,7 @@ namespace MiJuegoRPG.PjDatos
                 "Resistencia" => atributos.Resistencia,
                 "Sabiduría" => atributos.Sabiduría,
                 "Inteligencia" => atributos.Inteligencia,
-                "Fe" => atributos.Fe,
+                //"Fe" => atributos.Fe,
                 "Percepcion" => atributos.Percepcion,
                 "Persuasion" => atributos.Persuasion,
                 "Liderazgo" => atributos.Liderazgo,

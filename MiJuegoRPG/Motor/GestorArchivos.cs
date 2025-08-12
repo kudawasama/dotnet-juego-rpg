@@ -19,7 +19,7 @@ namespace MiJuegoRPG.Motor
             {
                 nombreArchivo = "personaje";
             }
-            string rutaCarpeta = Path.Combine(Environment.CurrentDirectory, "PjDatos", "PjGuardados");
+            string rutaCarpeta = "/workspaces/dotnet-juego-rpg/PjDatos/PjGuardados";
             Directory.CreateDirectory(rutaCarpeta);
             string rutaGuardado = Path.Combine(rutaCarpeta, nombreArchivo + ".json");
             try
@@ -38,8 +38,7 @@ namespace MiJuegoRPG.Motor
         {
             try
             {
-                string rutaPj = Path.Combine(Environment.CurrentDirectory, "PjDatos", "PjGuardados");
-                Console.WriteLine($"[DEBUG] Buscando personajes en: {rutaPj} (bin)");
+                string rutaPj = "/workspaces/dotnet-juego-rpg/PjDatos/PjGuardados";
                 var archivos = Directory.Exists(rutaPj) ? Directory.GetFiles(rutaPj, "*.json") : Array.Empty<string>();
                 if (archivos.Length == 0)
                 {

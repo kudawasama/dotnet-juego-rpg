@@ -44,16 +44,51 @@ namespace MiJuegoRPG.Motor
                 };
                 Console.WriteLine($"¿Cuántos minutos deseas entrenar {atributo}? (0 para cancelar)");
                 var minStr = Console.ReadLine();
-                if (int.TryParse(minStr, out int minutos) && minutos > 0) // Verifica si la entrada es un número válido y mayor que 0
+                if (int.TryParse(minStr, out int minutos) && minutos > 0)
                 {
-                    for (int i = 0; i < minutos; i++)
+                    bool cancelado = false;
+                    for (int i = 0; i < minutos && !cancelado; i++)
                     {
-                        juego.jugador?.Entrenar(atributo); // Entrena el atributo seleccionado
+                        for (int s = 0; s < 60 && !cancelado; s++)
+                        {
+                            juego.jugador?.Entrenar(atributo);
+                            DateTime tiempoActual = juego.FechaInicio.AddSeconds(juego.MinutosMundo * 60 + s);
+                            Console.Clear();
+                            int valorBase = 0;
+                            if (juego.jugador != null)
+                            {
+                                switch (atributo.ToLower())
+                                {
+                                    case "fuerza": valorBase = juego.jugador.AtributosBase.Fuerza; break;
+                                    case "inteligencia": valorBase = juego.jugador.AtributosBase.Inteligencia; break;
+                                    case "destreza": valorBase = juego.jugador.AtributosBase.Destreza; break;
+                                    case "magia": valorBase = (int)juego.jugador.ExpMagia; break;
+                                    case "suerte": valorBase = juego.jugador.AtributosBase.Suerte; break;
+                                    case "defensa": valorBase = juego.jugador.AtributosBase.Defensa; break;
+                                    case "vitalidad": valorBase = juego.jugador.AtributosBase.Vitalidad; break;
+                                    case "agilidad": valorBase = juego.jugador.AtributosBase.Agilidad; break;
+                                    case "resistencia": valorBase = juego.jugador.AtributosBase.Resistencia; break;
+                                }
+                            }
+                            Console.WriteLine($"Entrenando {atributo}... Progreso: {(i * 60 + s + 1)}/{minutos * 60} segundos | Valor actual: {valorBase} (Entrenamiento Avanzando)");
+                            Console.WriteLine($"Reloj mundial: [{tiempoActual:dd-MM-yyyy // HH:mm:ss}]");
+                            Console.WriteLine("Presiona 'c' para cancelar el entrenamiento.");
+                            for (int t = 0; t < 10; t++) // Espera 1 segundo en 10 intervalos de 100ms para detectar tecla
+                            {
+                                if (Console.KeyAvailable && Console.ReadKey(true).Key == ConsoleKey.C)
+                                {
+                                    cancelado = true;
+                                    break;
+                                }
+                                Thread.Sleep(100);
+                            }
+                        }
                         juego.MinutosMundo++;
-                        Console.WriteLine($"Reloj mundial: {juego.FormatoRelojMundo} | Minuto {i+1} de entrenamiento");
-                        Thread.Sleep(60000); // Espera 1 minuto real por cada minuto entrenado
                     }
-                    Console.WriteLine($"Entrenamiento finalizado. Tiempo total en el mundo: {juego.MinutosMundo} minutos.");
+                    if (cancelado)
+                        Console.WriteLine("Entrenamiento cancelado por el usuario.");
+                    else
+                        Console.WriteLine($"Entrenamiento finalizado. Tiempo total en el mundo: {juego.MinutosMundo} minutos.");
                 }
                 else
                 {

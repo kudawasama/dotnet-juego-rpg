@@ -27,13 +27,7 @@ namespace MiJuegoRPG.PjDatos
             // Eliminado: ya no se usa RUTA_POR_DEFECTO
             
             // Guardar cada personaje en su propio archivo .json
-            var dirProyecto = Directory.GetParent(Directory.GetParent(Environment.CurrentDirectory)?.FullName ?? "");
-            string rutaCarpeta = Path.Combine(dirProyecto?.FullName ?? Environment.CurrentDirectory, "MiJuegoRPG", "PjDatos", "PjGuardados");
-            // Evitar guardar en bin
-            if (rutaCarpeta.Contains("bin"))
-            {
-                rutaCarpeta = Path.Combine(dirProyecto?.FullName ?? Environment.CurrentDirectory, "MiJuegoRPG", "PjDatos", "PjGuardados");
-            }
+            string rutaCarpeta = "/workspaces/dotnet-juego-rpg/PjDatos/PjGuardados";
             if (!Directory.Exists(rutaCarpeta))
                 Directory.CreateDirectory(rutaCarpeta);
             string rutaArchivoFinal = Path.Combine(rutaCarpeta, personaje.Nombre + ".json");
@@ -50,13 +44,7 @@ namespace MiJuegoRPG.PjDatos
             // Eliminado: ya no se usa RUTA_POR_DEFECTO
             
             // Cargar todos los archivos .json en PjGuardados
-            var dirProyecto = Directory.GetParent(Directory.GetParent(Environment.CurrentDirectory)?.FullName ?? "");
-            string rutaCarpeta = Path.Combine(dirProyecto?.FullName ?? Environment.CurrentDirectory, "MiJuegoRPG", "PjDatos", "PjGuardados");
-            // Evitar bin
-            if (rutaCarpeta.Contains("bin"))
-            {
-                rutaCarpeta = Path.Combine(dirProyecto?.FullName ?? Environment.CurrentDirectory, "MiJuegoRPG", "PjDatos", "PjGuardados");
-            }
+            string rutaCarpeta = "/workspaces/dotnet-juego-rpg/PjDatos/PjGuardados";
             List<MiJuegoRPG.Personaje.Personaje> personajes = new List<MiJuegoRPG.Personaje.Personaje>();
             if (Directory.Exists(rutaCarpeta))
             {
@@ -78,10 +66,7 @@ namespace MiJuegoRPG.PjDatos
                     }
                 }
             }
-            else
-            {
-                Console.WriteLine($"No existe la carpeta de personajes guardados: {rutaCarpeta}");
-            }
+            // Si no existe la carpeta, simplemente retorna lista vacía (sin mensaje de depuración)
             return personajes;
         }
 
@@ -116,8 +101,7 @@ namespace MiJuegoRPG.PjDatos
             // Eliminado: ya no se usa RUTA_POR_DEFECTO
             
             // Eliminar el archivo individual del personaje
-            var dirProyecto = Directory.GetParent(Directory.GetParent(Environment.CurrentDirectory)?.FullName ?? "");
-            string rutaCarpeta = Path.Combine(dirProyecto?.FullName ?? Environment.CurrentDirectory, "MiJuegoRPG", "PjDatos", "PjGuardados");
+            string rutaCarpeta = "/workspaces/dotnet-juego-rpg/PjDatos/PjGuardados";
             string rutaArchivoFinal = Path.Combine(rutaCarpeta, nombrePersonaje + ".json");
             if (File.Exists(rutaArchivoFinal))
             {

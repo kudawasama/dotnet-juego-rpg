@@ -149,7 +149,8 @@ namespace MiJuegoRPG.Motor
                 Console.WriteLine($"  Requisitos: {string.Join(", ", m.Requisitos)}");
                 Console.WriteLine($"  Recompensas: {string.Join(", ", m.Recompensas)}");
                 Console.WriteLine($"  Exp. Nivel: {m.ExpNivel}");
-                Console.WriteLine($"  Exp. Atributos: {string.Join(", ", m.ExpAtributos.Select(a => a.Key + ": " + a.Value))}");
+                if (m.ExpAtributos != null)
+                    Console.WriteLine($"  Exp. Atributos: {string.Join(", ", m.ExpAtributos.Select(a => a.Key + ": " + a.Value))}");
                 Console.WriteLine($"  Estado: {m.Estado}");
                 if (m.Condiciones != null && m.Condiciones.Count > 0)
                     Console.WriteLine($"  Condiciones: {string.Join(", ", m.Condiciones)}");
@@ -253,7 +254,7 @@ namespace MiJuegoRPG.Motor
             Console.WriteLine("--- Inventario ---");
             foreach (var obj in juego.jugador.Inventario.Objetos)
             {
-                Console.WriteLine($"- {obj.Nombre} ({obj.Tipo})");
+                Console.WriteLine($"- {obj.Nombre} ({obj.Categoria})");
             }
         }
 
@@ -333,7 +334,7 @@ namespace MiJuegoRPG.Motor
                         MostrarEquipo();
                         break;
                     case "4":
-                        juego.GuardarPartida();
+                        juego.GuardarPersonaje();
                         Console.WriteLine("Partida guardada.");
                         break;
                     case "5":
@@ -364,7 +365,7 @@ namespace MiJuegoRPG.Motor
                 switch (opcion)
                 {
                     case "1":
-                        MostrarNPCsCiudadActual(ciudad);
+                        MostrarNPCsCiudadActual();
                         break;
                     case "2":
                         MostrarMisionesActivas();

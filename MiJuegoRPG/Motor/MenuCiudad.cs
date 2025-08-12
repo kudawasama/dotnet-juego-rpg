@@ -19,7 +19,7 @@ namespace MiJuegoRPG.Motor
             while (true)
             {
                 Console.WriteLine("=== Menú Principal de la Ciudad ===");
-                Console.WriteLine($"Ubicación actual: {juego.mapa.UbicacionActual.Nombre}");
+                Console.WriteLine($"Ubicación actual: {juego.mapa.UbicacionActual?.Nombre ?? "Desconocida"}");
                 Console.WriteLine("1. Explorar sector actual");
                 Console.WriteLine("2. Viajar a otro sector");
                 Console.WriteLine("3. Entrenar");
@@ -35,45 +35,45 @@ namespace MiJuegoRPG.Motor
                 switch (opcion)
                 {
                     case "1":
-                        juego.AvanzarTiempo();
+                        juego.AvanzarTiempo(1);
                         MostrarMenuExplorarSector();
                         break;
                     case "2":
-                        juego.AvanzarTiempo();
+                        juego.AvanzarTiempo(1);
                         MostrarMenuViajarMapa();
                         break;
                     case "3":
-                        juego.AvanzarTiempo();
+                        juego.AvanzarTiempo(1);
                         juego.Entrenar();
                         break;
                     case "4":
-                        juego.AvanzarTiempo();
+                        juego.AvanzarTiempo(1);
                         juego.IrATienda();
                         break;
                     case "5":
-                        juego.AvanzarTiempo();
+                        juego.AvanzarTiempo(1);
                         juego.GestionarInventario();
                         break;
                     case "6":
-                        juego.AvanzarTiempo();
+                        juego.AvanzarTiempo(1);
                         juego.MostrarMenuGuardado();
                         break;
                     case "7":
-                        juego.AvanzarTiempo();
+                        juego.AvanzarTiempo(1);
                         juego.MostrarMenuMisionesNPC();
                         break;
                     case "8":
-                        juego.AvanzarTiempo();
+                        juego.AvanzarTiempo(1);
                         juego.mapa.MostrarMapa();
                         Console.WriteLine("Presiona cualquier tecla para continuar...");
                         Console.ReadKey();
                         break;
                     case "9":
-                        juego.AvanzarTiempo();
+                        juego.AvanzarTiempo(1);
                         menusJuego.MostrarMenuPrincipalFijo();
                         break;
                     case "10":
-                        juego.AvanzarTiempo();
+                        juego.AvanzarTiempo(1);
                         Environment.Exit(0);
                         return;
                     default:
@@ -86,12 +86,12 @@ namespace MiJuegoRPG.Motor
         private void MostrarMenuExplorarSector()
         {
             var sector = juego.mapa.UbicacionActual;
-            Console.WriteLine($"=== {sector.Nombre} ===");
-            Console.WriteLine(sector.Region);
-            Console.WriteLine(sector.Descripcion);
-            Console.WriteLine("Enemigos posibles: " + (sector.Enemigos.Count > 0 ? string.Join(", ", sector.Enemigos) : "Ninguno"));
+            Console.WriteLine($"=== {sector?.Nombre ?? "Desconocido"} ===");
+            Console.WriteLine(sector?.Region ?? "Sin región");
+            Console.WriteLine(sector?.Descripcion ?? "Sin descripción");
+            Console.WriteLine("Enemigos posibles: " + (sector?.Enemigos != null && sector.Enemigos.Count > 0 ? string.Join(", ", sector.Enemigos) : "Ninguno"));
             // Mostrar eventos o ubicaciones internas si existen
-            if (sector.Eventos != null && sector.Eventos.Count > 0)
+            if (sector?.Eventos != null && sector.Eventos.Count > 0)
             {
                 Console.WriteLine("Eventos/Ubicaciones internas disponibles:");
                 for (int i = 0; i < sector.Eventos.Count; i++)
@@ -99,7 +99,7 @@ namespace MiJuegoRPG.Motor
                     Console.WriteLine($"- {sector.Eventos[i]}");
                 }
             }
-            if (sector.Conexiones.Count > 0)
+            if (sector?.Conexiones != null && sector.Conexiones.Count > 0)
             {
                 Console.WriteLine("Sectores disponibles para explorar:");
                 for (int i = 0; i < sector.Conexiones.Count; i++)
@@ -124,7 +124,7 @@ namespace MiJuegoRPG.Motor
                         {
                             foreach (var req in destino.Requisitos)
                             {
-                                if (!juego.jugador.CumpleRequisito(req.Key, req.Value))
+                                if (!(juego.jugador?.CumpleRequisito(req.Key, req.Value) ?? false))
                                 {
                                     Console.WriteLine($"No cumples el requisito: {req.Key} para viajar a {destino.Nombre}.");
                                     Console.WriteLine("Presiona cualquier tecla para volver...");
@@ -199,7 +199,7 @@ namespace MiJuegoRPG.Motor
                 {
                     foreach (var req in destino.Requisitos)
                     {
-                        if (!juego.jugador.CumpleRequisito(req.Key, req.Value))
+                        if (!(juego.jugador?.CumpleRequisito(req.Key, req.Value) ?? false))
                         {
                             Console.WriteLine($"No cumples el requisito: {req.Key} para viajar a {destino.Nombre}.");
                             Console.WriteLine("Presiona cualquier tecla para volver...");
