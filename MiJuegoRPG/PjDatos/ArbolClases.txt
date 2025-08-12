@@ -1,0 +1,126 @@
+🌳 Árbol de Clases y Profesiones RPG — Estructurado y Ordenado
+
+─────────────────────────────
+1. Combatientes (Físicos)
+─────────────────────────────
+  Soldado (Fuerza+2, Vitalidad+2)  ← Clase inicial
+    ├─ Guerrero (Fuerza+3, Defensa+2, Vitalidad+2)
+    │   ├─ Berserker (Fuerza+4, Vitalidad+2)
+    │   ├─ Espadachín (Fuerza+2, Agilidad+2)
+    │   │   ├─ Gladiador (Fuerza+3, Agilidad+2)
+    │   │   │   ├─ Campeón (Fuerza+4, Defensa+2, Agilidad+3)
+    │   │   │   │   ├─ Héroe Nacional (Fuerza+5, Defensa+3, Carisma+2)
+    │   │   │   │   │   └─ Campeón Eterno (Fuerza+6, Defensa+4, Carisma+3)
+    │   │   ├─ Caballero (Fuerza+2, Defensa+3)
+    │   │   │   ├─ Paladín (Fuerza+2, Defensa+3, Magia+1)
+    │   │   │   │   ├─ Templario (Fuerza+3, Defensa+4, Vitalidad+2)
+    │   │   │   │   │   └─ Guardián Divino (Fuerza+4, Defensa+5, Magia+2, Vitalidad+3)
+    ├─ Lancero (Fuerza+2, Agilidad+2)
+    │   ├─ Dragoon (Fuerza+3, Agilidad+3)
+    │   │   ├─ Caballero Dragón (Fuerza+4, Defensa+3, Agilidad+2)
+    │   │   │   ├─ Señor de Lanzas (Fuerza+5, Defensa+4, Agilidad+3)
+    │   │   │   │   └─ Avatar de Bahamut (Fuerza+6, Defensa+5, Magia+3, Vitalidad+4)
+    ├─ Discípulo (Agilidad+2, Vitalidad+2)
+    │   ├─ Monje (Agilidad+3, Vitalidad+2)
+    │   │   ├─ Maestro de Artes Marciales (Agilidad+3, Vitalidad+3, Defensa+2)
+    │   │   │   ├─ Gran Maestro (Agilidad+4, Vitalidad+4, Defensa+3)
+    │   │   │   │   └─ Avatar de la Serenidad (Agilidad+5, Vitalidad+5, Defensa+4, Magia+2)
+    │   ├─ Peleador (Fuerza+2, Agilidad+2)
+    │   │   ├─ Maestro de Chi (Fuerza+3, Agilidad+3, Magia+2)
+    │   │   │   └─ Guerrero Sagrado (Fuerza+4, Defensa+3, Magia+3)
+
+─────────────────────────────
+2. Combatientes (Mágicos)
+─────────────────────────────
+  Aprendiz de Mago (Magia+3, Inteligencia+3)  ← Clase inicial
+    ├─ Mago (Magia+2, Inteligencia+2)
+    │   ├─ Hechicero (Magia+3, Inteligencia+3)
+    │   │   ├─ Archimago (Magia+4, Inteligencia+4)
+    │   │   │   ├─ Maestro de los Elementos (Magia+5, Inteligencia+5)
+    │   │   │   │   └─ Guardián Arcano (Magia+6, Inteligencia+6, Defensa+2)
+    ├─ Encantadora (Magia+2, Carisma+2)
+    │   ├─ Hechicera (Magia+3, Agilidad+2)
+    │   │   ├─ Maga de Ilusiones (Magia+3, Carisma+3, Agilidad+2)
+    │   │   │   └─ Reina de las Sombras (Magia+4, Carisma+4, Agilidad+3)
+    ├─ Alquimista (Magia+2, Inteligencia+2)
+    │   ├─ Maestro Transmutador (Magia+3, Inteligencia+3)
+    │   │   └─ Filósofo de la Piedra (Magia+4, Inteligencia+4, Defensa+2)
+    ├─ Invocador (Magia+3, Carisma+2)
+    │   ├─ Maestro de Bestias (Magia+4, Carisma+3)
+    │   │   ├─ Señor de Espíritus (Magia+5, Carisma+4)
+    │   │   │   └─ Avatar de Gaia (Magia+6, Carisma+5, Vitalidad+3)
+    ├─ Cronomante (Magia+3, Inteligencia+3)
+    │   ├─ Maestro del Tiempo (Magia+4, Inteligencia+4)
+    │   │   └─ Guardián de la Eternidad (Magia+5, Inteligencia+5, Defensa+2)
+
+─────────────────────────────
+3. Pícaros y Asesinos
+─────────────────────────────
+  Pícaro (Agilidad+2, Suerte+2)  ← Clase inicial
+    ├─ Ladrón (Agilidad+3, Suerte+2)
+    │   ├─ Asesino (Agilidad+3, Suerte+3)
+    │   │   ├─ Maestro Asesino (Agilidad+4, Suerte+4)
+    │   │   │   └─ Sombra Eterna (Agilidad+5, Suerte+5, Defensa+2)
+    ├─ Explorador (Agilidad+2, Percepción+2)
+    │   ├─ Cazador (Agilidad+3, Percepción+3)
+    │   │   ├─ Maestro Arquero (Agilidad+4, Percepción+4)
+    │   │   │   └─ Francotirador Legendario (Agilidad+5, Percepción+5)
+    ├─ Bandido (Fuerza+2, Suerte+2)
+    │   ├─ Corsario (Fuerza+3, Suerte+3)
+    │   │   ├─ Capitán Pirata (Fuerza+4, Suerte+4, Carisma+2)
+    │   │   │   └─ Señor de los Mares (Fuerza+5, Suerte+5, Carisma+3)
+    ├─ Shinobi (Agilidad+2, Suerte+2)
+    │   ├─ Ninja (Agilidad+3, Suerte+2)
+    │   │   ├─ Maestro Ninja (Agilidad+3, Suerte+3)
+    │   │   │   └─ Sombra del Dragón (Agilidad+4, Suerte+4, Magia+2)
+    │   │   │   │   └─ Espíritu de la Noche (Agilidad+5, Suerte+5, Magia+3)
+
+─────────────────────────────
+4. Profesiones y Artesanos
+─────────────────────────────
+  Minero (Fuerza+2, Vitalidad+2)  ← Clase inicial
+    ├─ Maestro Forjador (Fuerza+3, Vitalidad+3)
+    │   ├─ Herrero Legendario (Fuerza+4, Vitalidad+4)
+    │   │   └─ Forjador Divino (Fuerza+5, Vitalidad+5, Destreza+2)
+  Leñador (Fuerza+2, Destreza+2)  ← Clase inicial
+    ├─ Maestro Carpintero (Fuerza+3, Destreza+3)
+    │   └─ Artesano Sagrado (Fuerza+4, Destreza+4, Carisma+2)
+  Pescador (Destreza+2, Suerte+2)  ← Clase inicial
+    ├─ Maestro Pescador (Destreza+3, Suerte+3)
+    │   └─ Guardián de las Aguas (Destreza+4, Suerte+4, Percepción+2)
+  Herrero (Fuerza+2, Destreza+2)  ← Clase inicial
+    ├─ Maestro Armero (Fuerza+3, Destreza+3)
+    │   └─ Forjador de Reliquias (Fuerza+4, Destreza+4, Carisma+2)
+  Alquimista (Inteligencia+2, Magia+2)  ← Clase inicial
+    ├─ Maestro de Pociones (Inteligencia+3, Magia+3)
+    │   └─ Elixirista Supremo (Inteligencia+4, Magia+4, Sabiduría+2)
+  Cocinero (Destreza+2, Inteligencia+2)  ← Clase inicial
+    ├─ Chef Maestro (Destreza+3, Inteligencia+3)
+    │   └─ Cocinero Real (Destreza+4, Inteligencia+4, Carisma+2)
+  Sastre (Destreza+2, Percepción+2)  ← Clase inicial
+    ├─ Maestro Tejedor (Destreza+3, Percepción+3)
+    │   └─ Artesano de Vestiduras Sagradas (Destreza+4, Percepción+4, Carisma+2)
+
+─────────────────────────────
+5. Clases Únicas / Ocultas / Legendarias
+─────────────────────────────
+  Caballero Fantasma (Fuerza+5, Defensa+5, Magia+3, Vitalidad+5)
+    • Desbloqueo: Morir en batalla contra un jefe legendario y renacer.
+  Portador del Eclipse (Fuerza+6, Magia+6, Defensa+4, Carisma+4)
+    • Desbloqueo: Dominar una rama de magia y una de combate físico hasta la etapa de élite y fusionarlas.
+  Avatar del Caos (Fuerza+8, Magia+8, Defensa+8, Vitalidad+8)
+    • Desbloqueo: Alcanzar el nivel máximo y tener reputación negativa en todas las facciones.
+  Campeón del Destino (Fuerza+7, Defensa+7, Carisma+7, Magia+7)
+    • Desbloqueo: Solo uno por servidor. Serie de misiones épicas y desafío final.
+  Bibliotecario Arcano (Inteligencia+8, Magia+8, Sabiduría+8)
+    • Desbloqueo: Encontrar todos los tomos perdidos y descifrar el conocimiento prohibido.
+  Errante Dimensional (Fuerza+5, Magia+5, Defensa+5, Carisma+5)
+    • Desbloqueo: Viajar entre múltiples dimensiones o planos. Acceso a habilidades de varias ramas sin restricción.
+  Forjador de Mundos (Fuerza+10, Destreza+10, Magia+10, Sabiduría+10)
+    • Desbloqueo: Nivel máximo de Forjador Divino y obtener un "Núcleo de la Creación". Permite crear armas y objetos únicos.
+
+─────────────────────────────
+Notas:
+- Las líneas y sangrías muestran la progresión y dependencia entre clases.
+- Puedes agregar requisitos específicos (nivel, atributos, misiones, reputación) en el sistema JSON.
+- Las clases ocultas/legendarias requieren condiciones especiales para desbloquearse.
