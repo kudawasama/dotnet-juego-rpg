@@ -20,6 +20,8 @@ namespace MiJuegoRPG.Objetos
                         return JsonSerializer.Deserialize<Pocion>(root.GetRawText(), options);
                     case "Arma":
                         return JsonSerializer.Deserialize<Arma>(root.GetRawText(), options);
+                    case "Material":
+                        return JsonSerializer.Deserialize<Material>(root.GetRawText(), options);
                     default:
                         throw new JsonException($"Tipo de objeto desconocido: {tipo}");
                 }

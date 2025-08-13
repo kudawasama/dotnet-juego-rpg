@@ -47,12 +47,12 @@ namespace MiJuegoRPG.Motor
                 if (int.TryParse(minStr, out int minutos) && minutos > 0)
                 {
                     bool cancelado = false;
-                    for (int i = 0; i < minutos && !cancelado; i++)
+                    for (int i = 0; i < minutos && !cancelado; i++) // Entrenamiento por minutos
                     {
-                        for (int s = 0; s < 60 && !cancelado; s++)
+                        for (int s = 0; s < 60 && !cancelado; s++) // Entrenamiento por segundos
                         {
                             juego.jugador?.Entrenar(atributo);
-                            DateTime tiempoActual = juego.FechaInicio.AddSeconds(juego.MinutosMundo * 60 + s);
+                            DateTime tiempoActual = juego.FechaInicio.AddSeconds(juego.MinutosMundo * 60 + s); 
                             Console.Clear();
                             int valorBase = 0;
                             if (juego.jugador != null)

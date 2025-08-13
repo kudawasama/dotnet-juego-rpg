@@ -14,27 +14,13 @@ namespace MiJuegoRPG.Motor
 {
     public class Juego
     {
-            // Método para crear un personaje nuevo
-            public void CrearPersonaje()
-            {
-                jugador = CreadorPersonaje.Crear();
-                Console.WriteLine("Personaje creado exitosamente.");
-            }
         public void Iniciar()
         {
-            if (jugador == null)
-            {
-                Console.WriteLine("No hay personaje cargado o creado. No se puede iniciar el juego.");
-                return;
-            }
-
+            // Menú principal del juego
             bool salir = false;
             while (!salir)
             {
-                Console.Clear();
-                Console.WriteLine(FormatoRelojMundo);
-                Console.WriteLine($"Bienvenido, {jugador.Nombre}!");
-                Console.WriteLine("=== Menú Principal ===");
+                Console.WriteLine("\n=== Menú Principal ===");
                 Console.WriteLine("1. Estado del personaje");
                 Console.WriteLine("2. Ir a ubicación actual");
                 Console.WriteLine("3. Inventario");
@@ -42,24 +28,29 @@ namespace MiJuegoRPG.Motor
                 Console.WriteLine("0. Salir del juego");
                 Console.Write("Selecciona una opción: ");
                 string opcion = Console.ReadLine() ?? "";
-
                 switch (opcion)
                 {
                     case "1":
-                        MostrarEstadoPersonaje(jugador);
-                        MostrarMenuFijo(ref salir);
+                        if (jugador != null) MostrarEstadoPersonaje(jugador);
+                        else Console.WriteLine("No hay personaje cargado.");
                         break;
                     case "2":
-                        MostrarMenuPorUbicacion(ref salir);
+                        // Volver al sector anterior: si está en ciudad, mostrar menú de ciudad; si está fuera, mostrar menú fuera de ciudad
+                        if (ubicacionActual != null && ubicacionActual.Tipo != null && ubicacionActual.Tipo.Equals("Ciudad", StringComparison.OrdinalIgnoreCase))
+                        {
+                            MostrarMenuCiudad(ref salir);
+                        }
+                        else
+                        {
+                            MostrarMenuFueraCiudad(ref salir);
+                        }
                         break;
                     case "3":
                         GestionarInventario();
-                        MostrarMenuFijo(ref salir);
                         break;
                     case "4":
                         GuardarPersonaje();
                         Console.WriteLine("¡Personaje guardado exitosamente!");
-                        MostrarMenuFijo(ref salir);
                         break;
                     case "0":
                         salir = true;
@@ -67,11 +58,78 @@ namespace MiJuegoRPG.Motor
                         break;
                     default:
                         Console.WriteLine("Opción no válida.");
-                        MostrarMenuFijo(ref salir);
                         break;
                 }
             }
         }
+    // ...existing code...
+        public void CrearPersonaje()
+        {
+            Console.WriteLine("=== Creación de Personaje ===");
+            Console.Write("Ingresa el nombre de tu personaje: ");
+            string nombre = Console.ReadLine() ?? "Héroe";
+            jugador = new MiJuegoRPG.Personaje.Personaje(nombre);
+            // Ubicación inicial: Ciudad de Bairan
+            var bairan = estadoMundo.Ubicaciones.Find(u => u.Nombre == "Ciudad de Bairan");
+            if (bairan != null)
+                jugador.UbicacionActual = bairan;
+            else
+                jugador.UbicacionActual = ubicacionActual;
+            ubicacionActual = jugador.UbicacionActual;
+            Console.WriteLine($"Personaje creado: {jugador.Nombre} en {jugador.UbicacionActual.Nombre}");
+        }
+        // Menú de recolección fuera de ciudad
+        public void MostrarMenuRecoleccion()
+        {
+            Console.WriteLine("=== Menú de Recolección ===");
+            Console.WriteLine("1. Recolectar");
+            Console.WriteLine("2. Minar");
+            Console.WriteLine("3. Talar");
+            Console.WriteLine("0. Volver");
+            Console.Write("Selecciona una acción: ");
+            var key = Console.ReadKey(true);
+            string opcion = key.KeyChar.ToString();
+            switch (opcion)
+            {
+                case "1": RealizarAccionRecoleccion("Recolectar"); break;
+                case "2": RealizarAccionRecoleccion("Minar"); break;
+                case "3": RealizarAccionRecoleccion("Talar"); break;
+                case "0": MostrarMenuPorUbicacion(); break;
+                default:
+                    Console.WriteLine("Opción no válida en el menú de recolección.");
+                    break;
+            }
+
+        }
+
+        // Método para cargar personaje desde el menú (extraído del default)
+        public void MostrarMenuCargarPersonaje()
+        {
+            var personajes = GuardaPersonaje.CargarTodosLosPersonajes();
+            if (personajes.Count == 0)
+            {
+                Console.WriteLine("No hay personajes guardados.");
+                return;
+            }
+            Console.WriteLine("Personajes guardados disponibles:");
+            for (int i = 0; i < personajes.Count; i++)
+            {
+                Console.WriteLine($"{i + 1}. {personajes[i].Nombre}");
+            }
+            Console.Write("Elige el número del personaje a cargar: ");
+            string entrada = Console.ReadLine() ?? string.Empty;
+            if (int.TryParse(entrada, out int seleccion) && seleccion > 0 && seleccion <= personajes.Count)
+            {
+                jugador = personajes[seleccion - 1];
+                Console.WriteLine($"Personaje '{jugador.Nombre}' cargado correctamente.");
+            }
+            else
+            {
+                Console.WriteLine("Selección inválida. No se pudo cargar el personaje.");
+            }
+        }
+        
+        
 
         public void MostrarMenuUbicacion()
         {
@@ -133,7 +191,8 @@ namespace MiJuegoRPG.Motor
             menuPrincipal = new MenusJuego(this);
             estadoMundo = new EstadoMundo();
             InicializarUbicaciones();
-            ubicacionActual = estadoMundo.Ubicaciones.Find(u => u.Nombre == "Ciudad de Albor") ?? estadoMundo.Ubicaciones[0];
+            ubicacionActual = estadoMundo.Ubicaciones.Find(u => u.Nombre == "Ciudad de Bairan")
+                ?? estadoMundo.Ubicaciones[0];
             CargarProbabilidades();
             motorEventos = new MotorEventos(this);
             motorCombate = new MotorCombate(this);
@@ -150,82 +209,99 @@ namespace MiJuegoRPG.Motor
         }
         public void MostrarMenuPorUbicacion(ref bool salir)
         {
+            if (ubicacionActual.Tipo != null && ubicacionActual.Tipo.Equals("Ciudad", StringComparison.OrdinalIgnoreCase))
+            {
+                MostrarMenuCiudad(ref salir);
+            }
+            else
+            {
+                MostrarMenuFueraCiudad(ref salir);
+            }
+        }
+
+        // Menú de ciudad
+        public void MostrarMenuCiudad(ref bool salir)
+        {
+            string opcion = "";
             while (!salir)
             {
-                Console.Clear();
                 Console.WriteLine(FormatoRelojMundo);
                 Console.WriteLine($"Ubicación actual: {ubicacionActual.Nombre}");
-                if (ubicacionActual.Tipo != null && ubicacionActual.Tipo.Equals("Ciudad", StringComparison.OrdinalIgnoreCase))
-                {
-                    Console.WriteLine("=== Menú de Ciudad ===");
-                    Console.WriteLine("1. Tienda");
-                    Console.WriteLine("2. Escuela de Entrenamiento");
-                    Console.WriteLine("3. Explorar sector");
-                    Console.WriteLine("4. Descansar en posada");
-                    Console.WriteLine("5. Salir de la ciudad");
-                }
-                else
-                {
-                    Console.WriteLine("=== Menú Fuera de Ciudad ===");
-                    Console.WriteLine("1. Explorar");
-                    Console.WriteLine("2. Encontrar mazmorra");
-                    Console.WriteLine("3. Volver a la ciudad");
-                }
+                Console.WriteLine("=== Menú de Ciudad ===");
+                Console.WriteLine("1. Tienda");
+                Console.WriteLine("2. Escuela de Entrenamiento");
+                Console.WriteLine("3. Explorar sector");
+                Console.WriteLine("4. Descansar en posada");
+                Console.WriteLine("5. Salir de la ciudad");
                 Console.WriteLine("9. Menú fijo");
                 Console.WriteLine("0. Volver al menú principal");
                 Console.Write("Selecciona una opción: ");
-                string opcion = Console.ReadLine() ?? "";
-
-                if (ubicacionActual.Tipo != null && ubicacionActual.Tipo.Equals("Ciudad", StringComparison.OrdinalIgnoreCase))
+                var key = Console.ReadKey(true);
+                opcion = key.KeyChar.ToString();
+                switch (opcion)
                 {
-                    switch (opcion)
-                    {
-                        case "1": MostrarTienda(); break;
-                        case "2": Entrenar(); break;
-                        case "3": ExplorarSector(); break;
-                        case "4":
-                            if (jugador != null)
-                            {
-                                jugador.Vida = jugador.VidaMaxima;
-                                Console.WriteLine("Has descansado y recuperado toda tu vida.");
-                            }
-                            else
-                                Console.WriteLine("No hay personaje cargado.");
-                            MostrarMenuFijo(ref salir);
-                            break;
-                        case "5": MostrarMenuRutas(); break;
-                        case "9": MostrarMenuFijo(ref salir); break;
-                        case "0": return;
-                        default:
-                            Console.WriteLine("Opción no válida.");
-                            MostrarMenuFijo(ref salir);
-                            break;
-                    }
+                    case "1": MostrarTienda(); break;
+                    case "2": Entrenar(); break;
+                    case "3": ExplorarSector(); break;
+                    case "4":
+                        if (jugador != null)
+                        {
+                            jugador.Vida = jugador.VidaMaxima;
+                            Console.WriteLine("Has descansado y recuperado toda tu vida.");
+                        }
+                        else
+                            Console.WriteLine("No hay personaje cargado.");
+                        MostrarMenuFijo(ref salir);
+                        break;
+                    case "5": MostrarMenuRutas(); break;
+                    case "9": MostrarMenuFijo(ref salir); break;
+                    case "0": return;
+                    default:
+                        Console.WriteLine("Opción no válida.");
+                        MostrarMenuFijo(ref salir);
+                        break;
                 }
-                else
+            }
+        }
+
+        // Menú fuera de ciudad
+        public void MostrarMenuFueraCiudad(ref bool salir)
+        {
+            string opcion = "";
+            while (!salir)
+            {
+                Console.WriteLine(FormatoRelojMundo);
+                Console.WriteLine($"Ubicación actual: {ubicacionActual.Nombre}");
+                Console.WriteLine("=== Menú Fuera de Ciudad ===");
+                Console.WriteLine("1. Explorar");
+                Console.WriteLine("2. Recolectar");
+                Console.WriteLine("3. Volver a la ciudad");
+                Console.WriteLine("9. Menú fijo");
+                Console.WriteLine("0. Volver al menú principal");
+                Console.Write("Selecciona una opción: ");
+                var key = Console.ReadKey(true);
+                opcion = key.KeyChar.ToString();
+                switch (opcion)
                 {
-                    switch (opcion)
-                    {
-                        case "1": ExplorarSector(); break;
-                        case "2": MostrarMenuMazmorra(); break;
-                        case "3":
-                            var ciudadDesbloqueada = estadoMundo.Ubicaciones.Find(u => u.Tipo == "Ciudad" && u.Desbloqueada);
-                            if (ciudadDesbloqueada != null)
-                            {
-                                ubicacionActual = ciudadDesbloqueada;
-                                Console.WriteLine("Has regresado a la ciudad.");
-                            }
-                            else
-                                Console.WriteLine("No tienes acceso a ninguna ciudad desbloqueada en este momento.");
-                            MostrarMenuFijo(ref salir);
-                            break;
-                        case "9": MostrarMenuFijo(ref salir); break;
-                        case "0": return;
-                        default:
-                            Console.WriteLine("Opción no válida.");
-                            MostrarMenuFijo(ref salir);
-                            break;
-                    }
+                    case "1": ExplorarSector(); break;
+                    case "2": MostrarMenuRecoleccion(); break;
+                    case "3":
+                        var ciudadDesbloqueada = estadoMundo.Ubicaciones.Find(u => u.Tipo == "Ciudad" && u.Desbloqueada);
+                        if (ciudadDesbloqueada != null)
+                        {
+                            ubicacionActual = ciudadDesbloqueada;
+                            Console.WriteLine("Has regresado a la ciudad.");
+                        }
+                        else
+                            Console.WriteLine("No tienes acceso a ninguna ciudad desbloqueada en este momento.");
+                        MostrarMenuFijo(ref salir);
+                        break;
+                    case "9": MostrarMenuFijo(ref salir); break;
+                    case "0": return;
+                    default:
+                        Console.WriteLine("Opción no válida.");
+                        MostrarMenuFijo(ref salir);
+                        break;
                 }
             }
         }
@@ -267,7 +343,7 @@ namespace MiJuegoRPG.Motor
                     break;
             }
         }
-        
+
 
         // Muestra el estado completo del personaje con explicación
         private void MostrarEstadoPersonaje(MiJuegoRPG.Personaje.Personaje pj)
@@ -279,29 +355,43 @@ namespace MiJuegoRPG.Motor
             Console.WriteLine($"Nivel: {pj.Nivel}");
             Console.WriteLine($"Vida: {pj.Vida}/{pj.VidaMaxima}");
             Console.WriteLine($"Oro: {pj.Oro}");
+            int expActual = pj.Experiencia;
+            int expSiguiente = pj.ExperienciaSiguienteNivel;
+            int expFaltante = expSiguiente - expActual;
+            double porcentaje = expSiguiente > 0 ? (double)expActual / expSiguiente * 100.0 : 0.0;
+            Console.WriteLine($"Experiencia: {expActual} / {expSiguiente} (Faltan {expFaltante})");
+            Console.WriteLine($"Progreso al siguiente nivel: {porcentaje:F2}%");
             Console.WriteLine("\n--- Atributos Base ---");
             Console.WriteLine("===================================");
             var ab = pj.AtributosBase;
-            var atributos = new Dictionary<string, double> {
-                {"Fuerza", ab.Fuerza}, {"Destreza", ab.Destreza}, {"Vitalidad", ab.Vitalidad}, {"Agilidad", ab.Agilidad},
-                {"Suerte", ab.Suerte}, {"Defensa", ab.Defensa}, {"Resistencia", ab.Resistencia}, {"Sabiduría", ab.Sabiduría},
-                {"Inteligencia", ab.Inteligencia}, {"Percepción", ab.Percepcion}, {"Persuasión", ab.Persuasion},
-                {"Liderazgo", ab.Liderazgo}, {"Carisma", ab.Carisma}, {"Voluntad", ab.Voluntad}
+            var atributos = new Dictionary<string, (string abrev, double valor, double exp, double req)> {
+                {"Fuerza", ("Fza", ab.Fuerza, pj.ExpFuerza, pj.FuerzaExpRequerida)},
+                {"Destreza", ("Dxt", ab.Destreza, pj.ExpDestreza, pj.DestrezaExpRequerida)},
+                {"Vitalidad", ("Vit", ab.Vitalidad, pj.ExpVitalidad, pj.VitalidadExpRequerida)},
+                {"Agilidad", ("Agi", ab.Agilidad, pj.ExpAgilidad, pj.AgilidadExpRequerida)},
+                {"Suerte", ("Srt", ab.Suerte, pj.ExpSuerte, pj.SuerteExpRequerida)},
+                {"Defensa", ("Def", ab.Defensa, pj.ExpDefensa, pj.DefensaExpRequerida)},
+                {"Resistencia", ("Res", ab.Resistencia, pj.ExpResistencia, pj.ResistenciaExpRequerida)},
+                {"Sabiduría", ("Sab", ab.Sabiduría, 0, 1)},
+                {"Inteligencia", ("Int", ab.Inteligencia, pj.ExpInteligencia, pj.InteligenciaExpRequerida)},
+                {"Percepción", ("Per", ab.Percepcion, pj.ExpPercepcion, pj.PercepcionExpRequerida)},
+                {"Persuasión", ("Prs", ab.Persuasion, 0, 1)},
+                {"Liderazgo", ("Lid", ab.Liderazgo, 0, 1)},
+                {"Carisma", ("Car", ab.Carisma, 0, 1)},
+                {"Voluntad", ("Vol", ab.Voluntad, 0, 1)}
             };
             foreach (var atributo in atributos)
             {
+                string abrev = atributo.Value.abrev;
+                double valor = atributo.Value.valor;
+                double exp = atributo.Value.exp;
+                double req = atributo.Value.req;
                 double bonificador = pj.ObtenerBonificadorAtributo(atributo.Key);
-                double total = atributo.Value + bonificador;
-                Console.WriteLine($"{atributo.Key}: {atributo.Value:F2} ({total:F2})");
-                if (bonificador > 0)
-                {
-                    var fuentes = pj.ObtenerFuentesBonificadorAtributo(atributo.Key);
-                    Console.WriteLine($"  Bonificador por equipo:");
-                    foreach (var fuente in fuentes)
-                    {
-                        Console.WriteLine($"    {fuente.Nombre}: +{fuente.Valor}");
-                    }
-                }
+                double total = valor + bonificador;
+                double prog = req > 0 ? exp / req * 100.0 : 0.0;
+                double faltante = req - exp;
+                string textoProg = req > 1 ? $" ({prog:F2}% de {req}, faltan {faltante:F2})" : "";
+                Console.WriteLine($"{abrev}: {total} (Base: {valor}, Bonif: {bonificador}){textoProg}");
             }
             Console.WriteLine("\n--- Estadísticas Físicas ---");
             var est = pj.Estadisticas;
@@ -434,13 +524,13 @@ namespace MiJuegoRPG.Motor
 
         private void InicializarUbicaciones()
         {
-            // Ejemplo de inicialización básica
+            // Inicialización básica: Ciudad de Bairan
             var ciudad = new MiJuegoRPG.Motor.Ubicacion
             {
-                Id = "albor",
-                Nombre = "Ciudad de Albor",
+                Id = "bairan",
+                Nombre = "Ciudad de Bairan",
                 Tipo = "Ciudad",
-                Descripcion = "La ciudad inicial, llena de vida y oportunidades.",
+                Descripcion = "Ciudad fortificada en las montañas del caos, famosa por sus minas y guerreros.",
                 Desbloqueada = true,
                 EventosPosibles = new List<string> { "Tienda", "Escuela de Entrenamiento", "Explorar sector", "Descansar en posada" }
             };
@@ -611,12 +701,156 @@ namespace MiJuegoRPG.Motor
         // Nuevo método para explorar, que ahora delega al GeneradorEnemigos
         public void ExplorarSector()
         {
-            motorEventos.ExplorarSector();
+            // Ganar experiencia por explorar
+            if (jugador != null)
+            {
+                jugador.ExpDestreza += 0.2;
+                jugador.ExpAgilidad += 0.1;
+                jugador.ExpPercepcion += 0.1;
+                RevisarAtributosPorExperiencia(jugador);
+            }
+            // 1. Probabilidad de Mazmorra
+            if (random.Next(100) < ProbMazmorra)
+            {
+                Console.WriteLine("¡Has encontrado una mazmorra!");
+                MostrarMenuMazmorra();
+                return;
+            }
+            // 2. Probabilidad de encontrar objetos
+            if (random.Next(100) < ProbObjeto)
+            {
+                string[] objetos = { "Oro", "Material", "Equipo" };
+                string tipoObjeto = objetos[random.Next(objetos.Length)];
+                switch (tipoObjeto)
+                {
+                    case "Oro":
+                        int oro = random.Next(5, 21);
+                        if (jugador != null)
+                        {
+                            jugador.Oro += oro;
+                            Console.WriteLine($"¡Has encontrado {oro} monedas de oro!");
+                        }
+                        else
+                        {
+                            Console.WriteLine($"¡Has encontrado {oro} monedas de oro! (No hay personaje cargado)");
+                        }
+                        break;
+                    case "Material":
+                        RealizarAccionRecoleccion("Recolectar");
+                        break;
+                    case "Equipo":
+                        if (jugador != null)
+                        {
+                            jugador.Inventario.AgregarObjeto(new Objetos.Arma("Espada Misteriosa", 10));
+                            Console.WriteLine("¡Has encontrado un arma misteriosa!");
+                        }
+                        else
+                        {
+                            Console.WriteLine("¡Has encontrado un arma misteriosa! (No hay personaje cargado)");
+                        }
+                        break;
+                }
+            }
+            // 3. Probabilidad de batalla
+            if (random.Next(100) < ProbMonstruo)
+            {
+                Console.WriteLine("¡Un monstruo aparece!");
+                ComenzarCombate();
+                return;
+            }
+            Console.WriteLine("No ha ocurrido nada especial en la exploración.");
+            Console.WriteLine("Presiona cualquier tecla para continuar...");
+            Console.ReadKey();
+            MostrarMenuPorUbicacion();
         }
 
         // Acciones de recolección, minería y tala
+        // Revisa si algún atributo sube por experiencia acumulada
+        private void RevisarAtributosPorExperiencia(MiJuegoRPG.Personaje.Personaje pj)
+        {
+            if (pj.ExpFuerza >= pj.FuerzaExpRequerida)
+            {
+                pj.AtributosBase.Fuerza += 1;
+                pj.ExpFuerza = 0;
+                Console.WriteLine("¡Tu Fuerza ha aumentado!");
+            }
+            if (pj.ExpDestreza >= pj.DestrezaExpRequerida)
+            {
+                pj.AtributosBase.Destreza += 1;
+                pj.ExpDestreza = 0;
+                Console.WriteLine("¡Tu Destreza ha aumentado!");
+            }
+            if (pj.ExpAgilidad >= pj.AgilidadExpRequerida)
+            {
+                pj.AtributosBase.Agilidad += 1;
+                pj.ExpAgilidad = 0;
+                Console.WriteLine("¡Tu Agilidad ha aumentado!");
+            }
+            if (pj.ExpResistencia >= pj.ResistenciaExpRequerida)
+            {
+                pj.AtributosBase.Resistencia += 1;
+                pj.ExpResistencia = 0;
+                Console.WriteLine("¡Tu Resistencia ha aumentado!");
+            }
+            if (pj.ExpInteligencia >= pj.InteligenciaExpRequerida)
+            {
+                pj.AtributosBase.Inteligencia += 1;
+                pj.ExpInteligencia = 0;
+                Console.WriteLine("¡Tu Inteligencia ha aumentado!");
+            }
+            if (pj.ExpPercepcion >= 1.0)
+            {
+                pj.AtributosBase.Percepcion += 1;
+                pj.ExpPercepcion = 0;
+                Console.WriteLine("¡Tu Percepción ha aumentado!");
+            }
+        }
         public void RealizarAccionRecoleccion(string tipo)
         {
+            // Ganar experiencia por acción de recolección, escalada por nivel y dificultad
+            if (jugador != null)
+            {
+                double expBase = 0.01;
+                double indiceNivel = Math.Pow(1.05, jugador.Nivel - 1);
+                int minutos = 1; // Cada acción equivale a 1 minuto
+                switch (tipo)
+                {
+                    case "Recolectar":
+                        double indicePercepcion = jugador.IndiceAtributo.ContainsKey("percepcion") ? jugador.IndiceAtributo["percepcion"] : 1.0;
+                        double expPercepcion = expBase / (indiceNivel * indicePercepcion);
+                        if (expPercepcion < 0.0001) expPercepcion = 0.0001;
+                        jugador.ExpPercepcion += expPercepcion * minutos;
+                        double indiceInteligencia = jugador.IndiceAtributo.ContainsKey("inteligencia") ? jugador.IndiceAtributo["inteligencia"] : 1.0;
+                        double expInteligencia = expBase / (indiceNivel * indiceInteligencia);
+                        if (expInteligencia < 0.0001) expInteligencia = 0.0001;
+                        jugador.ExpInteligencia += expInteligencia * minutos;
+                        Console.WriteLine($"Has ganado {expPercepcion * minutos:F4} exp de Percepción y {expInteligencia * minutos:F4} exp de Inteligencia.");
+                        break;
+                    case "Minar":
+                        double indiceFuerza = jugador.IndiceAtributo.ContainsKey("fuerza") ? jugador.IndiceAtributo["fuerza"] : 1.0;
+                        double expFuerza = expBase / (indiceNivel * indiceFuerza);
+                        if (expFuerza < 0.0001) expFuerza = 0.0001;
+                        jugador.ExpFuerza += expFuerza * minutos;
+                        double indiceResistencia = jugador.IndiceAtributo.ContainsKey("resistencia") ? jugador.IndiceAtributo["resistencia"] : 1.0;
+                        double expResistencia = expBase / (indiceNivel * indiceResistencia);
+                        if (expResistencia < 0.0001) expResistencia = 0.0001;
+                        jugador.ExpResistencia += expResistencia * minutos;
+                        Console.WriteLine($"Has ganado {expFuerza * minutos:F4} exp de Fuerza y {expResistencia * minutos:F4} exp de Resistencia.");
+                        break;
+                    case "Talar":
+                        double indiceFuerzaT = jugador.IndiceAtributo.ContainsKey("fuerza") ? jugador.IndiceAtributo["fuerza"] : 1.0;
+                        double expFuerzaT = expBase / (indiceNivel * indiceFuerzaT);
+                        if (expFuerzaT < 0.0001) expFuerzaT = 0.0001;
+                        jugador.ExpFuerza += expFuerzaT * minutos;
+                        double indiceDestreza = jugador.IndiceAtributo.ContainsKey("destreza") ? jugador.IndiceAtributo["destreza"] : 1.0;
+                        double expDestreza = expBase / (indiceNivel * indiceDestreza);
+                        if (expDestreza < 0.0001) expDestreza = 0.0001;
+                        jugador.ExpDestreza += expDestreza * minutos;
+                        Console.WriteLine($"Has ganado {expFuerzaT * minutos:F4} exp de Fuerza y {expDestreza * minutos:F4} exp de Destreza.");
+                        break;
+                }
+                RevisarAtributosPorExperiencia(jugador);
+            }
             var random = new Random();
             switch (tipo)
             {
@@ -665,8 +899,8 @@ namespace MiJuegoRPG.Motor
             }
             Console.WriteLine("Presiona cualquier tecla para continuar...");
             Console.ReadKey();
-            MostrarMenuPorUbicacion();
-        }
+            MostrarMenuRecoleccion();
+    }
 
         public void Entrenar()
         {
@@ -679,17 +913,7 @@ namespace MiJuegoRPG.Motor
         }
 
         // Método para guardar el personaje usando GuardaPersonaje
-        public void GuardarPersonaje()
-        {
-            if (jugador != null)
-            {
-                GuardaPersonaje.GuardarPersonaje(jugador);
-            }
-            else
-            {
-                Console.WriteLine("No hay personaje cargado para guardar.");
-            }
-        }
+    // ...existing code...
 
         // Método para cargar el personaje usando GuardaPersonaje
         public void CargarPersonaje()
@@ -711,12 +935,31 @@ namespace MiJuegoRPG.Motor
             {
                 jugador = personajes[seleccion - 1];
                 Console.WriteLine($"Personaje '{jugador.Nombre}' cargado correctamente.");
+                // Sincronizar ubicación actual
+                if (jugador.UbicacionActual != null)
+                    ubicacionActual = jugador.UbicacionActual;
             }
             else
             {
                 Console.WriteLine("Selección inválida. No se pudo cargar el personaje.");
             }
         }
+        public void GuardarPersonaje()
+        {
+            if (jugador != null)
+            {
+                // Guardar la ubicación actual en el personaje antes de serializar
+                jugador.UbicacionActual = ubicacionActual;
+                // Si tienes más datos de mundo que quieras guardar, puedes agregarlos aquí
+                // Por ejemplo: jugador.EstadoMundo = estadoMundo; // si existe esa propiedad
+                GuardaPersonaje.GuardarPersonaje(jugador);
+            }
+            else
+            {
+                Console.WriteLine("No hay personaje cargado para guardar.");
+            }
+        }
+    // ...existing code...
 
         // Método que encapsula el combate, usando la clase GeneradorEnemigos
         public void ComenzarCombate()
@@ -754,25 +997,71 @@ namespace MiJuegoRPG.Motor
         // Menú básico de rutas
         public void MostrarMenuRutas()
         {
-            Console.WriteLine("=== Menú de Rutas ===");
-            Console.WriteLine("1. Viajar a otra ubicación");
-            Console.WriteLine("2. Volver");
-            var opcion = Console.ReadLine();
-            switch (opcion)
+            // Mostrar sectores disponibles fuera de la ciudad
+            var sectores = mapa.ObtenerSectores();
+            // Buscar el sector actual por nombre
+            var sectorActual = sectores.Find(s => s.Nombre == ubicacionActual.Nombre);
+            List<PjDatos.SectorData> sectoresConectados = new List<PjDatos.SectorData>();
+            if (sectorActual != null && sectorActual.Conexiones != null)
             {
-                case "1":
-                    MostrarMenuViajar();
-                    break;
-                case "2":
-                    Console.WriteLine("Regresando...");
-                    break;
-                default:
-                    Console.WriteLine("Opción no válida.");
-                    break;
+                foreach (var id in sectorActual.Conexiones)
+                {
+                    var conectado = sectores.Find(s => s.Id == id);
+                    if (conectado != null)
+                        sectoresConectados.Add(conectado);
+                }
             }
-            Console.WriteLine("Presiona cualquier tecla para continuar...");
-            Console.ReadKey();
-            MostrarMenuPorUbicacion();
+            if (sectoresConectados.Count == 0)
+            {
+                Console.WriteLine("No hay sectores conectados disponibles.");
+                Console.WriteLine("Pulsa cualquier tecla para volver.");
+                Console.ReadKey();
+                return;
+            }
+            bool volver = false;
+            while (!volver)
+            {
+                // Console.Clear();
+                Console.WriteLine("=== Menú de Rutas ===");
+                Console.WriteLine("Sectores conectados:");
+                for (int i = 0; i < sectoresConectados.Count; i++)
+                {
+                    var s = sectoresConectados[i];
+                    Console.WriteLine($"{i + 1}. {s.Nombre} - {s.Descripcion}");
+                }
+                Console.WriteLine("0. Volver");
+                Console.Write("Selecciona el sector al que deseas viajar: ");
+                string opcion = Console.ReadLine() ?? "0";
+                if (opcion == "0")
+                {
+                    volver = true;
+                    break;
+                }
+                if (int.TryParse(opcion, out int idx) && idx > 0 && idx <= sectoresConectados.Count)
+                {
+                    var destino = sectoresConectados[idx - 1];
+                    ubicacionActual = new Ubicacion
+                    {
+                        Nombre = destino.Nombre,
+                        Tipo = destino.Tipo,
+                        Descripcion = destino.Descripcion
+                    };
+                    Console.WriteLine($"Te has movido a: {destino.Nombre}");
+                    Console.WriteLine(destino.Descripcion);
+                    Console.WriteLine("Pulsa cualquier tecla para continuar...");
+                    Console.ReadKey();
+                    volver = true;
+                }
+                else
+                {
+                    Console.WriteLine("Opción no válida.");
+                    Console.WriteLine("Pulsa cualquier tecla para volver.");
+                    Console.ReadKey();
+                }
+                // Al terminar, simplemente regresar al flujo del menú principal
+                MostrarMenuPorUbicacion(ref volver);
+            }
         }
     }
 }
+        // Menú de recolección fuera de ciudad

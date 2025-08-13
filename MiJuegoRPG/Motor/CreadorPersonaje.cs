@@ -25,7 +25,7 @@ namespace MiJuegoRPG.Motor  // Debe ser este espacio de nombres
                 {
                     var dir = Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory);
                     string rutaProyecto = dir?.Parent?.Parent?.FullName ?? AppDomain.CurrentDomain.BaseDirectory;
-                    rutaArchivo = Path.Combine(rutaProyecto, "MiJuegoRPG", "PjDatos", "Saves.json");
+                    rutaArchivo = Path.Combine(rutaProyecto, "PjDatos", "PjGuardados", "Grid.json");
                 }
 
                 // Crear directorio si no existe

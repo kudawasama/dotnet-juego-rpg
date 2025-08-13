@@ -1,4 +1,15 @@
 {
+  "UbicacionActual": {
+    "Id": "",
+    "Nombre": "Paso Norte de Chaos Mountains",
+    "Tipo": "Paso",
+    "Descripcion": "Paso monta\u00F1oso al norte, con vistas y peligros naturales.",
+    "Rutas": [],
+    "EventosPosibles": [],
+    "Desbloqueada": false,
+    "Visitada": false,
+    "Requisitos": {}
+  },
   "Estadisticas": {
     "Critico": 0,
     "Evasion": 0,
@@ -42,13 +53,14 @@
   "Nombre": "Grid",
   "Clase": {
     "Nombre": "Sin clase",
+    "Descripcion": "",
     "Atributos": {
       "Fuerza": 5,
       "Destreza": 5,
       "Vitalidad": 5,
       "Agilidad": 5,
       "Suerte": 5,
-      "Defensa": 0,
+      "Defensa": 5,
       "Resistencia": 5,
       "Sabidur\u00EDa": 5,
       "Inteligencia": 5,
@@ -71,9 +83,9 @@
       "Energia": 50,
       "Carga": 25,
       "Da\u00F1o": 0.1,
-      "DefensaFisica": 0.05,
+      "DefensaFisica": 0.1,
       "PoderOfensivoFisico": 0.1,
-      "PoderDefensivoFisico": 0.05,
+      "PoderDefensivoFisico": 0.1,
       "PoderMagico": 0.1,
       "DefensaMagica": 0.1,
       "RegeneracionMana": 0.05,
@@ -98,10 +110,170 @@
       "PoderDeManipulacion": 0
     }
   },
-  "Vida": 100,
+  "Vida": 90,
   "VidaMaxima": 100,
   "Inventario": {
-    "NuevosObjetos": [],
+    "NuevosObjetos": [
+      {
+        "Nombre": "Hierba Curativa",
+        "Rareza": 2,
+        "Categoria": "Material",
+        "TipoObjeto": "Material"
+      },
+      {
+        "TipoObjeto": "Arma",
+        "Da\u00F1o": 5,
+        "Nivel": 1,
+        "Nombre": "Espada Misteriosa",
+        "Rareza": 2,
+        "Categoria": "UnaMano",
+        "TipoObjeto": "Arma"
+      },
+      {
+        "Nombre": "Flor Azul",
+        "Rareza": 2,
+        "Categoria": "Material",
+        "TipoObjeto": "Material"
+      },
+      {
+        "Nombre": "Seta Roja",
+        "Rareza": 2,
+        "Categoria": "Material",
+        "TipoObjeto": "Material"
+      },
+      {
+        "Nombre": "Hierba Curativa",
+        "Rareza": 2,
+        "Categoria": "Material",
+        "TipoObjeto": "Material"
+      },
+      {
+        "Nombre": "Ra\u00EDz M\u00E1gica",
+        "Rareza": 2,
+        "Categoria": "Material",
+        "TipoObjeto": "Material"
+      },
+      {
+        "Nombre": "Seta Roja",
+        "Rareza": 2,
+        "Categoria": "Material",
+        "TipoObjeto": "Material"
+      },
+      {
+        "Nombre": "Flor Azul",
+        "Rareza": 2,
+        "Categoria": "Material",
+        "TipoObjeto": "Material"
+      },
+      {
+        "Nombre": "Seta Roja",
+        "Rareza": 2,
+        "Categoria": "Material",
+        "TipoObjeto": "Material"
+      },
+      {
+        "Nombre": "Seta Roja",
+        "Rareza": 2,
+        "Categoria": "Material",
+        "TipoObjeto": "Material"
+      },
+      {
+        "Nombre": "Hierba Curativa",
+        "Rareza": 2,
+        "Categoria": "Material",
+        "TipoObjeto": "Material"
+      },
+      {
+        "Nombre": "Ra\u00EDz M\u00E1gica",
+        "Rareza": 2,
+        "Categoria": "Material",
+        "TipoObjeto": "Material"
+      },
+      {
+        "Nombre": "Ra\u00EDz M\u00E1gica",
+        "Rareza": 2,
+        "Categoria": "Material",
+        "TipoObjeto": "Material"
+      },
+      {
+        "Nombre": "Seta Roja",
+        "Rareza": 2,
+        "Categoria": "Material",
+        "TipoObjeto": "Material"
+      },
+      {
+        "Nombre": "Seta Roja",
+        "Rareza": 2,
+        "Categoria": "Material",
+        "TipoObjeto": "Material"
+      },
+      {
+        "Nombre": "Seta Roja",
+        "Rareza": 2,
+        "Categoria": "Material",
+        "TipoObjeto": "Material"
+      },
+      {
+        "Nombre": "Hierba Curativa",
+        "Rareza": 2,
+        "Categoria": "Material",
+        "TipoObjeto": "Material"
+      },
+      {
+        "Nombre": "Ra\u00EDz M\u00E1gica",
+        "Rareza": 2,
+        "Categoria": "Material",
+        "TipoObjeto": "Material"
+      },
+      {
+        "Nombre": "Hierba Curativa",
+        "Rareza": 2,
+        "Categoria": "Material",
+        "TipoObjeto": "Material"
+      },
+      {
+        "Nombre": "Ra\u00EDz M\u00E1gica",
+        "Rareza": 2,
+        "Categoria": "Material",
+        "TipoObjeto": "Material"
+      },
+      {
+        "Nombre": "Ra\u00EDz M\u00E1gica",
+        "Rareza": 2,
+        "Categoria": "Material",
+        "TipoObjeto": "Material"
+      },
+      {
+        "Nombre": "Ra\u00EDz M\u00E1gica",
+        "Rareza": 2,
+        "Categoria": "Material",
+        "TipoObjeto": "Material"
+      },
+      {
+        "Nombre": "Seta Roja",
+        "Rareza": 2,
+        "Categoria": "Material",
+        "TipoObjeto": "Material"
+      },
+      {
+        "Nombre": "Ra\u00EDz M\u00E1gica",
+        "Rareza": 2,
+        "Categoria": "Material",
+        "TipoObjeto": "Material"
+      },
+      {
+        "Nombre": "Seta Roja",
+        "Rareza": 2,
+        "Categoria": "Material",
+        "TipoObjeto": "Material"
+      },
+      {
+        "Nombre": "Seta Roja",
+        "Rareza": 2,
+        "Categoria": "Material",
+        "TipoObjeto": "Material"
+      }
+    ],
     "Objetos": [],
     "Equipo": {
       "Arma": null,
@@ -115,14 +287,14 @@
       "Accesorio2": null
     }
   },
-  "VidaActual": 100,
+  "VidaActual": 90,
   "Atributos": {
     "Fuerza": 5,
     "Destreza": 5,
     "Vitalidad": 5,
     "Agilidad": 5,
     "Suerte": 5,
-    "Defensa": 0,
+    "Defensa": 5,
     "Resistencia": 5,
     "Sabidur\u00EDa": 5,
     "Inteligencia": 5,
@@ -139,7 +311,7 @@
     "Vitalidad": 5,
     "Agilidad": 5,
     "Suerte": 5,
-    "Defensa": 0,
+    "Defensa": 5,
     "Resistencia": 5,
     "Sabidur\u00EDa": 5,
     "Inteligencia": 5,
@@ -152,15 +324,16 @@
   },
   "Titulo": "Novato",
   "ClaseDesbloqueada": "Sin clase",
-  "ExpFuerza": 0.0006000000000000009,
+  "ExpFuerza": 0,
   "ExpMagia": 0,
-  "ExpAgilidad": 0,
-  "ExpInteligencia": 0,
+  "ExpAgilidad": 0.2,
+  "ExpInteligencia": 0.04625000000000002,
   "ExpResistencia": 0,
   "ExpDefensa": 0,
   "ExpVitalidad": 0,
   "ExpSuerte": 0,
-  "ExpDestreza": 0,
+  "ExpDestreza": 0.4,
+  "ExpPercepcion": 0.5700000000000003,
   "FuerzaExpRequerida": 1,
   "MagiaExpRequerida": 1,
   "AgilidadExpRequerida": 1,
@@ -170,11 +343,12 @@
   "VitalidadExpRequerida": 1,
   "SuerteExpRequerida": 1,
   "DestrezaExpRequerida": 1,
+  "PercepcionExpRequerida": 1,
   "Nivel": 1,
   "Experiencia": 0,
   "ExperienciaSiguienteNivel": 800,
   "Oro": 0,
-  "Defensa": 0,
+  "Defensa": 5,
   "EstaVivo": true,
   "Habilidades": {}
 }

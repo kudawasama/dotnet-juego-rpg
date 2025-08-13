@@ -9,6 +9,7 @@ namespace MiJuegoRPG.Personaje
 {
     public class Personaje : ICombatiente
     {
+        public MiJuegoRPG.Motor.Ubicacion? UbicacionActual { get; set; }
         // ...existing code...
         // Métodos de bonificadores y objetos equipados
         public double ObtenerBonificadorAtributo(string atributo)
@@ -127,26 +128,28 @@ namespace MiJuegoRPG.Personaje
     public string ClaseDesbloqueada { get; set; } = "Sin clase";
 
         // Experiencia por atributo
-        public double ExpFuerza { get; set; }
-        public double ExpMagia { get; set; }
-        public double ExpAgilidad { get; set; }
-        public double ExpInteligencia { get; set; }
-        public double ExpResistencia { get; set; }
-        public double ExpDefensa { get; set; }
-        public double ExpVitalidad { get; set; }
-        public double ExpSuerte { get; set; }
-        public double ExpDestreza { get; set; }
+    public double ExpFuerza { get; set; }
+    public double ExpMagia { get; set; }
+    public double ExpAgilidad { get; set; }
+    public double ExpInteligencia { get; set; }
+    public double ExpResistencia { get; set; }
+    public double ExpDefensa { get; set; }
+    public double ExpVitalidad { get; set; }
+    public double ExpSuerte { get; set; }
+    public double ExpDestreza { get; set; }
+    public double ExpPercepcion { get; set; }
 
         // Experiencia requerida para subir cada atributo
-        public double FuerzaExpRequerida { get; set; } = 1.0;
-        public double MagiaExpRequerida { get; set; } = 1.0;
-        public double AgilidadExpRequerida { get; set; } = 1.0;
-        public double InteligenciaExpRequerida { get; set; } = 1.0;
-        public double ResistenciaExpRequerida { get; set; } = 1.0;
-        public double DefensaExpRequerida { get; set; } = 1.0;
-        public double VitalidadExpRequerida { get; set; } = 1.0;
-        public double SuerteExpRequerida { get; set; } = 1.0;
-        public double DestrezaExpRequerida { get; set; } = 1.0;
+    public double FuerzaExpRequerida { get; set; } = 1.0;
+    public double MagiaExpRequerida { get; set; } = 1.0;
+    public double AgilidadExpRequerida { get; set; } = 1.0;
+    public double InteligenciaExpRequerida { get; set; } = 1.0;
+    public double ResistenciaExpRequerida { get; set; } = 1.0;
+    public double DefensaExpRequerida { get; set; } = 1.0;
+    public double VitalidadExpRequerida { get; set; } = 1.0;
+    public double SuerteExpRequerida { get; set; } = 1.0;
+    public double DestrezaExpRequerida { get; set; } = 1.0;
+    public double PercepcionExpRequerida { get; set; } = 1.0;
 
         // Sistema de Experiencia
         public int Nivel { get; set; }

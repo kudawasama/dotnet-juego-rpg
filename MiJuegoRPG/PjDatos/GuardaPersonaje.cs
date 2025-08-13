@@ -27,12 +27,19 @@ namespace MiJuegoRPG.PjDatos
             // Eliminado: ya no se usa RUTA_POR_DEFECTO
             
             // Guardar cada personaje en su propio archivo .json
-            string rutaCarpeta = "/workspaces/dotnet-juego-rpg/PjDatos/PjGuardados";
+                string rutaCarpeta = "c:\\Users\\ASUS\\OneDrive\\Documentos\\GitHub\\dotnet-juego-rpg\\PjDatos\\PjGuardados";
             if (!Directory.Exists(rutaCarpeta))
                 Directory.CreateDirectory(rutaCarpeta);
             string rutaArchivoFinal = Path.Combine(rutaCarpeta, personaje.Nombre + ".json");
             var opciones = new JsonSerializerOptions { WriteIndented = true };
             opciones.Converters.Add(new MiJuegoRPG.Objetos.ObjetoJsonConverter());
+            // Serializar siempre la ubicación actual
+            if (personaje.UbicacionActual == null)
+            {
+                var bairan = MiJuegoRPG.Motor.Juego.InstanciaActual?.estadoMundo.Ubicaciones.Find(u => u.Nombre == "Ciudad de Bairan");
+                if (bairan != null)
+                    personaje.UbicacionActual = bairan;
+            }
             string json = JsonSerializer.Serialize(personaje, opciones);
             File.WriteAllText(rutaArchivoFinal, json);
             Console.WriteLine($"Personaje '{personaje.Nombre}' guardado en: {rutaArchivoFinal}");
@@ -44,7 +51,7 @@ namespace MiJuegoRPG.PjDatos
             // Eliminado: ya no se usa RUTA_POR_DEFECTO
             
             // Cargar todos los archivos .json en PjGuardados
-            string rutaCarpeta = "/workspaces/dotnet-juego-rpg/PjDatos/PjGuardados";
+                string rutaCarpeta = "c:\\Users\\ASUS\\OneDrive\\Documentos\\GitHub\\dotnet-juego-rpg\\PjDatos\\PjGuardados";
             List<MiJuegoRPG.Personaje.Personaje> personajes = new List<MiJuegoRPG.Personaje.Personaje>();
             if (Directory.Exists(rutaCarpeta))
             {
@@ -58,7 +65,16 @@ namespace MiJuegoRPG.PjDatos
                         opciones.Converters.Add(new MiJuegoRPG.Objetos.ObjetoJsonConverter());
                         var personaje = JsonSerializer.Deserialize<MiJuegoRPG.Personaje.Personaje>(json, opciones);
                         if (personaje != null)
+                        {
+                            // Si no tiene ubicación, asignar Bairan
+                            if (personaje.UbicacionActual == null)
+                            {
+                                var bairan = MiJuegoRPG.Motor.Juego.InstanciaActual?.estadoMundo.Ubicaciones.Find(u => u.Nombre == "Ciudad de Bairan");
+                                if (bairan != null)
+                                    personaje.UbicacionActual = bairan;
+                            }
                             personajes.Add(personaje);
+                        }
                     }
                     catch (Exception ex)
                     {
