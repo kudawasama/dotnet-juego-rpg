@@ -25,26 +25,35 @@ namespace MiJuegoRPG.Personaje
 
     public class Inventario : NewBaseType
     {
-    public List<Objeto> NuevosObjetos { get; set; }
+    public List<ObjetoConCantidad> NuevosObjetos { get; set; } = new List<ObjetoConCantidad>();
     public List<Objeto> Objetos { get; set; } = new List<Objeto>();
     public Equipo Equipo { get; set; } = new Equipo();
-        public void AgregarObjeto(Objeto objeto)
+        public void AgregarObjeto(Objeto objeto, int cantidad = 1)
         {
-            NuevosObjetos.Add(objeto);
-            Console.WriteLine($"{objeto.Nombre} ha sido agregado al inventario.");
+            var existente = NuevosObjetos.FirstOrDefault(o => o.Objeto.Nombre == objeto.Nombre && o.Objeto.GetType() == objeto.GetType());
+            if (existente != null)
+            {
+                existente.Cantidad += cantidad;
+                Console.WriteLine($"Se apiló {cantidad}x {objeto.Nombre} (Total: {existente.Cantidad})");
+            }
+            else
+            {
+                NuevosObjetos.Add(new ObjetoConCantidad(objeto, cantidad));
+                Console.WriteLine($"{objeto.Nombre} ha sido agregado al inventario.");
+            }
         }
 
         public Inventario()
         {
-            NuevosObjetos = new List<Objeto>();
+            NuevosObjetos = new List<ObjetoConCantidad>();
         }
 
         public void MostrarInventario()
         {
             Console.WriteLine("Inventario:");
-            foreach (var obj in NuevosObjetos)
+            foreach (var objCant in NuevosObjetos)
             {
-                Console.WriteLine($"- {obj.Nombre}");
+                Console.WriteLine($"- {objCant.Objeto.Nombre} x{objCant.Cantidad}");
             }
         }
     }

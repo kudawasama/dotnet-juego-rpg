@@ -86,5 +86,17 @@
       "¿Buscas algo especial?"
     ],
     "Misiones": ["RAV-COM-001"]
+  },
+  {
+    "Id": "BAI-NEW-001",
+    "Nombre": "Elena, la del Inicio",
+    "Tipo": "Aventurera",
+    "Ubicacion": "Ciudad de Bairan",
+    "Dialogos": [
+      "¡Hola! Estoy aqui para darte la unica ayuda que necesitas para valerte por ti mismo.",
+      "¿Que arma te gustaria tener?"
+    ],
+    "Recompensas": ["Espada de Madera", "Baculo de Madera", "Arco de Madera", "Daga de Madera", "Hacha de Madera", "Martillo de Madera"],
+    "Misiones": []
   }
 ]

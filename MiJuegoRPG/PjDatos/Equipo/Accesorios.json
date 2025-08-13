@@ -1,0 +1,20 @@
+[
+  {
+    "Nombre": "Anillo de Poder",
+    "Rareza": "Raro",
+    "Categoria": "Accesorio",
+    "TipoObjeto": "Accesorio",
+    "BonificacionAtaque": 4,
+    "Perfeccion": 77,
+    "Nivel": 1
+  },
+  {
+    "Nombre": "Anillo de Proteccion",
+    "Rareza": "Raro",
+    "Categoria": "Accesorio",
+    "TipoObjeto": "Accesorio",
+    "BonificacionDefensa": 5,
+    "Perfeccion": 81,
+    "Nivel": 2
+  }
+]

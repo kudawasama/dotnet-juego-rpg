@@ -251,4 +251,20 @@
     "Condiciones": [],
     "SiguienteMisionId": null
   }
+  ,
+  {
+    "Id": "BAI-INI-001",
+    "Nombre": "Ayuda a Elena",
+    "Descripcion": "Elena te da tu primera arma",
+    "UbicacionNPC": "Entrada de Bairan",
+    "Estado": "No iniciada",
+    "Requisitos": [],
+    "Recompensas": ["Espada de Madera", "Baculo de Madera", "Arco de Madera", "Daga de Madera", "Hacha de Madera", "Martillo de Madera"],
+    "ExpNivel": {"Inicio Bairan": 0.003},
+    "ExpAtributos": {},
+    "LineaMision": "Inicio Bairan",
+    "Condiciones": [],
+    "SiguienteMisionId": null 
+    
+  }
 ]

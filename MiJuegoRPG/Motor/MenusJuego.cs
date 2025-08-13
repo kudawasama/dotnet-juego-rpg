@@ -267,15 +267,115 @@ namespace MiJuegoRPG.Motor
             }
             Console.WriteLine("--- Equipo Equipado ---");
             var eq = juego.jugador.Inventario.Equipo;
-            Console.WriteLine($"Arma: {eq.Arma?.Nombre ?? "Sin equipar"}");
-            Console.WriteLine($"Casco: {eq.Casco?.Nombre ?? "Sin equipar"}");
-            Console.WriteLine($"Armadura: {eq.Armadura?.Nombre ?? "Sin equipar"}");
-            Console.WriteLine($"Pantalón: {eq.Pantalon?.Nombre ?? "Sin equipar"}");
-            Console.WriteLine($"Zapatos: {eq.Zapatos?.Nombre ?? "Sin equipar"}");
-            Console.WriteLine($"Collar: {eq.Collar?.Nombre ?? "Sin equipar"}");
-            Console.WriteLine($"Cinturón: {eq.Cinturon?.Nombre ?? "Sin equipar"}");
-            Console.WriteLine($"Accesorio 1: {eq.Accesorio1?.Nombre ?? "Sin equipar"}");
-            Console.WriteLine($"Accesorio 2: {eq.Accesorio2?.Nombre ?? "Sin equipar"}");
+            if (eq.Arma != null)
+            {
+                Console.WriteLine($"Arma: {eq.Arma.Nombre}");
+                if (eq.Arma is MiJuegoRPG.Objetos.Arma arma)
+                {
+                    Console.WriteLine($"  Daño: {arma.Daño}");
+                    Console.WriteLine($"  Rareza: {arma.Rareza}");
+                    Console.WriteLine($"  Perfección: {arma.Perfeccion}");
+                }
+            }
+            else
+            {
+                Console.WriteLine("Arma: Sin equipar");
+            }
+            // Casco
+            if (eq.Casco != null)
+            {
+                Console.WriteLine($"Casco: {eq.Casco.Nombre}");
+                if (eq.Casco is MiJuegoRPG.Objetos.Casco casco)
+                {
+                    Console.WriteLine($"  Rareza: {casco.Rareza}");
+                    Console.WriteLine($"  Perfección: {casco.Perfeccion}");
+                }
+            }
+            else Console.WriteLine("Casco: Sin equipar");
+
+            // Armadura
+            if (eq.Armadura != null)
+            {
+                Console.WriteLine($"Armadura: {eq.Armadura.Nombre}");
+                if (eq.Armadura is MiJuegoRPG.Objetos.Armadura armadura)
+                {
+                    Console.WriteLine($"  Rareza: {armadura.Rareza}");
+                    Console.WriteLine($"  Perfección: {armadura.Perfeccion}");
+                }
+            }
+            else Console.WriteLine("Armadura: Sin equipar");
+
+            // Pantalón
+            if (eq.Pantalon != null)
+            {
+                Console.WriteLine($"Pantalón: {eq.Pantalon.Nombre}");
+                if (eq.Pantalon is MiJuegoRPG.Objetos.Pantalon pantalon)
+                {
+                    Console.WriteLine($"  Rareza: {pantalon.Rareza}");
+                    Console.WriteLine($"  Perfección: {pantalon.Perfeccion}");
+                }
+            }
+            else Console.WriteLine("Pantalón: Sin equipar");
+
+            // Zapatos
+            if (eq.Zapatos != null)
+            {
+                Console.WriteLine($"Zapatos: {eq.Zapatos.Nombre}");
+                if (eq.Zapatos is MiJuegoRPG.Objetos.Botas botas)
+                {
+                    Console.WriteLine($"  Rareza: {botas.Rareza}");
+                    Console.WriteLine($"  Perfección: {botas.Perfeccion}");
+                }
+            }
+            else Console.WriteLine("Zapatos: Sin equipar");
+
+            // Collar
+            if (eq.Collar != null)
+            {
+                Console.WriteLine($"Collar: {eq.Collar.Nombre}");
+                if (eq.Collar is MiJuegoRPG.Objetos.Collar collar)
+                {
+                    Console.WriteLine($"  Rareza: {collar.Rareza}");
+                    Console.WriteLine($"  Perfección: {collar.Perfeccion}");
+                }
+            }
+            else Console.WriteLine("Collar: Sin equipar");
+
+            // Cinturón
+            if (eq.Cinturon != null)
+            {
+                Console.WriteLine($"Cinturón: {eq.Cinturon.Nombre}");
+                if (eq.Cinturon is MiJuegoRPG.Objetos.Cinturon cinturon)
+                {
+                    Console.WriteLine($"  Rareza: {cinturon.Rareza}");
+                    Console.WriteLine($"  Perfección: {cinturon.Perfeccion}");
+                }
+            }
+            else Console.WriteLine("Cinturón: Sin equipar");
+
+            // Accesorio 1
+            if (eq.Accesorio1 != null)
+            {
+                Console.WriteLine($"Accesorio 1: {eq.Accesorio1.Nombre}");
+                if (eq.Accesorio1 is MiJuegoRPG.Objetos.Accesorio acc1)
+                {
+                    Console.WriteLine($"  Rareza: {acc1.Rareza}");
+                    Console.WriteLine($"  Perfección: {acc1.Perfeccion}");
+                }
+            }
+            else Console.WriteLine("Accesorio 1: Sin equipar");
+
+            // Accesorio 2
+            if (eq.Accesorio2 != null)
+            {
+                Console.WriteLine($"Accesorio 2: {eq.Accesorio2.Nombre}");
+                if (eq.Accesorio2 is MiJuegoRPG.Objetos.Accesorio acc2)
+                {
+                    Console.WriteLine($"  Rareza: {acc2.Rareza}");
+                    Console.WriteLine($"  Perfección: {acc2.Perfeccion}");
+                }
+            }
+            else Console.WriteLine("Accesorio 2: Sin equipar");
         }
 
         private void MostrarInformacionPersonaje()
@@ -294,17 +394,28 @@ namespace MiJuegoRPG.Motor
             Console.WriteLine("--- Atributos ---");
             foreach (var atributo in pj.AtributosBase.GetType().GetProperties())
             {
-                var valorBase = atributo.GetValue(pj.AtributosBase);
-                var valorTotal = atributo.GetValue(pj.Atributos);
-                Console.WriteLine($"{atributo.Name}: {valorTotal} ({valorBase} base)");
+                var nombre = atributo.Name;
+                var valorBase = Convert.ToDouble(atributo.GetValue(pj.AtributosBase));
+                var bonif = pj.ObtenerBonificadorAtributo(nombre);
+                var total = valorBase + bonif;
+                if (bonif != 0)
+                    Console.WriteLine($"{nombre}: {total} ({valorBase} base + {bonif} equipo)");
+                else
+                    Console.WriteLine($"{nombre}: {total} ({valorBase} base)");
             }
             Console.WriteLine("--- Estadísticas ---");
             if (pj.Estadisticas != null)
             {
                 foreach (var stat in pj.Estadisticas.GetType().GetProperties())
                 {
-                    var valor = stat.GetValue(pj.Estadisticas);
-                    Console.WriteLine($"{stat.Name}: {valor}");
+                    var nombre = stat.Name;
+                    var valorBase = Convert.ToDouble(stat.GetValue(pj.Estadisticas));
+                    var bonif = pj.ObtenerBonificadorEstadistica(nombre);
+                    var total = valorBase + bonif;
+                    if (bonif != 0)
+                        Console.WriteLine($"{nombre}: {total} ({valorBase} base + {bonif} equipo)");
+                    else
+                        Console.WriteLine($"{nombre}: {total} ({valorBase} base)");
                 }
             }
         }

@@ -768,42 +768,39 @@ namespace MiJuegoRPG.Motor
         // Revisa si algún atributo sube por experiencia acumulada
         private void RevisarAtributosPorExperiencia(MiJuegoRPG.Personaje.Personaje pj)
         {
-            if (pj.ExpFuerza >= pj.FuerzaExpRequerida)
+            // Ahora los atributos suben en fracciones, no hay experiencia separada
+            // Por compatibilidad, suma la experiencia acumulada al atributo y reinicia la experiencia
+            if (pj.ExpFuerza > 0)
             {
-                pj.AtributosBase.Fuerza += 1;
+                pj.AtributosBase.Fuerza += pj.ExpFuerza;
                 pj.ExpFuerza = 0;
-                Console.WriteLine("¡Tu Fuerza ha aumentado!");
             }
-            if (pj.ExpDestreza >= pj.DestrezaExpRequerida)
+            if (pj.ExpDestreza > 0)
             {
-                pj.AtributosBase.Destreza += 1;
+                pj.AtributosBase.Destreza += pj.ExpDestreza;
                 pj.ExpDestreza = 0;
-                Console.WriteLine("¡Tu Destreza ha aumentado!");
             }
-            if (pj.ExpAgilidad >= pj.AgilidadExpRequerida)
+            if (pj.ExpAgilidad > 0)
             {
-                pj.AtributosBase.Agilidad += 1;
+                pj.AtributosBase.Agilidad += pj.ExpAgilidad;
                 pj.ExpAgilidad = 0;
-                Console.WriteLine("¡Tu Agilidad ha aumentado!");
             }
-            if (pj.ExpResistencia >= pj.ResistenciaExpRequerida)
+            if (pj.ExpResistencia > 0)
             {
-                pj.AtributosBase.Resistencia += 1;
+                pj.AtributosBase.Resistencia += pj.ExpResistencia;
                 pj.ExpResistencia = 0;
-                Console.WriteLine("¡Tu Resistencia ha aumentado!");
             }
-            if (pj.ExpInteligencia >= pj.InteligenciaExpRequerida)
+            if (pj.ExpInteligencia > 0)
             {
-                pj.AtributosBase.Inteligencia += 1;
+                pj.AtributosBase.Inteligencia += pj.ExpInteligencia;
                 pj.ExpInteligencia = 0;
-                Console.WriteLine("¡Tu Inteligencia ha aumentado!");
             }
-            if (pj.ExpPercepcion >= 1.0)
+            if (pj.ExpPercepcion > 0)
             {
-                pj.AtributosBase.Percepcion += 1;
+                pj.AtributosBase.Percepcion += pj.ExpPercepcion;
                 pj.ExpPercepcion = 0;
-                Console.WriteLine("¡Tu Percepción ha aumentado!");
             }
+            // Si quieres que otros atributos suban igual, agrégalos aquí
         }
         public void RealizarAccionRecoleccion(string tipo)
         {

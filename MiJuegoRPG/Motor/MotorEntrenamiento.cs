@@ -54,7 +54,7 @@ namespace MiJuegoRPG.Motor
                             juego.jugador?.Entrenar(atributo);
                             DateTime tiempoActual = juego.FechaInicio.AddSeconds(juego.MinutosMundo * 60 + s); 
                             Console.Clear();
-                            int valorBase = 0;
+                            double valorBase = 0.0;
                             if (juego.jugador != null)
                             {
                                 switch (atributo.ToLower())
@@ -62,7 +62,7 @@ namespace MiJuegoRPG.Motor
                                     case "fuerza": valorBase = juego.jugador.AtributosBase.Fuerza; break;
                                     case "inteligencia": valorBase = juego.jugador.AtributosBase.Inteligencia; break;
                                     case "destreza": valorBase = juego.jugador.AtributosBase.Destreza; break;
-                                    case "magia": valorBase = (int)juego.jugador.ExpMagia; break;
+                                    case "magia": valorBase = juego.jugador.ExpMagia; break;
                                     case "suerte": valorBase = juego.jugador.AtributosBase.Suerte; break;
                                     case "defensa": valorBase = juego.jugador.AtributosBase.Defensa; break;
                                     case "vitalidad": valorBase = juego.jugador.AtributosBase.Vitalidad; break;

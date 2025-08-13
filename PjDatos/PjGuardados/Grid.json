@@ -1,12 +1,41 @@
 {
   "UbicacionActual": {
-    "Id": "",
-    "Nombre": "Paso Norte de Chaos Mountains",
-    "Tipo": "Paso",
-    "Descripcion": "Paso monta\u00F1oso al norte, con vistas y peligros naturales.",
-    "Rutas": [],
-    "EventosPosibles": [],
-    "Desbloqueada": false,
+    "Id": "bairan",
+    "Nombre": "Ciudad de Bairan",
+    "Tipo": "Ciudad",
+    "Descripcion": "Ciudad fortificada en las monta\u00F1as del caos, famosa por sus minas y guerreros.",
+    "Rutas": [
+      {
+        "Nombre": "Camino al Bosque Oscuro",
+        "Destino": "Bosque Oscuro",
+        "Desbloqueada": true,
+        "Requisitos": {},
+        "Estado": "Insegura"
+      },
+      {
+        "Nombre": "Camino al R\u00EDo Plateado",
+        "Destino": "R\u00EDo Plateado",
+        "Desbloqueada": false,
+        "Requisitos": {
+          "Barco": true
+        },
+        "Estado": "Insegura"
+      },
+      {
+        "Nombre": "Camino a Ciudad Bruma",
+        "Destino": "Ciudad Bruma",
+        "Desbloqueada": false,
+        "Requisitos": {},
+        "Estado": "Insegura"
+      }
+    ],
+    "EventosPosibles": [
+      "Tienda",
+      "Escuela de Entrenamiento",
+      "Explorar sector",
+      "Descansar en posada"
+    ],
+    "Desbloqueada": true,
     "Visitada": false,
     "Requisitos": {}
   },
@@ -51,229 +80,11 @@
   "MisionesActivas": [],
   "MisionesCompletadas": [],
   "Nombre": "Grid",
-  "Clase": {
-    "Nombre": "Sin clase",
-    "Descripcion": "",
-    "Atributos": {
-      "Fuerza": 5,
-      "Destreza": 5,
-      "Vitalidad": 5,
-      "Agilidad": 5,
-      "Suerte": 5,
-      "Defensa": 5,
-      "Resistencia": 5,
-      "Sabidur\u00EDa": 5,
-      "Inteligencia": 5,
-      "Fe": 5,
-      "Percepcion": 5,
-      "Persuasion": 5,
-      "Liderazgo": 5,
-      "Carisma": 5,
-      "Voluntad": 5
-    },
-    "Estadisticas": {
-      "Critico": 0.1,
-      "Evasion": 0.1,
-      "Velocidad": 0.05,
-      "Ataque": 0.1,
-      "Regeneracion": 0.05,
-      "Resistencia": 0.1,
-      "Salud": 50,
-      "Mana": 50,
-      "Energia": 50,
-      "Carga": 25,
-      "Da\u00F1o": 0.1,
-      "DefensaFisica": 0.1,
-      "PoderOfensivoFisico": 0.1,
-      "PoderDefensivoFisico": 0.1,
-      "PoderMagico": 0.1,
-      "DefensaMagica": 0.1,
-      "RegeneracionMana": 0.05,
-      "PoderDefensivoMagico": 0.1,
-      "PoderOfensivoMagico": 0.1,
-      "PoderEspiritual": 0.1,
-      "ResistenciaMagica": 0.1,
-      "AfinidadElemental": 0.05,
-      "PoderElemental": 0.1,
-      "ResistenciaElemental": 0.1,
-      "PoderCurativo": 0.1,
-      "PoderDeControl": 0.1,
-      "PoderDeSoporte": 0.1,
-      "PoderDeInvocacion": 0.1,
-      "PoderDeTransmutacion": 0.1,
-      "PoderDeAlteracion": 0.1,
-      "PoderDeIlusion": 0.1,
-      "PoderDeConjuracion": 0.1,
-      "PoderDeDestruccion": 0.1,
-      "PoderDeRestauracion": 0.1,
-      "PoderDeTransporte": 0.1,
-      "PoderDeManipulacion": 0
-    }
-  },
-  "Vida": 90,
+  "Clase": null,
+  "Vida": 100,
   "VidaMaxima": 100,
   "Inventario": {
-    "NuevosObjetos": [
-      {
-        "Nombre": "Hierba Curativa",
-        "Rareza": 2,
-        "Categoria": "Material",
-        "TipoObjeto": "Material"
-      },
-      {
-        "TipoObjeto": "Arma",
-        "Da\u00F1o": 5,
-        "Nivel": 1,
-        "Nombre": "Espada Misteriosa",
-        "Rareza": 2,
-        "Categoria": "UnaMano",
-        "TipoObjeto": "Arma"
-      },
-      {
-        "Nombre": "Flor Azul",
-        "Rareza": 2,
-        "Categoria": "Material",
-        "TipoObjeto": "Material"
-      },
-      {
-        "Nombre": "Seta Roja",
-        "Rareza": 2,
-        "Categoria": "Material",
-        "TipoObjeto": "Material"
-      },
-      {
-        "Nombre": "Hierba Curativa",
-        "Rareza": 2,
-        "Categoria": "Material",
-        "TipoObjeto": "Material"
-      },
-      {
-        "Nombre": "Ra\u00EDz M\u00E1gica",
-        "Rareza": 2,
-        "Categoria": "Material",
-        "TipoObjeto": "Material"
-      },
-      {
-        "Nombre": "Seta Roja",
-        "Rareza": 2,
-        "Categoria": "Material",
-        "TipoObjeto": "Material"
-      },
-      {
-        "Nombre": "Flor Azul",
-        "Rareza": 2,
-        "Categoria": "Material",
-        "TipoObjeto": "Material"
-      },
-      {
-        "Nombre": "Seta Roja",
-        "Rareza": 2,
-        "Categoria": "Material",
-        "TipoObjeto": "Material"
-      },
-      {
-        "Nombre": "Seta Roja",
-        "Rareza": 2,
-        "Categoria": "Material",
-        "TipoObjeto": "Material"
-      },
-      {
-        "Nombre": "Hierba Curativa",
-        "Rareza": 2,
-        "Categoria": "Material",
-        "TipoObjeto": "Material"
-      },
-      {
-        "Nombre": "Ra\u00EDz M\u00E1gica",
-        "Rareza": 2,
-        "Categoria": "Material",
-        "TipoObjeto": "Material"
-      },
-      {
-        "Nombre": "Ra\u00EDz M\u00E1gica",
-        "Rareza": 2,
-        "Categoria": "Material",
-        "TipoObjeto": "Material"
-      },
-      {
-        "Nombre": "Seta Roja",
-        "Rareza": 2,
-        "Categoria": "Material",
-        "TipoObjeto": "Material"
-      },
-      {
-        "Nombre": "Seta Roja",
-        "Rareza": 2,
-        "Categoria": "Material",
-        "TipoObjeto": "Material"
-      },
-      {
-        "Nombre": "Seta Roja",
-        "Rareza": 2,
-        "Categoria": "Material",
-        "TipoObjeto": "Material"
-      },
-      {
-        "Nombre": "Hierba Curativa",
-        "Rareza": 2,
-        "Categoria": "Material",
-        "TipoObjeto": "Material"
-      },
-      {
-        "Nombre": "Ra\u00EDz M\u00E1gica",
-        "Rareza": 2,
-        "Categoria": "Material",
-        "TipoObjeto": "Material"
-      },
-      {
-        "Nombre": "Hierba Curativa",
-        "Rareza": 2,
-        "Categoria": "Material",
-        "TipoObjeto": "Material"
-      },
-      {
-        "Nombre": "Ra\u00EDz M\u00E1gica",
-        "Rareza": 2,
-        "Categoria": "Material",
-        "TipoObjeto": "Material"
-      },
-      {
-        "Nombre": "Ra\u00EDz M\u00E1gica",
-        "Rareza": 2,
-        "Categoria": "Material",
-        "TipoObjeto": "Material"
-      },
-      {
-        "Nombre": "Ra\u00EDz M\u00E1gica",
-        "Rareza": 2,
-        "Categoria": "Material",
-        "TipoObjeto": "Material"
-      },
-      {
-        "Nombre": "Seta Roja",
-        "Rareza": 2,
-        "Categoria": "Material",
-        "TipoObjeto": "Material"
-      },
-      {
-        "Nombre": "Ra\u00EDz M\u00E1gica",
-        "Rareza": 2,
-        "Categoria": "Material",
-        "TipoObjeto": "Material"
-      },
-      {
-        "Nombre": "Seta Roja",
-        "Rareza": 2,
-        "Categoria": "Material",
-        "TipoObjeto": "Material"
-      },
-      {
-        "Nombre": "Seta Roja",
-        "Rareza": 2,
-        "Categoria": "Material",
-        "TipoObjeto": "Material"
-      }
-    ],
+    "NuevosObjetos": [],
     "Objetos": [],
     "Equipo": {
       "Arma": null,
@@ -287,53 +98,53 @@
       "Accesorio2": null
     }
   },
-  "VidaActual": 90,
+  "VidaActual": 100,
   "Atributos": {
-    "Fuerza": 5,
-    "Destreza": 5,
-    "Vitalidad": 5,
-    "Agilidad": 5,
-    "Suerte": 5,
-    "Defensa": 5,
-    "Resistencia": 5,
-    "Sabidur\u00EDa": 5,
-    "Inteligencia": 5,
-    "Fe": 5,
-    "Percepcion": 5,
-    "Persuasion": 5,
-    "Liderazgo": 5,
-    "Carisma": 5,
-    "Voluntad": 5
+    "Fuerza": 0,
+    "Destreza": 0,
+    "Vitalidad": 0,
+    "Agilidad": 0,
+    "Suerte": 0,
+    "Defensa": 0,
+    "Resistencia": 0,
+    "Sabidur\u00EDa": 0,
+    "Inteligencia": 0,
+    "Fe": 0,
+    "Percepcion": 0,
+    "Persuasion": 0,
+    "Liderazgo": 0,
+    "Carisma": 0,
+    "Voluntad": 0
   },
   "AtributosBase": {
-    "Fuerza": 5,
-    "Destreza": 5,
-    "Vitalidad": 5,
-    "Agilidad": 5,
-    "Suerte": 5,
-    "Defensa": 5,
-    "Resistencia": 5,
-    "Sabidur\u00EDa": 5,
-    "Inteligencia": 5,
-    "Fe": 5,
-    "Percepcion": 5,
-    "Persuasion": 5,
-    "Liderazgo": 5,
-    "Carisma": 5,
-    "Voluntad": 5
+    "Fuerza": 0,
+    "Destreza": 0,
+    "Vitalidad": 0,
+    "Agilidad": 0,
+    "Suerte": 0,
+    "Defensa": 0,
+    "Resistencia": 0,
+    "Sabidur\u00EDa": 0,
+    "Inteligencia": 0,
+    "Fe": 0,
+    "Percepcion": 0,
+    "Persuasion": 0,
+    "Liderazgo": 0,
+    "Carisma": 0,
+    "Voluntad": 0
   },
-  "Titulo": "Novato",
+  "Titulo": "Sin t\u00EDtulo",
   "ClaseDesbloqueada": "Sin clase",
   "ExpFuerza": 0,
   "ExpMagia": 0,
-  "ExpAgilidad": 0.2,
-  "ExpInteligencia": 0.04625000000000002,
+  "ExpAgilidad": 0,
+  "ExpInteligencia": 0,
   "ExpResistencia": 0,
   "ExpDefensa": 0,
   "ExpVitalidad": 0,
   "ExpSuerte": 0,
-  "ExpDestreza": 0.4,
-  "ExpPercepcion": 0.5700000000000003,
+  "ExpDestreza": 0,
+  "ExpPercepcion": 0,
   "FuerzaExpRequerida": 1,
   "MagiaExpRequerida": 1,
   "AgilidadExpRequerida": 1,
@@ -348,7 +159,7 @@
   "Experiencia": 0,
   "ExperienciaSiguienteNivel": 800,
   "Oro": 0,
-  "Defensa": 5,
+  "Defensa": 0,
   "EstaVivo": true,
   "Habilidades": {}
 }

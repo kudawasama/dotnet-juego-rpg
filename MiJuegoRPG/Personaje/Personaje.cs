@@ -168,8 +168,23 @@ namespace MiJuegoRPG.Personaje
         // };
         // public string ProfesionPrincipal { get; set; } = "Sin especialidad";
 
-        public int Defensa => Atributos.Defensa;
+        // Implementación de ICombatiente
+        public int Defensa => (int)Atributos.Defensa;
         public bool EstaVivo => Vida > 0;
+        public int Atacar(ICombatiente objetivo)
+        {
+            int danio = (int)Atributos.Fuerza;
+            objetivo.RecibirDanio(danio);
+            Console.WriteLine($"{Nombre} ataca y causa {danio} de daño a {objetivo.Nombre}");
+            return danio;
+        }
+        public void RecibirDanio(int danio)
+        {
+            double danioReal = Math.Max(1, danio - Defensa);
+            Vida -= (int)danioReal;
+            if (Vida < 0) Vida = 0;
+            Console.WriteLine($"{Nombre} recibió {danioReal} de daño. Vida restante: {Vida}");
+        }
 
         // Habilidades aprendidas y progreso
         public Dictionary<string, HabilidadProgreso> Habilidades { get; set; } = new Dictionary<string, HabilidadProgreso>();
@@ -217,50 +232,6 @@ namespace MiJuegoRPG.Personaje
                 Console.WriteLine($"Aprendiste la habilidad {habilidad.Nombre}");
             }
         }
-
-        public void RecibirDanio(int danio)
-        {
-            int danioReal = Math.Max(1, danio - Defensa);
-            Vida -= danioReal;
-            if (Vida < 0) Vida = 0;
-            Console.WriteLine($"{Nombre} recibió {danioReal} de daño. Vida restante: {Vida}");
-        }
-
-        public int Atacar(ICombatiente objetivo)
-        {
-            int danio = Atributos.Fuerza;
-            objetivo.RecibirDanio(danio);
-            Console.WriteLine($"{Nombre} ataca y causa {danio} de daño a {objetivo.Nombre}");
-            return danio;
-        }
-    
-
-    // Clase para progreso de habilidad
-    public class HabilidadProgreso
-        {
-            public string Id { get; set; } = string.Empty;
-            public string Nombre { get; set; } = string.Empty;
-            public int Exp { get; set; } = 0;
-            public List<EvolucionHabilidad> Evoluciones { get; set; } = new List<EvolucionHabilidad>();
-            public List<string> EvolucionesDesbloqueadas { get; set; } = new List<string>();
-        }
-
-        public class EvolucionHabilidad
-        {
-            public string Id { get; set; } = string.Empty;
-            public string Nombre { get; set; } = string.Empty;
-            public List<CondicionEvolucion> Condiciones { get; set; } = new List<CondicionEvolucion>();
-            public string Beneficio { get; set; } = string.Empty;
-            public List<string> Mejoras { get; set; } = new List<string>();
-        }
-
-        public class CondicionEvolucion
-        {
-            public string Tipo { get; set; } = string.Empty;
-            public int Cantidad { get; set; } = 0;
-        }
-
-        // (Método duplicado eliminado)
 
         public Personaje(string nombre)
         {
@@ -462,7 +433,7 @@ namespace MiJuegoRPG.Personaje
                 case "barco":
                     // Ejemplo: si el requisito es tener barco
                     // Puedes validar si el jugador tiene un objeto "Barco" en el inventario
-                    return Inventario.NuevosObjetos.Any(o => o.Nombre.ToLower().Contains("barco"));
+                    return Inventario.NuevosObjetos.Any(o => o.Objeto.Nombre.ToLower().Contains("barco"));
                 case "oro":
                     // Si el requisito es tener cierta cantidad de oro
                     if (valor is int oroRequerido)

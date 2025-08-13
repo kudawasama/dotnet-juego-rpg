@@ -22,6 +22,20 @@ namespace MiJuegoRPG.Objetos
                         return JsonSerializer.Deserialize<Arma>(root.GetRawText(), options);
                     case "Material":
                         return JsonSerializer.Deserialize<Material>(root.GetRawText(), options);
+                    case "Casco":
+                        return JsonSerializer.Deserialize<Casco>(root.GetRawText(), options);
+                    case "Armadura":
+                        return JsonSerializer.Deserialize<Armadura>(root.GetRawText(), options);
+                    case "Botas":
+                        return JsonSerializer.Deserialize<Botas>(root.GetRawText(), options);
+                    case "Cinturon":
+                        return JsonSerializer.Deserialize<Cinturon>(root.GetRawText(), options);
+                    case "Collar":
+                        return JsonSerializer.Deserialize<Collar>(root.GetRawText(), options);
+                    case "Pantalon":
+                        return JsonSerializer.Deserialize<Pantalon>(root.GetRawText(), options);
+                    case "Accesorio":
+                        return JsonSerializer.Deserialize<Accesorio>(root.GetRawText(), options);
                     default:
                         throw new JsonException($"Tipo de objeto desconocido: {tipo}");
                 }
