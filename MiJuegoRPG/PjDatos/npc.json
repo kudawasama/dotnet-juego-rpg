@@ -3,6 +3,7 @@
     "Id": "BAI-MER-001",
     "Nombre": "Lina la Mercader",
     "Tipo": "Mercader",
+    "Descripcion": "Vende productos únicos para aventureros.",
     "Ubicacion": "Ciudad de Bairan",
     "Dialogos": [
       "¡Bienvenido al mercado de Bairan!",
@@ -14,6 +15,7 @@
     "Id": "WIN-HER-001",
     "Nombre": "Gustavo el Herrero",
     "Tipo": "Herrero",
+    "Descripcion": "Forja armas y armaduras de gran calidad.",
     "Ubicacion": "Ciudad de Winston",
     "Dialogos": [
       "¿Buscas armas de calidad?",
@@ -25,6 +27,7 @@
     "Id": "ZIR-COC-001",
     "Nombre": "Mauro el Cocinero",
     "Tipo": "Cocinero",
+    "Descripcion": "Crea platillos deliciosos y nutritivos.",
     "Ubicacion": "Ciudad de Zircon",
     "Dialogos": [
       "¿Quieres probar mi receta secreta?",
@@ -36,6 +39,7 @@
     "Id": "AET-MAG-001",
     "Nombre": "Sara la Maga",
     "Tipo": "Maga",
+    "Descripcion": "Experta en hechizos y magia arcana.",
     "Ubicacion": "Ciudad de Aethel",
     "Dialogos": [
       "La magia es el arte de lo imposible.",
@@ -47,6 +51,7 @@
     "Id": "MOR-GUA-001",
     "Nombre": "Rufus el Guardia",
     "Tipo": "Guardia",
+    "Descripcion": "Protege la ciudad de Morholt.",
     "Ubicacion": "Ciudad de Morholt",
     "Dialogos": [
       "La seguridad de Morholt es mi deber.",
@@ -58,6 +63,7 @@
     "Id": "LAI-AGR-001",
     "Nombre": "Bruna la Agricultora",
     "Tipo": "Agricultora",
+    "Descripcion": "Cultiva los mejores productos de la región.",
     "Ubicacion": "Ciudad de Laito",
     "Dialogos": [
       "Los cultivos de Laito son los mejores de la región.",
@@ -69,6 +75,7 @@
     "Id": "ROK-MIN-001",
     "Nombre": "Aldo el Minero",
     "Tipo": "Minero",
+    "Descripcion": "Extrae minerales y gemas de las profundidades.",
     "Ubicacion": "Ciudad de Rok",
     "Dialogos": [
       "Las minas de Rok esconden grandes tesoros.",
@@ -80,6 +87,7 @@
     "Id": "RAV-COM-001",
     "Nombre": "Teresa la Comerciante",
     "Tipo": "Comerciante",
+    "Descripcion": "Intercambia bienes y servicios en el mercado.",
     "Ubicacion": "Ciudad de Raven",
     "Dialogos": [
       "El comercio en Raven es muy competitivo.",
@@ -91,6 +99,7 @@
     "Id": "BAI-NEW-001",
     "Nombre": "Elena, la del Inicio",
     "Tipo": "Aventurera",
+    "Descripcion": "Guía a los nuevos aventureros en su viaje.",
     "Ubicacion": "Ciudad de Bairan",
     "Dialogos": [
       "¡Hola! Estoy aqui para darte la unica ayuda que necesitas para valerte por ti mismo.",

@@ -8,10 +8,10 @@ namespace MiJuegoRPG.Motor
         private Juego juego;
         private MenusJuego menusJuego;
 
-        public MenuCiudad(Juego juego, MenusJuego menusJuego)
+        public MenuCiudad(Juego juego)
         {
             this.juego = juego;
-            this.menusJuego = menusJuego;
+            this.menusJuego = new MenusJuego(juego);
         }
 
         public void MostrarMenuPrincipal()

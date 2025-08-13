@@ -1,19 +1,26 @@
-using System;
-using System.IO;
-using System.Text.Json;
-using MiJuegoRPG.Enemigos;
-using MiJuegoRPG.Personaje;
-using MiJuegoRPG.PjDatos;
-using MiJuegoRPG.Interfaces;
-using MiJuegoRPG.Motor;
-using MiJuegoRPG.Objetos;
-using System.Text.Json.Serialization;
-using System.Threading;
+
+        using System;
+        using System.IO;
+        using System.Text.Json;
+        using System.Text.Json.Serialization;
+        using System.Threading;
+        using MiJuegoRPG.Enemigos;
+        using MiJuegoRPG.Personaje;
+        using MiJuegoRPG.PjDatos;
+        using MiJuegoRPG.Interfaces;
+        using MiJuegoRPG.Motor;
+        using MiJuegoRPG.Objetos;
 
 namespace MiJuegoRPG.Motor
 {
     public class Juego
     {
+        // Método para generar un material aleatorio (stub temporal)
+        public Material GenerarMaterialAleatorio()
+        {
+            // Stub temporal: retorna un material de prueba
+            return new Material("Madera", MiJuegoRPG.Objetos.Rareza.Normal);
+        }
         public void Iniciar()
         {
             // Menú principal del juego
@@ -105,27 +112,17 @@ namespace MiJuegoRPG.Motor
         // Método para cargar personaje desde el menú (extraído del default)
         public void MostrarMenuCargarPersonaje()
         {
-            var personajes = GuardaPersonaje.CargarTodosLosPersonajes();
-            if (personajes.Count == 0)
+            var pj = MiJuegoRPG.Motor.GestorArchivos.CargarPersonaje();
+            if (pj != null)
             {
-                Console.WriteLine("No hay personajes guardados.");
-                return;
-            }
-            Console.WriteLine("Personajes guardados disponibles:");
-            for (int i = 0; i < personajes.Count; i++)
-            {
-                Console.WriteLine($"{i + 1}. {personajes[i].Nombre}");
-            }
-            Console.Write("Elige el número del personaje a cargar: ");
-            string entrada = Console.ReadLine() ?? string.Empty;
-            if (int.TryParse(entrada, out int seleccion) && seleccion > 0 && seleccion <= personajes.Count)
-            {
-                jugador = personajes[seleccion - 1];
+                jugador = pj;
                 Console.WriteLine($"Personaje '{jugador.Nombre}' cargado correctamente.");
+                if (jugador.UbicacionActual != null)
+                    ubicacionActual = jugador.UbicacionActual;
             }
             else
             {
-                Console.WriteLine("Selección inválida. No se pudo cargar el personaje.");
+                Console.WriteLine("No se pudo cargar el personaje.");
             }
         }
         
@@ -242,7 +239,7 @@ namespace MiJuegoRPG.Motor
                 {
                     case "1": MostrarTienda(); break;
                     case "2": Entrenar(); break;
-                    case "3": ExplorarSector(); break;
+                    case "3": menuPrincipal.MostrarMenuMisionesNPC(); break;
                     case "4":
                         if (jugador != null)
                         {
@@ -265,45 +262,11 @@ namespace MiJuegoRPG.Motor
         }
 
         // Menú fuera de ciudad
+        private MiJuegoRPG.Motor.Menus.MenuFueraCiudad? _menuFueraCiudad;
         public void MostrarMenuFueraCiudad(ref bool salir)
         {
-            string opcion = "";
-            while (!salir)
-            {
-                Console.WriteLine(FormatoRelojMundo);
-                Console.WriteLine($"Ubicación actual: {ubicacionActual.Nombre}");
-                Console.WriteLine("=== Menú Fuera de Ciudad ===");
-                Console.WriteLine("1. Explorar");
-                Console.WriteLine("2. Recolectar");
-                Console.WriteLine("3. Volver a la ciudad");
-                Console.WriteLine("9. Menú fijo");
-                Console.WriteLine("0. Volver al menú principal");
-                Console.Write("Selecciona una opción: ");
-                var key = Console.ReadKey(true);
-                opcion = key.KeyChar.ToString();
-                switch (opcion)
-                {
-                    case "1": ExplorarSector(); break;
-                    case "2": MostrarMenuRecoleccion(); break;
-                    case "3":
-                        var ciudadDesbloqueada = estadoMundo.Ubicaciones.Find(u => u.Tipo == "Ciudad" && u.Desbloqueada);
-                        if (ciudadDesbloqueada != null)
-                        {
-                            ubicacionActual = ciudadDesbloqueada;
-                            Console.WriteLine("Has regresado a la ciudad.");
-                        }
-                        else
-                            Console.WriteLine("No tienes acceso a ninguna ciudad desbloqueada en este momento.");
-                        MostrarMenuFijo(ref salir);
-                        break;
-                    case "9": MostrarMenuFijo(ref salir); break;
-                    case "0": return;
-                    default:
-                        Console.WriteLine("Opción no válida.");
-                        MostrarMenuFijo(ref salir);
-                        break;
-                }
-            }
+            if (_menuFueraCiudad == null) _menuFueraCiudad = new MiJuegoRPG.Motor.Menus.MenuFueraCiudad(this);
+            _menuFueraCiudad.MostrarMenuFueraCiudad(ref salir);
         }
 
         // Menú fijo disponible en todos los menús
@@ -805,10 +768,23 @@ namespace MiJuegoRPG.Motor
         public void RealizarAccionRecoleccion(string tipo)
         {
             // Ganar experiencia por acción de recolección, escalada por nivel y dificultad
+            //
+            // Para modificar la experiencia ganada y su progresión según el nivel del jugador y el nivel del atributo:
+            // - Cambia el valor de 'expBase' para subir o bajar la ganancia general de experiencia.
+            // - Cambia la fórmula de 'indiceNivel' para ajustar la progresión según el nivel del jugador.
+            // - Cambia la obtención de 'indiceAtributo' para ajustar la progresión según el nivel del atributo.
+            // - Puedes modificar la fórmula final (actualmente: expBase / (indiceNivel * indiceAtributo)) para hacer la progresión más suave o más exigente.
+            // Ejemplo: multiplicar en vez de dividir, cambiar el exponente, etc.
+            //
+            // Si quieres que la experiencia base sea mayor, sube 'expBase'.
+            // Si quieres que la progresión sea más dura, aumenta el exponente de 'indiceNivel' o 'indiceAtributo'.
+            // Si quieres que sea más fácil, bájalo o usa una suma en vez de multiplicación.
+            //
+            // Modifica aquí según tus necesidades:
             if (jugador != null)
             {
-                double expBase = 0.01;
-                double indiceNivel = Math.Pow(1.05, jugador.Nivel - 1);
+                double expBase = 0.01; // Base de experiencia
+                double indiceNivel = Math.Pow(1.05, jugador.Nivel - 1); // Progresión por nivel de jugador
                 int minutos = 1; // Cada acción equivale a 1 minuto
                 switch (tipo)
                 {
@@ -828,7 +804,7 @@ namespace MiJuegoRPG.Motor
                         double expFuerza = expBase / (indiceNivel * indiceFuerza);
                         if (expFuerza < 0.0001) expFuerza = 0.0001;
                         jugador.ExpFuerza += expFuerza * minutos;
-                        double indiceResistencia = jugador.IndiceAtributo.ContainsKey("resistencia") ? jugador.IndiceAtributo["resistencia"] : 1.0;
+                        double indiceResistencia = jugador.IndiceAtributo.ContainsKey("resistencia") ? jugador.IndiceAtributo["resistencia"] : 1.0; // Progresión por nivel de atributo, mientras mas alto sea el nivel, más experiencia se gana
                         double expResistencia = expBase / (indiceNivel * indiceResistencia);
                         if (expResistencia < 0.0001) expResistencia = 0.0001;
                         jugador.ExpResistencia += expResistencia * minutos;
@@ -915,30 +891,17 @@ namespace MiJuegoRPG.Motor
         // Método para cargar el personaje usando GuardaPersonaje
         public void CargarPersonaje()
         {
-            var personajes = GuardaPersonaje.CargarTodosLosPersonajes();
-            if (personajes.Count == 0)
+            var pj = MiJuegoRPG.Motor.GestorArchivos.CargarPersonaje();
+            if (pj != null)
             {
-                Console.WriteLine("No hay personajes guardados.");
-                return;
-            }
-            Console.WriteLine("Personajes guardados disponibles:");
-            for (int i = 0; i < personajes.Count; i++)
-            {
-                Console.WriteLine($"{i + 1}. {personajes[i].Nombre}");
-            }
-            Console.Write("Elige el número del personaje a cargar: ");
-            string entrada = Console.ReadLine() ?? string.Empty;
-            if (int.TryParse(entrada, out int seleccion) && seleccion > 0 && seleccion <= personajes.Count)
-            {
-                jugador = personajes[seleccion - 1];
+                jugador = pj;
                 Console.WriteLine($"Personaje '{jugador.Nombre}' cargado correctamente.");
-                // Sincronizar ubicación actual
                 if (jugador.UbicacionActual != null)
                     ubicacionActual = jugador.UbicacionActual;
             }
             else
             {
-                Console.WriteLine("Selección inválida. No se pudo cargar el personaje.");
+                Console.WriteLine("No se pudo cargar el personaje.");
             }
         }
         public void GuardarPersonaje()
@@ -947,9 +910,8 @@ namespace MiJuegoRPG.Motor
             {
                 // Guardar la ubicación actual en el personaje antes de serializar
                 jugador.UbicacionActual = ubicacionActual;
-                // Si tienes más datos de mundo que quieras guardar, puedes agregarlos aquí
-                // Por ejemplo: jugador.EstadoMundo = estadoMundo; // si existe esa propiedad
-                GuardaPersonaje.GuardarPersonaje(jugador);
+                // Guardar usando SQLite
+                MiJuegoRPG.Motor.GestorArchivos.GuardarPersonaje(jugador);
             }
             else
             {

@@ -1,7 +1,10 @@
-using MiJuegoRPG.Objetos;
-using System;
-using System.Collections.Generic;
-using MiJuegoRPG.Personaje;
+
+        using MiJuegoRPG.Objetos;
+        using System;
+        using System.Collections.Generic;
+        using MiJuegoRPG.Personaje;
+
+
 
 
 namespace MiJuegoRPG.Personaje
@@ -25,9 +28,14 @@ namespace MiJuegoRPG.Personaje
 
     public class Inventario : NewBaseType
     {
-    public List<ObjetoConCantidad> NuevosObjetos { get; set; } = new List<ObjetoConCantidad>();
-    public List<Objeto> Objetos { get; set; } = new List<Objeto>();
-    public Equipo Equipo { get; set; } = new Equipo();
+        public List<ObjetoConCantidad> NuevosObjetos { get; set; } = new List<ObjetoConCantidad>();
+        public List<Objeto> Objetos { get; set; } = new List<Objeto>();
+        public Equipo Equipo { get; set; } = new Equipo();
+
+        public void Agregar(Material material, int cantidad = 1)
+        {
+            AgregarObjeto(material, cantidad);
+        }
         public void AgregarObjeto(Objeto objeto, int cantidad = 1)
         {
             var existente = NuevosObjetos.FirstOrDefault(o => o.Objeto.Nombre == objeto.Nombre && o.Objeto.GetType() == objeto.GetType());
@@ -40,6 +48,29 @@ namespace MiJuegoRPG.Personaje
             {
                 NuevosObjetos.Add(new ObjetoConCantidad(objeto, cantidad));
                 Console.WriteLine($"{objeto.Nombre} ha sido agregado al inventario.");
+            }
+        }
+
+
+        public void QuitarObjeto(Objeto objeto, int cantidad = 1)
+        {
+            var existente = NuevosObjetos.FirstOrDefault(o => o.Objeto.Nombre == objeto.Nombre && o.Objeto.GetType() == objeto.GetType());
+            if (existente != null)
+            {
+                if (existente.Cantidad > cantidad)
+                {
+                    existente.Cantidad -= cantidad;
+                    Console.WriteLine($"Se quitaron {cantidad}x {objeto.Nombre} (Quedan: {existente.Cantidad})");
+                }
+                else
+                {
+                    NuevosObjetos.Remove(existente);
+                    Console.WriteLine($"Se eliminó {objeto.Nombre} del inventario.");
+                }
+            }
+            else
+            {
+                Console.WriteLine($"No tienes {objeto.Nombre} en el inventario.");
             }
         }
 

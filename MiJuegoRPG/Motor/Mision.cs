@@ -15,9 +15,9 @@ namespace MiJuegoRPG.Motor
             Requisitos = new List<string>();
             Recompensas = new List<string>();
             UbicacionNPC = "";
-            Destino = "";
-            DesbloqueaRuta = false;
-            RutaDesbloqueada = "";
+            ExpAtributos = new Dictionary<string, double>();
+            LineaMision = "";
+            SiguienteMisionId = null;
         }
 
         public string Id { get; set; }
@@ -28,9 +28,10 @@ namespace MiJuegoRPG.Motor
         public List<string> Requisitos { get; set; }
         public List<string> Recompensas { get; set; }
         public string UbicacionNPC { get; set; }
-        public string Destino { get; set; }
-        public bool DesbloqueaRuta { get; set; }
-        public string RutaDesbloqueada { get; set; }
+        public double ExpNivel { get; set; }
+        public Dictionary<string, double> ExpAtributos { get; set; }
+        public string LineaMision { get; set; }
+        public string? SiguienteMisionId { get; set; }
     }
 
     // Eliminada clase NPC duplicada. Usar la versión de NPC.cs

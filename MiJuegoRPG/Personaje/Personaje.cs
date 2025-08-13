@@ -4,11 +4,44 @@ using MiJuegoRPG.Interfaces;
 using System.Collections.Generic;
 using System.Linq;
 using MiJuegoRPG.Motor;
-
 namespace MiJuegoRPG.Personaje
 {
     public class Personaje : ICombatiente
     {
+        // Completar misión y procesar recompensas
+        public void CompletarMision(string misionId)
+        {
+            var mision = MisionesActivas.FirstOrDefault(m => m.Id == misionId);
+            if (mision != null)
+            {
+                // Procesar recompensas
+                if (mision.Recompensas != null)
+                {
+                    foreach (var recompensa in mision.Recompensas)
+                    {
+                        if (recompensa.ToLower().Contains("oro"))
+                        {
+                            Oro += 100; // Ejemplo, puedes ajustar según la recompensa
+                            Console.WriteLine("¡Has recibido 100 monedas de oro!");
+                        }
+                        if (recompensa.ToLower().Contains("espada"))
+                        {
+                            Inventario.AgregarObjeto(new MiJuegoRPG.Objetos.Arma("Espada de Misión", 20));
+                            Console.WriteLine("¡Has recibido una Espada de Misión!");
+                        }
+                        // Agrega más lógica según el tipo de recompensa
+                    }
+                }
+                // Mover a completadas
+                MisionesCompletadas.Add(mision);
+                MisionesActivas.Remove(mision);
+                Console.WriteLine($"¡Misión completada: {mision.Nombre}!");
+            }
+            else
+            {
+                Console.WriteLine("No tienes esa misión activa.");
+            }
+        }
         public MiJuegoRPG.Motor.Ubicacion? UbicacionActual { get; set; }
         // ...existing code...
         // Métodos de bonificadores y objetos equipados
