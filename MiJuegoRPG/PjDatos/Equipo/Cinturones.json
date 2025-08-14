@@ -1,0 +1,20 @@
+[
+  {
+    "Nombre": "Cinturon de Cuero",
+    "Rareza": "Comun",
+    "Categoria": "Cinturon",
+    "TipoObjeto": "Cinturon",
+    "BonificacionCarga": 5,
+    "Perfeccion": 54,
+    "Nivel": 1
+  },
+  {
+    "Nombre": "Cinturon de Hierro",
+    "Rareza": "PocoComun",
+    "Categoria": "Cinturon",
+    "TipoObjeto": "Cinturon",
+    "BonificacionCarga": 13,
+    "Perfeccion": 70,
+    "Nivel": 2
+  }
+]

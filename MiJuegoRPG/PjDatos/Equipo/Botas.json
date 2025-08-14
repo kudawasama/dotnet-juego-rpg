@@ -1,0 +1,20 @@
+[
+  {
+    "Nombre": "Botas de Tela",
+    "Rareza": "Comun",
+    "Categoria": "Botas",
+    "TipoObjeto": "Botas",
+    "Defensa": 1,
+    "Perfeccion": 52,
+    "Nivel": 1
+  },
+  {
+    "Nombre": "Botas de Cuero",
+    "Rareza": "PocoComun",
+    "Categoria": "Botas",
+    "TipoObjeto": "Botas",
+    "Defensa": 3,
+    "Perfeccion": 68,
+    "Nivel": 2
+  }
+]

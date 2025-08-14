@@ -2,44 +2,187 @@ using System;
 using MiJuegoRPG.Enemigos;
 using MiJuegoRPG.Interfaces;
 using System.Collections.Generic;
-
+using System.Linq;
+using MiJuegoRPG.Motor;
 namespace MiJuegoRPG.Personaje
 {
     public class Personaje : ICombatiente
     {
+        // Completar misión y procesar recompensas
+        public void CompletarMision(string misionId)
+        {
+            var mision = MisionesActivas.FirstOrDefault(m => m.Id == misionId);
+            if (mision != null)
+            {
+                // Procesar recompensas
+                if (mision.Recompensas != null)
+                {
+                    foreach (var recompensa in mision.Recompensas)
+                    {
+                        if (recompensa.ToLower().Contains("oro"))
+                        {
+                            Oro += 100; // Ejemplo, puedes ajustar según la recompensa
+                            Console.WriteLine("¡Has recibido 100 monedas de oro!");
+                        }
+                        if (recompensa.ToLower().Contains("espada"))
+                        {
+                            Inventario.AgregarObjeto(new MiJuegoRPG.Objetos.Arma("Espada de Misión", 20));
+                            Console.WriteLine("¡Has recibido una Espada de Misión!");
+                        }
+                        // Agrega más lógica según el tipo de recompensa
+                    }
+                }
+                // Mover a completadas
+                MisionesCompletadas.Add(mision);
+                MisionesActivas.Remove(mision);
+                Console.WriteLine($"¡Misión completada: {mision.Nombre}!");
+            }
+            else
+            {
+                Console.WriteLine("No tienes esa misión activa.");
+            }
+        }
+        public MiJuegoRPG.Motor.Ubicacion? UbicacionActual { get; set; }
+        // ...existing code...
+        // Métodos de bonificadores y objetos equipados
+        public double ObtenerBonificadorAtributo(string atributo)
+        {
+            double total = 0;
+            foreach (var obj in ObtenerObjetosEquipados())
+            {
+                if (obj is MiJuegoRPG.Interfaces.IBonificadorAtributo boni)
+                {
+                    total += boni.ObtenerBonificador(atributo);
+                }
+            }
+            return total;
+        }
+
+        public List<FuenteBonificador> ObtenerFuentesBonificadorAtributo(string atributo)
+        {
+            var fuentes = new List<FuenteBonificador>();
+            foreach (var obj in ObtenerObjetosEquipados())
+            {
+                if (obj is MiJuegoRPG.Interfaces.IBonificadorAtributo boni)
+                {
+                    double valor = boni.ObtenerBonificador(atributo);
+                    if (valor != 0)
+                        fuentes.Add(new FuenteBonificador(obj.Nombre, "Atributo", atributo, valor));
+                }
+            }
+            return fuentes;
+        }
+
+        public double ObtenerBonificadorEstadistica(string estadistica)
+        {
+            double total = 0;
+            foreach (var obj in ObtenerObjetosEquipados())
+            {
+                if (obj is MiJuegoRPG.Interfaces.IBonificadorEstadistica boni)
+                {
+                    total += boni.ObtenerBonificador(estadistica);
+                }
+            }
+            return total;
+        }
+
+        public List<FuenteBonificador> ObtenerFuentesBonificadorEstadistica(string estadistica)
+        {
+            var fuentes = new List<FuenteBonificador>();
+            foreach (var obj in ObtenerObjetosEquipados())
+            {
+                if (obj is MiJuegoRPG.Interfaces.IBonificadorEstadistica boni)
+                {
+                    double valor = boni.ObtenerBonificador(estadistica);
+                    if (valor != 0)
+                        fuentes.Add(new FuenteBonificador(obj.Nombre, "Estadistica", estadistica, valor));
+                }
+            }
+            return fuentes;
+        }
+
+        public List<Objetos.Objeto> ObtenerObjetosEquipados()
+        {
+            var lista = new List<Objetos.Objeto>();
+            var eq = Inventario.Equipo;
+            if (eq.Arma != null) lista.Add(eq.Arma);
+            if (eq.Casco != null) lista.Add(eq.Casco);
+            if (eq.Armadura != null) lista.Add(eq.Armadura);
+            if (eq.Pantalon != null) lista.Add(eq.Pantalon);
+            if (eq.Zapatos != null) lista.Add(eq.Zapatos);
+            if (eq.Collar != null) lista.Add(eq.Collar);
+            if (eq.Cinturon != null) lista.Add(eq.Cinturon);
+            if (eq.Accesorio1 != null) lista.Add(eq.Accesorio1);
+            if (eq.Accesorio2 != null) lista.Add(eq.Accesorio2);
+            return lista;
+        }
+        // ...existing code...
+        // Índices de dificultad por atributo
+        public Dictionary<string, double> IndiceAtributo = new Dictionary<string, double>
+        {
+            { "fuerza", 3.0 },        // Más accesible para guerreros
+            { "inteligencia", 8.0 },  // Muy difícil para magos, requiere especialización
+            { "destreza", 3.5 },      // Exploradores y pícaros más ágiles
+            { "suerte", 12.0 },       // Extremadamente difícil, atributo raro
+            { "defensa", 5.5 },       // Tanques y defensivos
+            { "vitalidad", 9.0 },     // Muy difícil, solo tanques y guerreros la suben rápido
+            { "agilidad", 4.5 }       // Exploradores y pícaros la suben más fácil
+        };
+        public Estadisticas Estadisticas { get; set; } = new Estadisticas();
         // Propiedades del personaje
-        public string Nombre { get; set; } = string.Empty;
-        public Clase? Clase { get; set; }
-        public int Vida { get; set; }
-        public int VidaMaxima { get; set; }
-        public Inventario Inventario { get; set; } = new Inventario();
-        public int VidaActual => Vida;
-        public AtributosBase Atributos => Clase != null ? Clase.Atributos : AtributosBase;
-        public AtributosBase AtributosBase { get; set; } = new AtributosBase();
-        public string Titulo { get; set; } = "Sin título";
-        public string ClaseDesbloqueada { get; set; } = "Sin clase";
+        // Misiones activas y completadas
+        public List<MisionConId> MisionesActivas { get; set; } = new List<MisionConId>();
+        public List<MisionConId> MisionesCompletadas { get; set; } = new List<MisionConId>();
+        // Clase auxiliar para misiones con Id y condiciones
+        public class MisionConId
+        {
+            public string Id { get; set; } = string.Empty;
+            public string Nombre { get; set; } = string.Empty;
+            public string Descripcion { get; set; } = string.Empty;
+            public string UbicacionNPC { get; set; } = string.Empty;
+            public List<string> Requisitos { get; set; } = new List<string>();
+            public List<string> Recompensas { get; set; } = new List<string>();
+            public int ExpNivel { get; set; } = 0;
+            public Dictionary<string, int> ExpAtributos { get; set; } = new Dictionary<string, int>();
+            public string Estado { get; set; } = string.Empty;
+            public string SiguienteMisionId { get; set; } = string.Empty;
+            public List<string> Condiciones { get; set; } = new List<string>();
+        }
+        // ...existing code...
+    public string Nombre { get; set; } = string.Empty;
+    public Clase? Clase { get; set; }
+    public int Vida { get; set; }
+    public int VidaMaxima { get; set; }
+    public Inventario Inventario { get; set; } = new Inventario();
+    public int VidaActual => Vida;
+    public AtributosBase Atributos => Clase != null ? Clase.Atributos : AtributosBase;
+    public AtributosBase AtributosBase { get; set; } = new AtributosBase();
+    public string Titulo { get; set; } = "Sin título";
+    public string ClaseDesbloqueada { get; set; } = "Sin clase";
 
         // Experiencia por atributo
-        public double ExpFuerza { get; set; }
-        public double ExpMagia { get; set; }
-        public double ExpAgilidad { get; set; }
-        public double ExpInteligencia { get; set; }
-        public double ExpResistencia { get; set; }
-        public double ExpDefensa { get; set; }
-        public double ExpVitalidad { get; set; }
-        public double ExpSuerte { get; set; }
-        public double ExpDestreza { get; set; }
+    public double ExpFuerza { get; set; }
+    public double ExpMagia { get; set; }
+    public double ExpAgilidad { get; set; }
+    public double ExpInteligencia { get; set; }
+    public double ExpResistencia { get; set; }
+    public double ExpDefensa { get; set; }
+    public double ExpVitalidad { get; set; }
+    public double ExpSuerte { get; set; }
+    public double ExpDestreza { get; set; }
+    public double ExpPercepcion { get; set; }
 
         // Experiencia requerida para subir cada atributo
-        public double FuerzaExpRequerida { get; set; } = 1.0;
-        public double MagiaExpRequerida { get; set; } = 1.0;
-        public double AgilidadExpRequerida { get; set; } = 1.0;
-        public double InteligenciaExpRequerida { get; set; } = 1.0;
-        public double ResistenciaExpRequerida { get; set; } = 1.0;
-        public double DefensaExpRequerida { get; set; } = 1.0;
-        public double VitalidadExpRequerida { get; set; } = 1.0;
-        public double SuerteExpRequerida { get; set; } = 1.0;
-        public double DestrezaExpRequerida { get; set; } = 1.0;
+    public double FuerzaExpRequerida { get; set; } = 1.0;
+    public double MagiaExpRequerida { get; set; } = 1.0;
+    public double AgilidadExpRequerida { get; set; } = 1.0;
+    public double InteligenciaExpRequerida { get; set; } = 1.0;
+    public double ResistenciaExpRequerida { get; set; } = 1.0;
+    public double DefensaExpRequerida { get; set; } = 1.0;
+    public double VitalidadExpRequerida { get; set; } = 1.0;
+    public double SuerteExpRequerida { get; set; } = 1.0;
+    public double DestrezaExpRequerida { get; set; } = 1.0;
+    public double PercepcionExpRequerida { get; set; } = 1.0;
 
         // Sistema de Experiencia
         public int Nivel { get; set; }
@@ -47,19 +190,34 @@ namespace MiJuegoRPG.Personaje
         public int ExperienciaSiguienteNivel { get; set; }
         public int Oro { get; set; }
 
-        // Sistema de profesiones
-        public Dictionary<string, int> Profesiones { get; set; } = new Dictionary<string, int> {
-            { "Herrero", 0 },
-            { "Herbolaria", 0 },
-            { "Domador", 0 },
-            { "Alquimista", 0 },
-            { "Cazador", 0 },
-            { "Explorador", 0 }
-        };
-        public string ProfesionPrincipal { get; set; } = "Sin especialidad";
+        // Sistema de profesiones (OBSOLETO, mantener solo si se usa en alguna lógica especial)
+        // public Dictionary<string, int> Profesiones { get; set; } = new Dictionary<string, int> {
+        //     { "Herrero", 0 },
+        //     { "Herbolaria", 0 },
+        //     { "Domador", 0 },
+        //     { "Alquimista", 0 },
+        //     { "Cazador", 0 },
+        //     { "Explorador", 0 }
+        // };
+        // public string ProfesionPrincipal { get; set; } = "Sin especialidad";
 
-        public int Defensa => Atributos.Defensa;
+        // Implementación de ICombatiente
+        public int Defensa => (int)Atributos.Defensa;
         public bool EstaVivo => Vida > 0;
+        public int Atacar(ICombatiente objetivo)
+        {
+            int danio = (int)Atributos.Fuerza;
+            objetivo.RecibirDanio(danio);
+            Console.WriteLine($"{Nombre} ataca y causa {danio} de daño a {objetivo.Nombre}");
+            return danio;
+        }
+        public void RecibirDanio(int danio)
+        {
+            double danioReal = Math.Max(1, danio - Defensa);
+            Vida -= (int)danioReal;
+            if (Vida < 0) Vida = 0;
+            Console.WriteLine($"{Nombre} recibió {danioReal} de daño. Vida restante: {Vida}");
+        }
 
         // Habilidades aprendidas y progreso
         public Dictionary<string, HabilidadProgreso> Habilidades { get; set; } = new Dictionary<string, HabilidadProgreso>();
@@ -108,45 +266,6 @@ namespace MiJuegoRPG.Personaje
             }
         }
 
-        // Clase para progreso de habilidad
-        public class HabilidadProgreso
-        {
-            public string Id { get; set; } = string.Empty;
-            public string Nombre { get; set; } = string.Empty;
-            public int Exp { get; set; } = 0;
-            public List<EvolucionHabilidad> Evoluciones { get; set; } = new List<EvolucionHabilidad>();
-            public List<string> EvolucionesDesbloqueadas { get; set; } = new List<string>();
-        }
-
-        public class EvolucionHabilidad
-        {
-            public string Id { get; set; } = string.Empty;
-            public string Nombre { get; set; } = string.Empty;
-            public List<CondicionEvolucion> Condiciones { get; set; } = new List<CondicionEvolucion>();
-            public string Beneficio { get; set; } = string.Empty;
-            public List<string> Mejoras { get; set; } = new List<string>();
-        }
-
-        public class CondicionEvolucion
-        {
-            public string Tipo { get; set; } = string.Empty;
-            public int Cantidad { get; set; } = 0;
-        }
-
-        public int Atacar(ICombatiente objetivo)
-        {
-            int danio = Atributos.Fuerza;
-            objetivo.RecibirDanio(danio);
-            return danio;
-        }
-
-        public void RecibirDanio(int danio)
-        {
-            int danioReal = Math.Max(1, danio - Defensa);
-            Vida -= danioReal;
-            if (Vida < 0) Vida = 0;
-        }
-
         public Personaje(string nombre)
         {
             Nombre = nombre;
@@ -169,8 +288,12 @@ namespace MiJuegoRPG.Personaje
         // Método para entrenar atributos y desbloquear clases/títulos
         public void Entrenar(string atributo)
         {
-            // Valor base de experiencia por "minuto" de entrenamiento
-            double expPorMinuto = 0.00001;
+            // Sistema estandarizado: experiencia base * índice de atributo * índice de nivel
+            double expBase = 0.01; // Puedes ajustar este valor base
+            double indiceNivel = Math.Pow(1.05, Nivel - 1); // Cada nivel aumenta la dificultad un 5%
+            double indiceAtributo = IndiceAtributo.ContainsKey(atributo.ToLower()) ? IndiceAtributo[atributo.ToLower()] : 1.0;
+            double expPorMinuto = expBase / (indiceNivel * indiceAtributo);
+            if (expPorMinuto < 0.0001) expPorMinuto = 0.0001; // Límite mínimo absoluto
             int minutos = 1; // Simulación: cada acción equivale a 1 minuto
             switch (atributo.ToLower())
             {
@@ -265,22 +388,22 @@ namespace MiJuegoRPG.Personaje
             }
         }
 
-        // Método para entrenar profesión
-        public void EntrenarProfesion(string profesion)
-        {
-            if (!Profesiones.ContainsKey(profesion))
-            {
-                Console.WriteLine($"La profesión '{profesion}' no existe.");
-                return;
-            }
-            Profesiones[profesion] += 10;
-            Console.WriteLine($"Has entrenado en {profesion}. Progreso: {Profesiones[profesion]}/100");
-            if (Profesiones[profesion] >= 100 && ProfesionPrincipal == "Sin especialidad")
-            {
-                ProfesionPrincipal = profesion;
-                Console.WriteLine($"¡Ahora eres especialista en {profesion}!");
-            }
-        }
+        // Método para entrenar profesión (OBSOLETO, eliminar si no se usa en el juego)
+        // public void EntrenarProfesion(string profesion)
+        // {
+        //     if (!Profesiones.ContainsKey(profesion))
+        //     {
+        //         Console.WriteLine($"La profesión '{profesion}' no existe.");
+        //         return;
+        //     }
+        //     Profesiones[profesion] += 10;
+        //     Console.WriteLine($"Has entrenado en {profesion}. Progreso: {Profesiones[profesion]}/100");
+        //     if (Profesiones[profesion] >= 100 && ProfesionPrincipal == "Sin especialidad")
+        //     {
+        //         ProfesionPrincipal = profesion;
+        //         Console.WriteLine($"¡Ahora eres especialista en {profesion}!");
+        //     }
+        // }
 
         public void GanarExperiencia(int cantidad)
         {
@@ -306,6 +429,63 @@ namespace MiJuegoRPG.Personaje
             VidaMaxima += 10;
             Vida = VidaMaxima;
             Console.WriteLine($"¡Has subido al nivel {Nivel}! Vida máxima ahora: {VidaMaxima}");
+        }
+
+        // Verifica si el personaje puede acceder a una misión según condiciones y progreso
+        public bool PuedeAccederMision(Mision mision)
+        {
+            // Si la misión ya está activa o completada, no mostrarla como accesible
+            if (MisionesActivas != null && MisionesActivas.Any(ms => ms.Id == mision.Id))
+                return false;
+            if (MisionesCompletadas != null && MisionesCompletadas.Any(ms => ms.Id == mision.Id))
+                return false;
+            // Si la misión tiene condiciones, verificar que todas estén cumplidas
+            if (mision.Condiciones != null && mision.Condiciones.Count > 0)
+            {
+                foreach (var condicion in mision.Condiciones)
+                {
+                    // Ejemplo: "Completar BAI-REC-002" => buscar en MisionesCompletadas
+                    var partes = condicion.Split(' ');
+                    if (partes.Length == 2 && partes[0] == "Completar")
+                    {
+                        var idCondicion = partes[1];
+                        if (MisionesCompletadas == null || !MisionesCompletadas.Any(ms => ms.Id == idCondicion))
+                            return false;
+                    }
+                }
+            }
+            // Si no hay condiciones o todas se cumplen, la misión es accesible
+            return true;
+        }
+
+        // Verifica si el personaje cumple un requisito específico (para rutas, misiones, etc.)
+        public bool CumpleRequisito(string clave, object valor)
+        {
+            switch (clave.ToLower())
+            {
+                case "barco":
+                    // Ejemplo: si el requisito es tener barco
+                    // Puedes validar si el jugador tiene un objeto "Barco" en el inventario
+                    return Inventario.NuevosObjetos.Any(o => o.Objeto.Nombre.ToLower().Contains("barco"));
+                case "oro":
+                    // Si el requisito es tener cierta cantidad de oro
+                    if (valor is int oroRequerido)
+                        return Oro >= oroRequerido;
+                    break;
+                case "nivel":
+                    if (valor is int nivelRequerido)
+                        return Nivel >= nivelRequerido;
+                    break;
+                case "fuerza":
+                    if (valor is int fuerzaRequerida)
+                        return AtributosBase.Fuerza >= fuerzaRequerida;
+                    break;
+                // Agrega más casos según los requisitos que uses en el juego
+                default:
+                    // Si el requisito no se reconoce, por defecto no se cumple
+                    return false;
+            }
+            return false;
         }
     }
 }

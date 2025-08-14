@@ -15,5 +15,6 @@ namespace MiJuegoRPG.PjDatos
         public List<string> Conexiones { get; set; } = new List<string>();
         public bool CiudadInicial { get; set; } = false;
         public List<string> Eventos { get; set; } = new List<string>();
+        public Dictionary<string, object> Requisitos { get; set; } = new Dictionary<string, object>();
     }
 }

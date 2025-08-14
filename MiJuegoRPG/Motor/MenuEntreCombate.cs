@@ -14,10 +14,12 @@ namespace MiJuegoRPG.Motor
     public class MenuEntreCombate
     {
         private Juego juego;
+        private MenusJuego menusJuego;
 
-        public MenuEntreCombate(Juego juego)
+        public MenuEntreCombate(Juego juego, MenusJuego menusJuego)
         {
             this.juego = juego;
+            this.menusJuego = menusJuego;
         }
 
         public void MostrarMenu()
@@ -26,22 +28,31 @@ namespace MiJuegoRPG.Motor
             Console.WriteLine("1. Guardar personaje");
             Console.WriteLine("2. Cargar personaje");
             Console.WriteLine("3. Continuar combatiendo");
-            Console.WriteLine("4. Salir del juego");
+            Console.WriteLine("4. Menú principal fijo");
+            Console.WriteLine("5. Salir del juego");
 
             var opcion = Console.ReadLine();
 
             switch (opcion)
             {
                 case "1":
+                    juego.AvanzarTiempo(1);
                     juego.GuardarPersonaje();
                     break;
                 case "2":
+                    juego.AvanzarTiempo(1);
                     juego.CargarPersonaje();
                     break;
                 case "3":
+                    juego.AvanzarTiempo(1);
                     juego.ComenzarCombate();
                     break;
                 case "4":
+                    juego.AvanzarTiempo(1);
+                    menusJuego.MostrarMenuPrincipalFijo();
+                    break;
+                case "5":
+                    juego.AvanzarTiempo(1);
                     Environment.Exit(0);
                     break;
                 default:

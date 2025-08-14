@@ -1,0 +1,20 @@
+[
+  {
+    "Nombre": "Collar de Proteccion",
+    "Rareza": "PocoComun",
+    "Categoria": "Collar",
+    "TipoObjeto": "Collar",
+    "BonificacionDefensa": 3,
+    "Perfeccion": 67,
+    "Nivel": 1
+  },
+  {
+    "Nombre": "Collar de Energia",
+    "Rareza": "Raro",
+    "Categoria": "Collar",
+    "TipoObjeto": "Collar",
+    "BonificacionEnergia": 15,
+    "Perfeccion": 85,
+    "Nivel": 2
+  }
+]

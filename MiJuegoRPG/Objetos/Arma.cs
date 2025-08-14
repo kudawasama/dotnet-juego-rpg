@@ -2,8 +2,9 @@ using System;
 
 namespace MiJuegoRPG.Objetos
 {
-    public class Arma : MiJuegoRPG.Objetos.Objeto
+    public class Arma : MiJuegoRPG.Objetos.Objeto, MiJuegoRPG.Interfaces.IBonificadorEstadistica
     {
+        public int Perfeccion { get; set; }
         public string TipoObjeto { get; set; } = "Arma";
         public int Daño { get; set; }
         public int Nivel { get; set; }
@@ -23,9 +24,18 @@ namespace MiJuegoRPG.Objetos
         {
             Nivel = nivel;
             Daño = CalcularDaño(dañoBase, nivel, rareza);
+            Perfeccion = 50;
         }
 
         public Arma() : base("", Rareza.Normal, "UnaMano") { }
+        // Constructor extendido para permitir setear perfección
+        public Arma(string nombre, int dañoBase, int nivel, Rareza rareza, string categoria, int perfeccion)
+            : base(nombre, rareza, categoria)
+        {
+            Nivel = nivel;
+            Daño = CalcularDaño(dañoBase, nivel, rareza);
+            Perfeccion = perfeccion;
+        }
 
         private int CalcularDaño(int dañoBase, int nivel, Rareza rareza)
         {
@@ -42,6 +52,13 @@ namespace MiJuegoRPG.Objetos
         public override void Usar(MiJuegoRPG.Personaje.Personaje personaje)
         {
             Console.WriteLine($"{personaje.Nombre} equipa el arma {Nombre} ({Rareza}, {Categoria}, Daño: {Daño}, Nivel: {Nivel}).");
+        }
+        // Implementación de bonificador de estadística
+        public double ObtenerBonificador(string estadistica)
+        {
+            if (estadistica == "Daño" || estadistica == "Ataque")
+                return Daño;
+            return 0;
         }
     }
 }

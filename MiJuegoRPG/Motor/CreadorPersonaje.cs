@@ -18,6 +18,7 @@ namespace MiJuegoRPG.Motor  // Debe ser este espacio de nombres
             try
             {
                 var opciones = new JsonSerializerOptions { WriteIndented = true };
+                opciones.Converters.Add(new MiJuegoRPG.Personaje.ObjetoPolimorficoConverter());
                 string json = JsonSerializer.Serialize(personaje, opciones);
 
                 // Usar ruta por defecto si no se proporciona una
@@ -25,7 +26,7 @@ namespace MiJuegoRPG.Motor  // Debe ser este espacio de nombres
                 {
                     var dir = Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory);
                     string rutaProyecto = dir?.Parent?.Parent?.FullName ?? AppDomain.CurrentDomain.BaseDirectory;
-                    rutaArchivo = Path.Combine(rutaProyecto, "MiJuegoRPG", "PjDatos", "Saves.json");
+                    rutaArchivo = Path.Combine(rutaProyecto, "PjDatos", "PjGuardados", "Grid.json");
                 }
 
                 // Crear directorio si no existe
@@ -58,8 +59,10 @@ namespace MiJuegoRPG.Motor  // Debe ser este espacio de nombres
             }
 
             string json = File.ReadAllText(rutaArchivo);
-            return JsonSerializer.Deserialize<MiJuegoRPG.Personaje.Personaje>(json)
-                   ?? throw new InvalidOperationException("No se pudo deserializar el personaje.");
+         var opciones = new JsonSerializerOptions();
+         opciones.Converters.Add(new MiJuegoRPG.Personaje.ObjetoPolimorficoConverter());
+         return JsonSerializer.Deserialize<MiJuegoRPG.Personaje.Personaje>(json, opciones)
+             ?? throw new InvalidOperationException("No se pudo deserializar el personaje.");
         }
 
         public static void MostrarPersonaje(MiJuegoRPG.Personaje.Personaje personaje)

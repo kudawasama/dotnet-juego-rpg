@@ -1,0 +1,56 @@
+[
+    {
+        "Nombre": "Espada Oxidada",
+        "Daño": 3,
+        "NivelRequerido": 1,
+        "Rareza": "Rota",
+        "Categoria": "Arma",
+        "TipoObjeto": "Arma",
+        "Perfeccion": 12
+    },
+    {
+        "Nombre": "Arco Simple",
+        "Daño": 7,
+        "NivelRequerido": 1,
+        "Rareza": "Comun",
+        "Categoria": "Arma",
+        "TipoObjeto": "Arma",
+        "Perfeccion": 55
+    },
+    {
+        "Nombre": "Vara de Novato",
+        "Daño": 6,
+        "NivelRequerido": 1,
+        "Rareza": "Comun",
+        "Categoria": "Arma",
+        "TipoObjeto": "Arma",
+        "Perfeccion": 51
+    },
+    {
+        "Nombre": "Daga Ligera",
+        "Daño": 10,
+        "NivelRequerido": 1,
+        "Rareza": "PocoComun",
+        "Categoria": "Arma",
+        "TipoObjeto": "Arma",
+        "Perfeccion": 70
+    },
+    {
+        "Nombre": "Maza de Madera",
+        "Daño": 8,
+        "NivelRequerido": 1,
+        "Rareza": "Comun",
+        "Categoria": "Arma",
+        "TipoObjeto": "Arma",
+        "Perfeccion": 59
+    },
+    {
+        "Nombre": "Escudo Improvisado",
+        "Defensa": 2,
+        "NivelRequerido": 1,
+        "Rareza": "Rota",
+        "Categoria": "Escudo",
+        "TipoObjeto": "Escudo",
+        "Perfeccion": 18
+    }
+]

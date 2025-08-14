@@ -1,0 +1,20 @@
+[
+  {
+    "Nombre": "Armadura de Cuero",
+    "Rareza": "Comun",
+    "Categoria": "Armadura",
+    "TipoObjeto": "Armadura",
+    "Defensa": 3,
+    "Perfeccion": 52,
+    "Nivel": 1
+  },
+  {
+    "Nombre": "Armadura de Hierro",
+    "Rareza": "PocoComun",
+    "Categoria": "Armadura",
+    "TipoObjeto": "Armadura",
+    "Defensa": 8,
+    "Perfeccion": 68,
+    "Nivel": 2
+  }
+]

@@ -8,6 +8,8 @@ namespace MiJuegoRPG.PjDatos
         public int NivelRequerido { get; set; }
         public int Valor { get; set; }
         public required string Tipo { get; set; } // Ejemplo: "Espada", "Arco", "Bastón"
+        public string Rareza { get; set; } = "Comun";
+        public int Perfeccion { get; set; } = 50;
     }
 }
         

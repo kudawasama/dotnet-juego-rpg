@@ -17,7 +17,7 @@ namespace MiJuegoRPG.PjDatos
     /// <summary>Nivel mínimo requerido para evolucionar</summary>
     public int NivelMinimo { get; set; }
     /// <summary>Atributos requeridos y sus valores mínimos</summary>
-    public Dictionary<string, int> AtributosRequeridos { get; set; } = new Dictionary<string, int>();
+    public Dictionary<string, double> AtributosRequeridos { get; set; } = new Dictionary<string, double>();
     /// <summary>Reputación mínima requerida (puedes omitir si no usas reputación)</summary>
     public int ReputacionMinima { get; set; }
     /// <summary>Nombre de la misión única requerida para evolucionar (opcional)</summary>
@@ -89,9 +89,9 @@ namespace MiJuegoRPG.PjDatos
         }
 
         // Ayuda para obtener el valor de un atributo por nombre
-        private static int ObtenerValorAtributo(Personaje.AtributosBase atributos, string nombre)
+    private static double ObtenerValorAtributo(Personaje.AtributosBase atributos, string nombre)
         {
-            // Devuelve el valor del atributo solicitado por nombre. Si no existe, retorna 0.
+            // Devuelve el valor del atributo solicitado por nombre. Si no existe, retorna 0.0.
             return nombre switch
             {
                 "Fuerza" => atributos.Fuerza,
@@ -103,13 +103,13 @@ namespace MiJuegoRPG.PjDatos
                 "Resistencia" => atributos.Resistencia,
                 "Sabiduría" => atributos.Sabiduría,
                 "Inteligencia" => atributos.Inteligencia,
-                "Fe" => atributos.Fe,
+                //"Fe" => atributos.Fe,
                 "Percepcion" => atributos.Percepcion,
                 "Persuasion" => atributos.Persuasion,
                 "Liderazgo" => atributos.Liderazgo,
                 "Carisma" => atributos.Carisma,
                 "Voluntad" => atributos.Voluntad,
-                _ => 0
+                _ => 0.0
             };
         }
         }

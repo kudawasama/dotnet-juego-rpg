@@ -1,0 +1,20 @@
+[
+  {
+    "Nombre": "Pantalon de Tela",
+    "Rareza": "Comun",
+    "Categoria": "Pantalon",
+    "TipoObjeto": "Pantalon",
+    "Defensa": 1,
+    "Perfeccion": 51,
+    "Nivel": 1
+  },
+  {
+    "Nombre": "Pantalon de Cuero",
+    "Rareza": "PocoComun",
+    "Categoria": "Pantalon",
+    "TipoObjeto": "Pantalon",
+    "Defensa": 3,
+    "Perfeccion": 69,
+    "Nivel": 2
+  }
+]
