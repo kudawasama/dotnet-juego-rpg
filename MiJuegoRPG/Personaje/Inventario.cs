@@ -81,11 +81,18 @@ namespace MiJuegoRPG.Personaje
 
         public void MostrarInventario()
         {
-            Console.WriteLine("Inventario:");
+            int totalObjetos = NuevosObjetos.Sum(o => o.Cantidad);
+            // Peso total (por ahora 0, para implementar después)
+            double pesoTotal = 0;
+            Console.WriteLine($"Inventario: {totalObjetos} objetos (Peso: {pesoTotal} / --)");
+            Console.WriteLine("----------------------------------------");
+            Console.WriteLine($"{ "Nombre",-20} { "Categoría",-12} { "Cantidad",-8}");
+            Console.WriteLine("----------------------------------------");
             foreach (var objCant in NuevosObjetos)
             {
-                Console.WriteLine($"- {objCant.Objeto.Nombre} x{objCant.Cantidad}");
+                Console.WriteLine($"{objCant.Objeto.Nombre,-20} {objCant.Objeto.Categoria,-12} {objCant.Cantidad,-8}");
             }
+            Console.WriteLine("----------------------------------------");
         }
     }
 }

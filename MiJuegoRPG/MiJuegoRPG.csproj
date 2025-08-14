@@ -13,11 +13,13 @@
     </None>
 </ItemGroup>
   <ItemGroup>
-    <Content Include="PjDatos\**\*.json">
+    <Content Include="MiJuegoRPG\PjDatos\**\*.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <Link>MiJuegoRPG\PjDatos\%(RecursiveDir)%(Filename)%(Extension)</Link>
     </Content>
     <Content Include="MiJuegoRPG\PjDatos\**\*.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <Link>PjDatos\%(RecursiveDir)%(Filename)%(Extension)</Link>
     </Content>
   </ItemGroup>
 

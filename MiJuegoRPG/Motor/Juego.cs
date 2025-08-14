@@ -206,13 +206,18 @@ namespace MiJuegoRPG.Motor
         }
         public void MostrarMenuPorUbicacion(ref bool salir)
         {
-            if (ubicacionActual.Tipo != null && ubicacionActual.Tipo.Equals("Ciudad", StringComparison.OrdinalIgnoreCase))
+            if (ubicacionActual != null && ubicacionActual.Tipo != null && ubicacionActual.Tipo.Equals("Ciudad", StringComparison.OrdinalIgnoreCase))
             {
                 MostrarMenuCiudad(ref salir);
             }
-            else
+            else if (ubicacionActual != null && !string.IsNullOrWhiteSpace(ubicacionActual.Tipo))
             {
                 MostrarMenuFueraCiudad(ref salir);
+            }
+            else
+            {
+                Console.WriteLine("No estás en ninguna ubicación válida. Volviendo al menú principal...");
+                salir = true;
             }
         }
 
@@ -294,6 +299,19 @@ namespace MiJuegoRPG.Motor
                     Console.ReadKey();
                     break;
                 case "3":
+                    // Al volver, mostrar el menú adecuado según la ubicación actual
+                    if (ubicacionActual != null && ubicacionActual.Tipo != null && ubicacionActual.Tipo.Equals("Ciudad", StringComparison.OrdinalIgnoreCase))
+                    {
+                        MostrarMenuCiudad(ref salir);
+                    }
+                    else if (ubicacionActual != null && !string.IsNullOrWhiteSpace(ubicacionActual.Tipo))
+                    {
+                        MostrarMenuFueraCiudad(ref salir);
+                    }
+                    else
+                    {
+                        salir = true;
+                    }
                     return;
                 case "0":
                     salir = true;

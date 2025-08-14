@@ -317,10 +317,39 @@ namespace MiJuegoRPG.Motor
                 Console.WriteLine("No hay personaje cargado.");
                 return;
             }
-            Console.WriteLine("--- Inventario ---");
-            foreach (var obj in juego.jugador.Inventario.Objetos)
+            var inventario = juego.jugador.Inventario;
+            inventario.MostrarInventario();
+            // Menú básico de inventario
+            while (true)
             {
-                Console.WriteLine($"- {obj.Nombre} ({obj.Categoria})");
+                Console.WriteLine("\nOpciones de Inventario:");
+                Console.WriteLine("1. Usar objeto");
+                Console.WriteLine("2. Salir del inventario");
+                Console.Write("Selecciona una opción: ");
+                var opcion = Console.ReadLine();
+                if (opcion == "1")
+                {
+                    Console.Write("Ingresa el nombre del objeto a usar: ");
+                    var nombre = Console.ReadLine();
+                    var obj = inventario.NuevosObjetos.FirstOrDefault(o => o.Objeto.Nombre.Equals(nombre, StringComparison.OrdinalIgnoreCase));
+                    if (obj != null && obj.Cantidad > 0)
+                    {
+                        obj.Objeto.Usar(juego.jugador);
+                        inventario.QuitarObjeto(obj.Objeto, 1);
+                    }
+                    else
+                    {
+                        Console.WriteLine("No tienes ese objeto o la cantidad es 0.");
+                    }
+                }
+                else if (opcion == "2")
+                {
+                    break;
+                }
+                else
+                {
+                    Console.WriteLine("Opción no válida.");
+                }
             }
         }
 
@@ -545,7 +574,7 @@ namespace MiJuegoRPG.Motor
                 Console.WriteLine("1. Explorar sector (NPC y misiones)");
                 Console.WriteLine("2. Ver misiones activas");
                 Console.WriteLine("3. Ir a tienda");
-                Console.WriteLine("4. Menú principal (fijo)");
+                Console.WriteLine("4. Menú fijo");
                 Console.WriteLine("5. Salir de la ciudad");
                 Console.Write("Seleccione una opción: ");
                 var opcion = Console.ReadLine();

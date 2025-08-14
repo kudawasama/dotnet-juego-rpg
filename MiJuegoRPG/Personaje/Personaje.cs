@@ -17,19 +17,41 @@ namespace MiJuegoRPG.Personaje
                 // Procesar recompensas
                 if (mision.Recompensas != null)
                 {
-                    foreach (var recompensa in mision.Recompensas)
+                    // Si es la misión de Elena, dejar elegir arma
+                    if (mision.Id == "BAI-INI-001")
                     {
-                        if (recompensa.ToLower().Contains("oro"))
+                        var armas = mision.Recompensas;
+                        Console.WriteLine("Elena: ¿Qué arma te gustaría tener?");
+                        for (int i = 0; i < armas.Count; i++)
+                            Console.WriteLine($"{i + 1}. {armas[i]}");
+                        Console.Write("Selecciona una opción: ");
+                        if (int.TryParse(Console.ReadLine(), out int seleccion) && seleccion > 0 && seleccion <= armas.Count)
                         {
-                            Oro += 100; // Ejemplo, puedes ajustar según la recompensa
-                            Console.WriteLine("¡Has recibido 100 monedas de oro!");
+                            string armaElegida = armas[seleccion - 1];
+                            Inventario.AgregarObjeto(new MiJuegoRPG.Objetos.Arma(armaElegida, 5));
+                            Console.WriteLine($"¡Has recibido: {armaElegida}!");
                         }
-                        if (recompensa.ToLower().Contains("espada"))
+                        else
                         {
-                            Inventario.AgregarObjeto(new MiJuegoRPG.Objetos.Arma("Espada de Misión", 20));
-                            Console.WriteLine("¡Has recibido una Espada de Misión!");
+                            Console.WriteLine("Selección inválida. No se entregó arma.");
                         }
-                        // Agrega más lógica según el tipo de recompensa
+                    }
+                    else
+                    {
+                        foreach (var recompensa in mision.Recompensas)
+                        {
+                            if (recompensa.ToLower().Contains("oro"))
+                            {
+                                Oro += 100; // Ejemplo, puedes ajustar según la recompensa
+                                Console.WriteLine("¡Has recibido 100 monedas de oro!");
+                            }
+                            if (recompensa.ToLower().Contains("espada"))
+                            {
+                                Inventario.AgregarObjeto(new MiJuegoRPG.Objetos.Arma("Espada de Misión", 20));
+                                Console.WriteLine("¡Has recibido una Espada de Misión!");
+                            }
+                            // Agrega más lógica según el tipo de recompensa
+                        }
                     }
                 }
                 // Mover a completadas
