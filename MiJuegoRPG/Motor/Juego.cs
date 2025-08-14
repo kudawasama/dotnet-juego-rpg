@@ -1,15 +1,15 @@
 
-        using System;
-        using System.IO;
-        using System.Text.Json;
-        using System.Text.Json.Serialization;
-        using System.Threading;
-        using MiJuegoRPG.Enemigos;
-        using MiJuegoRPG.Personaje;
-        using MiJuegoRPG.PjDatos;
-        using MiJuegoRPG.Interfaces;
-        using MiJuegoRPG.Motor;
-        using MiJuegoRPG.Objetos;
+using System;
+using System.IO;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using System.Threading;
+using MiJuegoRPG.Enemigos;
+using MiJuegoRPG.Personaje;
+using MiJuegoRPG.PjDatos;
+using MiJuegoRPG.Interfaces;
+using MiJuegoRPG.Motor;
+using MiJuegoRPG.Objetos;
 
 namespace MiJuegoRPG.Motor
 {
@@ -69,13 +69,11 @@ namespace MiJuegoRPG.Motor
                 }
             }
         }
-    // ...existing code...
+        // ...existing code...
         public void CrearPersonaje()
         {
             Console.WriteLine("=== Creación de Personaje ===");
-            Console.Write("Ingresa el nombre de tu personaje: ");
-            string nombre = Console.ReadLine() ?? "Héroe";
-            jugador = new MiJuegoRPG.Personaje.Personaje(nombre);
+            jugador = MiJuegoRPG.Motor.CreadorPersonaje.CrearSinClase();
             // Ubicación inicial: Ciudad de Bairan
             var bairan = estadoMundo.Ubicaciones.Find(u => u.Nombre == "Ciudad de Bairan");
             if (bairan != null)
@@ -125,8 +123,8 @@ namespace MiJuegoRPG.Motor
                 Console.WriteLine("No se pudo cargar el personaje.");
             }
         }
-        
-        
+
+
 
         public void MostrarMenuUbicacion()
         {
@@ -182,12 +180,26 @@ namespace MiJuegoRPG.Motor
         // Constructor
         public Juego()
         {
-            string carpetaMapas = System.IO.Path.Combine(ObtenerRutaRaizProyecto(), "MiJuegoRPG", "PjDatos", "mapa");
+            string carpetaMapas = System.IO.Path.Combine(ObtenerRutaRaizProyecto(), "MiJuegoRPG", "DatosJuego", "mapa");
             mapa = MapaLoader.CargarMapaCompleto(carpetaMapas);
             InstanciaActual = this;
             menuPrincipal = new MenusJuego(this);
             estadoMundo = new EstadoMundo();
-            InicializarUbicaciones();
+            // Llenar estadoMundo.Ubicaciones con todos los sectores del mapa
+            foreach (var sector in mapa.ObtenerSectores())
+            {
+                // Convertir SectorData a Ubicacion
+                var ubic = new Ubicacion
+                {
+                    Id = sector.Id,
+                    Nombre = sector.Nombre,
+                    Tipo = sector.Tipo,
+                    Descripcion = sector.Descripcion,
+                    Desbloqueada = sector.CiudadInicial || sector.Id == "bairan", // O lógica que prefieras
+                    // Puedes mapear más campos si lo necesitas
+                };
+                estadoMundo.Ubicaciones.Add(ubic);
+            }
             ubicacionActual = estadoMundo.Ubicaciones.Find(u => u.Nombre == "Ciudad de Bairan")
                 ?? estadoMundo.Ubicaciones[0];
             CargarProbabilidades();
@@ -607,15 +619,11 @@ namespace MiJuegoRPG.Motor
                     {
                         jugador.Oro -= 10;
                         jugador.Inventario.AgregarObjeto(new Objetos.Pocion("Poción Curativa", 20));
-                        Console.WriteLine("¡Has comprado una poción curativa!");
-                    }
-                    else if (jugador != null)
-                    {
-                        Console.WriteLine("No tienes suficiente oro.");
+                        Console.WriteLine("Has comprado una poción curativa.");
                     }
                     else
                     {
-                        Console.WriteLine("No hay personaje cargado.");
+                        Console.WriteLine("No tienes suficiente oro.");
                     }
                     break;
                 case "2":
@@ -625,28 +633,12 @@ namespace MiJuegoRPG.Motor
                     Console.WriteLine("Opción no válida.");
                     break;
             }
-            Console.WriteLine("Presiona cualquier tecla para volver al menú principal...");
-            Console.ReadKey();
-            MostrarMenuPorUbicacion();
-        }
+        
 
-        public void MostrarMenuMisionesNPC()
-        {
-            motorMisiones.MostrarMenuMisionesNPC();
-        }
+         }
+        
+        
 
-        private void MostrarMisiones()
-        {
-            motorMisiones.MostrarMisiones();
-        }
-
-        private void MostrarNPCs()
-        {
-            motorMisiones.MostrarNPCs();
-        }
-
-
-        // Nuevo método para mostrar el submenú de Guardar/Cargar.
         public void MostrarMenuGuardado()
         {
             //Console.Clear();
@@ -807,33 +799,39 @@ namespace MiJuegoRPG.Motor
                 switch (tipo)
                 {
                     case "Recolectar":
-                        double indicePercepcion = jugador.IndiceAtributo.ContainsKey("percepcion") ? jugador.IndiceAtributo["percepcion"] : 1.0;
+                        double valorPercepcion = jugador.AtributosBase.Percepcion > 0 ? jugador.AtributosBase.Percepcion : 1.0;
+                        double indicePercepcion = 1.0 + (valorPercepcion / 10.0); // A mayor percepción, más difícil subir
                         double expPercepcion = expBase / (indiceNivel * indicePercepcion);
                         if (expPercepcion < 0.0001) expPercepcion = 0.0001;
                         jugador.ExpPercepcion += expPercepcion * minutos;
-                        double indiceInteligencia = jugador.IndiceAtributo.ContainsKey("inteligencia") ? jugador.IndiceAtributo["inteligencia"] : 1.0;
+                        double valorInteligencia = jugador.AtributosBase.Inteligencia > 0 ? jugador.AtributosBase.Inteligencia : 1.0;
+                        double indiceInteligencia = 1.0 + (valorInteligencia / 10.0);
                         double expInteligencia = expBase / (indiceNivel * indiceInteligencia);
                         if (expInteligencia < 0.0001) expInteligencia = 0.0001;
                         jugador.ExpInteligencia += expInteligencia * minutos;
                         Console.WriteLine($"Has ganado {expPercepcion * minutos:F4} exp de Percepción y {expInteligencia * minutos:F4} exp de Inteligencia.");
                         break;
                     case "Minar":
-                        double indiceFuerza = jugador.IndiceAtributo.ContainsKey("fuerza") ? jugador.IndiceAtributo["fuerza"] : 1.0;
+                        double valorFuerza = jugador.AtributosBase.Fuerza > 0 ? jugador.AtributosBase.Fuerza : 1.0;
+                        double indiceFuerza = 1.0 + (valorFuerza / 10.0);
                         double expFuerza = expBase / (indiceNivel * indiceFuerza);
                         if (expFuerza < 0.0001) expFuerza = 0.0001;
                         jugador.ExpFuerza += expFuerza * minutos;
-                        double indiceResistencia = jugador.IndiceAtributo.ContainsKey("resistencia") ? jugador.IndiceAtributo["resistencia"] : 1.0; // Progresión por nivel de atributo, mientras mas alto sea el nivel, más experiencia se gana
+                        double valorResistencia = jugador.AtributosBase.Resistencia > 0 ? jugador.AtributosBase.Resistencia : 1.0;
+                        double indiceResistencia = 1.0 + (valorResistencia / 10.0);
                         double expResistencia = expBase / (indiceNivel * indiceResistencia);
                         if (expResistencia < 0.0001) expResistencia = 0.0001;
                         jugador.ExpResistencia += expResistencia * minutos;
                         Console.WriteLine($"Has ganado {expFuerza * minutos:F4} exp de Fuerza y {expResistencia * minutos:F4} exp de Resistencia.");
                         break;
                     case "Talar":
-                        double indiceFuerzaT = jugador.IndiceAtributo.ContainsKey("fuerza") ? jugador.IndiceAtributo["fuerza"] : 1.0;
+                        double valorFuerzaT = jugador.AtributosBase.Fuerza > 0 ? jugador.AtributosBase.Fuerza : 1.0;
+                        double indiceFuerzaT = 1.0 + (valorFuerzaT / 10.0);
                         double expFuerzaT = expBase / (indiceNivel * indiceFuerzaT);
                         if (expFuerzaT < 0.0001) expFuerzaT = 0.0001;
                         jugador.ExpFuerza += expFuerzaT * minutos;
-                        double indiceDestreza = jugador.IndiceAtributo.ContainsKey("destreza") ? jugador.IndiceAtributo["destreza"] : 1.0;
+                        double valorDestreza = jugador.AtributosBase.Destreza > 0 ? jugador.AtributosBase.Destreza : 1.0;
+                        double indiceDestreza = 1.0 + (valorDestreza / 10.0);
                         double expDestreza = expBase / (indiceNivel * indiceDestreza);
                         if (expDestreza < 0.0001) expDestreza = 0.0001;
                         jugador.ExpDestreza += expDestreza * minutos;
@@ -1017,12 +1015,12 @@ namespace MiJuegoRPG.Motor
                 if (int.TryParse(opcion, out int idx) && idx > 0 && idx <= sectoresConectados.Count)
                 {
                     var destino = sectoresConectados[idx - 1];
-                    ubicacionActual = new Ubicacion
-                    {
-                        Nombre = destino.Nombre,
-                        Tipo = destino.Tipo,
-                        Descripcion = destino.Descripcion
-                    };
+                    // Asignar la instancia original de la lista de ubicaciones para mantener todos los datos y el tipo correcto
+                    var ubicacionOriginal = estadoMundo.Ubicaciones.FirstOrDefault(u => u.Id == destino.Id);
+                    if (ubicacionOriginal != null)
+                        ubicacionActual = ubicacionOriginal;
+                    else
+                        ubicacionActual = new Ubicacion { Id = destino.Id, Nombre = destino.Nombre, Tipo = destino.Tipo, Descripcion = destino.Descripcion };
                     Console.WriteLine($"Te has movido a: {destino.Nombre}");
                     Console.WriteLine(destino.Descripcion);
                     Console.WriteLine("Pulsa cualquier tecla para continuar...");

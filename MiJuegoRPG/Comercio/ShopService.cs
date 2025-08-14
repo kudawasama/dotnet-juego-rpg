@@ -29,9 +29,9 @@ namespace MiJuegoRPG.Comercio
         {
             var candidatos = new[]
             {
-                Path.Combine(AppContext.BaseDirectory, "MiJuegoRPG","PjDatos"),
-                Path.Combine(AppContext.BaseDirectory, "PjDatos"),
-                Path.Combine(Directory.GetCurrentDirectory(), "MiJuegoRPG","PjDatos")
+                Path.Combine(AppContext.BaseDirectory, "MiJuegoRPG","DatosJuego"),
+                Path.Combine(AppContext.BaseDirectory, "DatosJuego"),
+                Path.Combine(Directory.GetCurrentDirectory(), "MiJuegoRPG","DatosJuego")
             };
             foreach (var c in candidatos) if (Directory.Exists(c)) return c;
             throw new DirectoryNotFoundException("No se encontró carpeta PjDatos cerca del ejecutable.");
@@ -39,10 +39,10 @@ namespace MiJuegoRPG.Comercio
 
         private void CargarVendors()
         {
-            var root = BuscarDataRoot();
-            var npcPath = Path.Combine(root, "npc.json");
-            var armasPath = Path.Combine(root, "Equipo", "armas.json");
-            var pocionesPath = Path.Combine(root, "pociones.json");
+
+            var npcPath = Path.Combine(AppContext.BaseDirectory, "DatosJuego", "npcs", "npc.json");
+            var armasPath = Path.Combine(AppContext.BaseDirectory, "DatosJuego", "Equipo", "armas.json");
+            var pocionesPath = Path.Combine(AppContext.BaseDirectory, "DatosJuego", "pociones", "pociones.json");
 
             var npcs = JsonSerializer.Deserialize<List<NpcDto>>(File.ReadAllText(npcPath)) ?? new();
             var armas = JsonSerializer.Deserialize<List<ArmaDto>>(File.ReadAllText(armasPath)) ?? new();

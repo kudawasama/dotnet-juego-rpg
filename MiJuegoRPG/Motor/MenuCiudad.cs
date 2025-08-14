@@ -60,7 +60,7 @@ namespace MiJuegoRPG.Motor
                         break;
                     case "7":
                         juego.AvanzarTiempo(1);
-                        juego.MostrarMenuMisionesNPC();
+                        menusJuego.MostrarMenuMisionesNPC();
                         break;
                     case "8":
                         juego.AvanzarTiempo(1);

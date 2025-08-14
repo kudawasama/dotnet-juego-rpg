@@ -1,3 +1,4 @@
+        
 using System;
 using System.IO;
 using System.Text.Json;
@@ -164,8 +165,8 @@ namespace MiJuegoRPG.Motor
         {
             Console.WriteLine("--- NPCs de la ciudad actual ---");
             var ciudadActual = juego.ubicacionActual?.Nombre;
-            var rutaNPCs = Path.Combine(Environment.CurrentDirectory, "PjDatos", "npc.json");
-            var rutaMisiones = Path.Combine(Environment.CurrentDirectory, "PjDatos", "misiones.json");
+                var rutaNPCs = Path.Combine(Environment.CurrentDirectory, "DatosJuego", "npcs", "NPC.json");
+                var rutaMisiones = Path.Combine(Environment.CurrentDirectory, "DatosJuego", "misiones", "Misiones.json");
             List<Mision> misiones = new List<Mision>();
             if (File.Exists(rutaMisiones))
             {
@@ -738,6 +739,36 @@ namespace MiJuegoRPG.Motor
                         break;
                     case "3":
                         MostrarMenuPrincipalFijo();
+                        break;
+                    case "4":
+                        return;
+                    default:
+                        Console.WriteLine("Opción no válida.");
+                        break;
+                }
+            }
+        }
+        public void MostrarMenuRecoleccion()
+        {
+            while (true)
+            {
+                Console.WriteLine("\n=== Menú de Recolección ===");
+                Console.WriteLine("1. Recolectar");
+                Console.WriteLine("2. Minar");
+                Console.WriteLine("3. Talar");
+                Console.WriteLine("4. Volver");
+                Console.Write("Selecciona una opción: ");
+                var opcion = Console.ReadLine();
+                switch (opcion)
+                {
+                    case "1":
+                        juego.RealizarAccionRecoleccion("Recolectar");
+                        break;
+                    case "2":
+                        juego.RealizarAccionRecoleccion("Minar");
+                        break;
+                    case "3":
+                        juego.RealizarAccionRecoleccion("Talar");
                         break;
                     case "4":
                         return;

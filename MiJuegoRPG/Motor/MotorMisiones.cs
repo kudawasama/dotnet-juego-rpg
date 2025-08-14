@@ -51,7 +51,7 @@ namespace MiJuegoRPG.Motor
             Console.WriteLine("--- Misiones Disponibles ---");
             try
             {
-                var rutaMisiones = Path.Combine(Environment.CurrentDirectory, "PjDatos", "misiones.json");
+                var rutaMisiones = Path.Combine(Environment.CurrentDirectory, "DatosJuego", "misiones", "misiones.json");
                 if (File.Exists(rutaMisiones))
                 {
                     var json = File.ReadAllText(rutaMisiones);
@@ -84,8 +84,8 @@ namespace MiJuegoRPG.Motor
             Console.WriteLine("--- NPCs ---");
             try
             {
-                var rutaNPCs = Path.Combine(Environment.CurrentDirectory, "PjDatos", "npc.json");
-                var rutaMisiones = Path.Combine(Environment.CurrentDirectory, "PjDatos", "misiones.json");
+                var rutaNPCs = Path.Combine(Environment.CurrentDirectory, "DatosJuego", "npcs", "npc.json");
+                var rutaMisiones = Path.Combine(Environment.CurrentDirectory, "DatosJuego", "misiones", "misiones.json");
                 List<Mision> misiones = new List<Mision>();
                 if (File.Exists(rutaMisiones))
                 {

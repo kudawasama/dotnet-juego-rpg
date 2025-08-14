@@ -35,8 +35,9 @@ namespace MiJuegoRPG.Motor.Menus
                         var ciudadDesbloqueada = juego.estadoMundo.Ubicaciones.Find(u => u.Tipo == "Ciudad" && u.Desbloqueada);
                         if (ciudadDesbloqueada != null)
                         {
-                            juego.ubicacionActual = ciudadDesbloqueada;
-                            Console.WriteLine("Has regresado a la ciudad.");
+                            // Buscar la instancia exacta de la ciudad en estadoMundo.Ubicaciones y asignarla
+                            juego.ubicacionActual = juego.estadoMundo.Ubicaciones.First(u => u.Id == ciudadDesbloqueada.Id);
+                            Console.WriteLine($"Regresaste a {ciudadDesbloqueada.Nombre}.");
                         }
                         else
                             Console.WriteLine("No tienes acceso a ninguna ciudad desbloqueada en este momento.");

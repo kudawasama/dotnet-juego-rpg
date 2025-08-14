@@ -177,8 +177,8 @@ namespace MiJuegoRPG.Personaje
     public int VidaMaxima { get; set; }
     public Inventario Inventario { get; set; } = new Inventario();
     public int VidaActual => Vida;
-    public AtributosBase Atributos => Clase != null ? Clase.Atributos : AtributosBase;
-    public AtributosBase AtributosBase { get; set; } = new AtributosBase();
+    public AtributosBase Atributos => AtributosBase; // Atributos del personaje
+    public AtributosBase AtributosBase { get; set; } = new AtributosBase(); // Atributos base del personaje
     public string Titulo { get; set; } = "Sin título";
     public string ClaseDesbloqueada { get; set; } = "Sin clase";
 
@@ -298,7 +298,6 @@ namespace MiJuegoRPG.Personaje
             Experiencia = 0;
             ExperienciaSiguienteNivel = CalcularExperienciaNecesaria(Nivel + 1);
             Oro = 0;
-            AtributosBase = new AtributosBase();
             Clase = null;
         }
 
@@ -310,11 +309,27 @@ namespace MiJuegoRPG.Personaje
         // Método para entrenar atributos y desbloquear clases/títulos
         public void Entrenar(string atributo)
         {
-            // Sistema estandarizado: experiencia base * índice de atributo * índice de nivel
+            // Sistema estandarizado: experiencia base * índice de atributo * índice de nivel * dificultad por nivel de atributo
             double expBase = 0.01; // Puedes ajustar este valor base
             double indiceNivel = Math.Pow(1.05, Nivel - 1); // Cada nivel aumenta la dificultad un 5%
             double indiceAtributo = IndiceAtributo.ContainsKey(atributo.ToLower()) ? IndiceAtributo[atributo.ToLower()] : 1.0;
-            double expPorMinuto = expBase / (indiceNivel * indiceAtributo);
+            double valorAtributo = 1.0; // Valor actual del atributo
+            double factorEscalado = 0.05; // Ajusta este valor para más o menos dificultad
+            switch (atributo.ToLower())
+            {
+                case "fuerza": valorAtributo = AtributosBase.Fuerza; break;
+                case "inteligencia": valorAtributo = AtributosBase.Inteligencia; break;
+                case "destreza": valorAtributo = AtributosBase.Destreza; break;
+                case "magia": valorAtributo = 1.0; break; // Si tienes atributo Magia, cámbialo aquí
+                case "suerte": valorAtributo = AtributosBase.Suerte; break;
+                case "defensa": valorAtributo = AtributosBase.Defensa; break;
+                case "vitalidad": valorAtributo = AtributosBase.Vitalidad; break;
+                case "agilidad": valorAtributo = AtributosBase.Agilidad; break;
+                case "resistencia": valorAtributo = AtributosBase.Resistencia; break;
+                case "percepcion": valorAtributo = AtributosBase.Percepcion; break;
+                default: valorAtributo = 1.0; break;
+            }
+            double expPorMinuto = expBase / (indiceNivel * indiceAtributo * (1 + valorAtributo * factorEscalado));
             if (expPorMinuto < 0.0001) expPorMinuto = 0.0001; // Límite mínimo absoluto
             int minutos = 1; // Simulación: cada acción equivale a 1 minuto
             switch (atributo.ToLower())

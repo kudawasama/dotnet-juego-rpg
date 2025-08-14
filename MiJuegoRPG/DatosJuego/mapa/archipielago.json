@@ -3,6 +3,7 @@
     "Id": "BethrArchipelago",
     "Nombre": "Bethr Archipelago",
     "Region": "Sur-Este",
+    "Tipo": "Archipiélago",
     "Descripcion": "Archipiélago al sureste, con islas y rutas marítimas.",
     "NivelMinimo": 70,
     "NivelMaximo": 99,

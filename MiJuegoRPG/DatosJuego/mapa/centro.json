@@ -3,6 +3,7 @@
     "Id": "Titan",
     "Nombre": "Ciudad de Titan",
     "Region": "Centro",
+    "Tipo": "Ciudad",
     "Descripcion": "Ciudad fortificada, centro político y militar del continente.",
     "NivelMinimo": 0,
     "NivelMaximo": 0,
