@@ -19,7 +19,7 @@ namespace MiJuegoRPG.PjDatos
         /// <param name="dbPath">Ruta personalizada al archivo .db (opcional)</param>
         public PersonajeSqliteService(string? dbPath = null)
         {
-            _dbPath = dbPath ?? Path.Combine(AppContext.BaseDirectory, "juego.db");
+            _dbPath = dbPath ?? Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", "DatosCompartidos", "juego.db");
             Inicializar();
         }
 
