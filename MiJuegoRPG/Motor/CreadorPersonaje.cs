@@ -84,7 +84,8 @@ namespace MiJuegoRPG.Motor  // Debe ser este espacio de nombres
         public static MiJuegoRPG.Personaje.Personaje CrearSinClase()
         {
             Console.WriteLine("Nombre de tu personaje:");
-            string nombre = Console.ReadLine() ?? "Héroe Sin Nombre";
+            string nombre = InputService.LeerOpcion();
+            if (string.IsNullOrWhiteSpace(nombre)) nombre = "Héroe Sin Nombre";
 
             // Atributos base neutros
             var atributosBase = new AtributosBase(5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5);

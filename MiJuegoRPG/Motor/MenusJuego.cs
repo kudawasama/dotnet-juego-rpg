@@ -29,7 +29,7 @@ namespace MiJuegoRPG.Motor
             {
                 Console.WriteLine("No hay ubicaciones disponibles.");
                 Console.WriteLine("Presiona cualquier tecla para volver...");
-                Console.ReadKey();
+                InputService.Pausa();
                 return;
             }
             int i = 1;
@@ -41,7 +41,7 @@ namespace MiJuegoRPG.Motor
             }
             Console.WriteLine("0. Volver");
             Console.Write("Elige tu destino: ");
-            var opcion = Console.ReadLine();
+            var opcion = InputService.LeerOpcion();
             if (int.TryParse(opcion, out int seleccion) && seleccion > 0 && seleccion <= juego.estadoMundo.Ubicaciones.Count)
             {
                 var destino = juego.estadoMundo.Ubicaciones[seleccion - 1];
@@ -66,7 +66,7 @@ namespace MiJuegoRPG.Motor
                 Console.WriteLine("Opción no válida.");
             }
             Console.WriteLine("Presiona cualquier tecla para continuar...");
-            Console.ReadKey();
+            InputService.Pausa();
         }
 
         public void MostrarMenuGuardado()
@@ -77,7 +77,7 @@ namespace MiJuegoRPG.Motor
             Console.WriteLine("1. Guardar partida");
             Console.WriteLine("2. Cargar partida");
             Console.WriteLine("3. Volver al menú principal");
-            var opcion = Console.ReadLine();
+            var opcion = InputService.LeerOpcion();
             switch (opcion)
             {
                 case "1":
@@ -99,7 +99,7 @@ namespace MiJuegoRPG.Motor
                     break;
             }
             Console.WriteLine("\nPresiona cualquier tecla para continuar...");
-            Console.ReadKey();
+            InputService.Pausa();
         }
 
         public void MostrarMenuMisionesNPC()
@@ -111,17 +111,17 @@ namespace MiJuegoRPG.Motor
             Console.WriteLine("2. Ver NPCs de la ciudad actual");
             Console.WriteLine("3. Volver");
             Console.Write("Seleccione una opción: ");
-            var opcion = Console.ReadLine();
+            var opcion = InputService.LeerOpcion();
             switch (opcion)
             {
                 case "1":
                     MostrarMisionesActivas();
-                    Console.ReadKey();
+                    InputService.Pausa();
                     MostrarMenuMisionesNPC();
                     break;
                 case "2":
                     MostrarNPCsCiudadActual();
-                    Console.ReadKey();
+                    InputService.Pausa();
                     MostrarMenuMisionesNPC();
                     break;
                 case "3":
@@ -129,7 +129,7 @@ namespace MiJuegoRPG.Motor
                     break;
                 default:
                     Console.WriteLine("Opción inválida");
-                    Console.ReadKey();
+                    InputService.Pausa();
                     MostrarMenuMisionesNPC();
                     break;
             }
@@ -188,7 +188,7 @@ namespace MiJuegoRPG.Motor
                         Console.WriteLine($"{i + 1}. {npc.Nombre}");
                     }
                     Console.Write("Selecciona un NPC para ver sus misiones: ");
-                    if (int.TryParse(Console.ReadLine(), out int seleccion) && seleccion > 0 && seleccion <= npcsCiudad.Count)
+                    if (int.TryParse(InputService.LeerOpcion(), out int seleccion) && seleccion > 0 && seleccion <= npcsCiudad.Count)
                     {
                         var npcSeleccionado = npcsCiudad[seleccion - 1];
                         Console.WriteLine($"--- Misiones disponibles con {npcSeleccionado.Nombre} ---");
@@ -203,7 +203,7 @@ namespace MiJuegoRPG.Motor
                         {
                             Console.WriteLine($"\nTienes una misión activa para entregar: {misionActivaEntregable.Nombre}");
                             Console.Write("¿Deseas entregar la misión? (s/n): ");
-                            var entregar = Console.ReadLine();
+                            var entregar = InputService.LeerOpcion();
                             if (entregar != null && entregar.Trim().ToLower() == "s")
                             {
                                 if (juego.jugador != null)
@@ -242,7 +242,7 @@ namespace MiJuegoRPG.Motor
                                 }
                             }
                             Console.Write("\n¿Deseas aceptar alguna misión? Ingresa el número o presiona Enter para volver: ");
-                            var input = Console.ReadLine();
+                            var input = InputService.LeerOpcion();
                             if (int.TryParse(input, out int idx) && idx > 0 && idx <= misionesAccesibles.Count)
                             {
                                 var misionSeleccionada = misionesAccesibles[idx - 1]!;
@@ -290,7 +290,7 @@ namespace MiJuegoRPG.Motor
                 Console.WriteLine("3. Ver información y atributos");
                 Console.WriteLine("4. Volver");
                 Console.Write("Seleccione una opción: ");
-                var opcion = Console.ReadLine();
+                var opcion = InputService.LeerOpcion();
                 switch (opcion)
                 {
                     case "1":
@@ -320,6 +320,7 @@ namespace MiJuegoRPG.Motor
             }
             var inventario = juego.jugador.Inventario;
             inventario.MostrarInventario();
+        
             // Menú básico de inventario
             while (true)
             {
@@ -327,11 +328,11 @@ namespace MiJuegoRPG.Motor
                 Console.WriteLine("1. Usar objeto");
                 Console.WriteLine("2. Salir del inventario");
                 Console.Write("Selecciona una opción: ");
-                var opcion = Console.ReadLine();
+                var opcion = InputService.LeerOpcion();
                 if (opcion == "1")
                 {
                     Console.Write("Ingresa el nombre del objeto a usar: ");
-                    var nombre = Console.ReadLine();
+                    var nombre = InputService.LeerOpcion();
                     var obj = inventario.NuevosObjetos.FirstOrDefault(o => o.Objeto.Nombre.Equals(nombre, StringComparison.OrdinalIgnoreCase));
                     if (obj != null && obj.Cantidad > 0)
                     {
@@ -364,7 +365,7 @@ namespace MiJuegoRPG.Motor
             Console.WriteLine("[Stub] CargarPartida: Implementar lógica de carga aquí.");
         }
 
-        private void MostrarEquipo()
+        private void MostrarEquipo()   // Método para mostrar el equipo del jugador
         {
             if (juego.jugador == null)
             {
@@ -538,7 +539,7 @@ namespace MiJuegoRPG.Motor
                 Console.WriteLine("5. Salir del juego");
                 Console.WriteLine("6. Volver");
                 Console.Write("Seleccione una opción: ");
-                var opcion = Console.ReadLine();
+                var opcion = InputService.LeerOpcion();
                 switch (opcion)
                 {
                     case "1":
@@ -578,7 +579,7 @@ namespace MiJuegoRPG.Motor
                 Console.WriteLine("4. Menú fijo");
                 Console.WriteLine("5. Salir de la ciudad");
                 Console.Write("Seleccione una opción: ");
-                var opcion = Console.ReadLine();
+                var opcion = InputService.LeerOpcion();
                 switch (opcion)
                 {
                     case "1":
@@ -613,7 +614,7 @@ namespace MiJuegoRPG.Motor
                 Console.WriteLine("4. Huir");
                 Console.WriteLine("5. Menú principal (fijo)");
                 Console.Write("Seleccione una opción: ");
-                var opcion = Console.ReadLine();
+                var opcion = InputService.LeerOpcion();
                 switch (opcion)
                 {
                     case "1":
@@ -659,14 +660,14 @@ namespace MiJuegoRPG.Motor
                 }
                 Console.WriteLine("C. Comprar | V. Vender | S. Salir");
                 Console.Write("> ");
-                var op = Console.ReadLine()?.Trim().ToUpperInvariant();
+                var op = InputService.LeerOpcion()?.Trim().ToUpperInvariant();
                 if (op=="S") break;
                 if (juego.jugador==null) { Console.WriteLine("No hay personaje."); continue; }
 
                 if (op=="C")
                 {
-                    Console.Write("Índice a comprar: "); int.TryParse(Console.ReadLine(), out var idx);
-                    Console.Write("Cantidad: "); int.TryParse(Console.ReadLine(), out var cant);
+                    Console.Write("Índice a comprar: "); int.TryParse(InputService.LeerOpcion(), out var idx);
+                    Console.Write("Cantidad: "); int.TryParse(InputService.LeerOpcion(), out var cant);
                     if (_shop.Comprar(juego.jugador, vendor, idx-1, cant, out var msg)) Console.WriteLine(msg);
                     else Console.WriteLine($"No se pudo comprar: {msg}");
                 }
@@ -679,8 +680,8 @@ namespace MiJuegoRPG.Motor
                         var pr = new MiJuegoRPG.Comercio.PriceService().PrecioReventa(si.Objeto);
                         Console.WriteLine($"{i+1}. {si.Objeto.Nombre} x{si.Cantidad}  [vende: {pr}]");
                     }
-                    Console.Write("Índice a vender: "); int.TryParse(Console.ReadLine(), out var idx);
-                    Console.Write("Cantidad: "); int.TryParse(Console.ReadLine(), out var cant);
+                    Console.Write("Índice a vender: "); int.TryParse(InputService.LeerOpcion(), out var idx);
+                    Console.Write("Cantidad: "); int.TryParse(InputService.LeerOpcion(), out var cant);
                     if (_shop.Vender(juego.jugador, vendor, idx-1, cant, out var msg)) Console.WriteLine(msg);
                     else Console.WriteLine($"No se pudo vender: {msg}");
                 }
@@ -697,7 +698,7 @@ namespace MiJuegoRPG.Motor
                 Console.WriteLine("3. Menú principal (fijo)");
                 Console.WriteLine("4. Volver");
                 Console.Write("Seleccione una opción: ");
-                var opcion = Console.ReadLine();
+                var opcion = InputService.LeerOpcion();
                 switch (opcion)
                 {
                     case "1":
@@ -728,7 +729,7 @@ namespace MiJuegoRPG.Motor
                 Console.WriteLine("3. Menú principal (fijo)");
                 Console.WriteLine("4. Volver");
                 Console.Write("Seleccione una opción: ");
-                var opcion = Console.ReadLine();
+                var opcion = InputService.LeerOpcion();
                 switch (opcion)
                 {
                     case "1":
@@ -758,7 +759,7 @@ namespace MiJuegoRPG.Motor
                 Console.WriteLine("3. Talar");
                 Console.WriteLine("4. Volver");
                 Console.Write("Selecciona una opción: ");
-                var opcion = Console.ReadLine();
+                var opcion = InputService.LeerOpcion();
                 switch (opcion)
                 {
                     case "1":

@@ -18,7 +18,7 @@ class Program
             Console.WriteLine("0. Salir");
             Console.Write("Selecciona una opción: ");
             string opcion = Console.ReadLine() ?? "1";
-
+            
             switch (opcion)
             {
                 case "2":

@@ -128,10 +128,10 @@ namespace MiJuegoRPG.Motor
                 var opcion = Console.ReadLine();
                 if (opcion == "1") break;
                 if (opcion == "2") {
-                    // Volver al menú de ubicación si existe
+                    // Volver al menú de ubicación principal moderno
                     var juego = MiJuegoRPG.Motor.Juego.ObtenerInstanciaActual();
                     if (juego != null)
-                        juego.MostrarMenuUbicacion();
+                        juego.MostrarMenuPorUbicacion();
                     break;
                 }
             }

@@ -20,9 +20,7 @@ namespace MiJuegoRPG.Motor.Menus
             Console.WriteLine("2. Guardar partida");
             Console.WriteLine("3. Cargar partida");
             Console.WriteLine("0. Volver");
-            Console.Write("Selecciona una opción: ");
-            var key = Console.ReadKey(true);
-            opcion = key.KeyChar.ToString();
+            opcion = InputService.LeerOpcion();
             switch (opcion)
             {
                 case "1": menusJuego.MostrarInventario(); break;
@@ -31,6 +29,7 @@ namespace MiJuegoRPG.Motor.Menus
                 case "0": return;
                 default:
                     Console.WriteLine("Opción no válida.");
+                    InputService.Pausa();
                     break;
             }
         }

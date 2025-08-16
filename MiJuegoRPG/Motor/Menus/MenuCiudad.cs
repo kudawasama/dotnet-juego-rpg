@@ -26,9 +26,7 @@ namespace MiJuegoRPG.Motor.Menus
                 Console.WriteLine("5. Salir de la ciudad");
                 Console.WriteLine("9. Menú fijo");
                 Console.WriteLine("0. Volver al menú principal");
-                Console.Write("Selecciona una opción: ");
-                var key = Console.ReadKey(true);
-                opcion = key.KeyChar.ToString();
+                opcion = InputService.LeerOpcion();
                 switch (opcion)
                 {
                     case "1": juego.MostrarTienda(); break;
@@ -37,19 +35,29 @@ namespace MiJuegoRPG.Motor.Menus
                     case "4":
                         if (juego.jugador != null)
                         {
+                            if (juego.jugador.UltimoDiaDescanso != Juego.DiaActual)
+                            {
+                                juego.jugador.DescansosHoy = 0;
+                                juego.jugador.UltimoDiaDescanso = Juego.DiaActual;
+                            }
                             juego.jugador.Vida = juego.jugador.VidaMaxima;
-                            Console.WriteLine("Has descansado y recuperado toda tu vida.");
+                            juego.jugador.EnergiaActual = juego.jugador.EnergiaMaxima;
+                            Console.WriteLine($"DEBUG: Energía tras descansar: {juego.jugador.EnergiaActual}/{juego.jugador.EnergiaMaxima}");
+                            juego.jugador.DescansosHoy++; // <--- Aquí se incrementa el contador
+                            Console.WriteLine("Has descansado y recuperado toda tu vida y energía.");
                         }
                         else
                             Console.WriteLine("No hay personaje cargado.");
                         juego.MostrarMenuFijo(ref salir);
                         break;
-                    case "5": juego.MostrarMenuRutas(); break;
+                    case "5":
+                        juego.MostrarMenuRutas();
+                        return;
                     case "9": juego.MostrarMenuFijo(ref salir); break;
                     case "0": return;
                     default:
                         Console.WriteLine("Opción no válida.");
-                        juego.MostrarMenuFijo(ref salir);
+                        InputService.Pausa();
                         break;
                 }
             }

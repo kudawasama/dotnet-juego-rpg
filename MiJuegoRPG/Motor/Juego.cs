@@ -14,6 +14,7 @@ using MiJuegoRPG.Objetos;
 namespace MiJuegoRPG.Motor
 {
     public class Juego
+   
     {
         // Método para generar un material aleatorio (stub temporal)
         public Material GenerarMaterialAleatorio()
@@ -33,8 +34,7 @@ namespace MiJuegoRPG.Motor
                 Console.WriteLine("3. Inventario");
                 Console.WriteLine("4. Guardar personaje");
                 Console.WriteLine("0. Salir del juego");
-                Console.Write("Selecciona una opción: ");
-                string opcion = Console.ReadLine() ?? "";
+                string opcion = InputService.LeerOpcion();
                 switch (opcion)
                 {
                     case "1":
@@ -77,11 +77,12 @@ namespace MiJuegoRPG.Motor
             // Ubicación inicial: Ciudad de Bairan
             var bairan = estadoMundo.Ubicaciones.Find(u => u.Nombre == "Ciudad de Bairan");
             if (bairan != null)
-                jugador.UbicacionActual = bairan;
+                ubicacionActual = bairan;
+            else if (estadoMundo.Ubicaciones.Count > 0)
+                ubicacionActual = estadoMundo.Ubicaciones[0];
             else
-                jugador.UbicacionActual = ubicacionActual;
-            ubicacionActual = jugador.UbicacionActual;
-            Console.WriteLine($"Personaje creado: {jugador.Nombre} en {jugador.UbicacionActual.Nombre}");
+                throw new Exception("No hay ubicaciones disponibles para asignar al personaje.");
+            Console.WriteLine($"Personaje creado: {jugador.Nombre} en {ubicacionActual.Nombre}");
         }
         // Menú de recolección fuera de ciudad
         public void MostrarMenuRecoleccion()
@@ -125,19 +126,17 @@ namespace MiJuegoRPG.Motor
         }
 
 
-
-        public void MostrarMenuUbicacion()
+        /// <summary>
+        /// Sincroniza el tiempo del juego con el tiempo real del sistema.
+        /// </summary>
+        public void SincronizarTiempoConRelojReal()
         {
-            // Este menú ya no se usa
-            Console.WriteLine("Este menú ha sido reemplazado por el menú de ubicación principal.");
-            Console.WriteLine("Presiona cualquier tecla para volver al menú principal...");
-            Console.ReadKey();
-            return;
-        }
-
-        public void AvanzarTiempo(int minutos)
-        {
-            // Implementación pendiente
+            // Calcula la diferencia en días entre la fecha de inicio y la fecha actual del sistema
+            var ahora = DateTime.Now;
+            var diasTranscurridos = (ahora.Date - FechaInicio.Date).Days;
+            if (diasTranscurridos < 0) diasTranscurridos = 0;
+            // Calcula los minutos transcurridos desde la FechaInicio hasta ahora
+            MinutosMundo = (int)(ahora - FechaInicio).TotalMinutes;
         }
 
         public void IrATienda()
@@ -161,10 +160,7 @@ namespace MiJuegoRPG.Motor
         public DateTime FechaActual => FechaInicio.AddMinutes(MinutosMundo);
         public string FormatoRelojMundo => $"[{FechaActual:dd-MM-yyyy} // {FechaActual:HH:mm:ss} hrs]";
         public static Juego? InstanciaActual { get; private set; }
-        public int ProbMonstruo = 40;
-        public int ProbObjeto = 30;
-        public int ProbMazmorra = 10;
-        public int ProbEvento = 20;
+
         private readonly Random random = new Random();
         public MiJuegoRPG.Personaje.Personaje? jugador;
         private MenusJuego menuPrincipal;
@@ -185,6 +181,10 @@ namespace MiJuegoRPG.Motor
             InstanciaActual = this;
             menuPrincipal = new MenusJuego(this);
             estadoMundo = new EstadoMundo();
+
+            string rutaEnemigos = Path.Combine(ObtenerRutaRaizProyecto(), "MiJuegoRPG", "DatosJuego", "enemigos.json");
+            GeneradorEnemigos.CargarEnemigos(rutaEnemigos);
+
             // Llenar estadoMundo.Ubicaciones con todos los sectores del mapa
             foreach (var sector in mapa.ObtenerSectores())
             {
@@ -195,13 +195,31 @@ namespace MiJuegoRPG.Motor
                     Nombre = sector.Nombre,
                     Tipo = sector.Tipo,
                     Descripcion = sector.Descripcion,
-                    Desbloqueada = sector.CiudadInicial || sector.Id == "bairan", // O lógica que prefieras
+                    Desbloqueada = sector.CiudadInicial || sector.Id == "bairan", // Solo la ciudad inicial desbloqueada por defecto
                     // Puedes mapear más campos si lo necesitas
                 };
                 estadoMundo.Ubicaciones.Add(ubic);
             }
-            ubicacionActual = estadoMundo.Ubicaciones.Find(u => u.Nombre == "Ciudad de Bairan")
-                ?? estadoMundo.Ubicaciones[0];
+            // Desbloquear sectores adyacentes a la ciudad inicial
+            var bairan = estadoMundo.Ubicaciones.Find(u => u.Nombre == "Ciudad de Bairan");
+            if (bairan != null)
+            {
+                var sectorBairan = mapa.ObtenerSectores().Find(s => s.Nombre == "Ciudad de Bairan");
+                if (sectorBairan != null)
+                {
+                    foreach (var idConexion in sectorBairan.Conexiones)
+                    {
+                        var ubicAdj = estadoMundo.Ubicaciones.Find(u => u.Id == idConexion);
+                        if (ubicAdj != null)
+                            ubicAdj.Desbloqueada = true;
+                    }
+                }
+                ubicacionActual = bairan;
+            }
+            else
+            {
+                ubicacionActual = estadoMundo.Ubicaciones[0];
+            }
             CargarProbabilidades();
             motorEventos = new MotorEventos(this);
             motorCombate = new MotorCombate(this);
@@ -249,9 +267,7 @@ namespace MiJuegoRPG.Motor
                 Console.WriteLine("5. Salir de la ciudad");
                 Console.WriteLine("9. Menú fijo");
                 Console.WriteLine("0. Volver al menú principal");
-                Console.Write("Selecciona una opción: ");
-                var key = Console.ReadKey(true);
-                opcion = key.KeyChar.ToString();
+                opcion = InputService.LeerOpcion();
                 switch (opcion)
                 {
                     case "1": MostrarTienda(); break;
@@ -267,12 +283,14 @@ namespace MiJuegoRPG.Motor
                             Console.WriteLine("No hay personaje cargado.");
                         MostrarMenuFijo(ref salir);
                         break;
-                    case "5": MostrarMenuRutas(); break;
+                    case "5":
+                        MostrarMenuRutas();
+                        return;
                     case "9": MostrarMenuFijo(ref salir); break;
                     case "0": return;
                     default:
                         Console.WriteLine("Opción no válida.");
-                        MostrarMenuFijo(ref salir);
+                        InputService.Pausa();
                         break;
                 }
             }
@@ -294,21 +312,18 @@ namespace MiJuegoRPG.Motor
             Console.WriteLine("2. Guardar personaje");
             Console.WriteLine("3. Volver al menú principal");
             Console.WriteLine("0. Salir del juego");
-            Console.Write("Selecciona una opción: ");
-            string opcion = Console.ReadLine() ?? "";
+            string opcion = InputService.LeerOpcion();
             switch (opcion)
             {
                 case "1":
                     if (jugador != null) MostrarEstadoPersonaje(jugador);
                     else Console.WriteLine("No hay personaje cargado.");
-                    Console.WriteLine("Presiona cualquier tecla para continuar...");
-                    Console.ReadKey();
+                    InputService.Pausa();
                     break;
                 case "2":
                     GuardarPersonaje();
                     Console.WriteLine("¡Personaje guardado exitosamente!");
-                    Console.WriteLine("Presiona cualquier tecla para continuar...");
-                    Console.ReadKey();
+                    InputService.Pausa();
                     break;
                 case "3":
                     // Al volver, mostrar el menú adecuado según la ubicación actual
@@ -331,8 +346,7 @@ namespace MiJuegoRPG.Motor
                     break;
                 default:
                     Console.WriteLine("Opción no válida.");
-                    Console.WriteLine("Presiona cualquier tecla para continuar...");
-                    Console.ReadKey();
+                    InputService.Pausa();
                     break;
             }
         }
@@ -347,6 +361,7 @@ namespace MiJuegoRPG.Motor
             Console.WriteLine($"Título: {pj.Titulo}");
             Console.WriteLine($"Nivel: {pj.Nivel}");
             Console.WriteLine($"Vida: {pj.Vida}/{pj.VidaMaxima}");
+            Console.WriteLine($"Energía: {pj.EnergiaActual}/{pj.EnergiaMaxima}");
             Console.WriteLine($"Oro: {pj.Oro}");
             int expActual = pj.Experiencia;
             int expSiguiente = pj.ExperienciaSiguienteNivel;
@@ -354,6 +369,7 @@ namespace MiJuegoRPG.Motor
             double porcentaje = expSiguiente > 0 ? (double)expActual / expSiguiente * 100.0 : 0.0;
             Console.WriteLine($"Experiencia: {expActual} / {expSiguiente} (Faltan {expFaltante})");
             Console.WriteLine($"Progreso al siguiente nivel: {porcentaje:F2}%");
+            Console.WriteLine($"Descansos realizados hoy: {pj.DescansosHoy}");
             Console.WriteLine("\n--- Atributos Base ---");
             Console.WriteLine("===================================");
             var ab = pj.AtributosBase;
@@ -565,6 +581,11 @@ namespace MiJuegoRPG.Motor
             estadoMundo.Ubicaciones.Add(ciudadBruma);
         }
 
+        public int ProbMonstruo = 40;
+        public int ProbObjeto = 30;
+        public int ProbMazmorra = 10;
+        public int ProbEvento = 20;
+
         private void CargarProbabilidades()
         {
             string rutaProyecto = ObtenerRutaRaizProyecto();
@@ -638,6 +659,7 @@ namespace MiJuegoRPG.Motor
          }
         
         
+        
 
         public void MostrarMenuGuardado()
         {
@@ -677,13 +699,13 @@ namespace MiJuegoRPG.Motor
             // Ganar experiencia por explorar
             if (jugador != null)
             {
-                jugador.ExpDestreza += 0.2;
-                jugador.ExpAgilidad += 0.1;
-                jugador.ExpPercepcion += 0.1;
+                jugador.ExpDestreza += 0.0002; // Aumento de experiencia por explorar
+                jugador.ExpAgilidad += 0.0001; // Aumento de experiencia por explorar
+                jugador.ExpPercepcion += 0.0002; //        
                 RevisarAtributosPorExperiencia(jugador);
             }
             // 1. Probabilidad de Mazmorra
-            if (random.Next(100) < ProbMazmorra)
+            if (random.Next(100) < ProbMazmorra) //
             {
                 Console.WriteLine("¡Has encontrado una mazmorra!");
                 MostrarMenuMazmorra();
@@ -791,8 +813,20 @@ namespace MiJuegoRPG.Motor
             // Si quieres que sea más fácil, bájalo o usa una suma en vez de multiplicación.
             //
             // Modifica aquí según tus necesidades:
+            var energiaService = new EnergiaService();
             if (jugador != null)
             {
+                // Mostrar energía antes de la acción
+                energiaService.MostrarEnergia(jugador);
+                // Intentar gastar energía
+                if (!energiaService.GastarEnergiaRecoleccion(jugador))
+                {
+                    Console.WriteLine("No puedes realizar la acción por falta de energía.");
+                    Console.WriteLine("Presiona cualquier tecla para continuar...");
+                    Console.ReadKey();
+                    MostrarMenuRecoleccion();
+                    return;
+                }
                 double expBase = 0.01; // Base de experiencia
                 double indiceNivel = Math.Pow(1.05, jugador.Nivel - 1); // Progresión por nivel de jugador
                 int minutos = 1; // Cada acción equivale a 1 minuto
@@ -901,8 +935,18 @@ namespace MiJuegoRPG.Motor
             motorInventario.GestionarInventario();
         }
 
-        // Método para guardar el personaje usando GuardaPersonaje
-    // ...existing code...
+        // Día actual del juego basado en la fecha real del sistema
+        public static int DiaActual
+        {
+            get
+            {
+                // Puedes cambiar la fecha base si quieres que el día 1 sea otro
+                DateTime fechaBase = new DateTime(2025, 8, 16); // Día 1 del juego
+                var hoy = DateTime.Now.Date;
+                int dias = (hoy - fechaBase).Days + 1;
+                return dias > 0 ? dias : 1;
+            }
+        }
 
         // Método para cargar el personaje usando GuardaPersonaje
         public void CargarPersonaje()
@@ -942,8 +986,7 @@ namespace MiJuegoRPG.Motor
             motorCombate.ComenzarCombate();
         }
 
-        // Combate con varios enemigos distintos
-        // Eliminado combate múltiple, solo combate clásico
+      // Comienza a las 8 AM
 
         // Menú básico de mazmorra
         public void MostrarMenuMazmorra()
@@ -974,8 +1017,8 @@ namespace MiJuegoRPG.Motor
         {
             // Mostrar sectores disponibles fuera de la ciudad
             var sectores = mapa.ObtenerSectores();
-            // Buscar el sector actual por nombre
-            var sectorActual = sectores.Find(s => s.Nombre == ubicacionActual.Nombre);
+            // Buscar el sector actual por ID
+            var sectorActual = sectores.Find(s => s.Id == ubicacionActual.Id);
             List<PjDatos.SectorData> sectoresConectados = new List<PjDatos.SectorData>();
             if (sectorActual != null && sectorActual.Conexiones != null)
             {
@@ -1006,7 +1049,7 @@ namespace MiJuegoRPG.Motor
                 }
                 Console.WriteLine("0. Volver");
                 Console.Write("Selecciona el sector al que deseas viajar: ");
-                string opcion = Console.ReadLine() ?? "0";
+                string opcion = InputService.LeerOpcion() ?? "0";
                 if (opcion == "0")
                 {
                     volver = true;
@@ -1034,8 +1077,10 @@ namespace MiJuegoRPG.Motor
                     Console.ReadKey();
                 }
                 // Al terminar, simplemente regresar al flujo del menú principal
-                MostrarMenuPorUbicacion(ref volver);
+                
             }
+            // Al terminar, mostrar el menú correspondiente a la nueva ubicación
+            MostrarMenuPorUbicacion(ref volver);
         }
     }
 }

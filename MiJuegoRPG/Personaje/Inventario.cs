@@ -1,5 +1,4 @@
-
-        using MiJuegoRPG.Objetos;
+using MiJuegoRPG.Objetos;
         using System;
         using System.Collections.Generic;
         using MiJuegoRPG.Personaje;
@@ -28,16 +27,20 @@ namespace MiJuegoRPG.Personaje
 
     public class Inventario : NewBaseType
     {
-        public List<ObjetoConCantidad> NuevosObjetos { get; set; } = new List<ObjetoConCantidad>();
-        public List<Objeto> Objetos { get; set; } = new List<Objeto>();
+    public List<ObjetoConCantidad> NuevosObjetos { get; set; } = new List<ObjetoConCantidad>();
         public Equipo Equipo { get; set; } = new Equipo();
+        public int CapacidadMaxima { get; set; } = 30;
 
         public void Agregar(Material material, int cantidad = 1)
         {
             AgregarObjeto(material, cantidad);
         }
+
+
+
         public void AgregarObjeto(Objeto objeto, int cantidad = 1)
         {
+            int totalSlots = NuevosObjetos.Count;
             var existente = NuevosObjetos.FirstOrDefault(o => o.Objeto.Nombre == objeto.Nombre && o.Objeto.GetType() == objeto.GetType());
             if (existente != null)
             {
@@ -46,6 +49,11 @@ namespace MiJuegoRPG.Personaje
             }
             else
             {
+                if (totalSlots >= CapacidadMaxima)
+                {
+                    Console.WriteLine("No se puede agregar más objetos. Inventario lleno.");
+                    return;
+                }
                 NuevosObjetos.Add(new ObjetoConCantidad(objeto, cantidad));
                 Console.WriteLine($"{objeto.Nombre} ha sido agregado al inventario.");
             }
@@ -93,6 +101,7 @@ namespace MiJuegoRPG.Personaje
                 Console.WriteLine($"{objCant.Objeto.Nombre,-20} {objCant.Objeto.Categoria,-12} {objCant.Cantidad,-8}");
             }
             Console.WriteLine("----------------------------------------");
+            Console.WriteLine($"Capacidad: {NuevosObjetos.Count}/{CapacidadMaxima}");
         }
     }
 }

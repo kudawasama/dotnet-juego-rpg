@@ -7,6 +7,8 @@ using MiJuegoRPG.Motor;
 namespace MiJuegoRPG.Personaje
 {
     public class Personaje : ICombatiente
+
+    
     {
         // Completar misión y procesar recompensas
         public void CompletarMision(string misionId)
@@ -64,8 +66,15 @@ namespace MiJuegoRPG.Personaje
                 Console.WriteLine("No tienes esa misión activa.");
             }
         }
+        // PROPIEDADES Energía
+        public int EnergiaActual { get; set; } = 100;
+        public int EnergiaMaxima { get; set; } = 100;
+        public int DescansosHoy { get; set; } = 0;
+        public int UltimoDiaDescanso { get; set; } = 0;
+
+        // Ubicacion Actual
         public MiJuegoRPG.Motor.Ubicacion? UbicacionActual { get; set; }
-        // ...existing code...
+        
         // Métodos de bonificadores y objetos equipados
         public double ObtenerBonificadorAtributo(string atributo)
         {
@@ -171,40 +180,40 @@ namespace MiJuegoRPG.Personaje
             public List<string> Condiciones { get; set; } = new List<string>();
         }
         // ...existing code...
-    public string Nombre { get; set; } = string.Empty;
-    public Clase? Clase { get; set; }
-    public int Vida { get; set; }
-    public int VidaMaxima { get; set; }
-    public Inventario Inventario { get; set; } = new Inventario();
-    public int VidaActual => Vida;
-    public AtributosBase Atributos => AtributosBase; // Atributos del personaje
-    public AtributosBase AtributosBase { get; set; } = new AtributosBase(); // Atributos base del personaje
-    public string Titulo { get; set; } = "Sin título";
-    public string ClaseDesbloqueada { get; set; } = "Sin clase";
+        public string Nombre { get; set; } = string.Empty;
+        public Clase? Clase { get; set; }
+        public int Vida { get; set; }
+        public int VidaMaxima { get; set; }
+        public Inventario Inventario { get; set; } = new Inventario();
+        public int VidaActual => Vida;
+        public AtributosBase Atributos => AtributosBase; // Atributos del personaje
+        public AtributosBase AtributosBase { get; set; } = new AtributosBase(); // Atributos base del personaje
+        public string Titulo { get; set; } = "Sin título";
+        public string ClaseDesbloqueada { get; set; } = "Sin clase";
 
         // Experiencia por atributo
-    public double ExpFuerza { get; set; }
-    public double ExpMagia { get; set; }
-    public double ExpAgilidad { get; set; }
-    public double ExpInteligencia { get; set; }
-    public double ExpResistencia { get; set; }
-    public double ExpDefensa { get; set; }
-    public double ExpVitalidad { get; set; }
-    public double ExpSuerte { get; set; }
-    public double ExpDestreza { get; set; }
-    public double ExpPercepcion { get; set; }
+        public double ExpFuerza { get; set; }
+        public double ExpMagia { get; set; }
+        public double ExpAgilidad { get; set; }
+        public double ExpInteligencia { get; set; }
+        public double ExpResistencia { get; set; }
+        public double ExpDefensa { get; set; }
+        public double ExpVitalidad { get; set; }
+        public double ExpSuerte { get; set; }
+        public double ExpDestreza { get; set; }
+        public double ExpPercepcion { get; set; }
 
         // Experiencia requerida para subir cada atributo
-    public double FuerzaExpRequerida { get; set; } = 1.0;
-    public double MagiaExpRequerida { get; set; } = 1.0;
-    public double AgilidadExpRequerida { get; set; } = 1.0;
-    public double InteligenciaExpRequerida { get; set; } = 1.0;
-    public double ResistenciaExpRequerida { get; set; } = 1.0;
-    public double DefensaExpRequerida { get; set; } = 1.0;
-    public double VitalidadExpRequerida { get; set; } = 1.0;
-    public double SuerteExpRequerida { get; set; } = 1.0;
-    public double DestrezaExpRequerida { get; set; } = 1.0;
-    public double PercepcionExpRequerida { get; set; } = 1.0;
+        public double FuerzaExpRequerida { get; set; } = 1.0;
+        public double MagiaExpRequerida { get; set; } = 1.0;
+        public double AgilidadExpRequerida { get; set; } = 1.0;
+        public double InteligenciaExpRequerida { get; set; } = 1.0;
+        public double ResistenciaExpRequerida { get; set; } = 1.0;
+        public double DefensaExpRequerida { get; set; } = 1.0;
+        public double VitalidadExpRequerida { get; set; } = 1.0;
+        public double SuerteExpRequerida { get; set; } = 1.0;
+        public double DestrezaExpRequerida { get; set; } = 1.0;
+        public double PercepcionExpRequerida { get; set; } = 1.0;
 
         // Sistema de Experiencia
         public int Nivel { get; set; }
@@ -212,16 +221,8 @@ namespace MiJuegoRPG.Personaje
         public int ExperienciaSiguienteNivel { get; set; }
         public int Oro { get; set; }
 
-        // Sistema de profesiones (OBSOLETO, mantener solo si se usa en alguna lógica especial)
-        // public Dictionary<string, int> Profesiones { get; set; } = new Dictionary<string, int> {
-        //     { "Herrero", 0 },
-        //     { "Herbolaria", 0 },
-        //     { "Domador", 0 },
-        //     { "Alquimista", 0 },
-        //     { "Cazador", 0 },
-        //     { "Explorador", 0 }
-        // };
-        // public string ProfesionPrincipal { get; set; } = "Sin especialidad";
+        // Control de descansos por día
+
 
         // Implementación de ICombatiente
         public int Defensa => (int)Atributos.Defensa;
@@ -498,31 +499,22 @@ namespace MiJuegoRPG.Personaje
         // Verifica si el personaje cumple un requisito específico (para rutas, misiones, etc.)
         public bool CumpleRequisito(string clave, object valor)
         {
-            switch (clave.ToLower())
+            var requisito = clave.ToLower();
+            return requisito switch
             {
-                case "barco":
-                    // Ejemplo: si el requisito es tener barco
-                    // Puedes validar si el jugador tiene un objeto "Barco" en el inventario
-                    return Inventario.NuevosObjetos.Any(o => o.Objeto.Nombre.ToLower().Contains("barco"));
-                case "oro":
-                    // Si el requisito es tener cierta cantidad de oro
-                    if (valor is int oroRequerido)
-                        return Oro >= oroRequerido;
-                    break;
-                case "nivel":
-                    if (valor is int nivelRequerido)
-                        return Nivel >= nivelRequerido;
-                    break;
-                case "fuerza":
-                    if (valor is int fuerzaRequerida)
-                        return AtributosBase.Fuerza >= fuerzaRequerida;
-                    break;
+                "barco" => Inventario.NuevosObjetos.Any(o => o.Objeto.Nombre.Contains("barco", StringComparison.OrdinalIgnoreCase)),
+                "oro" => valor is int oroRequerido && Oro >= oroRequerido,
+                "nivel" => valor is int nivelRequerido && Nivel >= nivelRequerido,
+                "fuerza" => valor is int fuerzaRequerida && AtributosBase.Fuerza >= fuerzaRequerida,
+                "inteligencia" => valor is int inteligenciaRequerida && AtributosBase.Inteligencia >= inteligenciaRequerida,
+                "misioncompletada" => valor is string idMision && MisionesCompletadas.Any(m => m.Id == idMision),
                 // Agrega más casos según los requisitos que uses en el juego
-                default:
-                    // Si el requisito no se reconoce, por defecto no se cumple
-                    return false;
-            }
-            return false;
+                _ => false,
+            };
+
         }
+
+        
+
     }
 }

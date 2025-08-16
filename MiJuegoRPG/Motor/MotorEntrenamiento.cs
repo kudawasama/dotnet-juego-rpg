@@ -13,6 +13,7 @@ namespace MiJuegoRPG.Motor
         }
         public void Entrenar()
         {
+            // Muestra el reloj del mundo y el menú de atributos a entrenar
             Console.WriteLine(juego.FormatoRelojMundo);
             Console.WriteLine("¿Qué atributo deseas entrenar?");
             Console.WriteLine("1. Fuerza");
@@ -27,6 +28,7 @@ namespace MiJuegoRPG.Motor
             Console.WriteLine("0. Salir");
             var opcion = Console.ReadLine();
             int seleccion;
+            // Si la opción es válida (1-9), se selecciona el atributo a entrenar
             if (int.TryParse(opcion, out seleccion) && seleccion >= 1 && seleccion <= 9)
             {
                 string atributo = seleccion switch
@@ -44,17 +46,22 @@ namespace MiJuegoRPG.Motor
                 };
                 Console.WriteLine($"¿Cuántos minutos deseas entrenar {atributo}? (0 para cancelar)");
                 var minStr = Console.ReadLine();
+                // Si el usuario ingresa minutos válidos, inicia el entrenamiento
                 if (int.TryParse(minStr, out int minutos) && minutos > 0)
                 {
                     bool cancelado = false;
-                    for (int i = 0; i < minutos && !cancelado; i++) // Entrenamiento por minutos
+                    // Bucle por cada minuto de entrenamiento
+                    for (int i = 0; i < minutos && !cancelado; i++)
                     {
-                        for (int s = 0; s < 60 && !cancelado; s++) // Entrenamiento por segundos
+                        // Bucle por cada segundo del minuto
+                        for (int s = 0; s < 60 && !cancelado; s++)
                         {
+                            // Llama al método Entrenar del personaje para aumentar el atributo
                             juego.jugador?.Entrenar(atributo);
                             DateTime tiempoActual = juego.FechaInicio.AddSeconds(juego.MinutosMundo * 60 + s); 
                             Console.Clear();
                             double valorBase = 0.0;
+                            // Obtiene el valor actual del atributo entrenado
                             if (juego.jugador != null)
                             {
                                 switch (atributo.ToLower())
@@ -70,10 +77,13 @@ namespace MiJuegoRPG.Motor
                                     case "resistencia": valorBase = juego.jugador.AtributosBase.Resistencia; break;
                                 }
                             }
+                            // Muestra el progreso del entrenamiento y el valor actual del atributo
+                             
                             Console.WriteLine($"Entrenando {atributo}... Progreso: {(i * 60 + s + 1)}/{minutos * 60} segundos | Valor actual: {valorBase} (Entrenamiento Avanzando)");
                             Console.WriteLine($"Reloj mundial: [{tiempoActual:dd-MM-yyyy // HH:mm:ss}]");
                             Console.WriteLine("Presiona 'c' para cancelar el entrenamiento.");
-                            for (int t = 0; t < 10; t++) // Espera 1 segundo en 10 intervalos de 100ms para detectar tecla
+                            // Espera 1 segundo (en 10 intervalos de 100ms) y permite cancelar con 'c'
+                            for (int t = 0; t < 10; t++)
                             {
                                 if (Console.KeyAvailable && Console.ReadKey(true).Key == ConsoleKey.C)
                                 {
@@ -83,8 +93,10 @@ namespace MiJuegoRPG.Motor
                                 Thread.Sleep(100);
                             }
                         }
+                        // Avanza el tiempo del mundo en minutos
                         juego.MinutosMundo++;
                     }
+                    // Mensaje final según si fue cancelado o completado
                     if (cancelado)
                         Console.WriteLine("Entrenamiento cancelado por el usuario.");
                     else
@@ -95,14 +107,17 @@ namespace MiJuegoRPG.Motor
                     Console.WriteLine("Entrenamiento cancelado.");
                 }
             }
+            // Si el usuario elige salir
             else if (seleccion == 0)
             {
                 Console.WriteLine("Saliendo del entrenamiento...");
             }
+            // Si la opción es inválida
             else
             {
                 Console.WriteLine("Opción no válida.");
             }
+            // Mensaje final para volver al menú anterior
             Console.WriteLine("Presiona cualquier tecla para volver al menú...");
             Console.ReadKey();
         }

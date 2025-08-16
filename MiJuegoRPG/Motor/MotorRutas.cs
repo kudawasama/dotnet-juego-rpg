@@ -42,7 +42,7 @@ namespace MiJuegoRPG.Motor
                             Console.WriteLine(juego.ubicacionActual.Descripcion);
                             Console.WriteLine("Presiona cualquier tecla para ver los sectores y eventos disponibles...");
                             Console.ReadKey();
-                            juego.MostrarMenuUbicacion();
+                            juego.MostrarMenuPorUbicacion();
                             return;
                         }
                         else

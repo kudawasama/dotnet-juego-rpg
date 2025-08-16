@@ -21,9 +21,7 @@ namespace MiJuegoRPG.Motor.Menus
                 Console.WriteLine("=== Menú de Recolección ===");
                 Console.WriteLine("1. Buscar materiales");
                 Console.WriteLine("2. Volver");
-                Console.Write("Selecciona una opción: ");
-                var key = Console.ReadKey(true);
-                opcion = key.KeyChar.ToString();
+                opcion = InputService.LeerOpcion();
                 switch (opcion)
                 {
                     case "1":
@@ -33,6 +31,7 @@ namespace MiJuegoRPG.Motor.Menus
                         return;
                     default:
                         Console.WriteLine("Opción no válida.");
+                        InputService.Pausa();
                         break;
                 }
             }

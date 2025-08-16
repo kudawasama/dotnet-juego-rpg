@@ -31,28 +31,28 @@ namespace MiJuegoRPG.Motor
             Console.WriteLine("4. Menú principal fijo");
             Console.WriteLine("5. Salir del juego");
 
-            var opcion = Console.ReadLine();
+            var opcion = InputService.LeerOpcion();
 
             switch (opcion)
             {
                 case "1":
-                    juego.AvanzarTiempo(1);
+                    
                     juego.GuardarPersonaje();
                     break;
                 case "2":
-                    juego.AvanzarTiempo(1);
+                    
                     juego.CargarPersonaje();
                     break;
                 case "3":
-                    juego.AvanzarTiempo(1);
+                    
                     juego.ComenzarCombate();
                     break;
                 case "4":
-                    juego.AvanzarTiempo(1);
+                    
                     menusJuego.MostrarMenuPrincipalFijo();
                     break;
                 case "5":
-                    juego.AvanzarTiempo(1);
+                    
                     Environment.Exit(0);
                     break;
                 default:
