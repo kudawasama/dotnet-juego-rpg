@@ -38,7 +38,7 @@ namespace MiJuegoRPG.Personaje
 
 
 
-        public void AgregarObjeto(Objeto objeto, int cantidad = 1)
+    public void AgregarObjeto(Objeto objeto, int cantidad = 1, Personaje? personaje = null)
         {
             int totalSlots = NuevosObjetos.Count;
             var existente = NuevosObjetos.FirstOrDefault(o => o.Objeto.Nombre == objeto.Nombre && o.Objeto.GetType() == objeto.GetType());
@@ -57,6 +57,9 @@ namespace MiJuegoRPG.Personaje
                 NuevosObjetos.Add(new ObjetoConCantidad(objeto, cantidad));
                 Console.WriteLine($"{objeto.Nombre} ha sido agregado al inventario.");
             }
+            // Avisos automáticos si se pasa el personaje
+            if (personaje != null)
+                MiJuegoRPG.Motor.GestorDesbloqueos.VerificarDesbloqueos(personaje);
         }
 
 

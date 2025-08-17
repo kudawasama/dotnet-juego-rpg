@@ -1,4 +1,3 @@
-
 using System;
 using System.IO;
 using System.Text.Json;
@@ -16,6 +15,8 @@ namespace MiJuegoRPG.Motor
     public class Juego
    
     {
+       
+
         // Método para generar un material aleatorio (stub temporal)
         public Material GenerarMaterialAleatorio()
         {
@@ -161,9 +162,10 @@ namespace MiJuegoRPG.Motor
         public string FormatoRelojMundo => $"[{FechaActual:dd-MM-yyyy} // {FechaActual:HH:mm:ss} hrs]";
         public static Juego? InstanciaActual { get; private set; }
 
-        private readonly Random random = new Random();
+    private readonly Random random = new Random();
+    public EnergiaService energiaService { get; }
         public MiJuegoRPG.Personaje.Personaje? jugador;
-        private MenusJuego menuPrincipal;
+        public MenusJuego menuPrincipal;
         public EstadoMundo estadoMundo;
         public Ubicacion ubicacionActual;
         public MotorEventos motorEventos;
@@ -172,16 +174,17 @@ namespace MiJuegoRPG.Motor
         public MotorEntrenamiento motorEntrenamiento;
         public MotorInventario motorInventario;
         public MotorRutas motorRutas;
+        private MiJuegoRPG.Motor.Menus.MenuCiudad menuCiudad;
 
         // Constructor
         public Juego()
         {
+            energiaService = new EnergiaService();
             string carpetaMapas = System.IO.Path.Combine(ObtenerRutaRaizProyecto(), "MiJuegoRPG", "DatosJuego", "mapa");
             mapa = MapaLoader.CargarMapaCompleto(carpetaMapas);
             InstanciaActual = this;
             menuPrincipal = new MenusJuego(this);
             estadoMundo = new EstadoMundo();
-
             string rutaEnemigos = Path.Combine(ObtenerRutaRaizProyecto(), "MiJuegoRPG", "DatosJuego", "enemigos.json");
             GeneradorEnemigos.CargarEnemigos(rutaEnemigos);
 
@@ -227,6 +230,7 @@ namespace MiJuegoRPG.Motor
             motorEntrenamiento = new MotorEntrenamiento(this);
             motorInventario = new MotorInventario(this);
             motorRutas = new MotorRutas(this);
+            menuCiudad = new MiJuegoRPG.Motor.Menus.MenuCiudad(this);
         }
         // Sincroniza y muestra el menú correcto según la ubicación actual
         public void MostrarMenuPorUbicacion()
@@ -254,46 +258,7 @@ namespace MiJuegoRPG.Motor
         // Menú de ciudad
         public void MostrarMenuCiudad(ref bool salir)
         {
-            string opcion = "";
-            while (!salir)
-            {
-                Console.WriteLine(FormatoRelojMundo);
-                Console.WriteLine($"Ubicación actual: {ubicacionActual.Nombre}");
-                Console.WriteLine("=== Menú de Ciudad ===");
-                Console.WriteLine("1. Tienda");
-                Console.WriteLine("2. Escuela de Entrenamiento");
-                Console.WriteLine("3. Explorar sector");
-                Console.WriteLine("4. Descansar en posada");
-                Console.WriteLine("5. Salir de la ciudad");
-                Console.WriteLine("9. Menú fijo");
-                Console.WriteLine("0. Volver al menú principal");
-                opcion = InputService.LeerOpcion();
-                switch (opcion)
-                {
-                    case "1": MostrarTienda(); break;
-                    case "2": Entrenar(); break;
-                    case "3": menuPrincipal.MostrarMenuMisionesNPC(); break;
-                    case "4":
-                        if (jugador != null)
-                        {
-                            jugador.Vida = jugador.VidaMaxima;
-                            Console.WriteLine("Has descansado y recuperado toda tu vida.");
-                        }
-                        else
-                            Console.WriteLine("No hay personaje cargado.");
-                        MostrarMenuFijo(ref salir);
-                        break;
-                    case "5":
-                        MostrarMenuRutas();
-                        return;
-                    case "9": MostrarMenuFijo(ref salir); break;
-                    case "0": return;
-                    default:
-                        Console.WriteLine("Opción no válida.");
-                        InputService.Pausa();
-                        break;
-                }
-            }
+            menuCiudad.MostrarMenuCiudad(ref salir);
         }
 
         // Menú fuera de ciudad
@@ -503,6 +468,8 @@ namespace MiJuegoRPG.Motor
                 if (destino.Desbloqueada)
                 {
                     ubicacionActual = destino;
+                        if (jugador != null)
+                            MiJuegoRPG.Motor.GestorDesbloqueos.VerificarDesbloqueos(jugador);
                     mapa.MoverseA(destino.Id);
                     Console.WriteLine($"Viajaste a {destino.Nombre}.");
                     Console.WriteLine(destino.Descripcion);
@@ -1062,6 +1029,8 @@ namespace MiJuegoRPG.Motor
                     var ubicacionOriginal = estadoMundo.Ubicaciones.FirstOrDefault(u => u.Id == destino.Id);
                     if (ubicacionOriginal != null)
                         ubicacionActual = ubicacionOriginal;
+                            if (jugador != null)
+                                MiJuegoRPG.Motor.GestorDesbloqueos.VerificarDesbloqueos(jugador);
                     else
                         ubicacionActual = new Ubicacion { Id = destino.Id, Nombre = destino.Nombre, Tipo = destino.Tipo, Descripcion = destino.Descripcion };
                     Console.WriteLine($"Te has movido a: {destino.Nombre}");

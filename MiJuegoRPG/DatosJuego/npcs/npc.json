@@ -97,15 +97,18 @@
   },
   {
     "Id": "BAI-NEW-001",
-    "Nombre": "Elena, la del Inicio",
-    "Tipo": "Aventurera",
+    "Nombre": "Aaron, Tú Guía",
+    "Tipo": "Hijo del Creador",
     "Descripcion": "Guía a los nuevos aventureros en su viaje.",
     "Ubicacion": "Ciudad de Bairan",
     "Dialogos": [
-      "¡Hola! Estoy aqui para darte la unica ayuda que necesitas para valerte por ti mismo.",
-      "¿Que arma te gustaria tener?"
+      "¡Hola! Estoy para ayudarte en tu aventura. De acuerdo a tus logros, puedo ofrecerte diferentes recompensas. Por ahora elige tu arma de inicio: "
     ],
-    "Recompensas": ["Espada de Madera", "Baculo de Madera", "Arco de Madera", "Daga de Madera", "Hacha de Madera", "Martillo de Madera"],
-    "Misiones": []
+    "Recompensas": [],
+    "Misiones": ["BAI-INI-001", "BAI-COM-001"]
   }
+
+  
+
+
 ]

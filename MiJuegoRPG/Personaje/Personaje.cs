@@ -7,15 +7,57 @@ using MiJuegoRPG.Motor;
 namespace MiJuegoRPG.Personaje
 {
     public class Personaje : ICombatiente
+    {   
+        // IDs de desbloqueos ya notificados (para avisos automáticos)
+        public HashSet<string> DesbloqueosNotificados { get; set; } = new HashSet<string>();
 
-    
-    {
+
         // Completar misión y procesar recompensas
         public void CompletarMision(string misionId)
         {
             var mision = MisionesActivas.FirstOrDefault(m => m.Id == misionId);
             if (mision != null)
             {
+                // Validar requisitos antes de completar
+                bool cumpleTodos = true;
+                if (mision.Requisitos != null && mision.Requisitos.Count > 0)
+                {
+                    foreach (var req in mision.Requisitos)
+                    {
+                        // Soporta requisitos tipo "clave:valor" o solo "clave"
+                        var partes = req.Split(':');
+                        string clave = partes[0].Trim();
+                        object? valor = null;
+                        if (partes.Length > 1)
+                        {
+                            valor = partes[1].Trim();
+                            // Intenta convertir valor a int si es posible
+                            if (int.TryParse(valor.ToString(), out int valorInt))
+                                valor = valorInt;
+                        }
+                        // Si no hay valor, se asume que es un objeto que debe estar en el inventario
+                        bool cumple;
+                        if (valor == null)
+                        {
+                            // Buscar el objeto en el inventario (nombre parcial, insensible a mayúsculas)
+                            cumple = Inventario.NuevosObjetos.Any(o => o.Objeto.Nombre.Contains(clave, StringComparison.OrdinalIgnoreCase));
+                        }
+                        else
+                        {
+                            cumple = CumpleRequisito(clave, valor);
+                        }
+                        if (!cumple)
+                        {
+                            cumpleTodos = false;
+                            Console.WriteLine($"No cumples el requisito: {req}");
+                        }
+                    }
+                }
+                if (!cumpleTodos)
+                {
+                    Console.WriteLine("No puedes completar la misión porque no cumples todos los requisitos.");
+                    return;
+                }
                 // Procesar recompensas
                 if (mision.Recompensas != null)
                 {
@@ -60,6 +102,9 @@ namespace MiJuegoRPG.Personaje
                 MisionesCompletadas.Add(mision);
                 MisionesActivas.Remove(mision);
                 Console.WriteLine($"¡Misión completada: {mision.Nombre}!");
+
+                // Revisar desbloqueos automáticos después de completar misión
+                MiJuegoRPG.Motor.GestorDesbloqueos.VerificarDesbloqueos(this);
             }
             else
             {
@@ -70,6 +115,8 @@ namespace MiJuegoRPG.Personaje
         public int EnergiaActual { get; set; } = 100;
         public int EnergiaMaxima { get; set; } = 100;
         public int DescansosHoy { get; set; } = 0;
+        public DateTime UltimaFechaDescanso { get; set; }
+        public DateTime UltimaRecuperacionPasiva { get; set; }
         public int UltimoDiaDescanso { get; set; } = 0;
 
         // Ubicacion Actual
@@ -286,8 +333,18 @@ namespace MiJuegoRPG.Personaje
             {
                 Habilidades.Add(habilidad.Id, habilidad);
                 Console.WriteLine($"Aprendiste la habilidad {habilidad.Nombre}");
+                // Avisos automáticos al aprender habilidad
+                MiJuegoRPG.Motor.GestorDesbloqueos.VerificarDesbloqueos(this);
             }
         }
+        // Cuando cambies la clase, llama a los avisos automáticos
+        public void CambiarClase(Clase nuevaClase)
+        {
+            Clase = nuevaClase;
+            Console.WriteLine($"¡Has cambiado de clase a {nuevaClase.Nombre}!");
+            MiJuegoRPG.Motor.GestorDesbloqueos.VerificarDesbloqueos(this);
+        }
+        
 
         public Personaje(string nombre)
         {
@@ -467,6 +524,8 @@ namespace MiJuegoRPG.Personaje
             VidaMaxima += 10;
             Vida = VidaMaxima;
             Console.WriteLine($"¡Has subido al nivel {Nivel}! Vida máxima ahora: {VidaMaxima}");
+            // Revisar desbloqueos automáticos después de subir de nivel
+            MiJuegoRPG.Motor.GestorDesbloqueos.VerificarDesbloqueos(this);
         }
 
         // Verifica si el personaje puede acceder a una misión según condiciones y progreso

@@ -22,8 +22,14 @@ namespace MiJuegoRPG.Motor
 
         public void MostrarMenuViajar()
         {
+            // Recuperación pasiva de energía antes de mostrar menú
+            if (juego.jugador != null)
+                {
+                    juego.energiaService.RecuperacionPasiva(juego.jugador);
+                }
+
             //Console.Clear();
-            Console.WriteLine(juego.FormatoRelojMundo);
+                Console.WriteLine(juego.FormatoRelojMundo);
             Console.WriteLine("--- Menú de Viaje ---");
             if (juego.estadoMundo?.Ubicaciones == null || juego.estadoMundo.Ubicaciones.Count == 0)
             {

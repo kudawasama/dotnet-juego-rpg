@@ -254,17 +254,30 @@
   ,
   {
     "Id": "BAI-INI-001",
-    "Nombre": "Ayuda a Elena",
-    "Descripcion": "Elena te da tu primera arma",
+    "Nombre": "Bienvenida de Aaron",
+    "Descripcion": "Aaron te da tu primera arma",
     "UbicacionNPC": "Entrada de Bairan",
     "Estado": "No iniciada",
-    "Requisitos": [],
+    "Requisitos": ["nivel:2"],
     "Recompensas": ["Espada de Madera", "Baculo de Madera", "Arco de Madera", "Daga de Madera", "Hacha de Madera", "Martillo de Madera"],
-    "ExpNivel": 0.003,
+    "ExpNivel": 0.5,
     "ExpAtributos": {},
     "LineaMision": "Inicio Bairan",
     "Condiciones": [],
     "SiguienteMisionId": null 
     
-  }
+  },
+  {
+  "Id": "BAI-COM-001",
+  "Nombre": "Permiso de Comercio",
+  "Descripcion": "Consigue el Permiso de comercio hablando con el funcionario de la ciudad y pagando 200 monedas de oro.",
+  "UbicacionNPC": "Funcionario de Bairan",
+  "Requisitos": ["oro:300"],
+  "Recompensas": ["Permiso de comercio"],
+  "ExpNivel": 0,
+  "ExpAtributos": {},
+  "Estado": "Disponible",
+  "SiguienteMisionId": "",
+  "Condiciones": []
+}
 ]
