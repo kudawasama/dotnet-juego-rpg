@@ -46,7 +46,7 @@ namespace MiJuegoRPG.Motor
             {
                 Console.WriteLine("No se encontraron enemigos. Generando Goblin por defecto.");
                 // Creamos un enemigo por defecto si no hay JSON
-                return new EnemigoEstandar("Goblin", 50, 10, 5, 1, 5, 5);
+                return new EnemigoEstandar("Goblin", 50, 10, 5, 5, 1, 5, 5);
             }
 
             var enemigosApropiados = enemigosDisponibles
@@ -56,7 +56,7 @@ namespace MiJuegoRPG.Motor
             if (!enemigosApropiados.Any())
             {
                 Console.WriteLine("No se encontraron enemigos apropiados. Generando Goblin por defecto.");
-                return new EnemigoEstandar("Goblin", 50, 10, 5, 1, 5, 5);
+                return new EnemigoEstandar("Goblin", 50, 10, 5, 5, 1, 5, 5);
             }
 
             int indice = random.Next(0, enemigosApropiados.Count);
@@ -74,6 +74,7 @@ namespace MiJuegoRPG.Motor
                 enemigoData.VidaBase,
                 enemigoData.AtaqueBase,
                 enemigoData.DefensaBase,
+                enemigoData.DefensaMagicaBase,
                 enemigoData.Nivel,
                 enemigoData.ExperienciaRecompensa,
                 enemigoData.OroRecompensa
@@ -142,7 +143,7 @@ namespace MiJuegoRPG.Motor
             var lista = new List<ICombatiente>();
             if (enemigosDisponibles == null || enemigosDisponibles.Count == 0)
             {
-                lista.Add(new EnemigoEstandar("Goblin", 50, 10, 5, 1, 5, 5));
+                lista.Add(new EnemigoEstandar("Goblin", 50, 10, 5, 5, 1, 5, 5));
                 return lista;
             }
             var enemigosApropiados = jugador == null
@@ -160,6 +161,7 @@ namespace MiJuegoRPG.Motor
                     enemigoData.VidaBase,
                     enemigoData.AtaqueBase,
                     enemigoData.DefensaBase,
+                    enemigoData.DefensaMagicaBase,
                     enemigoData.Nivel,
                     enemigoData.ExperienciaRecompensa,
                     enemigoData.OroRecompensa

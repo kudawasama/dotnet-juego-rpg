@@ -50,7 +50,7 @@ namespace MiJuegoRPG.Motor
                             if (enemigosVivos.Count == 1)
                             {
                                 var objetivo = enemigosVivos[0];
-                                int danio = jugador.Atacar(objetivo);
+                                int danio = jugador.AtacarFisico(objetivo);
                                 Console.WriteLine($"{jugador.Nombre} ataca a {objetivo.Nombre} y le hace {danio} de daño.");
                             }
                             else
@@ -63,7 +63,7 @@ namespace MiJuegoRPG.Motor
                                 if (int.TryParse(sel, out idx) && idx > 0 && idx <= enemigosVivos.Count)
                                 {
                                     var objetivo = enemigosVivos[idx - 1];
-                                    int danio = jugador.Atacar(objetivo);
+                                    int danio = jugador.AtacarFisico(objetivo);
                                     Console.WriteLine($"{jugador.Nombre} ataca a {objetivo.Nombre} y le hace {danio} de daño.");
                                 }
                                 else
@@ -99,7 +99,7 @@ namespace MiJuegoRPG.Motor
                     foreach (var enemigo in enemigos.Where(e => e.EstaVivo))
                     {
                         Console.WriteLine($"\nTurno de {enemigo.Nombre}:");
-                        int danioEnemigo = enemigo.Atacar(jugador);
+                        int danioEnemigo = enemigo.AtacarFisico(jugador);
                         Console.WriteLine($"{enemigo.Nombre} ataca a {jugador.Nombre} y le hace {danioEnemigo} de daño.");
                     }
                 }

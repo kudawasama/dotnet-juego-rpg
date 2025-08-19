@@ -10,11 +10,15 @@ namespace MiJuegoRPG.Enemigos
     {
 
         // Implementación básica de ICombatiente
-        
+        public string Nombre { get; set; }
+        public int Vida { get; set; }
+        public int VidaMaxima { get; set; }
         public int Defensa { get; private set; }
-        public int DefensaMagica { get; private set; }
+        public int DefensaMagica { get; set; }
         public bool EstaVivo => Vida > 0;
+        public int Ataque { get; set; }
 
+        // Implementación explícita de los métodos de ICombatiente
         public virtual int AtacarFisico(ICombatiente objetivo)
         {
             int danio = Ataque;
@@ -91,10 +95,6 @@ namespace MiJuegoRPG.Enemigos
         }
     
         // Propiedades del enemigo. 'set' es privado para evitar cambios externos.
-        public string Nombre { get; set; }
-        public int Vida { get; set; }
-        public int VidaMaxima { get; set; }
-        public int Ataque { get; private set; }
         // Defensa ya está arriba
         public int Nivel { get; private set; }
         public int ExperienciaRecompensa { get; private set; }
