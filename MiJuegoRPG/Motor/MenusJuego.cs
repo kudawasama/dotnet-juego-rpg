@@ -385,7 +385,8 @@ namespace MiJuegoRPG.Motor
                 Console.WriteLine($"Arma: {eq.Arma.Nombre}");
                 if (eq.Arma is MiJuegoRPG.Objetos.Arma arma)
                 {
-                    Console.WriteLine($"  Daño: {arma.Daño}");
+                    Console.WriteLine($"  DañoFisico: {arma.DañoFisico}");
+                    Console.WriteLine($"  DañoMagico: {arma.DañoMagico}");
                     Console.WriteLine($"  Rareza: {arma.Rareza}");
                     Console.WriteLine($"  Perfección: {arma.Perfeccion}");
                 }
@@ -627,7 +628,32 @@ namespace MiJuegoRPG.Motor
                         // Lógica de ataque
                         break;
                     case "2":
-                        // Lógica de habilidad
+                        // Usar habilidad
+                        if (juego.jugador == null || juego.jugador.Habilidades == null || juego.jugador.Habilidades.Count == 0)
+                        {
+                            Console.WriteLine("No tienes habilidades disponibles.");
+                            break;
+                        }
+                        Console.WriteLine("Elige una habilidad:");
+                        int idx = 1;
+                        var listaHab = new List<string>(juego.jugador.Habilidades.Keys);
+                        foreach (var habId in listaHab)
+                        {
+                            var hab = juego.jugador.Habilidades[habId];
+                            Console.WriteLine($"{idx}. {hab.Nombre} (Nv {hab.Nivel}, Exp {hab.Exp})");
+                            idx++;
+                        }
+                        Console.Write("Selecciona el número de la habilidad: ");
+                        var input = Console.ReadLine();
+                        if (int.TryParse(input, out int seleccion) && seleccion > 0 && seleccion <= listaHab.Count)
+                        {
+                            var habId = listaHab[seleccion - 1];
+                            juego.jugador.UsarHabilidad(habId);
+                        }
+                        else
+                        {
+                            Console.WriteLine("Selección inválida.");
+                        }
                         break;
                     case "3":
                         // Lógica de objeto

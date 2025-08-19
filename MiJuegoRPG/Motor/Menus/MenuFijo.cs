@@ -13,24 +13,50 @@ namespace MiJuegoRPG.Motor.Menus
         }
         public void MostrarMenuFijo(ref bool salir)
         {
-            string opcion = "";
-            var menusJuego = new MenusJuego(juego);
-            Console.WriteLine("=== Menú Fijo ===");
-            Console.WriteLine("1. Inventario");
-            Console.WriteLine("2. Guardar partida");
-            Console.WriteLine("3. Cargar partida");
-            Console.WriteLine("0. Volver");
-            opcion = InputService.LeerOpcion();
-            switch (opcion)
+            while (true)
             {
-                case "1": menusJuego.MostrarInventario(); break;
-                case "2": menusJuego.GuardarPartida(); break;
-                case "3": menusJuego.CargarPartida(); break;
-                case "0": return;
-                default:
-                    Console.WriteLine("Opción no válida.");
-                    InputService.Pausa();
-                    break;
+                Console.WriteLine("\n=== Menú Fijo ===");
+                Console.WriteLine("1. Estado del personaje");
+                Console.WriteLine("2. Guardar personaje");
+                Console.WriteLine("3. Volver al menú principal");
+                Console.WriteLine("0. Salir del juego");
+                string opcion = InputService.LeerOpcion();
+                switch (opcion)
+                {
+                    case "1":
+                        if (juego.jugador != null) juego.MostrarEstadoPersonaje(juego.jugador);
+                        else Console.WriteLine("No hay personaje cargado.");
+                        InputService.Pausa();
+                        break;
+                    case "2":
+                        juego.GuardarPersonaje();
+                        Console.WriteLine("¡Personaje guardado exitosamente!");
+                        InputService.Pausa();
+                        break;
+                    case "3":
+                        // Al volver, mostrar el menú adecuado según la ubicación actual
+                        if (juego.ubicacionActual != null && juego.ubicacionActual.Tipo != null && juego.ubicacionActual.Tipo.Equals("Ciudad", StringComparison.OrdinalIgnoreCase))
+                        {
+                            juego.MostrarMenuCiudad(ref salir);
+                        }
+                        else if (juego.ubicacionActual != null && !string.IsNullOrWhiteSpace(juego.ubicacionActual.Tipo))
+                        {
+                            juego.MostrarMenuFueraCiudad(ref salir);
+                        }
+                        else
+                        {
+                            salir = true;
+                        }
+                        return;
+                    case "0":
+                        salir = true;
+                        Console.WriteLine("¡Gracias por jugar!");
+                        return;
+                    default:
+                        Console.WriteLine("Opción no válida.");
+                        InputService.Pausa();
+                        break;
+                }
             }
         }
     }

@@ -272,53 +272,15 @@ namespace MiJuegoRPG.Motor
         // Menú fijo disponible en todos los menús
         public void MostrarMenuFijo(ref bool salir)
         {
-            Console.WriteLine("\n=== Menú Fijo ===");
-            Console.WriteLine("1. Estado del personaje");
-            Console.WriteLine("2. Guardar personaje");
-            Console.WriteLine("3. Volver al menú principal");
-            Console.WriteLine("0. Salir del juego");
-            string opcion = InputService.LeerOpcion();
-            switch (opcion)
-            {
-                case "1":
-                    if (jugador != null) MostrarEstadoPersonaje(jugador);
-                    else Console.WriteLine("No hay personaje cargado.");
-                    InputService.Pausa();
-                    break;
-                case "2":
-                    GuardarPersonaje();
-                    Console.WriteLine("¡Personaje guardado exitosamente!");
-                    InputService.Pausa();
-                    break;
-                case "3":
-                    // Al volver, mostrar el menú adecuado según la ubicación actual
-                    if (ubicacionActual != null && ubicacionActual.Tipo != null && ubicacionActual.Tipo.Equals("Ciudad", StringComparison.OrdinalIgnoreCase))
-                    {
-                        MostrarMenuCiudad(ref salir);
-                    }
-                    else if (ubicacionActual != null && !string.IsNullOrWhiteSpace(ubicacionActual.Tipo))
-                    {
-                        MostrarMenuFueraCiudad(ref salir);
-                    }
-                    else
-                    {
-                        salir = true;
-                    }
-                    return;
-                case "0":
-                    salir = true;
-                    Console.WriteLine("¡Gracias por jugar!");
-                    break;
-                default:
-                    Console.WriteLine("Opción no válida.");
-                    InputService.Pausa();
-                    break;
-            }
+            // Delegar la lógica al menú fijo modularizado
+            var menuFijo = new MiJuegoRPG.Motor.Menus.MenuFijo(this);
+            menuFijo.MostrarMenuFijo(ref salir);
         }
+        
 
 
-        // Muestra el estado completo del personaje con explicación
-        private void MostrarEstadoPersonaje(MiJuegoRPG.Personaje.Personaje pj)
+    // Muestra el estado completo del personaje con explicación
+    public void MostrarEstadoPersonaje(MiJuegoRPG.Personaje.Personaje pj)
         {
             Console.WriteLine("\n=== ESTADO DEL PERSONAJE ===");
             Console.WriteLine($"Nombre: {pj.Nombre}");

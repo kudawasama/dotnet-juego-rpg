@@ -11,10 +11,10 @@ namespace MiJuegoRPG.Enemigos
             // Vida: 80, Ataque: 15, Defensa: 8, Nivel: 2, Experiencia: 50, Oro: 25
         }
 
-        public override int Atacar(ICombatiente objetivo)
+        public override int AtacarFisico(ICombatiente objetivo)
         {
             Console.WriteLine($"¡El {Nombre} ruge ferozmente y lanza un ataque devastador!");
-            objetivo.RecibirDanio(Ataque);
+            objetivo.RecibirDanioFisico(Ataque);
             return Ataque;
         }
     }

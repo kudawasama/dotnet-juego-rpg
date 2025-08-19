@@ -19,7 +19,7 @@ namespace MiJuegoRPG.Motor
 
             Console.WriteLine("--- Prueba de generación de objetos aleatorios ---");
             var arma = GeneradorObjetos.GenerarArmaAleatoria(1);
-            Console.WriteLine($"Arma: {arma.Nombre}, Daño: {arma.Daño}, Rareza: {arma.Rareza}, Perfección: {arma.Perfeccion}");
+            Console.WriteLine($"Arma: {arma.Nombre}, Daño: {arma.DañoFisico}/{arma.DañoMagico}, Rareza: {arma.Rareza}, Perfección: {arma.Perfeccion}");
 
             var armadura = GeneradorObjetos.GenerarArmaduraAleatoria(1);
             Console.WriteLine($"Armadura: {armadura.Nombre}, Defensa: {armadura.Defensa}, Rareza: {armadura.Rareza}, Perfección: {armadura.Perfeccion}");

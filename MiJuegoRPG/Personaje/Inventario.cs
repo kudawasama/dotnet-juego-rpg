@@ -25,8 +25,74 @@ namespace MiJuegoRPG.Personaje
         // La clase base puede estar vacía o tener lógica compartida
     }
 
-    public class Inventario : NewBaseType
-    {
+
+        public class Inventario : NewBaseType
+        {
+
+        /// <summary>
+        /// Equipa un objeto (arma, armadura o accesorio) y muestra un aviso centralizado con comparación de estadísticas.
+        /// </summary>
+        public void EquiparObjeto(Objeto objeto, Personaje? personaje = null)
+        {
+            string aviso = "";
+            string mejora = "";
+            if (objeto is MiJuegoRPG.Objetos.Arma armaNueva)
+            {
+                var armaAnterior = Equipo.Arma as MiJuegoRPG.Objetos.Arma;
+                Equipo.Arma = armaNueva;
+                aviso += $"Anterior: {(armaAnterior != null ? armaAnterior.Nombre + " (Daño Físico: " + armaAnterior.DañoFisico + ")" : "Ninguna")}\n";
+                aviso += $"Nuevo: {armaNueva.Nombre} (Daño Físico: {armaNueva.DañoFisico})\n";
+                if (armaAnterior != null)
+                {
+                    int diff = armaNueva.DañoFisico - armaAnterior.DañoFisico;
+                    mejora = diff > 0 ? $"¡Mejora! (+{diff} de daño físico)" : (diff < 0 ? $"¡Advertencia! ({diff} de daño físico)" : "Sin cambios en daño físico");
+                }
+            }
+            else if (objeto is MiJuegoRPG.Objetos.Armadura armaduraNueva)
+            {
+                var armaduraAnterior = Equipo.Armadura as MiJuegoRPG.Objetos.Armadura;
+                Equipo.Armadura = armaduraNueva;
+                aviso += $"Anterior: {(armaduraAnterior != null ? armaduraAnterior.Nombre + " (Defensa: " + armaduraAnterior.Defensa + ")" : "Ninguna")}\n";
+                aviso += $"Nuevo: {armaduraNueva.Nombre} (Defensa: {armaduraNueva.Defensa})\n";
+                if (armaduraAnterior != null)
+                {
+                    int diff = armaduraNueva.Defensa - armaduraAnterior.Defensa;
+                    mejora = diff > 0 ? $"¡Mejora! (+{diff} de defensa)" : (diff < 0 ? $"¡Advertencia! ({diff} de defensa)" : "Sin cambios en defensa");
+                }
+            }
+            else if (objeto is MiJuegoRPG.Objetos.Accesorio accesorioNuevo)
+            {
+                // Por simplicidad, equipar en Accesorio1 si está vacío, si no en Accesorio2
+                var accesorioAnterior = Equipo.Accesorio1 as MiJuegoRPG.Objetos.Accesorio;
+                if (Equipo.Accesorio1 == null)
+                {
+                    Equipo.Accesorio1 = accesorioNuevo;
+                }
+                else
+                {
+                    accesorioAnterior = Equipo.Accesorio2 as MiJuegoRPG.Objetos.Accesorio;
+                    Equipo.Accesorio2 = accesorioNuevo;
+                }
+                aviso += $"Anterior: {(accesorioAnterior != null ? accesorioAnterior.Nombre + " (Ataque: " + accesorioAnterior.BonificacionAtaque + ", Defensa: " + accesorioAnterior.BonificacionDefensa + ")" : "Ninguno")}\n";
+                aviso += $"Nuevo: {accesorioNuevo.Nombre} (Ataque: {accesorioNuevo.BonificacionAtaque}, Defensa: {accesorioNuevo.BonificacionDefensa})\n";
+                if (accesorioAnterior != null)
+                {
+                    int diffAtk = accesorioNuevo.BonificacionAtaque - accesorioAnterior.BonificacionAtaque;
+                    int diffDef = accesorioNuevo.BonificacionDefensa - accesorioAnterior.BonificacionDefensa;
+                    mejora = (diffAtk > 0 ? $"+{diffAtk} ATK " : (diffAtk < 0 ? $"{diffAtk} ATK " : "")) + (diffDef > 0 ? $"+{diffDef} DEF" : (diffDef < 0 ? $"{diffDef} DEF" : ""));
+                    if (string.IsNullOrWhiteSpace(mejora)) mejora = "Sin cambios en bonificaciones";
+                }
+            }
+            else
+            {
+                aviso = "Este objeto no es equipable.";
+            }
+            MiJuegoRPG.Motor.AvisosAventura.MostrarAviso(
+                "Equipo Equipado",
+                objeto.Nombre,
+                aviso + (string.IsNullOrWhiteSpace(mejora) ? "" : mejora)
+            );
+    }
     public List<ObjetoConCantidad> NuevosObjetos { get; set; } = new List<ObjetoConCantidad>();
         public Equipo Equipo { get; set; } = new Equipo();
         public int CapacidadMaxima { get; set; } = 30;

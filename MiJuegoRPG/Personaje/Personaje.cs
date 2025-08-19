@@ -273,20 +273,45 @@ namespace MiJuegoRPG.Personaje
 
         // Implementación de ICombatiente
         public int Defensa => (int)Atributos.Defensa;
+        public int DefensaMagica => (int)Estadisticas.DefensaMagica;
         public bool EstaVivo => Vida > 0;
-        public int Atacar(ICombatiente objetivo)
+
+        // Ataque físico
+        public int AtacarFisico(ICombatiente objetivo)
         {
-            int danio = (int)Atributos.Fuerza;
-            objetivo.RecibirDanio(danio);
-            Console.WriteLine($"{Nombre} ataca y causa {danio} de daño a {objetivo.Nombre}");
+            int danio = (int)(Atributos.Fuerza + Estadisticas.Ataque + ObtenerBonificadorAtributo("Fuerza") + ObtenerBonificadorEstadistica("Ataque"));
+            objetivo.RecibirDanioFisico(danio);
+            Console.WriteLine($"{Nombre} ataca físicamente y causa {danio} de daño a {objetivo.Nombre}");
             return danio;
         }
-        public void RecibirDanio(int danio)
+
+        // Ataque mágico
+        public int AtacarMagico(ICombatiente objetivo)
         {
-            double danioReal = Math.Max(1, danio - Defensa);
+            int danio = (int)(Atributos.Inteligencia + Estadisticas.PoderMagico + ObtenerBonificadorAtributo("Inteligencia") + ObtenerBonificadorEstadistica("Poder Mágico"));
+            objetivo.RecibirDanioMagico(danio);
+            Console.WriteLine($"{Nombre} lanza un ataque mágico y causa {danio} de daño a {objetivo.Nombre}");
+            return danio;
+        }
+
+        // Recibir daño físico
+        public void RecibirDanioFisico(int danio)
+        {
+            double defensaTotal = Defensa + ObtenerBonificadorAtributo("Defensa") + ObtenerBonificadorEstadistica("Defensa Física");
+            double danioReal = Math.Max(1, danio - defensaTotal);
             Vida -= (int)danioReal;
             if (Vida < 0) Vida = 0;
-            Console.WriteLine($"{Nombre} recibió {danioReal} de daño. Vida restante: {Vida}");
+            Console.WriteLine($"{Nombre} recibió {danioReal} de daño físico. Vida restante: {Vida}");
+        }
+
+        // Recibir daño mágico
+        public void RecibirDanioMagico(int danio)
+        {
+            double defensaMagicaTotal = DefensaMagica + ObtenerBonificadorAtributo("Resistencia") + ObtenerBonificadorEstadistica("Defensa Mágica");
+            double danioReal = Math.Max(1, danio - defensaMagicaTotal);
+            Vida -= (int)danioReal;
+            if (Vida < 0) Vida = 0;
+            Console.WriteLine($"{Nombre} recibió {danioReal} de daño mágico. Vida restante: {Vida}");
         }
 
         // Habilidades aprendidas y progreso
@@ -296,8 +321,16 @@ namespace MiJuegoRPG.Personaje
         {
             if (Habilidades.TryGetValue(habilidadId, out var progreso))
             {
+                int nivelAnterior = progreso.Nivel;
                 progreso.Exp++;
                 Console.WriteLine($"Usaste la habilidad {progreso.Nombre}. Exp actual: {progreso.Exp}");
+                if (progreso.Nivel > nivelAnterior)
+                {
+                    MiJuegoRPG.Motor.AvisosAventura.MostrarAviso(
+                        "Nivel de Habilidad",
+                        progreso.Nombre,
+                        $"¡La habilidad ha subido a nivel {progreso.Nivel}!");
+                }
                 RevisarEvolucionHabilidad(habilidadId);
             }
             else
@@ -322,7 +355,10 @@ namespace MiJuegoRPG.Personaje
                 if (cumple && !progreso.EvolucionesDesbloqueadas.Contains(evo.Id))
                 {
                     progreso.EvolucionesDesbloqueadas.Add(evo.Id);
-                    Console.WriteLine($"¡{progreso.Nombre} evolucionó a {evo.Nombre}! Beneficio: {evo.Beneficio}");
+                    MiJuegoRPG.Motor.AvisosAventura.MostrarAviso(
+                        "Evolución de Habilidad",
+                        $"{progreso.Nombre} → {evo.Nombre}",
+                        $"Beneficio: {evo.Beneficio}");
                 }
             }
         }
