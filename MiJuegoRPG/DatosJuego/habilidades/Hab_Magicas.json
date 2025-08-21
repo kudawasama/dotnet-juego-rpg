@@ -14,6 +14,7 @@
     "Mejoras": ["Venenos legendarios si sobrevives 200 veces", "Efectos de veneno mejorados si Inteligencia > 12"],
     "Oculta": true,
     "Exp": 0,
+    "CostoMana": 15,
     "Evoluciones": [
       {
         "Id": "MaestroVenenoAvanzado",
@@ -24,7 +25,231 @@
           { "Tipo": "Inteligencia", "Cantidad": 12 }
         ],
         "Beneficio": "Permite fabricar venenos legendarios y aplicar efectos devastadores",
-        "Mejoras": ["Venenos con efectos múltiples", "Probabilidad de envenenar en área"]
+        "Mejoras": ["Venenos con efectos múltiples", "Probabilidad de envenenar en área"],
+        "CostoMana": 30
+      }
+    ]
+  }
+  ,
+  {
+    "Id": "BolaFuego",
+    "Nombre": "Bola de Fuego",
+    "Tipo": "Activa",
+    "Categoria": "Magica",
+    "Descripcion": "Lanza una bola de fuego que inflige daño a un enemigo.",
+    "AtributosNecesarios": { "Inteligencia": 6 },
+    "Condiciones": [
+      { "Tipo": "Nivel", "Cantidad": 3 }
+    ],
+    "Beneficio": "Inflige daño de fuego básico.",
+    "Mejoras": ["Mayor alcance con Inteligencia > 10", "Ignora resistencia al fuego si NvHabilidad > 20"],
+    "Oculta": true,
+    "Exp": 0,
+    "CostoMana": 15,
+    "Evoluciones": [
+      {
+        "Id": "BolaFuegoAvanzada",
+        "Nombre": "Bola de Fuego Avanzada",
+        "Condiciones": [
+          { "Tipo": "NvHabilidad", "Cantidad": 50 },
+          { "Tipo": "Inteligencia", "Cantidad": 60 }
+        ],
+        "Beneficio": "Inflige daño de fuego en área y puede quemar al objetivo.",
+        "Mejoras": ["Probabilidad de quemadura prolongada", "Aumenta el área de efecto"],
+        "CostoMana": 500
+      }
+    ]
+  },
+  { 
+    "Id": "EscudoMagico",
+    "Nombre": "Escudo Mágico",
+    "Tipo": "Activa",
+    "Categoria": "Magica",
+    "Descripcion": "Crea un escudo que absorbe daño mágico.",
+    "AtributosNecesarios": { "Inteligencia": 5 },
+    "Condiciones": [
+      { "Tipo": "Nivel", "Cantidad": 2 }
+    ],
+    "Beneficio": "Absorbe una cantidad limitada de daño mágico.",
+    "Mejoras": ["Duración aumentada con Inteligencia > 8", "Absorbe daño físico si NvHabilidad > 15"],
+    "Oculta": true,
+    "Exp": 0,
+    "CostoMana": 50,
+    "Evoluciones": [
+      {
+        "Id": "EscudoMagicoAvanzado",
+        "Nombre": "Escudo Mágico Avanzado",
+        "Condiciones": [
+          { "Tipo": "NvHabilidad", "Cantidad": 50 },
+          { "Tipo": "Inteligencia", "Cantidad": 60 }
+        ],
+        "Beneficio": "Absorbe daño mágico y físico, y refleja parte del daño.",
+        "Mejoras": ["Refleja más daño", "Reduce el coste de activación"],
+        "CostoMana": 700
+      }
+    ]
+  },
+  {
+    "Id": "RayoArcano",
+    "Nombre": "Rayo Arcano",
+    "Tipo": "Activa",
+    "Categoria": "Magica",
+    "Descripcion": "Dispara un rayo de energía arcana que atraviesa enemigos.",
+    "AtributosNecesarios": { "Inteligencia": 7 },
+    "Condiciones": [
+      { "Tipo": "Nivel", "Cantidad": 4 }
+    ],
+    "Beneficio": "Inflige daño arcano y atraviesa hasta 2 enemigos.",
+    "Mejoras": ["Atraviesa más enemigos con Inteligencia > 12", "Probabilidad de aturdir si NvHabilidad > 18"],
+    "Oculta": true,
+    "Exp": 0,
+    "CostoMana": 50,
+    "Evoluciones": [
+      {
+        "Id": "RayoArcanoSupremo",
+        "Nombre": "Rayo Arcano Supremo",
+        "Condiciones": [
+          { "Tipo": "NvHabilidad", "Cantidad": 30 },
+          { "Tipo": "Inteligencia", "Cantidad": 14 }
+        ],
+        "Beneficio": "Atraviesa todos los enemigos en línea y puede desintegrar objetivos débiles.",
+        "Mejoras": ["Mayor alcance", "Desintegración instantánea con crítico"],
+        "CostoMana": 500
+      }
+    ]
+  },
+  {
+    "Id": "CuracionRapida",
+    "Nombre": "Curación Rápida",
+    "Tipo": "Activa",
+    "Categoria": "Magica",
+    "Descripcion": "Cura instantáneamente una pequeña cantidad de salud.",
+    "AtributosNecesarios": { "Inteligencia": 6 },
+    "Condiciones": [
+      { "Tipo": "Nivel", "Cantidad": 3 }
+    ],
+    "Beneficio": "Recupera salud de inmediato.",
+    "Mejoras": ["Cura adicional con Inteligencia > 10", "Reduce el tiempo de reutilización si NvHabilidad > 20"],
+    "Oculta": false,
+    "Exp": 0,
+    "Evoluciones": [
+      {
+        "Id": "CuracionAvanzada",
+        "Nombre": "Curación Avanzada",
+        "Condiciones": [
+          { "Tipo": "NvHabilidad", "Cantidad": 25 },
+          { "Tipo": "Inteligencia", "Cantidad": 12 }
+        ],
+        "Beneficio": "Cura a todos los aliados cercanos y elimina efectos negativos.",
+        "Mejoras": ["Elimina venenos", "Aumenta la cantidad de salud restaurada"]
+      }
+    ]
+  },
+  {
+    "Id": "Teletransporte",
+    "Nombre": "Teletransporte",
+    "Tipo": "Activa",
+    "Categoria": "Magica",
+    "Descripcion": "Permite moverse instantáneamente a una ubicación visible.",
+    "AtributosNecesarios": { "Inteligencia": 9 },
+    "Condiciones": [
+      { "Tipo": "Nivel", "Cantidad": 8 }
+    ],
+    "Beneficio": "Desplazamiento instantáneo a corta distancia.",
+    "Mejoras": ["Mayor alcance con Inteligencia > 14", "Reduce el coste de maná si NvHabilidad > 25"],
+    "Oculta": false,
+    "Exp": 0,
+    "Evoluciones": [
+      {
+        "Id": "TeletransporteMaestro",
+        "Nombre": "Teletransporte Maestro",
+        "Condiciones": [
+          { "Tipo": "NvHabilidad", "Cantidad": 35 },
+          { "Tipo": "Inteligencia", "Cantidad": 16 }
+        ],
+        "Beneficio": "Permite teletransportarse a cualquier lugar conocido y llevar aliados.",
+        "Mejoras": ["Teletransporte grupal", "Sin tiempo de reutilización"]
+      }
+    ]
+  },
+  {
+    "Id": "InvocacionElemental",
+    "Nombre": "Invocación Elemental",
+    "Tipo": "Activa",
+    "Categoria": "Magica",
+    "Descripcion": "Invoca un elemental para luchar a tu lado.",
+    "AtributosNecesarios": { "Inteligencia": 12 },
+    "Condiciones": [
+      { "Tipo": "Nivel", "Cantidad": 10 }
+    ],
+    "Beneficio": "Invoca un elemental durante un tiempo limitado.",
+    "Mejoras": ["Elemental más fuerte con Inteligencia > 16", "Invoca dos elementales si NvHabilidad > 40"],
+    "Oculta": false,
+    "Exp": 0,
+    "Evoluciones": [
+      {
+        "Id": "InvocacionElementalSuprema",
+        "Nombre": "Invocación Elemental Suprema",
+        "Condiciones": [
+          { "Tipo": "NvHabilidad", "Cantidad": 50 },
+          { "Tipo": "Inteligencia", "Cantidad": 18 }
+        ],
+        "Beneficio": "Invoca un elemental supremo con habilidades únicas.",
+        "Mejoras": ["Duración ilimitada", "Elemental puede lanzar hechizos"]
+      }
+    ]
+  },
+  {
+    "Id": "Congelacion",
+    "Nombre": "Congelación",
+    "Tipo": "Activa",
+    "Categoria": "Magica",
+    "Descripcion": "Congela a un enemigo, inmovilizándolo temporalmente.",
+    "AtributosNecesarios": { "Inteligencia": 8 },
+    "Condiciones": [
+      { "Tipo": "Nivel", "Cantidad": 5 }
+    ],
+    "Beneficio": "Inmoviliza a un enemigo durante unos segundos.",
+    "Mejoras": ["Mayor duración con Inteligencia > 13", "Congela en área si NvHabilidad > 22"],
+    "Oculta": false,
+    "Exp": 0,
+    "Evoluciones": [
+      {
+        "Id": "CongelacionTotal",
+        "Nombre": "Congelación Total",
+        "Condiciones": [
+          { "Tipo": "NvHabilidad", "Cantidad": 28 },
+          { "Tipo": "Inteligencia", "Cantidad": 15 }
+        ],
+        "Beneficio": "Congela a todos los enemigos cercanos y reduce su defensa.",
+        "Mejoras": ["Reducción de defensa aumentada", "Congelación prolongada"]
+      }
+    ]
+  },
+  {
+    "Id": "MaldicionOscura",
+    "Nombre": "Maldición Oscura",
+    "Tipo": "Activa",
+    "Categoria": "Magica",
+    "Descripcion": "Lanza una maldición que debilita al enemigo.",
+    "AtributosNecesarios": { "Inteligencia": 10 },
+    "Condiciones": [
+      { "Tipo": "Nivel", "Cantidad": 7 }
+    ],
+    "Beneficio": "Reduce el ataque y defensa del objetivo.",
+    "Mejoras": ["Afecta a varios enemigos con Inteligencia > 15", "Duración aumentada si NvHabilidad > 30"],
+    "Oculta": false,
+    "Exp": 0,
+    "Evoluciones": [
+      {
+        "Id": "MaldicionTotal",
+        "Nombre": "Maldición Total",
+        "Condiciones": [
+          { "Tipo": "NvHabilidad", "Cantidad": 40 },
+          { "Tipo": "Inteligencia", "Cantidad": 17 }
+        ],
+        "Beneficio": "Reduce drásticamente todas las estadísticas del objetivo.",
+        "Mejoras": ["Afecta a todos los enemigos cercanos", "Reduce regeneración de vida"]
       }
     ]
   }

@@ -13,27 +13,31 @@
     "Mejoras": ["+30% si detectas 60 trampas", "Detecta trampas mágicas si Percepción > 10"],
     "Oculta": true,
     "Exp": 0,
+    "CostoMana": 0,
     "Evoluciones": [
       {
         "Id": "VisionSuperior",
         "Nombre": "Visión Superior",
         "Condiciones": [ { "Tipo": "NvHabilidad", "Cantidad": 50 } ],
         "Beneficio": "+25% precisión y +30% detección de trampas",
-        "Mejoras": ["Detecta trampas ocultas"]
+        "Mejoras": ["Detecta trampas ocultas"],
+        "CostoMana": 0
       },
       {
         "Id": "VisionMaestra",
         "Nombre": "Visión Maestra",
         "Condiciones": [ { "Tipo": "NvHabilidad", "Cantidad": 100 } ],
         "Beneficio": "+40% precisión y +50% detección de trampas",
-        "Mejoras": ["Detecta trampas mágicas y legendarias"]
+        "Mejoras": ["Detecta trampas mágicas y legendarias"],
+        "CostoMana": 0
       },
       {
         "Id": "VisionLegendaria",
         "Nombre": "Visión Legendaria",
         "Condiciones": [ { "Tipo": "NvHabilidad", "Cantidad": 200 } ],
         "Beneficio": "Precisión perfecta y detección total de trampas",
-        "Mejoras": ["Detecta trampas en todo el mapa"]
+        "Mejoras": ["Detecta trampas en todo el mapa"],
+        "CostoMana": 0
       }
     ]
   }

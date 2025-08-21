@@ -14,6 +14,7 @@
     "Mejoras": ["Aumenta el daño si se entrena 100 veces", "Permite aturdir al objetivo si la Fuerza supera 10"],
     "Oculta": true,
     "Exp": 0,
+    "CostoMana": 10,
     "Evoluciones": [
       {
         "Id": "GolpeContundente",
@@ -24,28 +25,32 @@
           { "Tipo": "Ataque", "Cantidad": 50 }
         ],
         "Beneficio": "+5 al Ataque Fisico",
-        "Mejoras": ["Probabilidad de Aturdir", "Probabilidad de Destruir Defensa"]
+        "Mejoras": ["Probabilidad de Aturdir", "Probabilidad de Destruir Defensa"],
+        "CostoMana": 50
       },
       {
         "Id": "GolpeDemoledor",
         "Nombre": "Golpe Demoledor",
         "Condiciones": [ { "Tipo": "NvHabilidad", "Cantidad": 100 } ],
         "Beneficio": "+10 al Ataque Fisico",
-        "Mejoras": ["Aturde con mayor probabilidad", "Destruye defensa con más facilidad"]
+        "Mejoras": ["Aturde con mayor probabilidad", "Destruye defensa con más facilidad"],
+        "CostoMana": 100
       },
       {
         "Id": "GolpeTitanico",
         "Nombre": "Golpe Titánico",
         "Condiciones": [ { "Tipo": "NvHabilidad", "Cantidad": 200 } ],
         "Beneficio": "+20 al Ataque Fisico",
-        "Mejoras": ["Aturde a todos los enemigos en área", "Destruye armaduras legendarias"]
+        "Mejoras": ["Aturde a todos los enemigos en área", "Destruye armaduras legendarias"],
+        "CostoMana": 200
       },
       {
         "Id": "GolpeDivino",
         "Nombre": "Golpe Divino",
         "Condiciones": [ { "Tipo": "NvHabilidad", "Cantidad": 500 } ],
         "Beneficio": "+50 al Ataque Fisico",
-        "Mejoras": ["Aturde y elimina defensas mágicas"]
+        "Mejoras": ["Aturde y elimina defensas mágicas"],
+        "CostoMana": 500
       }
     ]
   }

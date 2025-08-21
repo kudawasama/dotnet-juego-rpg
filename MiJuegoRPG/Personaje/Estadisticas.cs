@@ -57,7 +57,22 @@ namespace MiJuegoRPG.Personaje
             Regeneracion = atributosBase.Vitalidad * 0.01; // Regeneración de salud y recursos basada en Vitalidad
             Resistencia = atributosBase.Vitalidad * 0.01 + atributosBase.Sabiduría * 0.01; // Resistencia a efectos negativos basada en Vitalidad y Sabiduría
             Salud = atributosBase.Vitalidad * 10; // Salud máxima basada en Vitalidad
-            Mana = atributosBase.Inteligencia * 10; // Mana máxima basada en Inteligencia
+            Mana =
+                atributosBase.Inteligencia * 10 +
+                atributosBase.Sabiduría * 3 +
+                atributosBase.Fe * 2 +
+                atributosBase.Voluntad * 1 +
+                atributosBase.Carisma * 0.5 +
+                atributosBase.Liderazgo * 0.5 +
+                atributosBase.Vitalidad * 0.2 +
+                atributosBase.Fuerza * 0.1 +
+                atributosBase.Destreza * 0.1 +
+                atributosBase.Agilidad * 0.1 +
+                atributosBase.Suerte * 0.1 +
+                atributosBase.Defensa * 0.1 +
+                atributosBase.Resistencia * 0.1 +
+                atributosBase.Percepcion * 0.1 +
+                atributosBase.Persuasion * 0.1;
             Energia = atributosBase.Agilidad * 10; // Energía máxima basada en Agilidad
             Carga = atributosBase.Fuerza * 5; // Capacidad de carga basada en Fuerza
             Daño = atributosBase.Fuerza * 0.01 + atributosBase.Destreza * 0.01; // Daño físico infligido basado en Fuerza y Destreza

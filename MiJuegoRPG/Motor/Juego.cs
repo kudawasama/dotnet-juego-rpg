@@ -15,7 +15,6 @@ namespace MiJuegoRPG.Motor
     public class Juego
    
     {
-       
 
         // Método para generar un material aleatorio (stub temporal)
         public Material GenerarMaterialAleatorio()
@@ -36,41 +35,31 @@ namespace MiJuegoRPG.Motor
                 Console.WriteLine("4. Guardar personaje");
                 Console.WriteLine("0. Salir del juego");
                 string opcion = InputService.LeerOpcion();
-                switch (opcion)
-                {
-                    case "1":
-                        if (jugador != null) MostrarEstadoPersonaje(jugador);
-                        else Console.WriteLine("No hay personaje cargado.");
-                        break;
-                    case "2":
-                        // Volver al sector anterior: si está en ciudad, mostrar menú de ciudad; si está fuera, mostrar menú fuera de ciudad
-                        if (ubicacionActual != null && ubicacionActual.Tipo != null && ubicacionActual.Tipo.Equals("Ciudad", StringComparison.OrdinalIgnoreCase))
-                        {
-                            MostrarMenuCiudad(ref salir);
-                        }
-                        else
-                        {
-                            MostrarMenuFueraCiudad(ref salir);
-                        }
-                        break;
-                    case "3":
-                        GestionarInventario();
-                        break;
-                    case "4":
-                        GuardarPersonaje();
-                        Console.WriteLine("¡Personaje guardado exitosamente!");
-                        break;
-                    case "0":
-                        salir = true;
-                        Console.WriteLine("¡Gracias por jugar!");
-                        break;
-                    default:
-                        Console.WriteLine("Opción no válida.");
-                        break;
-                }
-            }
+                    switch (opcion)
+                    {
+                        case "1":
+                            if (jugador != null) MostrarEstadoPersonaje(jugador);
+                            break;
+                        // Puedes agregar más casos aquí para otras opciones del menú
+                        case "2":
+                            MostrarMenuPorUbicacion();
+                            break;
+                        case "3":
+                            GestionarInventario();
+                            break;
+                        case "4":
+                            GuardarPersonaje();
+                            break;
+                        case "0":
+                            salir = true;
+                            break;
+                        default:
+                            Console.WriteLine("Opción no válida.");
+                            break;
+                    }
+            } 
+            
         }
-        // ...existing code...
         public void CrearPersonaje()
         {
             Console.WriteLine("=== Creación de Personaje ===");
@@ -84,6 +73,9 @@ namespace MiJuegoRPG.Motor
             else
                 throw new Exception("No hay ubicaciones disponibles para asignar al personaje.");
             Console.WriteLine($"Personaje creado: {jugador.Nombre} en {ubicacionActual.Nombre}");
+            // ...después de crear el personaje y asignar atributos base...
+            jugador.Estadisticas = new Estadisticas(jugador.AtributosBase);
+            jugador.ManaActual = jugador.ManaMaxima;
         }
         // Menú de recolección fuera de ciudad
         public void MostrarMenuRecoleccion()
@@ -162,8 +154,8 @@ namespace MiJuegoRPG.Motor
         public string FormatoRelojMundo => $"[{FechaActual:dd-MM-yyyy} // {FechaActual:HH:mm:ss} hrs]";
         public static Juego? InstanciaActual { get; private set; }
 
-    private readonly Random random = new Random();
-    public EnergiaService energiaService { get; }
+        private readonly Random random = new Random();
+        public EnergiaService energiaService { get; }
         public MiJuegoRPG.Personaje.Personaje? jugador;
         public MenusJuego menuPrincipal;
         public EstadoMundo estadoMundo;
@@ -281,127 +273,9 @@ namespace MiJuegoRPG.Motor
 
     // Muestra el estado completo del personaje con explicación
     public void MostrarEstadoPersonaje(MiJuegoRPG.Personaje.Personaje pj)
-        {
-            Console.WriteLine("\n=== ESTADO DEL PERSONAJE ===");
-            Console.WriteLine($"Nombre: {pj.Nombre}");
-            Console.WriteLine($"Clase: {(pj.Clase != null ? pj.Clase.Nombre : "Sin clase")}");
-            Console.WriteLine($"Título: {pj.Titulo}");
-            Console.WriteLine($"Nivel: {pj.Nivel}");
-            Console.WriteLine($"Vida: {pj.Vida}/{pj.VidaMaxima}");
-            Console.WriteLine($"Energía: {pj.EnergiaActual}/{pj.EnergiaMaxima}");
-            Console.WriteLine($"Oro: {pj.Oro}");
-            int expActual = pj.Experiencia;
-            int expSiguiente = pj.ExperienciaSiguienteNivel;
-            int expFaltante = expSiguiente - expActual;
-            double porcentaje = expSiguiente > 0 ? (double)expActual / expSiguiente * 100.0 : 0.0;
-            Console.WriteLine($"Experiencia: {expActual} / {expSiguiente} (Faltan {expFaltante})");
-            Console.WriteLine($"Progreso al siguiente nivel: {porcentaje:F2}%");
-            Console.WriteLine($"Descansos realizados hoy: {pj.DescansosHoy}");
-            Console.WriteLine("\n--- Atributos Base ---");
-            Console.WriteLine("===================================");
-            var ab = pj.AtributosBase;
-            var atributos = new Dictionary<string, (string abrev, double valor, double exp, double req)> {
-                {"Fuerza", ("Fza", ab.Fuerza, pj.ExpFuerza, pj.FuerzaExpRequerida)},
-                {"Destreza", ("Dxt", ab.Destreza, pj.ExpDestreza, pj.DestrezaExpRequerida)},
-                {"Vitalidad", ("Vit", ab.Vitalidad, pj.ExpVitalidad, pj.VitalidadExpRequerida)},
-                {"Agilidad", ("Agi", ab.Agilidad, pj.ExpAgilidad, pj.AgilidadExpRequerida)},
-                {"Suerte", ("Srt", ab.Suerte, pj.ExpSuerte, pj.SuerteExpRequerida)},
-                {"Defensa", ("Def", ab.Defensa, pj.ExpDefensa, pj.DefensaExpRequerida)},
-                {"Resistencia", ("Res", ab.Resistencia, pj.ExpResistencia, pj.ResistenciaExpRequerida)},
-                {"Sabiduría", ("Sab", ab.Sabiduría, 0, 1)},
-                {"Inteligencia", ("Int", ab.Inteligencia, pj.ExpInteligencia, pj.InteligenciaExpRequerida)},
-                {"Percepción", ("Per", ab.Percepcion, pj.ExpPercepcion, pj.PercepcionExpRequerida)},
-                {"Persuasión", ("Prs", ab.Persuasion, 0, 1)},
-                {"Liderazgo", ("Lid", ab.Liderazgo, 0, 1)},
-                {"Carisma", ("Car", ab.Carisma, 0, 1)},
-                {"Voluntad", ("Vol", ab.Voluntad, 0, 1)}
-            };
-            foreach (var atributo in atributos)
-            {
-                string abrev = atributo.Value.abrev;
-                double valor = atributo.Value.valor;
-                double exp = atributo.Value.exp;
-                double req = atributo.Value.req;
-                double bonificador = pj.ObtenerBonificadorAtributo(atributo.Key);
-                double total = valor + bonificador;
-                double prog = req > 0 ? exp / req * 100.0 : 0.0;
-                double faltante = req - exp;
-                string textoProg = req > 1 ? $" ({prog:F2}% de {req}, faltan {faltante:F2})" : "";
-                Console.WriteLine($"{abrev}: {total} (Base: {valor}, Bonif: {bonificador}){textoProg}");
-            }
-            Console.WriteLine("\n--- Estadísticas Físicas ---");
-            var est = pj.Estadisticas;
-            var estadisticasFisicas = new Dictionary<string, double> {
-                {"Ataque", est.Ataque}, {"Defensa Física", est.DefensaFisica}, {"Daño", est.Daño}, {"Crítico", est.Critico},
-                {"Evasión", est.Evasion}, {"Velocidad", est.Velocidad}, {"Regeneración", est.Regeneracion}, {"Salud", est.Salud},
-                {"Energía", est.Energia}, {"Carga", est.Carga}, {"Poder Ofensivo Físico", est.PoderOfensivoFisico}, {"Poder Defensivo Físico", est.PoderDefensivoFisico}
-            };
-            foreach (var stat in estadisticasFisicas)
-            {
-                double bonificador = pj.ObtenerBonificadorEstadistica(stat.Key);
-                double total = stat.Value + bonificador;
-                Console.WriteLine($"{stat.Key}: {stat.Value:F2} ({total:F2})");
-                if (bonificador > 0)
-                {
-                    var fuentes = pj.ObtenerFuentesBonificadorEstadistica(stat.Key);
-                    Console.WriteLine($"  Bonificador por equipo:");
-                    foreach (var fuente in fuentes)
-                    {
-                        Console.WriteLine($"    {fuente.Nombre}: +{fuente.Valor}");
-                    }
-                }
-            }
-
-            Console.WriteLine("\n--- Estadísticas Mágicas ---");
-            var estadisticasMagicas = new Dictionary<string, double> {
-                {"Poder Mágico", est.PoderMagico}, {"Defensa Mágica", est.DefensaMagica}, {"Regeneración Mana", est.RegeneracionMana},
-                {"Mana", est.Mana}, {"Poder Ofensivo Mágico", est.PoderOfensivoMagico}, {"Poder Defensivo Mágico", est.PoderDefensivoMagico},
-                {"Afinidad Elemental", est.AfinidadElemental}, {"Poder Elemental", est.PoderElemental}, {"Resistencia Elemental", est.ResistenciaElemental},
-                {"Resistencia Mágica", est.ResistenciaMagica}
-            };
-            foreach (var stat in estadisticasMagicas)
-            {
-                double bonificador = pj.ObtenerBonificadorEstadistica(stat.Key);
-                double total = stat.Value + bonificador;
-                Console.WriteLine($"{stat.Key}: {stat.Value:F2} ({total:F2})");
-                if (bonificador > 0)
-                {
-                    var fuentes = pj.ObtenerFuentesBonificadorEstadistica(stat.Key);
-                    Console.WriteLine($"  Bonificador por equipo:");
-                    foreach (var fuente in fuentes)
-                    {
-                        Console.WriteLine($"    {fuente.Nombre}: +{fuente.Valor}");
-                    }
-                }
-            }
-
-            Console.WriteLine("\n--- Estadísticas Espirituales y Especiales ---");
-            var estadisticasEspeciales = new Dictionary<string, double> {
-                {"Poder Espiritual", est.PoderEspiritual}, {"Poder Curativo", est.PoderCurativo}, {"Poder de Soporte", est.PoderDeSoporte},
-                {"Poder de Control", est.PoderDeControl}, {"Poder de Invocación", est.PoderDeInvocacion}, {"Poder de Transmutación", est.PoderDeTransmutacion},
-                {"Poder de Alteración", est.PoderDeAlteracion}, {"Poder de Ilusión", est.PoderDeIlusion}, {"Poder de Conjuración", est.PoderDeConjuracion},
-                {"Poder de Destrucción", est.PoderDeDestruccion}, {"Poder de Restauración", est.PoderDeRestauracion}, {"Poder de Transporte", est.PoderDeTransporte},
-                {"Poder de Manipulación", est.PoderDeManipulacion}
-            };
-            foreach (var stat in estadisticasEspeciales)
-            {
-                double bonificador = pj.ObtenerBonificadorEstadistica(stat.Key);
-                double total = stat.Value + bonificador;
-                Console.WriteLine($"{stat.Key}: {stat.Value:F2} ({total:F2})");
-                if (bonificador > 0)
-                {
-                    var fuentes = pj.ObtenerFuentesBonificadorEstadistica(stat.Key);
-                    Console.WriteLine($"  Bonificador por equipo:");
-                    foreach (var fuente in fuentes)
-                    {
-                        Console.WriteLine($"    {fuente.Nombre}: +{fuente.Valor}");
-                    }
-                }
-            }
-
-            Console.WriteLine("\nPresiona cualquier tecla para continuar...");
-            Console.ReadKey();
-        }
+    {
+        EstadoPersonajePrinter.MostrarEstadoPersonaje(pj);
+    }
         public void MostrarMenuViajar()
         {
             //Console.Clear();
@@ -557,38 +431,10 @@ namespace MiJuegoRPG.Motor
         // Método para mostrar la tienda (implementación básica)
         public void MostrarTienda()
         {
-            //Console.Clear();
-            Console.WriteLine("=== Tienda ===");
-            Console.WriteLine("1. Comprar poción curativa (10 oro)");
-            Console.WriteLine("2. Salir de la tienda");
-            var opcion = Console.ReadLine();
-            switch (opcion)
-            {
-                case "1":
-                    if (jugador != null && jugador.Oro >= 10)
-                    {
-                        jugador.Oro -= 10;
-                        jugador.Inventario.AgregarObjeto(new Objetos.Pocion("Poción Curativa", 20));
-                        Console.WriteLine("Has comprado una poción curativa.");
-                    }
-                    else
-                    {
-                        Console.WriteLine("No tienes suficiente oro.");
-                    }
-                    break;
-                case "2":
-                    Console.WriteLine("Saliendo de la tienda...");
-                    break;
-                default:
-                    Console.WriteLine("Opción no válida.");
-                    break;
-            }
-        
+            menuPrincipal.MostrarMenuTienda(ubicacionActual.Nombre);
+        }
 
-         }
-        
-        
-        
+    
 
         public void MostrarMenuGuardado()
         {
@@ -753,7 +599,7 @@ namespace MiJuegoRPG.Motor
                     Console.WriteLine("No puedes realizar la acción por falta de energía.");
                     Console.WriteLine("Presiona cualquier tecla para continuar...");
                     Console.ReadKey();
-                    MostrarMenuRecoleccion();
+                    menuPrincipal.MostrarMenuRecoleccion();
                     return;
                 }
                 double expBase = 0.01; // Base de experiencia
@@ -803,7 +649,7 @@ namespace MiJuegoRPG.Motor
                 }
                 RevisarAtributosPorExperiencia(jugador);
             }
-            var random = new Random();
+            // Usar el campo random de la clase
             switch (tipo)
             {
                 case "Recolectar":
@@ -851,7 +697,7 @@ namespace MiJuegoRPG.Motor
             }
             Console.WriteLine("Presiona cualquier tecla para continuar...");
             Console.ReadKey();
-            MostrarMenuRecoleccion();
+            menuPrincipal.MostrarMenuRecoleccion();
     }
 
         public void Entrenar()
@@ -884,6 +730,10 @@ namespace MiJuegoRPG.Motor
             if (pj != null)
             {
                 jugador = pj;
+                // Recalcular estadísticas y maná después de cargar
+                jugador.Estadisticas = new Estadisticas(jugador.AtributosBase);
+                jugador.ManaActual = jugador.ManaMaxima;
+
                 Console.WriteLine($"Personaje '{jugador.Nombre}' cargado correctamente.");
                 if (jugador.UbicacionActual != null)
                     ubicacionActual = jugador.UbicacionActual;

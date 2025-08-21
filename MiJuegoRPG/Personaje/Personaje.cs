@@ -1,3 +1,4 @@
+
 using System;
 using MiJuegoRPG.Enemigos;
 using MiJuegoRPG.Interfaces;
@@ -7,7 +8,7 @@ using MiJuegoRPG.Motor;
 namespace MiJuegoRPG.Personaje
 {
     public class Personaje : ICombatiente
-    {   
+    {
         // IDs de desbloqueos ya notificados (para avisos automáticos)
         public HashSet<string> DesbloqueosNotificados { get; set; } = new HashSet<string>();
 
@@ -121,7 +122,7 @@ namespace MiJuegoRPG.Personaje
 
         // Ubicacion Actual
         public MiJuegoRPG.Motor.Ubicacion? UbicacionActual { get; set; }
-        
+
         // Métodos de bonificadores y objetos equipados
         public double ObtenerBonificadorAtributo(string atributo)
         {
@@ -317,10 +318,42 @@ namespace MiJuegoRPG.Personaje
         // Habilidades aprendidas y progreso
         public Dictionary<string, HabilidadProgreso> Habilidades { get; set; } = new Dictionary<string, HabilidadProgreso>();
 
+        // Clase auxiliar para el progreso de habilidades
+        public class HabilidadProgreso
+        {
+            public string Id { get; set; } = string.Empty;
+            public string Nombre { get; set; } = string.Empty;
+            public int Exp { get; set; }
+            public int Nivel { get; set; }
+            public List<EvolucionHabilidad> Evoluciones { get; set; } = new List<EvolucionHabilidad>();
+            public HashSet<string> EvolucionesDesbloqueadas { get; set; } = new HashSet<string>();
+            public Dictionary<string, int>? AtributosNecesarios { get; set; } // <-- Agregado para requisitos de atributos
+        }
+
+        public class EvolucionHabilidad
+        {
+            public string Id { get; set; } = string.Empty;
+            public string Nombre { get; set; } = string.Empty;
+            public string Beneficio { get; set; } = string.Empty;
+            public List<CondicionEvolucion> Condiciones { get; set; } = new List<CondicionEvolucion>();
+        }
+
+        public class CondicionEvolucion
+        {
+            public string Tipo { get; set; } = string.Empty;
+            public int Cantidad { get; set; }
+        }
+
         public void UsarHabilidad(string habilidadId)
         {
             if (Habilidades.TryGetValue(habilidadId, out var progreso))
             {
+                // Verifica requisitos antes de usar la habilidad
+                if (progreso.AtributosNecesarios != null && !CumpleRequisitosHabilidad(progreso.AtributosNecesarios))
+                {
+                    Console.WriteLine($"No cumples los requisitos para usar la habilidad {progreso.Nombre}.");
+                    return;
+                }
                 int nivelAnterior = progreso.Nivel;
                 progreso.Exp++;
                 Console.WriteLine($"Usaste la habilidad {progreso.Nombre}. Exp actual: {progreso.Exp}");
@@ -363,8 +396,14 @@ namespace MiJuegoRPG.Personaje
             }
         }
 
-        public void AprenderHabilidad(HabilidadProgreso habilidad)
+        public void AprenderHabilidad(HabilidadProgreso habilidad) // Método para aprender habilidades
         {
+            // Verifica requisitos antes de aprender la habilidad
+            if (habilidad.AtributosNecesarios != null && !CumpleRequisitosHabilidad(habilidad.AtributosNecesarios))
+            {
+                Console.WriteLine($"No cumples los requisitos para aprender la habilidad {habilidad.Nombre}.");
+                return;
+            }
             if (!Habilidades.ContainsKey(habilidad.Id))
             {
                 Habilidades.Add(habilidad.Id, habilidad);
@@ -373,16 +412,16 @@ namespace MiJuegoRPG.Personaje
                 MiJuegoRPG.Motor.GestorDesbloqueos.VerificarDesbloqueos(this);
             }
         }
-        // Cuando cambies la clase, llama a los avisos automáticos
-        public void CambiarClase(Clase nuevaClase)
+        
+        public void CambiarClase(Clase nuevaClase) // Cuando cambies la clase, llama a los avisos automáticos
         {
             Clase = nuevaClase;
             Console.WriteLine($"¡Has cambiado de clase a {nuevaClase.Nombre}!");
             MiJuegoRPG.Motor.GestorDesbloqueos.VerificarDesbloqueos(this);
         }
-        
 
-        public Personaje(string nombre)
+
+        public Personaje(string nombre) // Constructor Personaje
         {
             Nombre = nombre;
             VidaMaxima = 100;
@@ -393,15 +432,18 @@ namespace MiJuegoRPG.Personaje
             ExperienciaSiguienteNivel = CalcularExperienciaNecesaria(Nivel + 1);
             Oro = 0;
             Clase = null;
+            // Inicializar estadísticas con los atributos base para que Mana y demás se calculen correctamente
+            Estadisticas = new Estadisticas(AtributosBase);
+            ManaActual = ManaMaxima;
         }
 
-        private int CalcularExperienciaNecesaria(int nivel)
+        private int CalcularExperienciaNecesaria(int nivel) // Método para calcular la experiencia necesaria para el siguiente nivel
         {
             return nivel * nivel * 200;
         }
 
-        // Método para entrenar atributos y desbloquear clases/títulos
-        public void Entrenar(string atributo)
+        
+        public void Entrenar(string atributo) // Método para entrenar atributos y desbloquear clases/títulos
         {
             // Sistema estandarizado: experiencia base * índice de atributo * índice de nivel * dificultad por nivel de atributo
             double expBase = 0.01; // Puedes ajustar este valor base
@@ -519,24 +561,8 @@ namespace MiJuegoRPG.Personaje
             }
         }
 
-        // Método para entrenar profesión (OBSOLETO, eliminar si no se usa en el juego)
-        // public void EntrenarProfesion(string profesion)
-        // {
-        //     if (!Profesiones.ContainsKey(profesion))
-        //     {
-        //         Console.WriteLine($"La profesión '{profesion}' no existe.");
-        //         return;
-        //     }
-        //     Profesiones[profesion] += 10;
-        //     Console.WriteLine($"Has entrenado en {profesion}. Progreso: {Profesiones[profesion]}/100");
-        //     if (Profesiones[profesion] >= 100 && ProfesionPrincipal == "Sin especialidad")
-        //     {
-        //         ProfesionPrincipal = profesion;
-        //         Console.WriteLine($"¡Ahora eres especialista en {profesion}!");
-        //     }
-        // }
 
-        public void GanarExperiencia(int cantidad)
+        public void GanarExperiencia(int cantidad) // Método para ganar experiencia
         {
             Experiencia += cantidad;
             Console.WriteLine($"Has ganado {cantidad} puntos de experiencia. Total actual: {Experiencia}");
@@ -546,13 +572,13 @@ namespace MiJuegoRPG.Personaje
             }
         }
 
-        public void GanarOro(int cantidad)
+        public void GanarOro(int cantidad) // Método para ganar oro
         {
             Oro += cantidad;
             Console.WriteLine($"Has ganado {cantidad} monedas de oro. Total actual: {Oro}");
         }
 
-        private void SubirNivel()
+        private void SubirNivel() // Método para subir de nivel
         {
             Nivel++;
             Experiencia -= ExperienciaSiguienteNivel;
@@ -564,8 +590,8 @@ namespace MiJuegoRPG.Personaje
             MiJuegoRPG.Motor.GestorDesbloqueos.VerificarDesbloqueos(this);
         }
 
-        // Verifica si el personaje puede acceder a una misión según condiciones y progreso
-        public bool PuedeAccederMision(Mision mision)
+        
+        public bool PuedeAccederMision(Mision mision) // Verifica si el personaje puede acceder a una misión según condiciones y progreso
         {
             // Si la misión ya está activa o completada, no mostrarla como accesible
             if (MisionesActivas != null && MisionesActivas.Any(ms => ms.Id == mision.Id))
@@ -591,8 +617,8 @@ namespace MiJuegoRPG.Personaje
             return true;
         }
 
-        // Verifica si el personaje cumple un requisito específico (para rutas, misiones, etc.)
-        public bool CumpleRequisito(string clave, object valor)
+        
+        public bool CumpleRequisito(string clave, object valor) // Verifica si el personaje cumple un requisito específico (para rutas, misiones, etc.)
         {
             var requisito = clave.ToLower();
             return requisito switch
@@ -609,7 +635,62 @@ namespace MiJuegoRPG.Personaje
 
         }
 
+        // Propiedades de maná
+        public int ManaActual { get; set; }
+        public int ManaMaxima => (int)Estadisticas.Mana;   
+
         
+
+        public bool GastarMana(int cantidad) // Método para gastar maná
+        {
+            if (ManaActual >= cantidad)
+            {
+                ManaActual -= cantidad;
+                return true;
+            }
+            return false;
+        }
+
+            public void RecuperarMana(int cantidad) // Método para recuperar maná
+            {
+                ManaActual = Math.Min(ManaActual + cantidad, ManaMaxima);
+            }
+
+                // Verifica si el personaje cumple los requisitos de atributos para una habilidad
+        public bool CumpleRequisitosHabilidad(Dictionary<string, int> atributosNecesarios)
+        {
+            foreach (var req in atributosNecesarios)
+            {
+                // Normaliza el nombre del atributo para evitar problemas de mayúsculas/minúsculas
+                string clave = req.Key.ToLower();
+                int valorNecesario = req.Value;
+                int valorActual = 0;
+                switch (clave)
+                {
+                    case "fuerza": valorActual = (int)AtributosBase.Fuerza; break;
+                    case "inteligencia": valorActual = (int)AtributosBase.Inteligencia; break;
+                    case "destreza": valorActual = (int)AtributosBase.Destreza; break;
+                    case "suerte": valorActual = (int)AtributosBase.Suerte; break;
+                    case "defensa": valorActual = (int)AtributosBase.Defensa; break;
+                    case "vitalidad": valorActual = (int)AtributosBase.Vitalidad; break;
+                    case "agilidad": valorActual = (int)AtributosBase.Agilidad; break;
+                    case "resistencia": valorActual = (int)AtributosBase.Resistencia; break;
+                    case "percepcion": valorActual = (int)AtributosBase.Percepcion; break;
+                    case "sabiduria": valorActual = (int)AtributosBase.Sabiduría; break;
+                    case "fe": valorActual = (int)AtributosBase.Fe; break;
+                    case "carisma": valorActual = (int)AtributosBase.Carisma; break;
+                    case "liderazgo": valorActual = (int)AtributosBase.Liderazgo; break;
+                    case "persuasion": valorActual = (int)AtributosBase.Persuasion; break;
+                    default: continue; // Si el atributo no existe, lo ignora
+                }
+                if (valorActual < valorNecesario)
+                {
+                    Console.WriteLine($"No cumples el requisito: {req.Key} ({valorActual}/{valorNecesario})");
+                    return false;
+                }
+            }
+            return true;
+        }
 
     }
 }

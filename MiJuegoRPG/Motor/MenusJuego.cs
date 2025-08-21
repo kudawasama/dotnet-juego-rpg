@@ -674,7 +674,7 @@ namespace MiJuegoRPG.Motor
         // Servicio de tienda integrado
         private readonly MiJuegoRPG.Comercio.ShopService _shop = new(new MiJuegoRPG.Comercio.PriceService());
 
-        private void MostrarMenuTienda(string tienda)
+        public void MostrarMenuTienda(string tienda)
         {
             // Se asume que la ubicación actual es el nombre de la ciudad (puedes ajustar esto)
             var ubicacionActual = tienda;

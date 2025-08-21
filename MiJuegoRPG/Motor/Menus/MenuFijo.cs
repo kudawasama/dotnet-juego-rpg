@@ -34,19 +34,7 @@ namespace MiJuegoRPG.Motor.Menus
                         InputService.Pausa();
                         break;
                     case "3":
-                        // Al volver, mostrar el menú adecuado según la ubicación actual
-                        if (juego.ubicacionActual != null && juego.ubicacionActual.Tipo != null && juego.ubicacionActual.Tipo.Equals("Ciudad", StringComparison.OrdinalIgnoreCase))
-                        {
-                            juego.MostrarMenuCiudad(ref salir);
-                        }
-                        else if (juego.ubicacionActual != null && !string.IsNullOrWhiteSpace(juego.ubicacionActual.Tipo))
-                        {
-                            juego.MostrarMenuFueraCiudad(ref salir);
-                        }
-                        else
-                        {
-                            salir = true;
-                        }
+                        salir = true;
                         return;
                     case "0":
                         salir = true;
