@@ -1,7 +1,14 @@
 {
-  "nombre": "Regi\u00F3n 40_19",
-  "bioma": "Indefinido",
+  "Id": "40_19",
+  "nombre": "Sector 40_19",
+  "bioma": "Campo",
+  "parteCiudad": "",
+  "ciudadPrincipal": false,
+  "esCentroCiudad": false,
   "nodosRecoleccion": [],
+  "Requisitos": {},
   "enemigos": [],
-  "eventos": []
+  "Conexiones": [],
+  "eventos": [],
+  "descripcion": "Sector autocompletado."
 }

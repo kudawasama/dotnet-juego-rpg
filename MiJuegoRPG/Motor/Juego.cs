@@ -196,10 +196,10 @@ namespace MiJuegoRPG.Motor
                 estadoMundo.Ubicaciones.Add(ubic);
             }
             // Desbloquear sectores adyacentes a la ciudad inicial
-            var bairan = estadoMundo.Ubicaciones.Find(u => u.Nombre == "Ciudad de Bairan");
+            var bairan = estadoMundo.Ubicaciones.Find(u => u.Nombre == "Bairan" || u.Nombre == "Ciudad de Bairan");
             if (bairan != null)
             {
-                var sectorBairan = mapa.ObtenerSectores().Find(s => s.Nombre == "Ciudad de Bairan");
+                var sectorBairan = mapa.ObtenerSectores().Find(s => s.Nombre == "Bairan" || s.Nombre == "Ciudad de Bairan");
                 if (sectorBairan != null)
                 {
                     foreach (var idConexion in sectorBairan.Conexiones)
@@ -210,6 +210,24 @@ namespace MiJuegoRPG.Motor
                     }
                 }
                 ubicacionActual = bairan;
+                // DEBUG: Mostrar ID de ubicación actual y desbloqueo de sectores conectados
+                Console.WriteLine($"[DEBUG] Ubicación actual: {ubicacionActual.Nombre} (ID: {ubicacionActual.Id})");
+                if (sectorBairan != null)
+                {
+                    Console.WriteLine($"[DEBUG] Conexiones de {sectorBairan.Nombre}:");
+                    foreach (var idConexion in sectorBairan.Conexiones)
+                    {
+                        var ubicAdj = estadoMundo.Ubicaciones.Find(u => u.Id == idConexion);
+                        if (ubicAdj != null)
+                        {
+                            Console.WriteLine($"  - {ubicAdj.Nombre} (ID: {ubicAdj.Id}) | Desbloqueada: {ubicAdj.Desbloqueada}");
+                        }
+                        else
+                        {
+                            Console.WriteLine($"  - [NO ENCONTRADO] ID: {idConexion}");
+                        }
+                    }
+                }
             }
             else
             {
@@ -809,6 +827,20 @@ namespace MiJuegoRPG.Motor
             var sectores = mapa.ObtenerSectores();
             // Buscar el sector actual por ID
             var sectorActual = sectores.Find(s => s.Id == ubicacionActual.Id);
+            // DEBUG: Mostrar ID de ubicación actual y conexiones
+            Console.WriteLine($"[DEBUG] Ubicación actual: {ubicacionActual.Nombre} (ID: {ubicacionActual.Id})");
+            if (sectorActual != null)
+            {
+                Console.WriteLine($"[DEBUG] Conexiones de {sectorActual.Nombre}:");
+                foreach (var idConexion in sectorActual.Conexiones)
+                {
+                    var conectado = sectores.Find(s => s.Id == idConexion);
+                    if (conectado != null)
+                        Console.WriteLine($"  - {conectado.Nombre} (ID: {conectado.Id})");
+                    else
+                        Console.WriteLine($"  - [NO ENCONTRADO] ID: {idConexion}");
+                }
+            }
             List<PjDatos.SectorData> sectoresConectados = new List<PjDatos.SectorData>();
             if (sectorActual != null && sectorActual.Conexiones != null)
             {

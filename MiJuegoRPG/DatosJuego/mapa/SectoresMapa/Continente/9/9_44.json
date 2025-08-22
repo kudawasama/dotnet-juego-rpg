@@ -1,7 +1,14 @@
 {
-  "nombre": "Regi\u00F3n 9_44",
-  "bioma": "Indefinido",
+  "Id": "9_44",
+  "nombre": "Sector 9_44",
+  "bioma": "Campo",
+  "parteCiudad": "",
+  "ciudadPrincipal": false,
+  "esCentroCiudad": false,
   "nodosRecoleccion": [],
+  "Requisitos": {},
   "enemigos": [],
-  "eventos": []
+  "Conexiones": [],
+  "eventos": [],
+  "descripcion": "Sector autocompletado."
 }

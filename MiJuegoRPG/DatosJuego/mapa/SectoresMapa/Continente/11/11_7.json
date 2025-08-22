@@ -1,7 +1,14 @@
 {
-  "nombre": "Regi\u00F3n 11_7",
-  "bioma": "Indefinido",
+  "Id": "11_7",
+  "nombre": "Sector 11_7",
+  "bioma": "Campo",
+  "parteCiudad": "",
+  "ciudadPrincipal": false,
+  "esCentroCiudad": false,
   "nodosRecoleccion": [],
+  "Requisitos": {},
   "enemigos": [],
-  "eventos": []
+  "Conexiones": [],
+  "eventos": [],
+  "descripcion": "Sector autocompletado."
 }

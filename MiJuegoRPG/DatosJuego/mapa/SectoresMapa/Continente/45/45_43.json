@@ -1,7 +1,14 @@
 {
-  "nombre": "Regi\u00F3n 45_43",
-  "bioma": "Indefinido",
+  "Id": "45_43",
+  "nombre": "Sector 45_43",
+  "bioma": "Campo",
+  "parteCiudad": "",
+  "ciudadPrincipal": false,
+  "esCentroCiudad": false,
   "nodosRecoleccion": [],
+  "Requisitos": {},
   "enemigos": [],
-  "eventos": []
+  "Conexiones": [],
+  "eventos": [],
+  "descripcion": "Sector autocompletado."
 }

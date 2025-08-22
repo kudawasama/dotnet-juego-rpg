@@ -3,7 +3,7 @@ using MiJuegoRPG.Interfaces;
 using System;
 using System.IO;
 using System.Text.Json;
-using Herramientas;
+using MiJuegoRPG.Herramientas;
 
 class Program
 {
@@ -12,6 +12,15 @@ class Program
         // Genera todos los archivos de regiones del mapa automáticamente al inicio
         //GeneradorSectores.CrearMapaCompleto(@"C:\Users\ASUS\OneDrive\Documentos\GitHub\dotnet-juego-rpg\MiJuegoRPG\DatosJuego\mapa\SectoresMapa");
 
+        // Cambia la ruta según la ubicación real de tus sectores
+        //string rutaSectores = @"c:\Users\jose.cespedes\Documents\GitHub\dotnet-juego-rpg\MiJuegoRPG\DatosJuego\mapa\SectoresMapa";
+        //ValidadorSectores.ValidarSectores(rutaSectores);
+
+        // Cambia la ruta según la ubicación real de tus sectores
+        string rutaSectores = @"c:\Users\jose.cespedes\Documents\GitHub\dotnet-juego-rpg\MiJuegoRPG\DatosJuego\mapa\SectoresMapa";
+        ReparadorSectores.RepararSectores(rutaSectores);
+
+        // Aquí puedes agregar la lógica para iniciar el juego
         try
         {
             Juego juego = new Juego();
@@ -22,7 +31,7 @@ class Program
             Console.WriteLine("0. Salir");
             Console.Write("Selecciona una opción: ");
             string opcion = Console.ReadLine() ?? "1";
-            
+
             switch (opcion)
             {
                 case "2":

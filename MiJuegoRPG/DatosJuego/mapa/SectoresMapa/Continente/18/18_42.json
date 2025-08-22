@@ -1,7 +1,14 @@
 {
-  "nombre": "Regi\u00F3n 18_42",
-  "bioma": "Indefinido",
+  "Id": "18_42",
+  "nombre": "Sector 18_42",
+  "bioma": "Campo",
+  "parteCiudad": "",
+  "ciudadPrincipal": false,
+  "esCentroCiudad": false,
   "nodosRecoleccion": [],
+  "Requisitos": {},
   "enemigos": [],
-  "eventos": []
+  "Conexiones": [],
+  "eventos": [],
+  "descripcion": "Sector autocompletado."
 }

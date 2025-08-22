@@ -1,7 +1,14 @@
 {
-  "nombre": "Regi\u00F3n 51_16",
-  "bioma": "Indefinido",
+  "Id": "51_16",
+  "nombre": "Sector 51_16",
+  "bioma": "Campo",
+  "parteCiudad": "",
+  "ciudadPrincipal": false,
+  "esCentroCiudad": false,
   "nodosRecoleccion": [],
+  "Requisitos": {},
   "enemigos": [],
-  "eventos": []
+  "Conexiones": [],
+  "eventos": [],
+  "descripcion": "Sector autocompletado."
 }

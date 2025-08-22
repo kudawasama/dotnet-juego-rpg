@@ -1,7 +1,14 @@
 {
-  "nombre": "Regi\u00F3n 48_50",
-  "bioma": "Indefinido",
+  "Id": "48_50",
+  "nombre": "Sector 48_50",
+  "bioma": "Campo",
+  "parteCiudad": "",
+  "ciudadPrincipal": false,
+  "esCentroCiudad": false,
   "nodosRecoleccion": [],
+  "Requisitos": {},
   "enemigos": [],
-  "eventos": []
+  "Conexiones": [],
+  "eventos": [],
+  "descripcion": "Sector autocompletado."
 }

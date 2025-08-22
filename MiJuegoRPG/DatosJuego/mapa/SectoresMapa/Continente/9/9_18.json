@@ -1,11 +1,14 @@
 {
   "Id": "9_18",
-  "nombre": "Patrian",
-  "bioma": "Ciudad",
-  "parteCiudad": "Patrian",
-  "esCentroCiudad": true,
+  "nombre": "Sector 9_18",
+  "bioma": "Campo",
+  "parteCiudad": "",
+  "ciudadPrincipal": false,
+  "esCentroCiudad": false,
   "nodosRecoleccion": [],
+  "Requisitos": {},
   "enemigos": [],
-  "eventos": ["Puerto", "Misión secundaria"],
-  "descripcion": "Ciudad portuaria al norte, famosa por su comercio marítimo."
+  "Conexiones": [],
+  "eventos": [],
+  "descripcion": "Sector autocompletado."
 }

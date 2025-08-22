@@ -1,7 +1,14 @@
 {
-  "nombre": "Regi\u00F3n 54_47",
-  "bioma": "Indefinido",
+  "Id": "54_47",
+  "nombre": "Sector 54_47",
+  "bioma": "Campo",
+  "parteCiudad": "",
+  "ciudadPrincipal": false,
+  "esCentroCiudad": false,
   "nodosRecoleccion": [],
+  "Requisitos": {},
   "enemigos": [],
-  "eventos": []
+  "Conexiones": [],
+  "eventos": [],
+  "descripcion": "Sector autocompletado."
 }

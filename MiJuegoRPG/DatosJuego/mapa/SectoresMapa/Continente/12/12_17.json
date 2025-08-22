@@ -1,11 +1,14 @@
 {
   "Id": "12_17",
-  "nombre": "Reidan",
-  "bioma": "Ciudad",
-  "parteCiudad": "Reidan",
+  "nombre": "Sector 12_17",
+  "bioma": "Campo",
+  "parteCiudad": "",
+  "ciudadPrincipal": false,
   "esCentroCiudad": false,
   "nodosRecoleccion": [],
+  "Requisitos": {},
   "enemigos": [],
-  "eventos": ["Arena", "Misión especial"],
-  "descripcion": "Ciudad en el desierto, conocida por su arena y su fortaleza."
+  "Conexiones": [],
+  "eventos": [],
+  "descripcion": "Sector autocompletado."
 }

@@ -1,7 +1,14 @@
 {
-  "nombre": "Regi\u00F3n 41_15",
-  "bioma": "Indefinido",
+  "Id": "41_15",
+  "nombre": "Sector 41_15",
+  "bioma": "Campo",
+  "parteCiudad": "",
+  "ciudadPrincipal": false,
+  "esCentroCiudad": false,
   "nodosRecoleccion": [],
+  "Requisitos": {},
   "enemigos": [],
-  "eventos": []
+  "Conexiones": [],
+  "eventos": [],
+  "descripcion": "Sector autocompletado."
 }
