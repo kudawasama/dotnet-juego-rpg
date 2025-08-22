@@ -7,10 +7,12 @@ namespace MiJuegoRPG.Crafteo
 {
     public class RecetaCrafteo
     {
-        public string Nombre { get; set; }
+        public required string Nombre { get; set; }
         public List<(string nombreMaterial, int cantidad)> Materiales { get; set; } = new();
-        public Objeto ObjetoResultado { get; set; }
+        public required Objeto ObjetoResultado { get; set; }
     }
+
+    
 
     public class CraftingService
     {

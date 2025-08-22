@@ -1,0 +1,17 @@
+{
+  "Id": "8_24",
+  "nombre": "Salida_Este_Montaña",
+  "bioma": "Montaña",
+  "nodosRecoleccion": [],
+  "enemigos": [],
+  "eventos": [],
+  "Conexiones": ["8_23","8_25", "7_23", "7_24", "9_22", "9_23"],
+  "descripcion": "Sector montañoso al este de Bairan, con rutas hacia otras regiones.",
+  "requisitos": {
+    "nivelMinimo": 5,
+    "AtributosRequeridos": {
+      "Fuerza": 15,
+      "Destreza": 10
+    }
+  }
+}

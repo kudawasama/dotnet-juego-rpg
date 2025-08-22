@@ -1,0 +1,16 @@
+{
+  "nombre": "Cañon Kesan",
+  "bioma": "Cañon",
+  "nodosRecoleccion": [],
+  "enemigos": [],
+  "eventos": [],
+  "Conexiones": ["8_24", "8_26", "7_25", "9_25"],
+  "descripcion": "Un cañón profundo y peligroso, hogar de criaturas salvajes.",
+  "requisitos": {
+    "nivelMinimo": 6,
+    "AtributosRequeridos": {
+      "Fuerza": 15,
+      "Destreza": 14
+    }
+  }
+}

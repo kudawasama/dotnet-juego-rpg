@@ -1,0 +1,11 @@
+{
+  "Id": "9_20",
+  "nombre": "Reinhardt",
+  "bioma": "Ciudad",
+  "parteCiudad": "Reinhardt",
+  "esCentroCiudad": true,
+  "nodosRecoleccion": [],
+  "enemigos": [],
+  "eventos": ["Castillo Real", "Misión principal"],
+  "descripcion": "Capital del continente oeste, centro político y comercial."
+}

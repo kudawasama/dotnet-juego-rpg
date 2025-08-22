@@ -3,11 +3,15 @@ using MiJuegoRPG.Interfaces;
 using System;
 using System.IO;
 using System.Text.Json;
+using Herramientas;
 
 class Program
 {
     static void Main(string[] args)
     {
+        // Genera todos los archivos de regiones del mapa automáticamente al inicio
+        //GeneradorSectores.CrearMapaCompleto(@"C:\Users\ASUS\OneDrive\Documentos\GitHub\dotnet-juego-rpg\MiJuegoRPG\DatosJuego\mapa\SectoresMapa");
+
         try
         {
             Juego juego = new Juego();

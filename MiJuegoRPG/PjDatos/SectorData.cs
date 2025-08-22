@@ -16,5 +16,11 @@ namespace MiJuegoRPG.PjDatos
         public bool CiudadInicial { get; set; } = false;
         public List<string> Eventos { get; set; } = new List<string>();
         public Dictionary<string, object> Requisitos { get; set; } = new Dictionary<string, object>();
+        public List<MiJuegoRPG.Motor.NodoRecoleccion>? NodosRecoleccion { get; set; }
+
+        // Nuevos metadatos de ciudad
+        public bool CiudadPrincipal { get; set; } = false;
+        public bool EsCentroCiudad { get; set; } = false;
+        public string? ParteCiudad { get; set; } = null;
     }
 }

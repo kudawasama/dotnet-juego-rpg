@@ -1,0 +1,11 @@
+{
+  "Id": "12_16",
+  "nombre": "Reidan",
+  "bioma": "Ciudad",
+  "parteCiudad": "Reidan",
+  "esCentroCiudad": true,
+  "nodosRecoleccion": [],
+  "enemigos": [],
+  "eventos": ["Arena", "Misión especial"],
+  "descripcion": "Ciudad en el desierto, conocida por su arena y su fortaleza."
+}

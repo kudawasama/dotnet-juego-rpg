@@ -11,6 +11,17 @@ namespace MiJuegoRPG.Motor
             Tipo = "";
             Descripcion = "";
         }
+        public Ubicacion(PjDatos.SectorData data)
+        {
+            Id = data.Id;
+            Nombre = data.Nombre;
+            Tipo = data.Tipo;
+            Descripcion = data.Descripcion;
+            CiudadPrincipal = data.CiudadPrincipal;
+            EsCentroCiudad = data.EsCentroCiudad;
+            ParteCiudad = data.ParteCiudad;
+            // Copiar otros campos relevantes si es necesario
+        }
         public string Id { get; set; }
         public string Nombre { get; set; }
         public string Tipo { get; set; } // Ciudad, Ruta, Mazmorra, etc.
@@ -20,6 +31,11 @@ namespace MiJuegoRPG.Motor
         public bool Desbloqueada { get; set; } = false;
         public bool Visitada { get; set; } = false;
         public Dictionary<string, object> Requisitos { get; set; } = new Dictionary<string, object>();
+
+        // Nuevos metadatos de ciudad
+        public bool CiudadPrincipal { get; set; } = false;
+        public bool EsCentroCiudad { get; set; } = false;
+        public string? ParteCiudad { get; set; } = null;
     }
 
     public class Ruta

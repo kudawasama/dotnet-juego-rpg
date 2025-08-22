@@ -1,0 +1,25 @@
+[
+  {
+    "Nombre": "Estofado de Carne",
+    "Materiales": [
+      { "Nombre": "Carne Fresca", "Cantidad": 2 },
+      { "Nombre": "Zanahoria", "Cantidad": 1 },
+      { "Nombre": "Agua Pura", "Cantidad": 1 }
+    ]
+  },
+  {
+    "Nombre": "Pan Casero",
+    "Materiales": [
+      { "Nombre": "Harina", "Cantidad": 2 },
+      { "Nombre": "Agua Pura", "Cantidad": 1 }
+    ]
+  },
+  {
+    "Nombre": "Sopa de Verduras",
+    "Materiales": [
+      { "Nombre": "Zanahoria", "Cantidad": 1 },
+      { "Nombre": "Papa", "Cantidad": 1 },
+      { "Nombre": "Agua Pura", "Cantidad": 1 }
+    ]
+  }
+]

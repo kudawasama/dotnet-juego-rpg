@@ -10,17 +10,28 @@ namespace MiJuegoRPG.Motor
         public static Mapa CargarMapaCompleto(string carpeta)
         {
             var sectores = new Dictionary<string, SectorData>();
-            var archivos = Directory.GetFiles(carpeta, "*.json");
+            var archivos = Directory.GetFiles(carpeta, "*.json", SearchOption.AllDirectories);
             foreach (var archivo in archivos)
             {
                 var json = File.ReadAllText(archivo);
-                var lista = JsonSerializer.Deserialize<List<SectorData>>(json);
-                if (lista != null)
+                // Si cada archivo es un único SectorData:
+                try
                 {
-                    foreach (var sector in lista)
+                    var sector = JsonSerializer.Deserialize<SectorData>(json);
+                    if (sector != null && !sectores.ContainsKey(sector.Id))
+                        sectores.Add(sector.Id, sector);
+                }
+                catch
+                {
+                    // Si el archivo es una lista de sectores (compatibilidad vieja)
+                    var lista = JsonSerializer.Deserialize<List<SectorData>>(json);
+                    if (lista != null)
                     {
-                        if (sector != null && !sectores.ContainsKey(sector.Id))
-                            sectores.Add(sector.Id, sector);
+                        foreach (var sector in lista)
+                        {
+                            if (sector != null && !sectores.ContainsKey(sector.Id))
+                                sectores.Add(sector.Id, sector);
+                        }
                     }
                 }
             }

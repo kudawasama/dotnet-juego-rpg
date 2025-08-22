@@ -1,0 +1,11 @@
+{
+  "Id": "9_18",
+  "nombre": "Patrian",
+  "bioma": "Ciudad",
+  "parteCiudad": "Patrian",
+  "esCentroCiudad": true,
+  "nodosRecoleccion": [],
+  "enemigos": [],
+  "eventos": ["Puerto", "Misión secundaria"],
+  "descripcion": "Ciudad portuaria al norte, famosa por su comercio marítimo."
+}

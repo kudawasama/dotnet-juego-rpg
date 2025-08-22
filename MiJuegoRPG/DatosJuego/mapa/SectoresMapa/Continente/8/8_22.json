@@ -1,0 +1,11 @@
+{
+  "Id": "8_22",
+  "nombre": "Winston",
+  "bioma": "Ciudad",
+  "parteCiudad": "Winston",
+  "esCentroCiudad": true,
+  "nodosRecoleccion": [],
+  "enemigos": [],
+  "eventos": ["Taberna", "Misión secundaria"],
+  "descripcion": "Ciudad comercial con gran actividad de aventureros y comerciantes."
+}

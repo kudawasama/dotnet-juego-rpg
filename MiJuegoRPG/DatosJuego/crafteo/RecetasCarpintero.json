@@ -1,0 +1,16 @@
+[
+  {
+    "Nombre": "Bastón de Roble",
+    "Materiales": [
+      { "Nombre": "Madera Sagrada", "Cantidad": 2 },
+      { "Nombre": "Cuerda", "Cantidad": 1 }
+    ]
+  },
+  {
+    "Nombre": "Arco Largo",
+    "Materiales": [
+      { "Nombre": "Madera Flexible", "Cantidad": 3 },
+      { "Nombre": "Cuerda", "Cantidad": 2 }
+    ]
+  }
+]

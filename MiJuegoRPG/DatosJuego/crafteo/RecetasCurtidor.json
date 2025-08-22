@@ -1,0 +1,16 @@
+[
+  {
+    "Nombre": "Botas de Cuero",
+    "Materiales": [
+      { "Nombre": "Cuero", "Cantidad": 3 },
+      { "Nombre": "Hilo", "Cantidad": 1 }
+    ]
+  },
+  {
+    "Nombre": "Cinturón Reforzado",
+    "Materiales": [
+      { "Nombre": "Cuero", "Cantidad": 2 },
+      { "Nombre": "Hebilla de Hierro", "Cantidad": 1 }
+    ]
+  }
+]

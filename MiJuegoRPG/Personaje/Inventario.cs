@@ -172,5 +172,31 @@ namespace MiJuegoRPG.Personaje
             Console.WriteLine("----------------------------------------");
             Console.WriteLine($"Capacidad: {NuevosObjetos.Count}/{CapacidadMaxima}");
         }
+
+        public int ContarMaterial(string nombreMaterial)
+        {
+            return NuevosObjetos
+                .Where(o => o.Objeto is MiJuegoRPG.Objetos.Material && o.Objeto.Nombre == nombreMaterial)
+                .Sum(o => o.Cantidad);
+        }
+
+        public void ConsumirMaterial(string nombreMaterial, int cantidad)
+        {
+            int restante = cantidad;
+            foreach (var objCant in NuevosObjetos.Where(o => o.Objeto is MiJuegoRPG.Objetos.Material && o.Objeto.Nombre == nombreMaterial).ToList())
+            {
+                if (restante <= 0) break;
+                if (objCant.Cantidad > restante)
+                {
+                    objCant.Cantidad -= restante;
+                    restante = 0;
+                }
+                else
+                {
+                    restante -= objCant.Cantidad;
+                    NuevosObjetos.Remove(objCant);
+                }
+            }
+        }
     }
 }

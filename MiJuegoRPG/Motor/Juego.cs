@@ -64,10 +64,10 @@ namespace MiJuegoRPG.Motor
         {
             Console.WriteLine("=== Creación de Personaje ===");
             jugador = MiJuegoRPG.Motor.CreadorPersonaje.CrearSinClase();
-            // Ubicación inicial: Ciudad de Bairan
-            var bairan = estadoMundo.Ubicaciones.Find(u => u.Nombre == "Ciudad de Bairan");
-            if (bairan != null)
-                ubicacionActual = bairan;
+            // Ubicación inicial: buscar la ciudad principal por propiedad CiudadPrincipal
+            var ciudadPrincipal = estadoMundo.Ubicaciones.Find(u => u != null && u.CiudadPrincipal);
+            if (ciudadPrincipal != null)
+                ubicacionActual = ciudadPrincipal;
             else if (estadoMundo.Ubicaciones.Count > 0)
                 ubicacionActual = estadoMundo.Ubicaciones[0];
             else
@@ -737,6 +737,17 @@ namespace MiJuegoRPG.Motor
                 Console.WriteLine($"Personaje '{jugador.Nombre}' cargado correctamente.");
                 if (jugador.UbicacionActual != null)
                     ubicacionActual = jugador.UbicacionActual;
+                else
+                {
+                    // Si no tiene ubicación, asignar ciudad principal
+                    var ciudadPrincipal = estadoMundo.Ubicaciones.Find(u =>
+                        (u is not null && u.Requisitos != null &&
+                         u.Requisitos.ContainsKey("ciudadPrincipal") &&
+                         u.Requisitos["ciudadPrincipal"] is bool b && b)
+                    );
+                    if (ciudadPrincipal != null)
+                        ubicacionActual = ciudadPrincipal;
+                }
             }
             else
             {
@@ -818,7 +829,6 @@ namespace MiJuegoRPG.Motor
             bool volver = false;
             while (!volver)
             {
-                // Console.Clear();
                 Console.WriteLine("=== Menú de Rutas ===");
                 Console.WriteLine("Sectores conectados:");
                 for (int i = 0; i < sectoresConectados.Count; i++)
@@ -837,14 +847,16 @@ namespace MiJuegoRPG.Motor
                 if (int.TryParse(opcion, out int idx) && idx > 0 && idx <= sectoresConectados.Count)
                 {
                     var destino = sectoresConectados[idx - 1];
-                    // Asignar la instancia original de la lista de ubicaciones para mantener todos los datos y el tipo correcto
+                    // Lógica de movimiento usando el sistema de mapa
+                    mapa.MoverseA(destino.Id);
+                    // Actualizar la ubicación actual del juego
                     var ubicacionOriginal = estadoMundo.Ubicaciones.FirstOrDefault(u => u.Id == destino.Id);
                     if (ubicacionOriginal != null)
                         ubicacionActual = ubicacionOriginal;
-                            if (jugador != null)
-                                MiJuegoRPG.Motor.GestorDesbloqueos.VerificarDesbloqueos(jugador);
                     else
                         ubicacionActual = new Ubicacion { Id = destino.Id, Nombre = destino.Nombre, Tipo = destino.Tipo, Descripcion = destino.Descripcion };
+                    if (jugador != null)
+                        MiJuegoRPG.Motor.GestorDesbloqueos.VerificarDesbloqueos(jugador);
                     Console.WriteLine($"Te has movido a: {destino.Nombre}");
                     Console.WriteLine(destino.Descripcion);
                     Console.WriteLine("Pulsa cualquier tecla para continuar...");
@@ -857,8 +869,6 @@ namespace MiJuegoRPG.Motor
                     Console.WriteLine("Pulsa cualquier tecla para volver.");
                     Console.ReadKey();
                 }
-                // Al terminar, simplemente regresar al flujo del menú principal
-                
             }
             // Al terminar, mostrar el menú correspondiente a la nueva ubicación
             MostrarMenuPorUbicacion(ref volver);
