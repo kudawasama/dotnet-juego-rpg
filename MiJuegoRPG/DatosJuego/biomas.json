@@ -4,7 +4,16 @@
     "NodosComunes": [
         {
             "Nombre": "Árboles de Roble Mágico",
-            "Materiales": [ { "Nombre": "Madera Encantada", "Cantidad": 2 } ],
+            "Tipo": "Talar",
+            "Requiere": "Hacha Hierro Encantada",
+            "Materiales": [ 
+              { "Nombre": "Madera Encantada", "Cantidad": 2 },
+              { "Nombre": "Hoja Mágica", "Cantidad": 1 },
+              { "Nombre": "Savia Mágica", "Cantidad": 1 },
+              { "Nombre": "Fruto Mágico", "Cantidad": 1 },
+              { "Nombre": "Polvo de Estrellas", "Cantidad": 1 }
+
+            ],
             "Cooldown": 3
         },
         {
@@ -53,12 +62,41 @@
       }
     ]
   },
+
+
+
+
   {
     "TipoBioma": "Montaña",
     "NodosComunes": [
       {
         "Nombre": "Mina de Hierro",
-        "Materiales": [ { "Nombre": "Lingote de Hierro", "Cantidad": 1 } ],
+        "Tipo": "Minar",
+        "Requiere": "Pico de Hierro",
+        "Materiales": [ 
+          { "Nombre": "Mineral de Hierro", "Cantidad": 1 },
+          { "Nombre": "Piedra", "Cantidad": 2 }
+          ],
+        "Cooldown": 3
+      },
+      {
+        "Nombre": "Mina de Cobre",
+        "Tipo": "Minar",
+        "Requiere": "Pico de Hierro",
+        "Materiales": [ 
+          { "Nombre": "Mineral de Cobre", "Cantidad": 1 },
+          { "Nombre": "Piedra", "Cantidad": 2 }
+          ],
+        "Cooldown": 3
+      },
+      {
+        "Nombre": "Mina de Carbon",
+        "Tipo": "Minar",
+        "Requiere": "Pico de Hierro",
+        "Materiales": [ 
+          { "Nombre": "Mineral de Carbon", "Cantidad": 1 },
+          { "Nombre": "Piedra", "Cantidad": 2 }
+          ],
         "Cooldown": 3
       },
       {
@@ -80,6 +118,9 @@
       }
     ]
   },
+
+
+
   {
     "TipoBioma": "Lago",
     "NodosComunes": [
@@ -187,6 +228,65 @@
         "Nombre": "Cristal de Cañon",
         "Materiales": [ { "Nombre": "Cristal", "Cantidad": 1 } ],
         "Cooldown": 5
+      }
+    ]
+  },
+  {
+    "TipoBioma": "Oceano Lejano",
+    "NodosComunes": [
+      {
+        "Nombre": "Coral Abisal",
+        "Materiales": [ { "Nombre": "Fragmento de Coral Abisal", "Cantidad": 1 } ],
+        "Cooldown": 6
+      },
+      {
+        "Nombre": "Alga Gigante",
+        "Materiales": [ { "Nombre": "Alga Gigante", "Cantidad": 1 } ],
+        "Cooldown": 4
+      }
+    ],
+    "NodosRaros": [
+      {
+        "Nombre": "Perla Negra",
+        "Materiales": [ { "Nombre": "Perla Negra", "Cantidad": 1 } ],
+        "Cooldown": 10
+      },
+      {
+        "Nombre": "Restos de Naufragio",
+        "Materiales": [ { "Nombre": "Madera Antigua", "Cantidad": 2 } ],
+        "Cooldown": 12
+      }
+    ]
+  },
+  {
+    "TipoBioma": "Oceano",
+    "NodosComunes": [
+      {
+        "Nombre": "Coral",
+        "Materiales": [ { "Nombre": "Fragmento de Coral", "Cantidad": 1 } ],
+        "Cooldown": 5
+      },
+      {
+        "Nombre": "Alga Marina",
+        "Materiales": [ { "Nombre": "Alga Marina", "Cantidad": 1 } ],
+        "Cooldown": 3
+      },
+      {
+        "Nombre": "Conchas",
+        "Materiales": [ { "Nombre": "Concha Marina", "Cantidad": 1 } ],
+        "Cooldown": 4
+      }
+    ],
+    "NodosRaros": [
+      {
+        "Nombre": "Perla",
+        "Materiales": [ { "Nombre": "Perla", "Cantidad": 1 } ],
+        "Cooldown": 7
+      },
+      {
+        "Nombre": "Estrella de Mar",
+        "Materiales": [ { "Nombre": "Estrella de Mar", "Cantidad": 1 } ],
+        "Cooldown": 8
       }
     ]
   }

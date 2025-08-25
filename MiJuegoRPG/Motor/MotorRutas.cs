@@ -13,60 +13,49 @@ namespace MiJuegoRPG.Motor
         }
         public void MostrarMenuRutas()
         {
-            var ubicacionActual = juego.ubicacionActual;
-            var estadoMundo = juego.estadoMundo;
+            var ubicacionActual = juego.mapa.UbicacionActual;
+            var sectores = juego.mapa.ObtenerSectores();
             Console.Clear();
             Console.WriteLine(juego.FormatoRelojMundo);
-            Console.WriteLine($"Rutas disponibles desde {ubicacionActual.Nombre}:");
-            int i = 1;
-            foreach (var ruta in ubicacionActual.Rutas)
+            Console.WriteLine($"Sectores conectados desde {ubicacionActual.Nombre}:");
+            var sectoresConectados = new List<PjDatos.SectorData>();
+            foreach (var idConexion in ubicacionActual.Conexiones)
             {
-                Console.WriteLine($"{i}. {ruta.Nombre} {(ruta.Desbloqueada ? "(Desbloqueada)" : "(Bloqueada)")}");
+                var conectado = sectores.Find(s => s.Id == idConexion);
+                if (conectado != null)
+                    sectoresConectados.Add(conectado);
+            }
+            int i = 1;
+            foreach (var sector in sectoresConectados)
+            {
+                Console.WriteLine($"{i}. {sector.Nombre} - {sector.Descripcion}");
                 i++;
             }
-            Console.WriteLine($"{i}. Volver");
+            Console.WriteLine($"0. Volver");
+            Console.Write("Selecciona el sector al que deseas viajar: ");
             var opcion = Console.ReadLine();
-            int seleccion;
-            if (int.TryParse(opcion, out seleccion))
+            if (opcion == "0")
+                return;
+            if (int.TryParse(opcion, out int idx) && idx > 0 && idx <= sectoresConectados.Count)
             {
-                if (seleccion > 0 && seleccion <= ubicacionActual.Rutas.Count)
+                var destino = sectoresConectados[idx - 1];
+                if (juego.mapa.MoverseA(destino.Id))
                 {
-                    var rutaElegida = ubicacionActual.Rutas[seleccion - 1];
-                    if (rutaElegida.Desbloqueada)
-                    {
-                        var nuevaUbicacion = estadoMundo.Ubicaciones.Find(u => u.Nombre == rutaElegida.Destino);
-                        if (nuevaUbicacion != null)
-                        {
-                            juego.ubicacionActual = nuevaUbicacion;
-                            Console.WriteLine($"Viajaste a {juego.ubicacionActual.Nombre}.");
-                            Console.WriteLine(juego.ubicacionActual.Descripcion);
-                            Console.WriteLine("Presiona cualquier tecla para ver los sectores y eventos disponibles...");
-                            Console.ReadKey();
-                            juego.MostrarMenuPorUbicacion();
-                            return;
-                        }
-                        else
-                        {
-                            Console.WriteLine("No se encontró la ubicación de destino. No tienes acceso a esa zona.");
-                        }
-                    }
-                    else
-                    {
-                        Console.WriteLine("La ruta está bloqueada. No tienes acceso a esa zona.");
-                    }
-                }
-                else if (seleccion == i)
-                {
+                    Console.WriteLine($"Te has movido a: {destino.Nombre}");
+                    Console.WriteLine(destino.Descripcion);
+                    Console.WriteLine("Presiona cualquier tecla para continuar...");
+                    Console.ReadKey();
+                    juego.MostrarMenuPorUbicacion();
                     return;
                 }
                 else
                 {
-                    Console.WriteLine("Opción no válida. No tienes acceso a esa opción.");
+                    Console.WriteLine("No puedes moverte a ese sector.");
                 }
             }
             else
             {
-                Console.WriteLine("Opción no válida. No tienes acceso a esa opción.");
+                Console.WriteLine("Opción no válida.");
             }
             Console.WriteLine("Presiona cualquier tecla para continuar...");
             Console.ReadKey();

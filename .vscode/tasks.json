@@ -7,6 +7,12 @@
 			"command": "dotnet run --project MiJuegoRPG.csproj --no-build",
 			"args": [],
 			"group": "test"
+		},
+		{
+			"label": "Compilar y ejecutar juego para probar nombres de sectores",
+			"type": "shell",
+			"command": "dotnet run --project MiJuegoRPG.csproj --no-build",
+			"group": "test"
 		}
 	]
 }

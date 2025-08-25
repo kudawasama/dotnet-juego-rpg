@@ -16,8 +16,9 @@ namespace MiJuegoRPG.Motor
 
         public void ExplorarSector()
         {
-            Console.WriteLine($"Sectores disponibles en {juego.ubicacionActual.Nombre}:");
-            var opciones = new List<string>(juego.ubicacionActual.EventosPosibles);
+            var sectorActual = juego.mapa.UbicacionActual;
+            Console.WriteLine($"Sectores disponibles en {sectorActual.Nombre}:");
+            var opciones = new List<string>(sectorActual.Eventos);
             Console.WriteLine("Elige una opción:");
             var opcion = Console.ReadLine();
             int seleccion;
@@ -94,7 +95,7 @@ namespace MiJuegoRPG.Motor
                 if (monstruo)
                 {
                     Console.WriteLine("¡Un monstruo aparece!");
-                    juego.ComenzarCombate();
+                    juego.motorCombate.ComenzarCombate();
                     juego.ProgresionPorActividad("combate");
                 }
                 if (objeto)

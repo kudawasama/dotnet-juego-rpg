@@ -17,7 +17,7 @@ namespace MiJuegoRPG.Motor
     public class Mapa
     {   
         private Dictionary<string, PjDatos.SectorData> sectores = new Dictionary<string, PjDatos.SectorData>();
-        public PjDatos.SectorData UbicacionActual { get; private set; }
+        public PjDatos.SectorData UbicacionActual { get; set; }
         public Dictionary<string, bool> SectoresDescubiertos { get; private set; } = new Dictionary<string, bool>();
 
         public List<PjDatos.SectorData> ObtenerSectores()
@@ -25,25 +25,27 @@ namespace MiJuegoRPG.Motor
             return new List<PjDatos.SectorData>(sectores.Values);
         }
 
-        public void MoverseA(string idSectorDestino)
+    public bool MoverseA(string idSectorDestino)
         {
             if (sectores.TryGetValue(idSectorDestino, out var sectorDestino))
             {
                 if (UbicacionActual.Conexiones.Contains(idSectorDestino))
                 {
                     UbicacionActual = sectorDestino;
-                    Console.WriteLine($"Te has movido a: {UbicacionActual.Nombre}.");
                     if (!SectoresDescubiertos.ContainsKey(UbicacionActual.Id))
                         SectoresDescubiertos[UbicacionActual.Id] = true;
+                    return true;
                 }
                 else
                 {
                     Console.WriteLine($"No puedes moverte a: {idSectorDestino}. Conexiones disponibles: {string.Join(", ", UbicacionActual.Conexiones)}");
+                    return false;
                 }
             }
             else
             {
                 Console.WriteLine($"El sector con ID '{idSectorDestino}' no existe en el mapa.");
+                return false;
             }
         }
 

@@ -1,7 +1,7 @@
 {
   "Id": "8_25",
-  "nombre": "Sector 8_25",
-  "bioma": "Campo",
+  "nombre": "Bloqueo Montañoso",
+  "bioma": "Montaña",
   "parteCiudad": "",
   "ciudadPrincipal": false,
   "esCentroCiudad": false,
@@ -10,5 +10,5 @@
   "enemigos": [],
   "Conexiones": [],
   "eventos": [],
-  "descripcion": "Sector autocompletado."
+  "descripcion": "Bloqueo."
 }

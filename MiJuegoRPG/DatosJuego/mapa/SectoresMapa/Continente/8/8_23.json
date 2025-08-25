@@ -2,6 +2,8 @@
   "Id": "8_23",
   "nombre": "Bairan",
   "bioma": "Ciudad",
+  "tipo": "Ciudad",
+  "ciudadInicial": true,
   "parteCiudad": "Bairan",
   "ciudadPrincipal": true,
   "esCentroCiudad": true,

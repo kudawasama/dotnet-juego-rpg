@@ -24,7 +24,7 @@ namespace MiJuegoRPG.Motor.Menus
             while (!salir)
             {
                 Console.WriteLine(juego.FormatoRelojMundo);
-                Console.WriteLine($"Ubicación actual: {juego.ubicacionActual.Nombre}");
+                Console.WriteLine($"Ubicación actual: {juego.mapa.UbicacionActual.Nombre}");
                 Console.WriteLine("=== Menú Fuera de Ciudad ===");
                 Console.WriteLine("1. Explorar");
                 Console.WriteLine("2. Recolectar");

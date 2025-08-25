@@ -2,6 +2,7 @@
   "Id": "8_22",
   "nombre": "Sector 8_22",
   "bioma": "Campo",
+  "Tipo": "Ruta",
   "parteCiudad": "",
   "ciudadPrincipal": false,
   "esCentroCiudad": false,

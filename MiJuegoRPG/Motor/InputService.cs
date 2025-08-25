@@ -4,11 +4,12 @@ namespace MiJuegoRPG.Motor
 {
     public static class InputService
     {
+
         public static string LeerOpcion(string mensaje = "Selecciona una opción: ")
         {
             Console.Write(mensaje);
             var s = Console.ReadLine() ?? string.Empty;
-            return s.Trim().Length > 0 ? s.Trim()[0].ToString() : string.Empty;
+            return s.Trim(); // Retorna toda la cadena ingresada
         }
 
         public static int LeerNumero(string mensaje = "Ingresa un número: ")

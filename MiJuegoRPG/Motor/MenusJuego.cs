@@ -24,12 +24,12 @@ namespace MiJuegoRPG.Motor
         {
             // Recuperación pasiva de energía antes de mostrar menú
             if (juego.jugador != null)
-                {
-                    juego.energiaService.RecuperacionPasiva(juego.jugador);
-                }
+            {
+                juego.energiaService.RecuperacionPasiva(juego.jugador);
+            }
 
             //Console.Clear();
-                Console.WriteLine(juego.FormatoRelojMundo);
+            Console.WriteLine(juego.FormatoRelojMundo);
             Console.WriteLine("--- Menú de Viaje ---");
             if (juego.estadoMundo?.Ubicaciones == null || juego.estadoMundo.Ubicaciones.Count == 0)
             {
@@ -50,12 +50,21 @@ namespace MiJuegoRPG.Motor
             var opcion = InputService.LeerOpcion();
             if (int.TryParse(opcion, out int seleccion) && seleccion > 0 && seleccion <= juego.estadoMundo.Ubicaciones.Count)
             {
-                var destino = juego.estadoMundo.Ubicaciones[seleccion - 1];
-                if (destino.Desbloqueada)
+                var destinoUbic = juego.estadoMundo.Ubicaciones[seleccion - 1];
+                if (destinoUbic.Desbloqueada)
                 {
-                    juego.ubicacionActual = destino;
-                    Console.WriteLine($"Viajaste a {destino.Nombre}.");
-                    Console.WriteLine(destino.Descripcion);
+                    // Buscar el SectorData correspondiente al destino
+                    var destinoSector = juego.mapa.ObtenerSectores().Find(s => s.Id == destinoUbic.Id);
+                    if (destinoSector != null)
+                    {
+                        juego.mapa.UbicacionActual = destinoSector;
+                        Console.WriteLine($"Viajaste a {destinoSector.Nombre}.");
+                        Console.WriteLine(destinoSector.Descripcion);
+                    }
+                    else
+                    {
+                        Console.WriteLine("No se encontró el sector correspondiente a la ubicación seleccionada.");
+                    }
                 }
                 else
                 {
@@ -170,9 +179,9 @@ namespace MiJuegoRPG.Motor
         private void MostrarNPCsCiudadActual()
         {
             Console.WriteLine("--- NPCs de la ciudad actual ---");
-            var ciudadActual = juego.ubicacionActual?.Nombre;
-                var rutaNPCs = Path.Combine(Environment.CurrentDirectory, "DatosJuego", "npcs", "NPC.json");
-                var rutaMisiones = Path.Combine(Environment.CurrentDirectory, "DatosJuego", "misiones", "Misiones.json");
+            var ciudadActual = juego.mapa.UbicacionActual?.Nombre;
+            var rutaNPCs = Path.Combine(Environment.CurrentDirectory, "DatosJuego", "npcs", "NPC.json");
+            var rutaMisiones = Path.Combine(Environment.CurrentDirectory, "DatosJuego", "misiones", "Misiones.json");
             List<Mision> misiones = new List<Mision>();
             if (File.Exists(rutaMisiones))
             {
@@ -317,7 +326,7 @@ namespace MiJuegoRPG.Motor
             }
         }
 
-    public void MostrarInventario()
+        public void MostrarInventario()
         {
             if (juego.jugador == null)
             {
@@ -326,7 +335,7 @@ namespace MiJuegoRPG.Motor
             }
             var inventario = juego.jugador.Inventario;
             inventario.MostrarInventario();
-        
+
             // Menú básico de inventario
             while (true)
             {
@@ -361,12 +370,12 @@ namespace MiJuegoRPG.Motor
             }
         }
 
-    public void GuardarPartida()
+        public void GuardarPartida()
         {
             Console.WriteLine("[Stub] GuardarPartida: Implementar lógica de guardado aquí.");
         }
 
-    public void CargarPartida()
+        public void CargarPartida()
         {
             Console.WriteLine("[Stub] CargarPartida: Implementar lógica de carga aquí.");
         }
@@ -684,37 +693,37 @@ namespace MiJuegoRPG.Motor
             while (true)
             {
                 Console.WriteLine($"\n=== Tienda: {vendor.Nombre} ({vendor.Ubicacion}) === Oro: {juego.jugador?.Oro}");
-                for (int i=0;i<vendor.Stock.Count;i++)
+                for (int i = 0; i < vendor.Stock.Count; i++)
                 {
                     var si = vendor.Stock[i];
                     var p = new MiJuegoRPG.Comercio.PriceService().PrecioDe(si.Item);
-                    Console.WriteLine($"{i+1}. {si.Item.Nombre} x{si.Cantidad}  [{p} oro]");
+                    Console.WriteLine($"{i + 1}. {si.Item.Nombre} x{si.Cantidad}  [{p} oro]");
                 }
                 Console.WriteLine("C. Comprar | V. Vender | S. Salir");
                 Console.Write("> ");
                 var op = InputService.LeerOpcion()?.Trim().ToUpperInvariant();
-                if (op=="S") break;
-                if (juego.jugador==null) { Console.WriteLine("No hay personaje."); continue; }
+                if (op == "S") break;
+                if (juego.jugador == null) { Console.WriteLine("No hay personaje."); continue; }
 
-                if (op=="C")
+                if (op == "C")
                 {
                     Console.Write("Índice a comprar: "); int.TryParse(InputService.LeerOpcion(), out var idx);
                     Console.Write("Cantidad: "); int.TryParse(InputService.LeerOpcion(), out var cant);
-                    if (_shop.Comprar(juego.jugador, vendor, idx-1, cant, out var msg)) Console.WriteLine(msg);
+                    if (_shop.Comprar(juego.jugador, vendor, idx - 1, cant, out var msg)) Console.WriteLine(msg);
                     else Console.WriteLine($"No se pudo comprar: {msg}");
                 }
-                else if (op=="V")
+                else if (op == "V")
                 {
                     var inv = juego.jugador.Inventario.NuevosObjetos;
-                    for (int i=0;i<inv.Count;i++)
+                    for (int i = 0; i < inv.Count; i++)
                     {
                         var si = inv[i];
                         var pr = new MiJuegoRPG.Comercio.PriceService().PrecioReventa(si.Objeto);
-                        Console.WriteLine($"{i+1}. {si.Objeto.Nombre} x{si.Cantidad}  [vende: {pr}]");
+                        Console.WriteLine($"{i + 1}. {si.Objeto.Nombre} x{si.Cantidad}  [vende: {pr}]");
                     }
                     Console.Write("Índice a vender: "); int.TryParse(InputService.LeerOpcion(), out var idx);
                     Console.Write("Cantidad: "); int.TryParse(InputService.LeerOpcion(), out var cant);
-                    if (_shop.Vender(juego.jugador, vendor, idx-1, cant, out var msg)) Console.WriteLine(msg);
+                    if (_shop.Vender(juego.jugador, vendor, idx - 1, cant, out var msg)) Console.WriteLine(msg);
                     else Console.WriteLine($"No se pudo vender: {msg}");
                 }
             }
@@ -792,22 +801,63 @@ namespace MiJuegoRPG.Motor
                 Console.WriteLine("4. Volver");
                 Console.Write("Selecciona una opción: ");
                 var opcion = InputService.LeerOpcion();
-                switch (opcion)
+                string[] tipos = { "Recolectar", "Minar", "Talar" };
+                int tipoIdx = -1;
+                if (opcion == "1" || opcion == "2" || opcion == "3")
+                    tipoIdx = int.Parse(opcion) - 1;
+                if (tipoIdx >= 0 && tipoIdx < tipos.Length)
                 {
-                    case "1":
-                        juego.RealizarAccionRecoleccion("Recolectar");
-                        break;
-                    case "2":
-                        juego.RealizarAccionRecoleccion("Minar");
-                        break;
-                    case "3":
-                        juego.RealizarAccionRecoleccion("Talar");
-                        break;
-                    case "4":
-                        return;
-                    default:
-                        Console.WriteLine("Opción no válida.");
-                        break;
+                    // Obtener nodos disponibles (por bioma o personalizados) usando solo SectorData
+                    var sector = juego.mapa.UbicacionActual;
+                    var tipoAccion = tipos[tipoIdx];
+                    List<MiJuegoRPG.Motor.NodoRecoleccion> nodos = new List<MiJuegoRPG.Motor.NodoRecoleccion>();
+                    if (sector != null && sector.NodosRecoleccion != null && sector.NodosRecoleccion.Count > 0)
+                    {
+                        nodos.AddRange(sector.NodosRecoleccion);
+                    }
+                    // Si no hay nodos personalizados, usar los del bioma
+                    if (nodos.Count == 0 && sector != null && !string.IsNullOrWhiteSpace(sector.Region))
+                    {
+                        nodos.AddRange(MiJuegoRPG.Motor.TablaBiomas.GenerarNodosParaBioma(sector.Region));
+                    }
+                    // Filtrar nodos por tipo de acción si la propiedad Tipo existe
+                    var nodosFiltrados = nodos.Where(n => n.Tipo == tipoAccion).ToList();
+                    if (nodosFiltrados.Count == 0)
+                    {
+                        Console.WriteLine($"No hay nodos de tipo '{tipoAccion}' en este sector o bioma.");
+                        Console.WriteLine("Presiona cualquier tecla para volver...");
+                        Console.ReadKey();
+                        continue;
+                    }
+                    // Mostrar submenú de nodos filtrados
+                    Console.WriteLine($"--- Selecciona un nodo de {tipoAccion.ToLower()} ---");
+                    for (int i = 0; i < nodosFiltrados.Count; i++)
+                    {
+                        Console.WriteLine($"{i + 1}. {nodosFiltrados[i].Nombre}");
+                    }
+                    Console.WriteLine("0. Volver");
+                    Console.Write("Nodo: ");
+                    var nodoOpcion = Console.ReadLine();
+                    if (nodoOpcion == "0")
+                    {
+                        continue;
+                    }
+                    if (int.TryParse(nodoOpcion, out int nodoIdx) && nodoIdx > 0 && nodoIdx <= nodosFiltrados.Count)
+                    {
+                        juego.RealizarAccionRecoleccion(tipoAccion, nodosFiltrados[nodoIdx - 1]);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Opción de nodo no válida.");
+                    }
+                }
+                else if (opcion == "4")
+                {
+                    return;
+                }
+                else
+                {
+                    Console.WriteLine("Opción no válida.");
                 }
             }
         }

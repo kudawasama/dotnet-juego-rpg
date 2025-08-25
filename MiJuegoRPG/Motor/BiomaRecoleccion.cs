@@ -5,16 +5,18 @@ namespace MiJuegoRPG.Motor
 {
     public class NodoRecoleccion
     {
-        public string? Nombre { get; set; }
-        public List<(string Nombre, int Cantidad)> ?Materiales { get; set; }
-        public int Cooldown { get; set; }
+    public string? Nombre { get; set; }
+    public List<(string Nombre, int Cantidad)>? Materiales { get; set; }
+    public int Cooldown { get; set; }
+    public string? Tipo { get; set; }
+    public string? Requiere { get; set; } // Herramienta u objeto requerido
     }
 
     public class BiomaRecoleccion
     {
-        public string ?TipoBioma { get; set; }
-        public List<NodoRecoleccion> ?NodosComunes { get; set; }
-        public List<NodoRecoleccion> ?NodosRaros { get; set; }
+        public string? TipoBioma { get; set; }
+        public List<NodoRecoleccion>? NodosComunes { get; set; }
+        public List<NodoRecoleccion>? NodosRaros { get; set; }
     }
 
     public static class TablaBiomas

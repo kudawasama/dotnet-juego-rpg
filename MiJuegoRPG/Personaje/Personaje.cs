@@ -120,8 +120,11 @@ namespace MiJuegoRPG.Personaje
         public DateTime UltimaRecuperacionPasiva { get; set; }
         public int UltimoDiaDescanso { get; set; } = 0;
 
-        // Ubicacion Actual
-        public MiJuegoRPG.Motor.Ubicacion? UbicacionActual { get; set; }
+    // Ubicacion Actual (obsoleto, usar UbicacionActualId para persistencia de sector)
+    public MiJuegoRPG.Motor.Ubicacion? UbicacionActual { get; set; }
+
+    // Nuevo: ID del sector actual para persistencia y carga
+    public string? UbicacionActualId { get; set; }
 
         // Métodos de bonificadores y objetos equipados
         public double ObtenerBonificadorAtributo(string atributo)

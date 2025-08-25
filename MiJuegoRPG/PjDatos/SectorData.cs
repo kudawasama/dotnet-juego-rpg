@@ -5,6 +5,7 @@ namespace MiJuegoRPG.PjDatos
     public class SectorData
     {
         public string Id { get; set; } = string.Empty;
+        [System.Text.Json.Serialization.JsonPropertyName("nombre")]
         public string Nombre { get; set; } = string.Empty;
         public string Region { get; set; } = string.Empty;
         public string Tipo { get; set; } = "Ciudad";
@@ -22,5 +23,6 @@ namespace MiJuegoRPG.PjDatos
         public bool CiudadPrincipal { get; set; } = false;
         public bool EsCentroCiudad { get; set; } = false;
         public string? ParteCiudad { get; set; } = null;
+        public string Rutas { get; set; } = string.Empty;
     }
 }

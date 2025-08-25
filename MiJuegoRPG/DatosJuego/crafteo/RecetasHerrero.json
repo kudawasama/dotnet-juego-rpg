@@ -45,5 +45,15 @@
       { "Nombre": "Lingote de Hierro", "Cantidad": 8 },
       { "Nombre": "Cuero", "Cantidad": 2 }
     ]
+  },
+  
+  {
+    "Nombre": "Lingote de Hierro",
+    "Materiales": [
+      { "Nombre": "Mineral de Hierro", "Cantidad": 2 },
+      { "Nombre": "Carbón", "Cantidad": 1 }
+    ]
   }
+
+  
 ]

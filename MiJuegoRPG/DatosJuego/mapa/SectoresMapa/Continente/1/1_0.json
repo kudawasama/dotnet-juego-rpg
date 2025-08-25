@@ -8,7 +8,7 @@
   "nodosRecoleccion": [],
   "Requisitos": {},
   "enemigos": [],
-  "Conexiones": [],
+  "Conexiones": ["0_0"],
   "eventos": [],
   "descripcion": "Sector autocompletado."
 }
