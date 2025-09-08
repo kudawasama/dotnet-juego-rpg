@@ -1,4 +1,19 @@
-# Explicación y Ejemplo de Sistema RPG Versátil
+# Documentación del Sistema RPG
+
+## Arquitectura del Proyecto
+
+### Estructura de Directorios:
+- **Motor/**: Engine principal del juego
+  - **Menus/**: Sistemas de menús por contexto (ciudad, exploración, etc.)
+  - **Acciones/**: Acciones del jugador (recolección, minería, etc.)  
+  - **Servicios/**: Lógica de negocio y persistencia
+- **Personaje/**: Clases relacionadas con el personaje del jugador
+- **Enemigos/**: Sistema de enemigos y combate
+- **Objetos/**: Items, equipamiento y objetos del juego
+- **Interfaces/**: Contratos y abstracciones
+- **DatosJuego/**: Datos de configuración en JSON
+
+## Sistema RPG Versátil - Funcionalidades
 
 ## 1. Mapa y Exploración
 - El juego usa un "Mapa Imaginario" donde cada ubicación es un nodo (ciudad, ruta, mazmorra).
