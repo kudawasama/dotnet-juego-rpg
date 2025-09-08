@@ -34,7 +34,7 @@ namespace MiJuegoRPG.Motor.Menus
                 switch (opcion)
                 {
                     case "1": juego.MostrarTienda(); break;
-                    case "2": juego.Entrenar(); break;
+                    case "2": juego.motorEntrenamiento.Entrenar(); break;
                     case "3": juego.menuPrincipal.MostrarMenuMisionesNPC(); break;
                     case "4":
                         if (juego.jugador != null)

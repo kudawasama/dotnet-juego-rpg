@@ -10,108 +10,14 @@ using MiJuegoRPG.PjDatos;
 using MiJuegoRPG.Interfaces;
 using MiJuegoRPG.Motor;
 using MiJuegoRPG.Objetos;
+using MiJuegoRPG.Dominio; // Enums dominio
 
 namespace MiJuegoRPG.Motor
 {
     public class Juego
     {
         // Acción de recolección sobre un nodo específico
-        public void RealizarAccionRecoleccion(string tipo, MiJuegoRPG.Motor.NodoRecoleccion nodo)
-        {
-            // Validar si el nodo requiere una herramienta u objeto específico
-            if (!string.IsNullOrEmpty(nodo.Requiere))
-            {
-                bool tieneHerramienta = jugador != null 
-                    && jugador.Inventario != null 
-                    && jugador.Inventario.NuevosObjetos.Any(objCant => objCant.Objeto.Nombre.Contains(nodo.Requiere));
-                if (!tieneHerramienta)
-                {
-                    Console.WriteLine($"Necesitas un {nodo.Requiere} para realizar esta acción.");
-                    Console.WriteLine("Presiona cualquier tecla para continuar...");
-                    Console.ReadKey();
-                    MostrarMenuPorUbicacion();
-                    return;
-                }
-            }
-            var energiaService = new EnergiaService();
-            if (jugador != null)
-            {
-                energiaService.MostrarEnergia(jugador);
-                if (!energiaService.GastarEnergiaRecoleccion(jugador))
-                {
-                    Console.WriteLine("No puedes realizar la acción por falta de energía.");
-                    Console.WriteLine("Presiona cualquier tecla para continuar...");
-                    Console.ReadKey();
-                    menuPrincipal.MostrarMenuRecoleccion();
-                    return;
-                }
-                // Experiencia igual que antes
-                double expBase = 0.01;
-                double indiceNivel = Math.Pow(1.05, jugador.Nivel - 1);
-                int minutos = 1;
-                switch (tipo)
-                {
-                    case "Recolectar":
-                        double valorPercepcion = jugador.AtributosBase.Percepcion > 0 ? jugador.AtributosBase.Percepcion : 1.0;
-                        double indicePercepcion = 1.0 + (valorPercepcion / 10.0);
-                        double expPercepcion = expBase / (indiceNivel * indicePercepcion);
-                        if (expPercepcion < 0.0001) expPercepcion = 0.0001;
-                        jugador.ExpPercepcion += expPercepcion * minutos;
-                        double valorInteligencia = jugador.AtributosBase.Inteligencia > 0 ? jugador.AtributosBase.Inteligencia : 1.0;
-                        double indiceInteligencia = 1.0 + (valorInteligencia / 10.0);
-                        double expInteligencia = expBase / (indiceNivel * indiceInteligencia);
-                        if (expInteligencia < 0.0001) expInteligencia = 0.0001;
-                        jugador.ExpInteligencia += expInteligencia * minutos;
-                        Console.WriteLine($"Has ganado {expPercepcion * minutos:F4} exp de Percepción y {expInteligencia * minutos:F4} exp de Inteligencia.");
-                        break;
-                    case "Minar":
-                        double valorFuerza = jugador.AtributosBase.Fuerza > 0 ? jugador.AtributosBase.Fuerza : 1.0;
-                        double indiceFuerza = 1.0 + (valorFuerza / 10.0);
-                        double expFuerza = expBase / (indiceNivel * indiceFuerza);
-                        if (expFuerza < 0.0001) expFuerza = 0.0001;
-                        jugador.ExpFuerza += expFuerza * minutos;
-                        double valorResistencia = jugador.AtributosBase.Resistencia > 0 ? jugador.AtributosBase.Resistencia : 1.0;
-                        double indiceResistencia = 1.0 + (valorResistencia / 10.0);
-                        double expResistencia = expBase / (indiceNivel * indiceResistencia);
-                        if (expResistencia < 0.0001) expResistencia = 0.0001;
-                        jugador.ExpResistencia += expResistencia * minutos;
-                        Console.WriteLine($"Has ganado {expFuerza * minutos:F4} exp de Fuerza y {expResistencia * minutos:F4} exp de Resistencia.");
-                        break;
-                    case "Talar":
-                        double valorFuerzaT = jugador.AtributosBase.Fuerza > 0 ? jugador.AtributosBase.Fuerza : 1.0;
-                        double indiceFuerzaT = 1.0 + (valorFuerzaT / 10.0);
-                        double expFuerzaT = expBase / (indiceNivel * indiceFuerzaT);
-                        if (expFuerzaT < 0.0001) expFuerzaT = 0.0001;
-                        jugador.ExpFuerza += expFuerzaT * minutos;
-                        double valorDestreza = jugador.AtributosBase.Destreza > 0 ? jugador.AtributosBase.Destreza : 1.0;
-                        double indiceDestreza = 1.0 + (valorDestreza / 10.0);
-                        double expDestreza = expBase / (indiceNivel * indiceDestreza);
-                        if (expDestreza < 0.0001) expDestreza = 0.0001;
-                        jugador.ExpDestreza += expDestreza * minutos;
-                        Console.WriteLine($"Has ganado {expFuerzaT * minutos:F4} exp de Fuerza y {expDestreza * minutos:F4} exp de Destreza.");
-                        break;
-                }
-                RevisarAtributosPorExperiencia(jugador);
-            }
-            // Aquí puedes personalizar la lógica de obtención de materiales según el nodo
-            Console.WriteLine($"Recolectaste en el nodo: {nodo.Nombre}");
-            if (nodo.Materiales != null && nodo.Materiales.Count > 0)
-            {
-                foreach (var mat in nodo.Materiales)
-                {
-                    Console.WriteLine($"  - {mat.Cantidad}x {mat.Nombre}");
-                    if (jugador != null && jugador.Inventario != null)
-                        jugador.Inventario.AgregarObjeto(new Objetos.Material(mat.Nombre, Objetos.Rareza.Normal));
-                }
-            }
-            else
-            {
-                Console.WriteLine("No encontraste materiales en este nodo.");
-            }
-            Console.WriteLine("Presiona cualquier tecla para continuar...");
-            Console.ReadKey();
-            MostrarMenuPorUbicacion();
-    }
+    // Método legado de recolección eliminado: ahora gestionado por RecoleccionService
     
    
     
@@ -233,10 +139,9 @@ namespace MiJuegoRPG.Motor
             Console.Write("Selecciona una acción: ");
             var key = Console.ReadKey(true);
             string opcion = key.KeyChar.ToString();
-            string[] tipos = {"Recolectar", "Minar", "Talar"};
+            TipoRecoleccion[] tipos = { TipoRecoleccion.Recolectar, TipoRecoleccion.Minar, TipoRecoleccion.Talar };
             int tipoIdx = -1;
-            if (opcion == "1" || opcion == "2" || opcion == "3")
-                tipoIdx = int.Parse(opcion) - 1;
+            if (opcion == "1" || opcion == "2" || opcion == "3") tipoIdx = int.Parse(opcion) - 1;
             if (tipoIdx >= 0 && tipoIdx < tipos.Length)
             {
                 // Obtener nodos disponibles (por bioma o personalizados)
@@ -277,7 +182,14 @@ namespace MiJuegoRPG.Motor
                 }
                 if (int.TryParse(nodoOpcion, out int nodoIdx) && nodoIdx > 0 && nodoIdx <= nodos.Count)
                 {
-                    RealizarAccionRecoleccion(tipos[tipoIdx], nodos[nodoIdx - 1]);
+                    // Llamar al servicio (menú legacy interno todavía usa este bloque)
+                    var tipoRecoleccion = tipoAccion switch {
+                        MiJuegoRPG.Dominio.TipoRecoleccion.Recolectar => MiJuegoRPG.Dominio.TipoRecoleccion.Recolectar,
+                        MiJuegoRPG.Dominio.TipoRecoleccion.Minar => MiJuegoRPG.Dominio.TipoRecoleccion.Minar,
+                        MiJuegoRPG.Dominio.TipoRecoleccion.Talar => MiJuegoRPG.Dominio.TipoRecoleccion.Talar,
+                        _ => MiJuegoRPG.Dominio.TipoRecoleccion.Recolectar
+                    };
+                    recoleccionService.EjecutarAccion(tipoRecoleccion, nodos[nodoIdx - 1]);
                 }
                 else
                 {
@@ -351,10 +263,13 @@ namespace MiJuegoRPG.Motor
         public DateTime FechaInicio { get; set; } = DateTime.Now;
         public DateTime FechaActual => FechaInicio.AddMinutes(MinutosMundo);
         public string FormatoRelojMundo => $"[{FechaActual:dd-MM-yyyy} // {FechaActual:HH:mm:ss} hrs]";
-        public static Juego? InstanciaActual { get; private set; }
-
-        private readonly Random random = new Random();
-        public EnergiaService energiaService { get; }
+    public static Juego? InstanciaActual { get; private set; }
+    // Campo Random local eliminado: ahora todo usa RandomService.Instancia
+    public EnergiaService energiaService { get; }
+    private readonly MiJuegoRPG.Motor.Servicios.ProgressionService? progressionService;
+    // Exposición controlada para servicios internos (evitar reflection)
+    public MiJuegoRPG.Motor.Servicios.ProgressionService ProgressionService => progressionService!;
+    public MiJuegoRPG.Motor.Servicios.RecoleccionService recoleccionService { get; private set; }
         public MiJuegoRPG.Personaje.Personaje? jugador;
         public MenusJuego menuPrincipal;
         public EstadoMundo estadoMundo;
@@ -371,6 +286,9 @@ namespace MiJuegoRPG.Motor
         public Juego()
         {
             energiaService = new EnergiaService();
+            progressionService = new MiJuegoRPG.Motor.Servicios.ProgressionService();
+            progressionService.Verbose = true; // se puede ajustar dinámicamente
+            recoleccionService = new MiJuegoRPG.Motor.Servicios.RecoleccionService(this);
             string carpetaMapas = System.IO.Path.Combine(ObtenerRutaRaizProyecto(), "MiJuegoRPG", "DatosJuego", "mapa");
             mapa = MapaLoader.CargarMapaCompleto(carpetaMapas);
             InstanciaActual = this;
@@ -706,27 +624,29 @@ namespace MiJuegoRPG.Motor
             // Ganar experiencia por explorar
             if (jugador != null)
             {
-                jugador.ExpDestreza += 0.0002; // Aumento de experiencia por explorar
-                jugador.ExpAgilidad += 0.0001; // Aumento de experiencia por explorar
-                jugador.ExpPercepcion += 0.0002; //        
-                RevisarAtributosPorExperiencia(jugador);
+                // Antes se sumaba a campos legacy ExpDestreza/ExpAgilidad/ExpPercepcion y luego se revisaba.
+                // Ahora aplicamos pequeñas fracciones directamente a los atributos base para simular micro progreso explorando.
+                // Podría unificarse vía ProgressionService si se define una fuente 'exploracion'; por ahora incrementos directos controlados.
+                jugador.AtributosBase.Destreza += 0.0002;
+                jugador.AtributosBase.Agilidad += 0.0001;
+                jugador.AtributosBase.Percepcion += 0.0002;
             }
             // 1. Probabilidad de Mazmorra
-            if (random.Next(100) < ProbMazmorra) //
+            if (MiJuegoRPG.Motor.Servicios.RandomService.Instancia.Next(100) < ProbMazmorra) //
             {
                 Console.WriteLine("¡Has encontrado una mazmorra!");
                 MostrarMenuMazmorra();
                 return;
             }
             // 2. Probabilidad de encontrar objetos
-            if (random.Next(100) < ProbObjeto)
+            if (MiJuegoRPG.Motor.Servicios.RandomService.Instancia.Next(100) < ProbObjeto)
             {
                 string[] objetos = { "Oro", "Material", "Equipo" };
-                string tipoObjeto = objetos[random.Next(objetos.Length)];
+                string tipoObjeto = objetos[MiJuegoRPG.Motor.Servicios.RandomService.Instancia.Next(objetos.Length)];
                 switch (tipoObjeto)
                 {
                     case "Oro":
-                        int oro = random.Next(5, 21);
+                        int oro = MiJuegoRPG.Motor.Servicios.RandomService.Instancia.Next(5, 21);
                         if (jugador != null)
                         {
                             jugador.Oro += oro;
@@ -751,7 +671,7 @@ namespace MiJuegoRPG.Motor
                         }
                         if (nodosMaterial.Count > 0)
                         {
-                            RealizarAccionRecoleccion("Recolectar", nodosMaterial[0]);
+                            recoleccionService.EjecutarAccion(MiJuegoRPG.Dominio.TipoRecoleccion.Recolectar, nodosMaterial[0]);
                         }
                         else
                         {
@@ -772,7 +692,7 @@ namespace MiJuegoRPG.Motor
                 }
             }
             // 3. Probabilidad de batalla
-            if (random.Next(100) < ProbMonstruo)
+            if (MiJuegoRPG.Motor.Servicios.RandomService.Instancia.Next(100) < ProbMonstruo)
             {
                 Console.WriteLine("¡Un monstruo aparece!");
                 // ComenzarCombate(); // Método no implementado, comentar o implementar si es necesario
@@ -787,32 +707,9 @@ namespace MiJuegoRPG.Motor
 
         // Acciones de recolección, minería y tala
         // Revisa si algún atributo sube por experiencia acumulada
-        private void RevisarAtributosPorExperiencia(MiJuegoRPG.Personaje.Personaje pj)
-        {
-            // Ahora los atributos suben en fracciones, no hay experiencia separada
-            // Por compatibilidad, suma la experiencia acumulada al atributo y reinicia la experiencia
-            if (pj.ExpFuerza > 0)
-            {
-                pj.AtributosBase.Fuerza += pj.ExpFuerza;
-                pj.ExpFuerza = 0;
-            }
-            if (pj.ExpDestreza > 0)
-            {
-                pj.AtributosBase.Destreza += pj.ExpDestreza;
-                pj.ExpDestreza = 0;
-            }
-            if (pj.ExpPercepcion > 0)
-            {
-                pj.AtributosBase.Percepcion += pj.ExpPercepcion;
-                pj.ExpPercepcion = 0;
-            }
-            // Si quieres que otros atributos suban igual, agrégalos aquí
-        }
+    // RevisarAtributosPorExperiencia eliminado: el nuevo sistema maneja experiencia y subida inmediatamente dentro de ProgressionService.
 
-        public void Entrenar()
-        {
-            motorEntrenamiento.Entrenar();
-        }
+    // Método Entrenar() removido: usar motorEntrenamiento.Entrenar() directamente
 
         public void GestionarInventario()
         {

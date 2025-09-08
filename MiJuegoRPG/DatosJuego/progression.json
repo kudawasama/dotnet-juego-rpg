@@ -1,0 +1,15 @@
+{
+  "ExpBaseRecoleccion": 0.01,
+  "ExpBaseEntrenamiento": 0.01,
+  "Indices": {
+    "Fuerza": 3.0,
+    "Inteligencia": 8.0,
+    "Destreza": 3.5,
+    "Suerte": 12.0,
+    "Defensa": 5.5,
+    "Vitalidad": 9.0,
+    "Agilidad": 4.5,
+    "Resistencia": 3.5,
+    "Percepcion": 4.0
+  }
+}

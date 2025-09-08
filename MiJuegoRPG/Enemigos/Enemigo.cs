@@ -62,7 +62,7 @@ namespace MiJuegoRPG.Enemigos
 
         public MiJuegoRPG.Objetos.Objeto? IntentarDrop()
         {
-            var random = new Random();
+            var random = MiJuegoRPG.Motor.Servicios.RandomService.Instancia;
             foreach (var obj in ObjetosDrop)
             {
                 double rate = BASE_DROP_RATE;

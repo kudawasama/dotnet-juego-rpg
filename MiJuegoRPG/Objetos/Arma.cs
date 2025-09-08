@@ -43,7 +43,7 @@ namespace MiJuegoRPG.Objetos
 
         private int CalcularDaño(int dañoBase, int nivel, Rareza rareza)
         {
-            var random = new Random();
+            var random = MiJuegoRPG.Motor.Servicios.RandomService.Instancia;
             // Daño base escalado por nivel (ejemplo: dañoBase * nivel)
             int dañoEscalado = dañoBase + (int)(dañoBase * (nivel - 1) * 0.5);
             // Multiplicador por rareza

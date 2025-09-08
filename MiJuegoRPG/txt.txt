@@ -1,12 +1,84 @@
-4. ¿Qué falta o puedes mejorar?
-Validación automática: Un script que recorra todos los sectores y valide conexiones, campos obligatorios y referencias.
-Documentación: Una guía rápida para crear nuevos sectores y cómo deben conectarse.
-Integración de eventos y recursos: Si quieres que cada sector tenga recursos únicos, eventos aleatorios o NPCs, define esos campos y su lógica.
-Soporte para zonas especiales: Mazmorras, ciudades, rutas, etc., pueden tener campos extra (tiendas, puntos de guardado, etc.).
-Minimapa y exploración: Si quieres mostrar un minimapa o niebla de guerra, cada sector debe tener flags de explorado/visible.
-5. Resumen de la nueva implementación
-Tu sistema es muy flexible y escalable.
-Permite un mundo abierto, detallado y fácil de expandir.
-Requiere validación y herramientas para evitar errores humanos al crear o conectar sectores.
-Es ideal para RPGs con exploración profunda y muchos secretos.
-¿Quieres que te ayude a crear un validador de sectores, un loader eficiente, o a definir la estructura ideal de cada sector? ¿O prefieres ejemplos de integración con el motor de juego?
+PLAN DE REFACTORIZACIÓN Y PROGRESO (log incremental)
+=================================================
+
+Formato columnas: [ID] Estado | Área | Descripción breve | Próxima acción
+Estados posibles: Pendiente, En curso, Parcial, Hecho, Bloqueado
+
+Legend inicial: Solo la 1.x se empieza ahora para evitar cambios masivos de golpe.
+
+1. FUNDAMENTOS (Infra / Enumeraciones / Servicios base)
+------------------------------------------------------
+[1.1] En curso | Organización | Crear este archivo de tracking | Archivo creado
+[1.2] Parcial | Enumeraciones | Definir enums: Atributo, TipoRecoleccion, OrigenExp | Añadidos 3 enums
+[1.3] Hecho | Servicio | Crear ProgressionService (sólido) con método AplicarExpAtributo | Recolección + entrenamiento centralizados (penden tests 9.x)
+[1.4] Hecho | Servicio | RandomService centralizado (inyectable) | Reemplazados todos los usos de new Random() en dominio
+[1.5] Hecho | Limpieza | Sustituir strings mágicos de recolección por enum | Menú y acción usan TipoRecoleccion
+[1.6] Pendiente | Guardado | Completar GuardadoService (ya scaffold) | Extraer lógica de Juego
+
+2. EVENTOS Y DESACOPLAMIENTO
+----------------------------
+[2.1] Pendiente | Infra | EventBus simple (pub/sub en memoria) | Crear interface + implementación
+[2.2] Pendiente | Progresión | Emitir eventos en subidas de nivel / atributo / misión | Requiere 2.1
+[2.3] Pendiente | UI | Sustituir Console directa por IUserInterface | Después de EventBus
+
+3. PROGRESIÓN Y ATRIBUTOS
+-------------------------
+[3.1] Pendiente | Dominio | Unificar experiencia de atributos en estructura (ExpAtributo) | Después 1.3
+[3.2] Pendiente | Dominio | Migrar Personaje a diccionario <Atributo, ExpAtributo> | Requiere 3.1
+[3.3] Pendiente | Balance | Parametrizar fórmula en ProgressionConfig (JSON) | Tras 3.2
+
+4. RECOLECCIÓN Y MUNDO
+----------------------
+[4.1] Hecho | Servicio | RecoleccionService (mover RealizarAccionRecoleccion + MostrarMenuRecoleccion) | Menú y ejecución centralizados
+[4.2] Pendiente | Data | Añadir tiempos de respawn y rarezas a nodos | JSON nodos
+[4.3] Pendiente | Energía | Integrar coste dinámico según herramienta y bioma | Después 4.1
+
+5. COMBATE
+-----------
+[5.1] Pendiente | Dominio | Definir IAccionCombate + ResultadoAccion | Base
+[5.2] Pendiente | Dominio | Refactor CombatePorTurnos a cola de acciones | Tras 5.1
+[5.3] Pendiente | Estados | Implementar IEfecto (veneno, sangrado, buff) | Tras 5.2
+[5.4] Pendiente | Balance | Escalado por velocidad (orden dinámico) | Tras 5.2
+
+6. MISIONES Y REQUISITOS
+------------------------
+[6.1] Pendiente | Dominio | Reemplazar strings requisitos por IRequisito | Base
+[6.2] Pendiente | Dominio | Reemplazar recompensas por IRecompensa | Tras 6.1
+[6.3] Pendiente | Flujo | Cadena de misiones con grafo (prerequisitos) | Tras 6.1
+
+7. REPOSITORIOS / DATA
+----------------------
+[7.1] Pendiente | Infra | IRepository<T> genérico JSON | Base
+[7.2] Pendiente | Infra | Repos específico Misiones / Enemigos / Objetos | Tras 7.1
+[7.3] Pendiente | Cache | Carga diferida + invalidación | Tras 7.2
+
+8. UI / PRESENTACIÓN
+--------------------
+[8.1] Pendiente | Abstracción | IUserInterface (WriteLine, ReadOption, Confirm) | Tras 2.3
+[8.2] Pendiente | Menús | Refactor menús a comandos (Command Pattern) | Tras 8.1
+[8.3] Pendiente | Estilo | Colores y layout unificados | Tras 8.1
+
+9. TESTING
+----------
+[9.1] Pendiente | Infra | Crear proyecto tests xUnit | Base
+[9.2] Pendiente | Test | Mapa.MoverseA casos | Prioridad alta
+[9.3] Pendiente | Test | GeneradorEnemigos nivel y drops | Prioridad media
+[9.4] Pendiente | Test | ProgressionService fórmula | Tras 1.3
+[9.5] Pendiente | Test | Recolección energía y requisitos | Tras 4.1
+
+10. LIMPIEZA / QUALITY
+----------------------
+[10.1] Pendiente | Rutas | Centralizar rutas en PathProvider | Base
+[10.2] Pendiente | Random | Sustituir usos dispersos | Tras 1.4
+[10.3] Pendiente | Nombres | Uniformar nombres archivos (GeneradorObjetos vs GeneradorDeObjetos) | Revisión
+[10.4] Pendiente | Comentarios | Podar comentarios redundantes | Continuo
+[10.5] Pendiente | Documentación | README arquitectura modular | Final intermedio
+
+ESTADO ACTUAL (al cerrar este commit virtual):
+- Plan creado (1.1 Hecho / reflejado como 'En curso' para permitir anotaciones).
+- Enums y ProgressionService con config externa (progression.json) y flag Verbose.
+
+PRÓXIMO PASO SUGERIDO:
+Integrar ProgressionService en entrenamiento y recolección (marcará 1.3 Parcial) sin romper comportamiento existente.
+
+— Fin registro inicial —

@@ -27,17 +27,18 @@ namespace MiJuegoRPG.Motor
             Console.WriteLine("\n--- Atributos Base ---");
             Console.WriteLine("===================================");
             var ab = pj.AtributosBase;
-            var atributos = new Dictionary<string, (string abrev, double valor, double exp, double req)> {
-                {"Fuerza", ("Fza", ab.Fuerza, pj.ExpFuerza, pj.FuerzaExpRequerida)},
-                {"Destreza", ("Dxt", ab.Destreza, pj.ExpDestreza, pj.DestrezaExpRequerida)},
-                {"Vitalidad", ("Vit", ab.Vitalidad, pj.ExpVitalidad, pj.VitalidadExpRequerida)},
-                {"Agilidad", ("Agi", ab.Agilidad, pj.ExpAgilidad, pj.AgilidadExpRequerida)},
-                {"Suerte", ("Srt", ab.Suerte, pj.ExpSuerte, pj.SuerteExpRequerida)},
-                {"Defensa", ("Def", ab.Defensa, pj.ExpDefensa, pj.DefensaExpRequerida)},
-                {"Resistencia", ("Res", ab.Resistencia, pj.ExpResistencia, pj.ResistenciaExpRequerida)},
+            var atributos = new Dictionary<string, (string abrev, double valor, double exp, double req)>
+            {
+                {"Fuerza", ("Fza", ab.Fuerza, pj.ExperienciaAtributos[Dominio.Atributo.Fuerza].Progreso, pj.ExperienciaAtributos[Dominio.Atributo.Fuerza].Requerida)},
+                {"Destreza", ("Dxt", ab.Destreza, pj.ExperienciaAtributos[Dominio.Atributo.Destreza].Progreso, pj.ExperienciaAtributos[Dominio.Atributo.Destreza].Requerida)},
+                {"Vitalidad", ("Vit", ab.Vitalidad, pj.ExperienciaAtributos[Dominio.Atributo.Vitalidad].Progreso, pj.ExperienciaAtributos[Dominio.Atributo.Vitalidad].Requerida)},
+                {"Agilidad", ("Agi", ab.Agilidad, pj.ExperienciaAtributos[Dominio.Atributo.Agilidad].Progreso, pj.ExperienciaAtributos[Dominio.Atributo.Agilidad].Requerida)},
+                {"Suerte", ("Srt", ab.Suerte, pj.ExperienciaAtributos[Dominio.Atributo.Suerte].Progreso, pj.ExperienciaAtributos[Dominio.Atributo.Suerte].Requerida)},
+                {"Defensa", ("Def", ab.Defensa, pj.ExperienciaAtributos[Dominio.Atributo.Defensa].Progreso, pj.ExperienciaAtributos[Dominio.Atributo.Defensa].Requerida)},
+                {"Resistencia", ("Res", ab.Resistencia, pj.ExperienciaAtributos[Dominio.Atributo.Resistencia].Progreso, pj.ExperienciaAtributos[Dominio.Atributo.Resistencia].Requerida)},
                 {"Sabiduría", ("Sab", ab.Sabiduría, 0, 1)},
-                {"Inteligencia", ("Int", ab.Inteligencia, pj.ExpInteligencia, pj.InteligenciaExpRequerida)},
-                {"Percepción", ("Per", ab.Percepcion, pj.ExpPercepcion, pj.PercepcionExpRequerida)},
+                {"Inteligencia", ("Int", ab.Inteligencia, pj.ExperienciaAtributos[Dominio.Atributo.Inteligencia].Progreso, pj.ExperienciaAtributos[Dominio.Atributo.Inteligencia].Requerida)},
+                {"Percepción", ("Per", ab.Percepcion, pj.ExperienciaAtributos[Dominio.Atributo.Percepcion].Progreso, pj.ExperienciaAtributos[Dominio.Atributo.Percepcion].Requerida)},
                 {"Persuasión", ("Prs", ab.Persuasion, 0, 1)},
                 {"Liderazgo", ("Lid", ab.Liderazgo, 0, 1)},
                 {"Carisma", ("Car", ab.Carisma, 0, 1)},

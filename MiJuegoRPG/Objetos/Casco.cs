@@ -21,7 +21,7 @@ namespace MiJuegoRPG.Objetos
 
         private int CalcularDefensa(int defensaBase, int nivel, Rareza rareza)
         {
-            var random = new Random();
+            var random = MiJuegoRPG.Motor.Servicios.RandomService.Instancia;
             int defensaEscalada = defensaBase + (int)(defensaBase * (nivel - 1) * 0.5);
             double mult = 1.0;
             // Puedes agregar lógica de multiplicadores por rareza si lo deseas

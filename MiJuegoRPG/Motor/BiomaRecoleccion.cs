@@ -39,7 +39,9 @@ namespace MiJuegoRPG.Motor
 
         public static List<NodoRecoleccion> GenerarNodosParaBioma(string tipoBioma, Random? rng = null)
         {
-            rng ??= new Random();
+            // Si no se pasa RNG, usar el servicio centralizado
+            rng ??= new Random((int)DateTime.UtcNow.Ticks & 0x0000FFFF); // fallback mínimo
+            var randomSvc = MiJuegoRPG.Motor.Servicios.RandomService.Instancia;
             if (!Biomas.TryGetValue(tipoBioma, out var bioma))
                 return new List<NodoRecoleccion>();
             var nodos = new List<NodoRecoleccion>();
@@ -47,7 +49,7 @@ namespace MiJuegoRPG.Motor
             // Probabilidad de agregar un nodo raro
             foreach (var nodoRaro in bioma.NodosRaros ?? new List<NodoRecoleccion>())
             {
-                if (rng.NextDouble() < 0.3) // 30% de probabilidad
+                if (randomSvc.NextDouble() < 0.3) // 30% de probabilidad
                     nodos.Add(nodoRaro);
             }
             return nodos;

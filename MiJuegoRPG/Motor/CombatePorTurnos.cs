@@ -77,7 +77,7 @@ namespace MiJuegoRPG.Motor
                             break;
                         case "3":
                             Console.WriteLine($"{jugador.Nombre} intenta huir...");
-                            if (new Random().Next(100) < 60) // 60% probabilidad de huir
+                            if (MiJuegoRPG.Motor.Servicios.RandomService.Instancia.Next(100) < 60) // 60% probabilidad de huir
                             {
                                 Console.WriteLine("¡Has logrado huir del combate!");
                                 // Volver al menú de ubicación

@@ -1,4 +1,3 @@
-
 using System;
 using MiJuegoRPG.Enemigos;
 using MiJuegoRPG.Interfaces;
@@ -9,6 +8,18 @@ namespace MiJuegoRPG.Personaje
 {
     public class Personaje : ICombatiente
     {
+    // Atributos base del personaje (faltaba propiedad pública explícita para uso en servicios)
+    public AtributosBase AtributosBase { get; set; } = new AtributosBase();
+    // Alias para compatibilidad con código existente que usa 'Atributos'
+    public AtributosBase Atributos => AtributosBase;
+
+    // Propiedades básicas (algunas eran referenciadas pero no estaban definidas en este archivo)
+    public string Nombre { get; set; } = string.Empty;
+    public string Titulo { get; set; } = string.Empty;
+    public int Vida { get; set; }
+    public int VidaMaxima { get; set; }
+    public Inventario Inventario { get; set; } = new Inventario();
+    public Clase? Clase { get; set; }
         // IDs de desbloqueos ya notificados (para avisos automáticos)
         public HashSet<string> DesbloqueosNotificados { get; set; } = new HashSet<string>();
 
@@ -198,7 +209,6 @@ namespace MiJuegoRPG.Personaje
             if (eq.Accesorio2 != null) lista.Add(eq.Accesorio2);
             return lista;
         }
-        // ...existing code...
         // Índices de dificultad por atributo
         public Dictionary<string, double> IndiceAtributo = new Dictionary<string, double>
         {
@@ -230,41 +240,31 @@ namespace MiJuegoRPG.Personaje
             public string SiguienteMisionId { get; set; } = string.Empty;
             public List<string> Condiciones { get; set; } = new List<string>();
         }
-        // ...existing code...
-        public string Nombre { get; set; } = string.Empty;
-        public Clase? Clase { get; set; }
-        public int Vida { get; set; }
-        public int VidaMaxima { get; set; }
-        public Inventario Inventario { get; set; } = new Inventario();
-        public int VidaActual => Vida;
-        public AtributosBase Atributos => AtributosBase; // Atributos del personaje
-        public AtributosBase AtributosBase { get; set; } = new AtributosBase(); // Atributos base del personaje
-        public string Titulo { get; set; } = "Sin título";
-        public string ClaseDesbloqueada { get; set; } = "Sin clase";
+        // Experiencia unificada por atributo (nuevo sistema 3.1)
+        public Dictionary<MiJuegoRPG.Dominio.Atributo, ExpAtributo> ExperienciaAtributos { get; set; } = new Dictionary<MiJuegoRPG.Dominio.Atributo, ExpAtributo>();
 
-        // Experiencia por atributo
-        public double ExpFuerza { get; set; }
-        public double ExpMagia { get; set; }
-        public double ExpAgilidad { get; set; }
-        public double ExpInteligencia { get; set; }
-        public double ExpResistencia { get; set; }
-        public double ExpDefensa { get; set; }
-        public double ExpVitalidad { get; set; }
-        public double ExpSuerte { get; set; }
-        public double ExpDestreza { get; set; }
-        public double ExpPercepcion { get; set; }
+        // Campos legacy de experiencia (mantener temporalmente para compatibilidad con guardados antiguos)
+        [Obsolete("Usar ExperienciaAtributos")] public double ExpFuerza { get; set; }
+        [Obsolete("Usar ExperienciaAtributos")] public double ExpMagia { get; set; }
+        [Obsolete("Usar ExperienciaAtributos")] public double ExpAgilidad { get; set; }
+        [Obsolete("Usar ExperienciaAtributos")] public double ExpInteligencia { get; set; }
+        [Obsolete("Usar ExperienciaAtributos")] public double ExpResistencia { get; set; }
+        [Obsolete("Usar ExperienciaAtributos")] public double ExpDefensa { get; set; }
+        [Obsolete("Usar ExperienciaAtributos")] public double ExpVitalidad { get; set; }
+        [Obsolete("Usar ExperienciaAtributos")] public double ExpSuerte { get; set; }
+        [Obsolete("Usar ExperienciaAtributos")] public double ExpDestreza { get; set; }
+        [Obsolete("Usar ExperienciaAtributos")] public double ExpPercepcion { get; set; }
 
-        // Experiencia requerida para subir cada atributo
-        public double FuerzaExpRequerida { get; set; } = 1.0;
-        public double MagiaExpRequerida { get; set; } = 1.0;
-        public double AgilidadExpRequerida { get; set; } = 1.0;
-        public double InteligenciaExpRequerida { get; set; } = 1.0;
-        public double ResistenciaExpRequerida { get; set; } = 1.0;
-        public double DefensaExpRequerida { get; set; } = 1.0;
-        public double VitalidadExpRequerida { get; set; } = 1.0;
-        public double SuerteExpRequerida { get; set; } = 1.0;
-        public double DestrezaExpRequerida { get; set; } = 1.0;
-        public double PercepcionExpRequerida { get; set; } = 1.0;
+        [Obsolete("Usar ExperienciaAtributos")] public double FuerzaExpRequerida { get; set; } = 1.0;
+        [Obsolete("Usar ExperienciaAtributos")] public double MagiaExpRequerida { get; set; } = 1.0;
+        [Obsolete("Usar ExperienciaAtributos")] public double AgilidadExpRequerida { get; set; } = 1.0;
+        [Obsolete("Usar ExperienciaAtributos")] public double InteligenciaExpRequerida { get; set; } = 1.0;
+        [Obsolete("Usar ExperienciaAtributos")] public double ResistenciaExpRequerida { get; set; } = 1.0;
+        [Obsolete("Usar ExperienciaAtributos")] public double DefensaExpRequerida { get; set; } = 1.0;
+        [Obsolete("Usar ExperienciaAtributos")] public double VitalidadExpRequerida { get; set; } = 1.0;
+        [Obsolete("Usar ExperienciaAtributos")] public double SuerteExpRequerida { get; set; } = 1.0;
+        [Obsolete("Usar ExperienciaAtributos")] public double DestrezaExpRequerida { get; set; } = 1.0;
+        [Obsolete("Usar ExperienciaAtributos")] public double PercepcionExpRequerida { get; set; } = 1.0;
 
         // Sistema de Experiencia
         public int Nivel { get; set; }
@@ -435,9 +435,47 @@ namespace MiJuegoRPG.Personaje
             ExperienciaSiguienteNivel = CalcularExperienciaNecesaria(Nivel + 1);
             Oro = 0;
             Clase = null;
-            // Inicializar estadísticas con los atributos base para que Mana y demás se calculen correctamente
             Estadisticas = new Estadisticas(AtributosBase);
             ManaActual = ManaMaxima;
+            // Inicializar experiencia atributos nueva estructura
+            foreach (MiJuegoRPG.Dominio.Atributo atr in Enum.GetValues(typeof(MiJuegoRPG.Dominio.Atributo)))
+            {
+                ExperienciaAtributos[atr] = new ExpAtributo();
+            }
+            MigrarExperienciaLegacy();
+        }
+
+        private bool _migracionLegacyHecha = false;
+        /// <summary>
+        /// Migra valores de experiencia legacy (ExpFuerza, etc.) al diccionario unificado si existen.
+        /// Se ejecuta una sola vez; deja los campos legacy intactos para compatibilidad de lectura pero ya no se usan.
+        /// </summary>
+        private void MigrarExperienciaLegacy()
+        {
+            if (_migracionLegacyHecha) return;
+            bool habiaDatos = false;
+            void Copiar(MiJuegoRPG.Dominio.Atributo atr, double exp, double req)
+            {
+                if (exp > 0)
+                {
+                    var data = ExperienciaAtributos[atr];
+                    data.Progreso = exp;
+                    if (req > 0) data.Requerida = req;
+                    habiaDatos = true;
+                }
+            }
+            Copiar(MiJuegoRPG.Dominio.Atributo.Fuerza, ExpFuerza, FuerzaExpRequerida);
+            Copiar(MiJuegoRPG.Dominio.Atributo.Inteligencia, ExpInteligencia, InteligenciaExpRequerida);
+            Copiar(MiJuegoRPG.Dominio.Atributo.Agilidad, ExpAgilidad, AgilidadExpRequerida);
+            Copiar(MiJuegoRPG.Dominio.Atributo.Resistencia, ExpResistencia, ResistenciaExpRequerida);
+            Copiar(MiJuegoRPG.Dominio.Atributo.Defensa, ExpDefensa, DefensaExpRequerida);
+            Copiar(MiJuegoRPG.Dominio.Atributo.Vitalidad, ExpVitalidad, VitalidadExpRequerida);
+            Copiar(MiJuegoRPG.Dominio.Atributo.Suerte, ExpSuerte, SuerteExpRequerida);
+            Copiar(MiJuegoRPG.Dominio.Atributo.Destreza, ExpDestreza, DestrezaExpRequerida);
+            Copiar(MiJuegoRPG.Dominio.Atributo.Percepcion, ExpPercepcion, PercepcionExpRequerida);
+            if (habiaDatos)
+                Console.WriteLine("[Migración] Experiencia legacy migrada al nuevo sistema.");
+            _migracionLegacyHecha = true;
         }
 
         private int CalcularExperienciaNecesaria(int nivel) // Método para calcular la experiencia necesaria para el siguiente nivel
@@ -446,123 +484,7 @@ namespace MiJuegoRPG.Personaje
         }
 
         
-        public void Entrenar(string atributo) // Método para entrenar atributos y desbloquear clases/títulos
-        {
-            // Sistema estandarizado: experiencia base * índice de atributo * índice de nivel * dificultad por nivel de atributo
-            double expBase = 0.01; // Puedes ajustar este valor base
-            double indiceNivel = Math.Pow(1.05, Nivel - 1); // Cada nivel aumenta la dificultad un 5%
-            double indiceAtributo = IndiceAtributo.ContainsKey(atributo.ToLower()) ? IndiceAtributo[atributo.ToLower()] : 1.0;
-            double valorAtributo = 1.0; // Valor actual del atributo
-            double factorEscalado = 0.05; // Ajusta este valor para más o menos dificultad
-            switch (atributo.ToLower())
-            {
-                case "fuerza": valorAtributo = AtributosBase.Fuerza; break;
-                case "inteligencia": valorAtributo = AtributosBase.Inteligencia; break;
-                case "destreza": valorAtributo = AtributosBase.Destreza; break;
-                case "magia": valorAtributo = 1.0; break; // Si tienes atributo Magia, cámbialo aquí
-                case "suerte": valorAtributo = AtributosBase.Suerte; break;
-                case "defensa": valorAtributo = AtributosBase.Defensa; break;
-                case "vitalidad": valorAtributo = AtributosBase.Vitalidad; break;
-                case "agilidad": valorAtributo = AtributosBase.Agilidad; break;
-                case "resistencia": valorAtributo = AtributosBase.Resistencia; break;
-                case "percepcion": valorAtributo = AtributosBase.Percepcion; break;
-                default: valorAtributo = 1.0; break;
-            }
-            double expPorMinuto = expBase / (indiceNivel * indiceAtributo * (1 + valorAtributo * factorEscalado));
-            if (expPorMinuto < 0.0001) expPorMinuto = 0.0001; // Límite mínimo absoluto
-            int minutos = 1; // Simulación: cada acción equivale a 1 minuto
-            switch (atributo.ToLower())
-            {
-                case "fuerza":
-                    ExpFuerza += expPorMinuto * minutos;
-                    Console.WriteLine($"Entrenando Fuerza... Progreso: {ExpFuerza:F5}/{FuerzaExpRequerida:F2}");
-                    if (ExpFuerza >= FuerzaExpRequerida)
-                    {
-                        AtributosBase.Fuerza += 1;
-                        ExpFuerza = 0;
-                        FuerzaExpRequerida *= 1.2; // Aumenta dificultad
-                        Console.WriteLine($"¡Fuerza subió a {AtributosBase.Fuerza}! Próximo nivel requiere {FuerzaExpRequerida:F2} exp.");
-                    }
-                    break;
-                case "inteligencia":
-                    ExpInteligencia += expPorMinuto * minutos;
-                    Console.WriteLine($"Entrenando Inteligencia... Progreso: {ExpInteligencia:F5}/{InteligenciaExpRequerida:F2}");
-                    if (ExpInteligencia >= InteligenciaExpRequerida)
-                    {
-                        AtributosBase.Inteligencia += 1;
-                        ExpInteligencia = 0;
-                        InteligenciaExpRequerida *= 1.2;
-                        Console.WriteLine($"¡Inteligencia subió a {AtributosBase.Inteligencia}! Próximo nivel requiere {InteligenciaExpRequerida:F2} exp.");
-                    }
-                    break;
-                case "destreza":
-                    ExpDestreza += expPorMinuto * minutos;
-                    Console.WriteLine($"Entrenando Destreza... Progreso: {ExpDestreza:F5}/{DestrezaExpRequerida:F2}");
-                    if (ExpDestreza >= DestrezaExpRequerida)
-                    {
-                        AtributosBase.Destreza += 1;
-                        ExpDestreza = 0;
-                        DestrezaExpRequerida *= 1.2;
-                        Console.WriteLine($"¡Destreza subió a {AtributosBase.Destreza}! Próximo nivel requiere {DestrezaExpRequerida:F2} exp.");
-                    }
-                    break;
-                case "magia":
-                    ExpMagia += expPorMinuto * minutos;
-                    Console.WriteLine($"Entrenando Magia... Progreso: {ExpMagia:F5}/{MagiaExpRequerida:F2}");
-                    if (ExpMagia >= MagiaExpRequerida)
-                    {
-                        // Si tienes atributo Magia, súbelo aquí
-                        ExpMagia = 0;
-                        MagiaExpRequerida *= 1.2;
-                        Console.WriteLine($"¡Magia subió de nivel! Próximo nivel requiere {MagiaExpRequerida:F2} exp.");
-                    }
-                    break;
-                case "suerte":
-                    ExpSuerte += expPorMinuto * minutos;
-                    Console.WriteLine($"Entrenando Suerte... Progreso: {ExpSuerte:F5}/{SuerteExpRequerida:F2}");
-                    if (ExpSuerte >= SuerteExpRequerida)
-                    {
-                        AtributosBase.Suerte += 1;
-                        ExpSuerte = 0;
-                        SuerteExpRequerida *= 1.2;
-                        Console.WriteLine($"¡Suerte subió a {AtributosBase.Suerte}! Próximo nivel requiere {SuerteExpRequerida:F2} exp.");
-                    }
-                    break;
-                case "defensa":
-                    ExpDefensa += expPorMinuto * minutos;
-                    Console.WriteLine($"Entrenando Defensa... Progreso: {ExpDefensa:F5}/{DefensaExpRequerida:F2}");
-                    if (ExpDefensa >= DefensaExpRequerida)
-                    {
-                        AtributosBase.Defensa += 1;
-                        ExpDefensa = 0;
-                        DefensaExpRequerida *= 1.2;
-                        Console.WriteLine($"¡Defensa subió a {AtributosBase.Defensa}! Próximo nivel requiere {DefensaExpRequerida:F2} exp.");
-                    }
-                    break;
-                case "vitalidad":
-                    ExpVitalidad += expPorMinuto * minutos;
-                    Console.WriteLine($"Entrenando Vitalidad... Progreso: {ExpVitalidad:F5}/{VitalidadExpRequerida:F2}");
-                    if (ExpVitalidad >= VitalidadExpRequerida)
-                    {
-                        AtributosBase.Vitalidad += 1;
-                        ExpVitalidad = 0;
-                        VitalidadExpRequerida *= 1.2;
-                        Console.WriteLine($"¡Vitalidad subió a {AtributosBase.Vitalidad}! Próximo nivel requiere {VitalidadExpRequerida:F2} exp.");
-                    }
-                    break;
-                case "agilidad":
-                    ExpAgilidad += expPorMinuto * minutos;
-                    Console.WriteLine($"Entrenando Agilidad... Progreso: {ExpAgilidad:F5}/{AgilidadExpRequerida:F2}");
-                    if (ExpAgilidad >= AgilidadExpRequerida)
-                    {
-                        AtributosBase.Agilidad += 1;
-                        ExpAgilidad = 0;
-                        AgilidadExpRequerida *= 1.2;
-                        Console.WriteLine($"¡Agilidad subió a {AtributosBase.Agilidad}! Próximo nivel requiere {AgilidadExpRequerida:F2} exp.");
-                    }
-                    break;
-            }
-        }
+    // Método Entrenar eliminado (migrado a ProgressionService). Mantener referencia si se necesitara compatibilidad retro.
 
 
         public void GanarExperiencia(int cantidad) // Método para ganar experiencia

@@ -13,7 +13,7 @@ namespace MiJuegoRPG.Motor
 {
     public static class GeneradorEnemigos
     {
-        private static readonly Random random = new Random();
+    // Random centralizado a través de RandomService
         private static List<EnemigoData>? enemigosDisponibles;
 
         // Este es el método que falta en tu archivo.
@@ -59,7 +59,7 @@ namespace MiJuegoRPG.Motor
                 return new EnemigoEstandar("Goblin", 50, 10, 5, 5, 1, 5, 5);
             }
 
-            int indice = random.Next(0, enemigosApropiados.Count);
+            int indice = MiJuegoRPG.Motor.Servicios.RandomService.Instancia.Next(0, enemigosApropiados.Count);
             EnemigoData enemigoData = enemigosApropiados[indice];
 
             // Buscar arma por nombre si existe en el JSON del enemigo

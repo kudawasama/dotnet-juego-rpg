@@ -792,74 +792,7 @@ namespace MiJuegoRPG.Motor
         }
         public void MostrarMenuRecoleccion()
         {
-            while (true)
-            {
-                Console.WriteLine("\n=== Menú de Recolección ===");
-                Console.WriteLine("1. Recolectar");
-                Console.WriteLine("2. Minar");
-                Console.WriteLine("3. Talar");
-                Console.WriteLine("4. Volver");
-                Console.Write("Selecciona una opción: ");
-                var opcion = InputService.LeerOpcion();
-                string[] tipos = { "Recolectar", "Minar", "Talar" };
-                int tipoIdx = -1;
-                if (opcion == "1" || opcion == "2" || opcion == "3")
-                    tipoIdx = int.Parse(opcion) - 1;
-                if (tipoIdx >= 0 && tipoIdx < tipos.Length)
-                {
-                    // Obtener nodos disponibles (por bioma o personalizados) usando solo SectorData
-                    var sector = juego.mapa.UbicacionActual;
-                    var tipoAccion = tipos[tipoIdx];
-                    List<MiJuegoRPG.Motor.NodoRecoleccion> nodos = new List<MiJuegoRPG.Motor.NodoRecoleccion>();
-                    if (sector != null && sector.NodosRecoleccion != null && sector.NodosRecoleccion.Count > 0)
-                    {
-                        nodos.AddRange(sector.NodosRecoleccion);
-                    }
-                    // Si no hay nodos personalizados, usar los del bioma
-                    if (nodos.Count == 0 && sector != null && !string.IsNullOrWhiteSpace(sector.Region))
-                    {
-                        nodos.AddRange(MiJuegoRPG.Motor.TablaBiomas.GenerarNodosParaBioma(sector.Region));
-                    }
-                    // Filtrar nodos por tipo de acción si la propiedad Tipo existe
-                    var nodosFiltrados = nodos.Where(n => n.Tipo == tipoAccion).ToList();
-                    if (nodosFiltrados.Count == 0)
-                    {
-                        Console.WriteLine($"No hay nodos de tipo '{tipoAccion}' en este sector o bioma.");
-                        Console.WriteLine("Presiona cualquier tecla para volver...");
-                        Console.ReadKey();
-                        continue;
-                    }
-                    // Mostrar submenú de nodos filtrados
-                    Console.WriteLine($"--- Selecciona un nodo de {tipoAccion.ToLower()} ---");
-                    for (int i = 0; i < nodosFiltrados.Count; i++)
-                    {
-                        Console.WriteLine($"{i + 1}. {nodosFiltrados[i].Nombre}");
-                    }
-                    Console.WriteLine("0. Volver");
-                    Console.Write("Nodo: ");
-                    var nodoOpcion = Console.ReadLine();
-                    if (nodoOpcion == "0")
-                    {
-                        continue;
-                    }
-                    if (int.TryParse(nodoOpcion, out int nodoIdx) && nodoIdx > 0 && nodoIdx <= nodosFiltrados.Count)
-                    {
-                        juego.RealizarAccionRecoleccion(tipoAccion, nodosFiltrados[nodoIdx - 1]);
-                    }
-                    else
-                    {
-                        Console.WriteLine("Opción de nodo no válida.");
-                    }
-                }
-                else if (opcion == "4")
-                {
-                    return;
-                }
-                else
-                {
-                    Console.WriteLine("Opción no válida.");
-                }
-            }
+            juego.recoleccionService.MostrarMenu();
         }
     }
 }
