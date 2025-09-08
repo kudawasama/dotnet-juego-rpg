@@ -15,12 +15,6 @@ namespace MiJuegoRPG.Motor
 {
     public class Juego
     {
-        // Método para generar un material aleatorio (stub temporal)
-        public Material GenerarMaterialAleatorio()
-        {
-            // Stub temporal: retorna un material de prueba
-            return new Material("Madera", MiJuegoRPG.Objetos.Rareza.Normal);
-        }
         public void Iniciar()
         {
             // Menú principal del juego

@@ -8,7 +8,7 @@ namespace MiJuegoRPG.Objetos
 {
     public static class GestorMateriales
     {
-        public static string RutaMaterialesJson = "c:/Users/ASUS/OneDrive/Documentos/GitHub/dotnet-juego-rpg/MiJuegoRPG/PjDatos/materiales.json";
+        public static string RutaMaterialesJson = Path.Combine("PjDatos", "materiales.json");
         public static List<Material> MaterialesDisponibles = new List<Material>();
 
         public static void GuardarMaterialSiNoExiste(Material material)

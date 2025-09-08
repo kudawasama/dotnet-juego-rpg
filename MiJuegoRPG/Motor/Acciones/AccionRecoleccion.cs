@@ -18,10 +18,18 @@ namespace MiJuegoRPG.Motor.Acciones
                 Console.WriteLine("No hay personaje cargado.");
                 return;
             }
-            // Aquí iría la lógica de recolección de materiales, por ejemplo:
-            var material = juego.GenerarMaterialAleatorio();
-            if (material != null)
+            
+            // Simple material generation for collection action
+            var random = new Random();
+            var materiales = new[] { "Madera", "Piedra", "Hierro", "Hierba" };
+            var rarezas = new[] { MiJuegoRPG.Objetos.Rareza.Normal, MiJuegoRPG.Objetos.Rareza.Normal, MiJuegoRPG.Objetos.Rareza.Rara };
+            
+            if (random.Next(0, 100) < 60) // 60% chance de encontrar algo
             {
+                var materialNombre = materiales[random.Next(materiales.Length)];
+                var rareza = rarezas[random.Next(rarezas.Length)];
+                var material = new MiJuegoRPG.Objetos.Material(materialNombre, rareza);
+                
                 juego.jugador.Inventario.Agregar(material);
                 Console.WriteLine($"Has recolectado: {material.Nombre}");
             }
