@@ -11,11 +11,13 @@ using MiJuegoRPG.Interfaces;
 using MiJuegoRPG.Motor;
 using MiJuegoRPG.Objetos;
 using MiJuegoRPG.Dominio; // Enums dominio
+using MiJuegoRPG.Motor.Servicios; // GuardadoService, ProgressionService, etc.
 
 namespace MiJuegoRPG.Motor
 {
     public class Juego
     {
+    public static Juego? Instancia { get; private set; }
         // Acción de recolección sobre un nodo específico
     // Método legado de recolección eliminado: ahora gestionado por RecoleccionService
     
@@ -39,15 +41,9 @@ namespace MiJuegoRPG.Motor
                 Console.WriteLine("2. Ir a ubicación actual");
                 Console.WriteLine("3. Inventario");
                 Console.WriteLine("4. Guardar personaje");
-                Console.WriteLine("/tp [id] - Teletransportar a sector por Id (admin)");
+                Console.WriteLine("5. Menú administrador");
                 Console.WriteLine("0. Salir del juego");
                 string opcion = InputService.LeerOpcion();
-                if (opcion.StartsWith("/tp "))
-                {
-                    var id = opcion.Substring(4).Trim();
-                    TeletransportarASector(id);
-                    continue;
-                }
                 switch (opcion)
                 {
                     case "1":
@@ -62,6 +58,10 @@ namespace MiJuegoRPG.Motor
                         break;
                     case "4":
                         GuardarPersonaje();
+                        break;
+                    case "5":
+                        var menuAdmin = new MiJuegoRPG.Motor.Menus.MenuAdmin(this);
+                        menuAdmin.MostrarMenuAdmin();
                         break;
                     case "0":
                         salir = true;
@@ -82,6 +82,7 @@ namespace MiJuegoRPG.Motor
                 if (sectorData != null)
                 {
                     mapa.UbicacionActual = sectorData;
+                    try { recoleccionService.AlEntrarSector(sectorData.Id); } catch { }
                     Console.WriteLine($"[ADMIN] Teletransportado a: {destino.Nombre} (ID: {destino.Id})");
                 }
                 else
@@ -95,6 +96,8 @@ namespace MiJuegoRPG.Motor
                 Console.WriteLine($"[ADMIN] No se encontró el sector con Id: {idSector}");
             }
         }
+
+    // ProcesarComando eliminado: ahora los comandos admin están aislados en MenuAdmin.
             
         
         public void CrearPersonaje()
@@ -211,21 +214,19 @@ namespace MiJuegoRPG.Motor
         // Método para cargar personaje desde el menú (extraído del default)
         public void MostrarMenuCargarPersonaje()
         {
-            var pj = MiJuegoRPG.Motor.GestorArchivos.CargarPersonaje();
-            if (pj != null)
-            {
-                jugador = pj;
-                Console.WriteLine($"Personaje '{jugador.Nombre}' cargado correctamente.");
-                if (!string.IsNullOrEmpty(jugador.UbicacionActualId))
-                {
-                    var sectorData = mapa.ObtenerSectores().Find(s => s.Id == jugador.UbicacionActualId);
-                    if (sectorData != null)
-                        mapa.UbicacionActual = sectorData;
-                }
-            }
-            else
+            var pj = guardadoService.CargarInteractivo();
+            if (pj == null)
             {
                 Console.WriteLine("No se pudo cargar el personaje.");
+                return;
+            }
+            jugador = pj;
+            Console.WriteLine($"Personaje '{jugador.Nombre}' cargado correctamente.");
+            if (!string.IsNullOrEmpty(jugador.UbicacionActualId))
+            {
+                var sectorData = mapa.ObtenerSectores().Find(s => s.Id == jugador.UbicacionActualId);
+                if (sectorData != null)
+                    mapa.UbicacionActual = sectorData;
             }
         }
 
@@ -267,9 +268,12 @@ namespace MiJuegoRPG.Motor
     // Campo Random local eliminado: ahora todo usa RandomService.Instancia
     public EnergiaService energiaService { get; }
     private readonly MiJuegoRPG.Motor.Servicios.ProgressionService? progressionService;
+    private GuardadoService guardadoService; // Nuevo servicio de guardado
     // Exposición controlada para servicios internos (evitar reflection)
     public MiJuegoRPG.Motor.Servicios.ProgressionService ProgressionService => progressionService!;
     public MiJuegoRPG.Motor.Servicios.RecoleccionService recoleccionService { get; private set; }
+    public MiJuegoRPG.Motor.Servicios.ClaseDinamicaService claseService { get; private set; }
+    public MiJuegoRPG.Motor.Servicios.ReputacionService reputacionService { get; private set; }
         public MiJuegoRPG.Personaje.Personaje? jugador;
         public MenusJuego menuPrincipal;
         public EstadoMundo estadoMundo;
@@ -288,7 +292,11 @@ namespace MiJuegoRPG.Motor
             energiaService = new EnergiaService();
             progressionService = new MiJuegoRPG.Motor.Servicios.ProgressionService();
             progressionService.Verbose = true; // se puede ajustar dinámicamente
+            guardadoService = new GuardadoService(); // inicializa servicio de guardado
             recoleccionService = new MiJuegoRPG.Motor.Servicios.RecoleccionService(this);
+            claseService = new MiJuegoRPG.Motor.Servicios.ClaseDinamicaService(this);
+            reputacionService = new MiJuegoRPG.Motor.Servicios.ReputacionService(this);
+            Instancia = this;
             string carpetaMapas = System.IO.Path.Combine(ObtenerRutaRaizProyecto(), "MiJuegoRPG", "DatosJuego", "mapa");
             mapa = MapaLoader.CargarMapaCompleto(carpetaMapas);
             InstanciaActual = this;
@@ -328,7 +336,10 @@ namespace MiJuegoRPG.Motor
                 }
                 // Asignar el sector de Bairan como ubicación actual si existe
                 if (sectorBairan != null)
+                {
                     mapa.UbicacionActual = sectorBairan;
+                    try { recoleccionService.AlEntrarSector(sectorBairan.Id); } catch { }
+                }
                 // DEBUG: Mostrar ID de ubicación actual y desbloqueo de sectores conectados
                 Console.WriteLine($"[DEBUG] Ubicación actual: {mapa.UbicacionActual.Nombre} (ID: {mapa.UbicacionActual.Id})");
                 if (sectorBairan != null)
@@ -352,7 +363,10 @@ namespace MiJuegoRPG.Motor
             {
                 var primerSector = mapa.ObtenerSectores().FirstOrDefault();
                 if (primerSector != null)
+                {
                     mapa.UbicacionActual = primerSector;
+                    try { recoleccionService.AlEntrarSector(primerSector.Id); } catch { }
+                }
             }
             CargarProbabilidades();
             motorEventos = new MotorEventos(this);
@@ -362,6 +376,17 @@ namespace MiJuegoRPG.Motor
             motorInventario = new MotorInventario(this);
             motorRutas = new MotorRutas(this);
             menuCiudad = new MiJuegoRPG.Motor.Menus.MenuCiudad(this);
+            // Listeners básicos de eventos
+            var bus = MiJuegoRPG.Motor.Servicios.BusEventos.Instancia;
+            bus.Suscribir<MiJuegoRPG.Motor.Servicios.EventoAtributoSubido>(e => {
+                Console.WriteLine($"[EVENTO] Atributo subido: {e.Atributo} = {e.NuevoValor:F2}");
+            });
+            bus.Suscribir<MiJuegoRPG.Motor.Servicios.EventoNivelSubido>(e => {
+                Console.WriteLine($"[EVENTO] Nivel del jugador ahora: {e.Nivel}");
+            });
+            bus.Suscribir<MiJuegoRPG.Motor.Servicios.EventoMisionCompletada>(e => {
+                Console.WriteLine($"[EVENTO] Misión completada ({e.Id}): {e.Nombre}");
+            });
         }
         // Sincroniza y muestra el menú correcto según la ubicación actual
         public void MostrarMenuPorUbicacion()
@@ -732,70 +757,48 @@ namespace MiJuegoRPG.Motor
         // Método para cargar el personaje usando GuardaPersonaje
         public void CargarPersonaje()
         {
-            var pj = MiJuegoRPG.Motor.GestorArchivos.CargarPersonaje();
-            if (pj != null)
+            var pj = guardadoService.CargarInteractivo();
+            if (pj == null) return;
+            jugador = pj;
+            jugador.Estadisticas = new Estadisticas(jugador.AtributosBase);
+            jugador.ManaActual = jugador.ManaMaxima;
+            Console.WriteLine($"Personaje '{jugador.Nombre}' cargado correctamente.");
+            if (!string.IsNullOrEmpty(jugador.UbicacionActualId))
             {
-                jugador = pj;
-                // Recalcular estadísticas y maná después de cargar
-                jugador.Estadisticas = new Estadisticas(jugador.AtributosBase);
-                jugador.ManaActual = jugador.ManaMaxima;
-
-                Console.WriteLine($"Personaje '{jugador.Nombre}' cargado correctamente.");
-                // Asignar ubicación actual del personaje si existe (usando SectorData)
-                if (jugador != null && !string.IsNullOrEmpty(jugador.UbicacionActualId))
+                var sectorData = mapa.ObtenerSectores().Find(s => s.Id == jugador.UbicacionActualId);
+                if (sectorData != null)
+                    mapa.UbicacionActual = sectorData;
+            }
+            else
+            {
+                var sectorBairan = mapa.ObtenerSectores().Find(s => s.Nombre == "Bairan" || s.Nombre == "Ciudad de Bairan");
+                if (sectorBairan != null)
                 {
-                    var sectorData = mapa.ObtenerSectores().Find(s => s.Id == jugador.UbicacionActualId);
-                    if (sectorData != null)
-                        mapa.UbicacionActual = sectorData;
+                    foreach (var idConexion in sectorBairan.Conexiones)
+                    {
+                        var ubicAdj = estadoMundo.Ubicaciones.Find(u => u.Id == idConexion);
+                        if (ubicAdj != null) ubicAdj.Desbloqueada = true;
+                    }
+                    mapa.UbicacionActual = sectorBairan;
                 }
                 else
                 {
-                    // Si no tiene ubicación, asignar ciudad principal
-                    var ciudadPrincipal = estadoMundo.Ubicaciones.Find(u =>
-                        (u is not null && u.Requisitos != null &&
-                         u.Requisitos.ContainsKey("ciudadPrincipal") &&
-                         u.Requisitos["ciudadPrincipal"] is bool b && b)
-                    );
-                    // Buscar la ciudad principal en SectorData
-                    var bairanUbic = estadoMundo.Ubicaciones.Find(u => u.Nombre == "Bairan" || u.Nombre == "Ciudad de Bairan");
-                    var sectorBairan = mapa.ObtenerSectores().Find(s => s.Nombre == "Bairan" || s.Nombre == "Ciudad de Bairan");
-                    if (bairanUbic != null && sectorBairan != null)
-                    {
-                        foreach (var idConexion in sectorBairan.Conexiones)
-                        {
-                            var ubicAdj = estadoMundo.Ubicaciones.Find(u => u.Id == idConexion);
-                            if (ubicAdj != null)
-                                ubicAdj.Desbloqueada = true;
-                        }
-                        mapa.UbicacionActual = sectorBairan;
-                        // DEBUG: Mostrar ID de ubicación actual y desbloqueo de sectores conectados
-                        Console.WriteLine($"[DEBUG] Ubicación actual: {sectorBairan.Nombre} (ID: {sectorBairan.Id})");
-                        Console.WriteLine($"[DEBUG] Conexiones de {sectorBairan.Nombre}:");
-                        foreach (var idConexion in sectorBairan.Conexiones)
-                        {
-                            var ubicAdj = estadoMundo.Ubicaciones.Find(u => u.Id == idConexion);
-                            if (ubicAdj != null)
-                                Console.WriteLine($"  - {ubicAdj.Nombre} (ID: {ubicAdj.Id}) | Desbloqueada: {ubicAdj.Desbloqueada}");
-                            else
-                                Console.WriteLine($"  - [NO ENCONTRADO] ID: {idConexion}");
-                        }
-                    }
-                    else
-                    {
-                        var primerSector = mapa.ObtenerSectores().FirstOrDefault();
-                        if (primerSector != null)
-                            mapa.UbicacionActual = primerSector;
-                    }
+                    var primerSector = mapa.ObtenerSectores().FirstOrDefault();
+                    if (primerSector != null) mapa.UbicacionActual = primerSector;
                 }
             }
         }
         // Sincronizar el ID de ubicación antes de guardar
         public void GuardarPersonaje()
         {
-            if (mapa.UbicacionActual != null && jugador != null)
+            if (jugador == null)
+            {
+                Console.WriteLine("No hay personaje para guardar.");
+                return;
+            }
+            if (mapa.UbicacionActual != null)
                 jugador.UbicacionActualId = mapa.UbicacionActual.Id;
-            if (jugador != null)
-                MiJuegoRPG.Motor.GestorArchivos.GuardarPersonaje(jugador);
+            guardadoService.Guardar(jugador);
         }
 
             // Menú básico de mazmorra
@@ -881,6 +884,8 @@ namespace MiJuegoRPG.Motor
                 if (int.TryParse(opcion, out int idx) && idx > 0 && idx <= sectoresConectados.Count)
                 {
                     var destino = sectoresConectados[idx - 1];
+                    // Determinar si es primera visita antes de movernos
+                    bool yaDescubierto = mapa.SectoresDescubiertos.ContainsKey(destino.Id) && mapa.SectoresDescubiertos[destino.Id];
                     // Centralizar la validación y el movimiento en Mapa
                     if (mapa.MoverseA(destino.Id))
                     {
@@ -890,7 +895,11 @@ namespace MiJuegoRPG.Motor
                         if (sectorData != null)
                             mapa.UbicacionActual = sectorData;
                         if (jugador != null)
+                        {
+                            // Aplicar micro experiencia de exploración (Percepción + bonus Agilidad si primera visita)
+                            progressionService?.AplicarExpExploracion(jugador, primeraVisita: !yaDescubierto);
                             MiJuegoRPG.Motor.GestorDesbloqueos.VerificarDesbloqueos(jugador);
+                        }
                         Console.WriteLine($"Te has movido a: {destino.Nombre}");
                         Console.WriteLine(destino.Descripcion);
                         Console.WriteLine("Pulsa cualquier tecla para continuar...");

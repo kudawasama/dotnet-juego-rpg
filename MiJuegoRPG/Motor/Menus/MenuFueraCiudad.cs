@@ -35,7 +35,10 @@ namespace MiJuegoRPG.Motor.Menus
                 switch (opcion)
                 {
                     case "1": juego.ExplorarSector(); break;
-                    case "2": juego.MostrarMenuRecoleccion(); break;
+                    case "2":
+                        // Nuevo menú híbrido de recolección
+                        juego.recoleccionService.MostrarMenu();
+                        break;
                     case "5":
                         juego.MostrarMenuRutas();
                         return;

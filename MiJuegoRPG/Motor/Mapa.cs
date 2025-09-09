@@ -32,6 +32,9 @@ namespace MiJuegoRPG.Motor
                 if (UbicacionActual.Conexiones.Contains(idSectorDestino))
                 {
                     UbicacionActual = sectorDestino;
+                    // Notificar cambio de sector para restaurar cooldowns
+                    var juego = Juego.ObtenerInstanciaActual();
+                    try { juego?.recoleccionService?.AlEntrarSector(UbicacionActual.Id); } catch { }
                     if (!SectoresDescubiertos.ContainsKey(UbicacionActual.Id))
                         SectoresDescubiertos[UbicacionActual.Id] = true;
                     return true;
@@ -50,38 +53,54 @@ namespace MiJuegoRPG.Motor
         }
 
         public Mapa(Dictionary<string, PjDatos.SectorData> sectoresDict)
+        {
+            sectores = sectoresDict ?? new Dictionary<string, PjDatos.SectorData>();
+            PjDatos.SectorData? ubicacionInicial = null;
+            // Prioridad 1: CiudadPrincipal
+            foreach (var s in sectores.Values)
+            {
+                if (s.CiudadPrincipal)
+                {
+                    ubicacionInicial = s;
+                    break;
+                }
+            }
+            // Prioridad 2: CiudadInicial (compatibilidad)
+            if (ubicacionInicial == null)
+            {
+                foreach (var s in sectores.Values)
+                {
+                    if (s.CiudadInicial)
                     {
-                        sectores = sectoresDict ?? new Dictionary<string, PjDatos.SectorData>();
-                        PjDatos.SectorData? ubicacionInicial = null;
-                        // Prioridad 1: CiudadPrincipal
-                        foreach (var s in sectores.Values)
-                        {
-                            if (s.CiudadPrincipal)
-                            {
-                                ubicacionInicial = s;
-                                break;
-                            }
-                        }
-                        // Prioridad 2: CiudadInicial (compatibilidad)
-                        if (ubicacionInicial == null)
-                        {
-                            foreach (var s in sectores.Values)
-                            {
-                                if (s.CiudadInicial)
-                                {
-                                    ubicacionInicial = s;
-                                    break;
-                                }
-                            }
-                        }
-                        // Prioridad 3: Primer sector disponible
-                        if (ubicacionInicial == null && sectores.Count > 0)
-                            ubicacionInicial = new List<PjDatos.SectorData>(sectores.Values)[0];
-                        if (ubicacionInicial == null)
-                            throw new InvalidOperationException("No se encontró ninguna ubicación válida en el mapa. Verifica los archivos de mapa.");
-                        UbicacionActual = ubicacionInicial;
-                        SectoresDescubiertos[UbicacionActual.Id] = true;
+                        ubicacionInicial = s;
+                        break;
                     }
+                }
+            }
+            // Prioridad 3: Primer sector disponible
+            if (ubicacionInicial == null && sectores.Count > 0)
+                ubicacionInicial = new List<PjDatos.SectorData>(sectores.Values)[0];
+            if (ubicacionInicial == null)
+                throw new InvalidOperationException("No se encontró ninguna ubicación válida en el mapa. Verifica los archivos de mapa.");
+            UbicacionActual = ubicacionInicial;
+            SectoresDescubiertos[UbicacionActual.Id] = true;
+
+            // Validación de conexiones rotas para diagnóstico
+            int conexionesRota = 0;
+            foreach (var s in sectores.Values)
+            {
+                foreach (var idConn in s.Conexiones)
+                {
+                    if (!sectores.ContainsKey(idConn))
+                    {
+                        conexionesRota++;
+                        Console.WriteLine($"[Mapa] Conexión inexistente referenciada: {s.Id} -> {idConn}");
+                    }
+                }
+            }
+            if (conexionesRota > 0)
+                Console.WriteLine($"[Mapa] Total conexiones rotas: {conexionesRota}");
+        }
 
 
         public List<PjDatos.SectorData> ObtenerSectoresAdyacentes()

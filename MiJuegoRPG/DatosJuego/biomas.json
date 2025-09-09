@@ -221,6 +221,16 @@
         "Nombre": "Planta Resistente",
         "Materiales": [ { "Nombre": "Hierba", "Cantidad": 1 } ],
         "Cooldown": 2
+      },
+      {
+        "Nombre": "Cactus del Cañon",
+        "Materiales": [ { "Nombre": "Espinas de Cactus", "Cantidad": 1 } ],
+        "Cooldown": 2
+      },
+      {
+        "Nombre": "Tronco Seco",
+        "Materiales": [ { "Nombre": "Madera Seca", "Cantidad": 1 } ],
+        "Cooldown": 2
       }
     ],
     "NodosRaros": [
@@ -287,6 +297,37 @@
         "Nombre": "Estrella de Mar",
         "Materiales": [ { "Nombre": "Estrella de Mar", "Cantidad": 1 } ],
         "Cooldown": 8
+      }
+    ]
+  },
+  {
+    "TipoBioma": "Campo",
+    "NodosComunes": [
+      {
+        "Nombre": "Árboles de Sauce",
+        "Materiales": [ { "Nombre": "Madera Flexible", "Cantidad": 2 } ],
+        "Cooldown": 2
+      },
+      {
+        "Nombre": "Pradera de Flores",
+        "Materiales": [ { "Nombre": "Flor Silvestre", "Cantidad": 1 },
+         { "Nombre": "Hierba Curativa", "Cantidad": 1 },
+         { "Nombre": "Hierba Antídoto", "Cantidad": 1 },
+         { "Nombre": "Hierba Energizante", "Cantidad": 1 }
+       ],
+       "Cooldown": 1
+     }
+   ],
+   "NodosRaros": [
+     {
+        "Nombre": "Árbol Antiguo",
+        "Materiales": [ { "Nombre": "Madera Antigua", "Cantidad": 1 } ],
+        "Cooldown": 5
+      },
+      {
+        "Nombre": "Flor Dorada",
+        "Materiales": [ { "Nombre": "Flor Dorada", "Cantidad": 1 } ],
+        "Cooldown": 4
       }
     ]
   }

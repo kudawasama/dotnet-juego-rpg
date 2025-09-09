@@ -5,17 +5,24 @@ using MiJuegoRPG.Dominio;
 namespace MiJuegoRPG.Motor.Servicios
 {
     /// Servicio responsable de aplicar experiencia a atributos según reglas actuales.
-    /// Refactor inicial: replica la lógica existente evitando alterar el balance mientras se desacopla.
+    /// NOTA: Centraliza toda la progresión (recolección, entrenamiento, exploración) para evitar lógica duplicada.
+    /// Ajustable vía progression.json (valores base y escalados). Factor mínimo evita que la exp llegue a 0.
     public class ProgressionService
     {
-        private double expBaseRecoleccion = 0.01;
-        private double expBaseEntrenamiento = 0.01;
+    private double expBaseRecoleccion = 0.01;
+    private double expBaseEntrenamiento = 0.01;
+    private double expBaseExploracion = 0.0025; // valor pequeño incremental para exploración
+    // Parametrización extendida (3.3)
+    private double escaladoNivelRecoleccion = 1.05;
+    private double escaladoNivelEntrenamiento = 1.05;
+    private double escaladoNivelExploracion = 1.03;
+    private double factorMinExp = 0.0001;
         private readonly Dictionary<Atributo, double> indiceAtributo = new();
         public bool Verbose { get; set; } = true; // permite silenciar mensajes
 
-        private record ProgressionConfig(double ExpBaseRecoleccion, double ExpBaseEntrenamiento, Dictionary<string,double> Indices);
+    private record ProgressionConfig(double ExpBaseRecoleccion, double ExpBaseEntrenamiento, double? ExpBaseExploracion, Dictionary<string,double> Indices, double? EscaladoNivelRecoleccion, double? EscaladoNivelEntrenamiento, double? EscaladoNivelExploracion, double? FactorMinExp);
 
-        public ProgressionService(string? rutaConfig = null)
+    public ProgressionService(string? rutaConfig = null) // Carga config de progresión (o usa valores por defecto)
         {
             try
             {
@@ -28,6 +35,11 @@ namespace MiJuegoRPG.Motor.Servicios
                     {
                         expBaseRecoleccion = cfg.ExpBaseRecoleccion;
                         expBaseEntrenamiento = cfg.ExpBaseEntrenamiento;
+                        if (cfg.ExpBaseExploracion.HasValue) expBaseExploracion = cfg.ExpBaseExploracion.Value;
+                        if (cfg.EscaladoNivelRecoleccion.HasValue) escaladoNivelRecoleccion = cfg.EscaladoNivelRecoleccion.Value;
+                        if (cfg.EscaladoNivelEntrenamiento.HasValue) escaladoNivelEntrenamiento = cfg.EscaladoNivelEntrenamiento.Value;
+                        if (cfg.EscaladoNivelExploracion.HasValue) escaladoNivelExploracion = cfg.EscaladoNivelExploracion.Value;
+                        if (cfg.FactorMinExp.HasValue) factorMinExp = cfg.FactorMinExp.Value;
                         indiceAtributo.Clear();
                         foreach (var kv in cfg.Indices)
                         {
@@ -51,11 +63,11 @@ namespace MiJuegoRPG.Motor.Servicios
             }
         }
 
-        public void AplicarExpRecoleccion(Personaje.Personaje pj, TipoRecoleccion tipo)
+    public void AplicarExpRecoleccion(Personaje.Personaje pj, TipoRecoleccion tipo) // Aplica exp a dos atributos según el tipo de recolección
         {
             if (pj == null) return;
             double expBase = expBaseRecoleccion; // configurable
-            double indiceNivel = Math.Pow(1.05, pj.Nivel - 1);
+            double indiceNivel = Math.Pow(escaladoNivelRecoleccion, pj.Nivel - 1);
             int minutos = 1; // cada acción = 1 minuto virtual (igual que antes)
 
             switch (tipo)
@@ -78,13 +90,33 @@ namespace MiJuegoRPG.Motor.Servicios
             }
         }
 
+        /// Aplica micro-experiencia por exploración de sector.
+        /// Regla: Percepción siempre gana una fracción; si es primera visita, pequeño bonus a Agilidad.
+    public void AplicarExpExploracion(Personaje.Personaje pj, bool primeraVisita) // Micro exp al explorar, bonus si primera vez
+        {
+            if (pj == null) return;
+            double indiceNivel = Math.Pow(escaladoNivelExploracion, pj.Nivel - 1);
+            double basePercepcion = expBaseExploracion / indiceNivel;
+            if (basePercepcion < 0.00005) basePercepcion = 0.00005;
+            IncrementarAtributo(pj, Atributo.Percepcion, basePercepcion);
+            if (Verbose)
+                Console.WriteLine($"Exploración: +{basePercepcion:F5} Percepción");
+            if (primeraVisita)
+            {
+                double bonusAgilidad = basePercepcion * 0.5;
+                IncrementarAtributo(pj, Atributo.Agilidad, bonusAgilidad);
+                if (Verbose)
+                    Console.WriteLine($"Exploración (primera visita): +{bonusAgilidad:F5} Agilidad");
+            }
+        }
+
         /// Aplica progreso de entrenamiento para un atributo específico (equivalente a Personaje.Entrenar pero centralizado).
         /// Cada invocación simula 1 "minuto" virtual tal como hacía la versión previa.
-        public void AplicarEntrenamiento(Personaje.Personaje pj, Atributo atributo, int minutos = 1)
+    public void AplicarEntrenamiento(Personaje.Personaje pj, Atributo atributo, int minutos = 1) // Simula entrenamiento incremental por "minuto virtual"
         {
             if (pj == null) return;
             double expBase = expBaseEntrenamiento;
-            double indiceNivel = Math.Pow(1.05, pj.Nivel - 1);
+            double indiceNivel = Math.Pow(escaladoNivelEntrenamiento, pj.Nivel - 1);
             double indiceAtr = indiceAtributo.TryGetValue(atributo, out var idx) ? idx : 1.0;
             double valorActual = ObtenerValorAtributo(pj, atributo);
             double factorEscalado = 0.05; // igual que antes
@@ -114,15 +146,17 @@ namespace MiJuegoRPG.Motor.Servicios
         private void MostrarSubida(string nombre, double nuevoValor, double reqNueva)
         {
             Console.WriteLine($"¡{nombre} subió a {nuevoValor}! Próximo nivel requiere {reqNueva:F2} exp.");
+            // Emitir evento de subida (atributo). "nombre" aquí es el string del enum.
+            try { BusEventos.Instancia.Publicar(new EventoAtributoSubido(nombre, nuevoValor)); } catch { /* silencioso */ }
         }
 
-        private void GanarAtributoFraccion(Personaje.Personaje pj, Atributo atributo, double expBase, double indiceNivel, int minutos)
+    private void GanarAtributoFraccion(Personaje.Personaje pj, Atributo atributo, double expBase, double indiceNivel, int minutos) // Fórmula fraccional escalada por nivel y valor actual
         {
             double valorActual = ObtenerValorAtributo(pj, atributo);
             if (valorActual <= 0) valorActual = 1.0; // salvaguarda como en código original
             double indice = 1.0 + (valorActual / 10.0);
             double expFraccion = expBase / (indiceNivel * indice);
-            if (expFraccion < 0.0001) expFraccion = 0.0001; // mínimo heredado
+            if (expFraccion < factorMinExp) expFraccion = factorMinExp; // mínimo configurable
             // En la implementación previa se acumulaba en ExpX y luego se volcaba; aquí sumamos directo para simplificar.
             IncrementarAtributo(pj, atributo, expFraccion * minutos);
             if (Verbose)

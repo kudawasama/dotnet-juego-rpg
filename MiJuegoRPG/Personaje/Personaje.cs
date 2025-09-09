@@ -4,6 +4,7 @@ using MiJuegoRPG.Interfaces;
 using System.Collections.Generic;
 using System.Linq;
 using MiJuegoRPG.Motor;
+using System.Text.Json.Serialization; // Necesario para [JsonIgnore]
 namespace MiJuegoRPG.Personaje
 {
     public class Personaje : ICombatiente
@@ -18,14 +19,18 @@ namespace MiJuegoRPG.Personaje
     public string Titulo { get; set; } = string.Empty;
     public int Vida { get; set; }
     public int VidaMaxima { get; set; }
+    // Alias de compatibilidad con código antiguo que usaba VidaActual
+    public int VidaActual { get => Vida; set => Vida = value; }
     public Inventario Inventario { get; set; } = new Inventario();
     public Clase? Clase { get; set; }
+    // Compatibilidad: algunos scripts referencian ClaseDesbloqueada
+    public string? ClaseDesbloqueada { get; set; }
         // IDs de desbloqueos ya notificados (para avisos automáticos)
         public HashSet<string> DesbloqueosNotificados { get; set; } = new HashSet<string>();
 
 
         // Completar misión y procesar recompensas
-        public void CompletarMision(string misionId)
+    public void CompletarMision(string misionId)
         {
             var mision = MisionesActivas.FirstOrDefault(m => m.Id == misionId);
             if (mision != null)
@@ -114,6 +119,7 @@ namespace MiJuegoRPG.Personaje
                 MisionesCompletadas.Add(mision);
                 MisionesActivas.Remove(mision);
                 Console.WriteLine($"¡Misión completada: {mision.Nombre}!");
+                try { MiJuegoRPG.Motor.Servicios.BusEventos.Instancia.Publicar(new MiJuegoRPG.Motor.Servicios.EventoMisionCompletada(mision.Id, mision.Nombre)); } catch { }
 
                 // Revisar desbloqueos automáticos después de completar misión
                 MiJuegoRPG.Motor.GestorDesbloqueos.VerificarDesbloqueos(this);
@@ -225,6 +231,23 @@ namespace MiJuegoRPG.Personaje
         // Misiones activas y completadas
         public List<MisionConId> MisionesActivas { get; set; } = new List<MisionConId>();
         public List<MisionConId> MisionesCompletadas { get; set; } = new List<MisionConId>();
+        // Sistema dinámico de clases y actividad
+        public Dictionary<string,int> ContadoresActividad { get; set; } = new();
+        public HashSet<string> ClasesDesbloqueadas { get; set; } = new();
+        public void RegistrarActividad(string clave, int inc = 1)
+        {
+            if (string.IsNullOrWhiteSpace(clave)) return;
+            ContadoresActividad.TryGetValue(clave, out var v);
+            ContadoresActividad[clave] = v + inc;
+        }
+        public bool TieneClase(string nombre) => ClasesDesbloqueadas.Contains(nombre) || (Clase != null && Clase.Nombre == nombre);
+        public bool DesbloquearClase(string nombre)
+        {
+            if (TieneClase(nombre)) return false;
+            ClasesDesbloqueadas.Add(nombre);
+            try { MiJuegoRPG.Motor.AvisosAventura.MostrarAviso("Clase Desbloqueada", nombre, $"Has obtenido la clase {nombre}!"); } catch { Console.WriteLine($"[CLASE] Desbloqueada: {nombre}"); }
+            return true;
+        }
         // Clase auxiliar para misiones con Id y condiciones
         public class MisionConId
         {
@@ -243,34 +266,39 @@ namespace MiJuegoRPG.Personaje
         // Experiencia unificada por atributo (nuevo sistema 3.1)
         public Dictionary<MiJuegoRPG.Dominio.Atributo, ExpAtributo> ExperienciaAtributos { get; set; } = new Dictionary<MiJuegoRPG.Dominio.Atributo, ExpAtributo>();
 
-        // Campos legacy de experiencia (mantener temporalmente para compatibilidad con guardados antiguos)
-        [Obsolete("Usar ExperienciaAtributos")] public double ExpFuerza { get; set; }
-        [Obsolete("Usar ExperienciaAtributos")] public double ExpMagia { get; set; }
-        [Obsolete("Usar ExperienciaAtributos")] public double ExpAgilidad { get; set; }
-        [Obsolete("Usar ExperienciaAtributos")] public double ExpInteligencia { get; set; }
-        [Obsolete("Usar ExperienciaAtributos")] public double ExpResistencia { get; set; }
-        [Obsolete("Usar ExperienciaAtributos")] public double ExpDefensa { get; set; }
-        [Obsolete("Usar ExperienciaAtributos")] public double ExpVitalidad { get; set; }
-        [Obsolete("Usar ExperienciaAtributos")] public double ExpSuerte { get; set; }
-        [Obsolete("Usar ExperienciaAtributos")] public double ExpDestreza { get; set; }
-        [Obsolete("Usar ExperienciaAtributos")] public double ExpPercepcion { get; set; }
+    // Campos legacy de experiencia (mantener temporalmente para compatibilidad con guardados antiguos)
+    // LEGACY: Marcados con JsonIgnore para no volver a persistirlos en nuevas partidas.
+    [JsonIgnore][Obsolete("Usar ExperienciaAtributos")] public double ExpFuerza { get; set; }
+    [JsonIgnore][Obsolete("Usar ExperienciaAtributos")] public double ExpMagia { get; set; }
+    [JsonIgnore][Obsolete("Usar ExperienciaAtributos")] public double ExpAgilidad { get; set; }
+    [JsonIgnore][Obsolete("Usar ExperienciaAtributos")] public double ExpInteligencia { get; set; }
+    [JsonIgnore][Obsolete("Usar ExperienciaAtributos")] public double ExpResistencia { get; set; }
+    [JsonIgnore][Obsolete("Usar ExperienciaAtributos")] public double ExpDefensa { get; set; }
+    [JsonIgnore][Obsolete("Usar ExperienciaAtributos")] public double ExpVitalidad { get; set; }
+    [JsonIgnore][Obsolete("Usar ExperienciaAtributos")] public double ExpSuerte { get; set; }
+    [JsonIgnore][Obsolete("Usar ExperienciaAtributos")] public double ExpDestreza { get; set; }
+    [JsonIgnore][Obsolete("Usar ExperienciaAtributos")] public double ExpPercepcion { get; set; }
 
-        [Obsolete("Usar ExperienciaAtributos")] public double FuerzaExpRequerida { get; set; } = 1.0;
-        [Obsolete("Usar ExperienciaAtributos")] public double MagiaExpRequerida { get; set; } = 1.0;
-        [Obsolete("Usar ExperienciaAtributos")] public double AgilidadExpRequerida { get; set; } = 1.0;
-        [Obsolete("Usar ExperienciaAtributos")] public double InteligenciaExpRequerida { get; set; } = 1.0;
-        [Obsolete("Usar ExperienciaAtributos")] public double ResistenciaExpRequerida { get; set; } = 1.0;
-        [Obsolete("Usar ExperienciaAtributos")] public double DefensaExpRequerida { get; set; } = 1.0;
-        [Obsolete("Usar ExperienciaAtributos")] public double VitalidadExpRequerida { get; set; } = 1.0;
-        [Obsolete("Usar ExperienciaAtributos")] public double SuerteExpRequerida { get; set; } = 1.0;
-        [Obsolete("Usar ExperienciaAtributos")] public double DestrezaExpRequerida { get; set; } = 1.0;
-        [Obsolete("Usar ExperienciaAtributos")] public double PercepcionExpRequerida { get; set; } = 1.0;
+    [JsonIgnore][Obsolete("Usar ExperienciaAtributos")] public double FuerzaExpRequerida { get; set; } = 1.0;
+    [JsonIgnore][Obsolete("Usar ExperienciaAtributos")] public double MagiaExpRequerida { get; set; } = 1.0;
+    [JsonIgnore][Obsolete("Usar ExperienciaAtributos")] public double AgilidadExpRequerida { get; set; } = 1.0;
+    [JsonIgnore][Obsolete("Usar ExperienciaAtributos")] public double InteligenciaExpRequerida { get; set; } = 1.0;
+    [JsonIgnore][Obsolete("Usar ExperienciaAtributos")] public double ResistenciaExpRequerida { get; set; } = 1.0;
+    [JsonIgnore][Obsolete("Usar ExperienciaAtributos")] public double DefensaExpRequerida { get; set; } = 1.0;
+    [JsonIgnore][Obsolete("Usar ExperienciaAtributos")] public double VitalidadExpRequerida { get; set; } = 1.0;
+    [JsonIgnore][Obsolete("Usar ExperienciaAtributos")] public double SuerteExpRequerida { get; set; } = 1.0;
+    [JsonIgnore][Obsolete("Usar ExperienciaAtributos")] public double DestrezaExpRequerida { get; set; } = 1.0;
+    [JsonIgnore][Obsolete("Usar ExperienciaAtributos")] public double PercepcionExpRequerida { get; set; } = 1.0;
 
         // Sistema de Experiencia
         public int Nivel { get; set; }
         public int Experiencia { get; set; }
         public int ExperienciaSiguienteNivel { get; set; }
         public int Oro { get; set; }
+
+    // Reputación global básica y reputaciones por facción (extensible)
+    public int Reputacion { get; set; } = 0; // usada por ReputacionMinima genérica
+    public Dictionary<string,int> ReputacionesFaccion { get; set; } = new();
 
         // Control de descansos por día
 
@@ -464,6 +492,8 @@ namespace MiJuegoRPG.Personaje
                     habiaDatos = true;
                 }
             }
+            // Desactivar advertencias de obsolescencia dentro del bloque de migración
+#pragma warning disable CS0618
             Copiar(MiJuegoRPG.Dominio.Atributo.Fuerza, ExpFuerza, FuerzaExpRequerida);
             Copiar(MiJuegoRPG.Dominio.Atributo.Inteligencia, ExpInteligencia, InteligenciaExpRequerida);
             Copiar(MiJuegoRPG.Dominio.Atributo.Agilidad, ExpAgilidad, AgilidadExpRequerida);
@@ -473,6 +503,7 @@ namespace MiJuegoRPG.Personaje
             Copiar(MiJuegoRPG.Dominio.Atributo.Suerte, ExpSuerte, SuerteExpRequerida);
             Copiar(MiJuegoRPG.Dominio.Atributo.Destreza, ExpDestreza, DestrezaExpRequerida);
             Copiar(MiJuegoRPG.Dominio.Atributo.Percepcion, ExpPercepcion, PercepcionExpRequerida);
+#pragma warning restore CS0618
             if (habiaDatos)
                 Console.WriteLine("[Migración] Experiencia legacy migrada al nuevo sistema.");
             _migracionLegacyHecha = true;
@@ -513,6 +544,7 @@ namespace MiJuegoRPG.Personaje
             Console.WriteLine($"¡Has subido al nivel {Nivel}! Vida máxima ahora: {VidaMaxima}");
             // Revisar desbloqueos automáticos después de subir de nivel
             MiJuegoRPG.Motor.GestorDesbloqueos.VerificarDesbloqueos(this);
+            try { MiJuegoRPG.Motor.Servicios.BusEventos.Instancia.Publicar(new MiJuegoRPG.Motor.Servicios.EventoNivelSubido(Nivel)); } catch { }
         }
 
         

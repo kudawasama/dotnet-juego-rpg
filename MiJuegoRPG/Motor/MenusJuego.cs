@@ -96,15 +96,10 @@ namespace MiJuegoRPG.Motor
             switch (opcion)
             {
                 case "1":
-                    if (juego.jugador != null)
-                        GestorArchivos.GuardarPersonaje(juego.jugador);
-                    else
-                        Console.WriteLine("No hay personaje para guardar.");
+                    juego.GuardarPersonaje();
                     break;
                 case "2":
-                    var pj = GestorArchivos.CargarPersonaje();
-                    if (pj != null)
-                        juego.jugador = pj;
+                    juego.CargarPersonaje();
                     break;
                 case "3":
                     // Volver al menú de la ciudad

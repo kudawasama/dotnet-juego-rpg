@@ -1,6 +1,11 @@
 {
   "ExpBaseRecoleccion": 0.01,
   "ExpBaseEntrenamiento": 0.01,
+  "ExpBaseExploracion": 0.0025,
+  "EscaladoNivelRecoleccion": 1.05,
+  "EscaladoNivelEntrenamiento": 1.05,
+  "EscaladoNivelExploracion": 1.03,
+  "FactorMinExp": 0.0001,
   "Indices": {
     "Fuerza": 3.0,
     "Inteligencia": 8.0,

@@ -1,12 +1,18 @@
 {
   "Id": "8_24",
   "nombre": "Este de Bairan",
-  "bioma": "Montaña",
-  "Tipo": "Ruta",
+  "bioma": "Montaña,Cañon",
+  "tipo": "Ruta",
   "parteCiudad": "",
   "ciudadPrincipal": false,
   "esCentroCiudad": false,
-  "nodosRecoleccion": ["Mina de Hierro", "Mina de Cobre", "Mina de Carbon"],
+  "nodosRecoleccion": [
+    { "Nombre": "Mina de Hierro", "Tipo": "Minar" },
+    { "Nombre": "Mina de Cobre", "Tipo": "Minar" },
+    { "Nombre": "Mina de Carbón", "Tipo": "Minar" },
+    { "Nombre": "Tronco Seco", "Tipo": "Talar" }
+
+  ],
   "Requisitos": {},
   "enemigos": [],
   "Conexiones": ["8_23"],

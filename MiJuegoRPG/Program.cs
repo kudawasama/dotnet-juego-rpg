@@ -9,16 +9,43 @@ class Program
 {
     static void Main(string[] args)
     {
-        // Genera todos los archivos de regiones del mapa automáticamente al inicio
-        //GeneradorSectores.CrearMapaCompleto(@"C:\Users\ASUS\OneDrive\Documentos\GitHub\dotnet-juego-rpg\MiJuegoRPG\DatosJuego\mapa\SectoresMapa");
+        // === BLOQUE UTILIDADES DEBUG (comentado / protegido) ===
+        // Las siguientes herramientas de generación / validación de sectores y reparación
+        // se dejan dentro de un bloque de compilación condicional para evitar ejecuciones
+        // accidentales en inicio estándar. Para usarlas, compilar en Debug y descomentar
+        // la(s) línea(s) deseada(s), o pasar el flag correspondiente.
+#if DEBUG
+        // Generar todos los sectores del mapa (costo: puede sobrescribir archivos existentes)
+        //GeneradorSectores.CrearMapaCompleto(@"C:\\RUTA\\A\\TU\\REPO\\MiJuegoRPG\\DatosJuego\\mapa\\SectoresMapa");
 
-        // Cambia la ruta según la ubicación real de tus sectores
-        //string rutaSectores = @"c:\Users\jose.cespedes\Documents\GitHub\dotnet-juego-rpg\MiJuegoRPG\DatosJuego\mapa\SectoresMapa";
-        //ValidadorSectores.ValidarSectores(rutaSectores);
+        // Validar sectores (estructura / referencias)
+        //string rutaSectoresDebug = @"C:\\RUTA\\A\\TU\\REPO\\MiJuegoRPG\\DatosJuego\\mapa\\SectoresMapa";
+        //ValidadorSectores.ValidarSectores(rutaSectoresDebug);
 
-        // Cambia la ruta según la ubicación real de tus sectores
-        string rutaSectores = @"c:\Users\jose.cespedes\Documents\GitHub\dotnet-juego-rpg\MiJuegoRPG\DatosJuego\mapa\SectoresMapa";
-        ReparadorSectores.RepararSectores(rutaSectores);
+        // Reparación opcional de sectores solo en Debug si se pasa argumento --reparar-sectores
+        if (args != null && Array.Exists(args, a => a.Equals("--reparar-sectores", StringComparison.OrdinalIgnoreCase)))
+        {
+            try
+            {
+                var raiz = Juego.ObtenerRutaRaizProyecto();
+                var rutaSectores = Path.Combine(raiz, "MiJuegoRPG", "DatosJuego", "mapa", "SectoresMapa");
+                if (Directory.Exists(rutaSectores))
+                {
+                    Console.WriteLine($"[DEBUG] Reparando sectores en: {rutaSectores}");
+                    ReparadorSectores.RepararSectores(rutaSectores);
+                }
+                else
+                {
+                    Console.WriteLine($"[DEBUG] Ruta de sectores no encontrada: {rutaSectores} (omitida reparación)");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[DEBUG][ERROR] Falló reparación sectores: {ex.Message}");
+            }
+        }
+#endif
+        // === FIN BLOQUE DEBUG ===
 
         // Aquí puedes agregar la lógica para iniciar el juego
         try
