@@ -1,93 +1,63 @@
 INICIO DEL JUEGO
-└─ Muestra: "Bienvenido a Mi Primer Juego."
-└─ Opciones iniciales:
-   ├─ 1. Crear personaje nuevo
-   │   └─ Solicita nombre y clase
-   │   └─ Crea personaje y muestra menú principal
-   ├─ 2. Cargar personaje guardado
-   │   └─ Si existe, carga y muestra menú principal
-   │   └─ Si no existe, pregunta si crear uno nuevo
-   ├─ 3. Ver estado del personaje
-   │   └─ Muestra atributos y estado actual
-   ├─ (Repite hasta que haya personaje cargado)
-   └─ 4. Salir del Juego
-       └─ ¿Seguro? s/n (s = Salir del programa) 
+└─ Muestra pantalla de inicio con título y opciones:
+   ├─ 1. Nuevo Juego
+   │   └─ Solicita nombre y clase del personaje
+   │   └─ Crea personaje y pasa al Menú Principal
+   ├─ 2. Cargar Juego
+   │   └─ Si hay partidas guardadas, permite seleccionar y cargar
+   │   └─ Si no hay, pregunta si crear un nuevo personaje
+   ├─ 3. Créditos
+   │   └─ Muestra información de los creadores y vuelve al inicio
+   └─ 4. Salir
+       └─ Confirma salida (¿Seguro? s/n)
 
 MENÚ PRINCIPAL (CIUDAD INICIAL)
 └─ Muestra: "¿Qué deseas hacer?"
    ├─ 1. Aventura (Explorar el sector)
-   │   └─ Muestra: "¡Te aventuras en lo desconocido!"
-   │   └─ Ejecuta: juego.ExplorarSector()
-   │       ├─ Si aparece un combate:
-   │       │   └─ Muestra: "¡Se ha iniciado un combate!"
-   │       │   └─ Menú de combate:
-   │       │       ├─ 1. Atacar
-   │       │       ├─ 2. Usar objeto
-   │       │       ├─ 3. Huir
-   │       │       └─ 4. Ver estado
-   │       │   └─ Resultado: victoria, derrota, huida
-   │       ├─ Si encuentras un objeto:
-   │       │   └─ Muestra: "Has encontrado [objeto]"
-   │       │   └─ Opciones: Recoger, Dejar
-   │       ├─ Si ocurre evento especial:
-   │       │   └─ Muestra evento y opciones (diálogo, decisión, etc.)
-   │       └─ Si no ocurre nada relevante:
-   │           └─ Opciones: Volver al menú principal, Explorar de nuevo
+   │   └─ Explora el entorno, posibles eventos:
+   │       ├─ Combate (abre Menú de Combate)
+   │       ├─ Encuentro de objeto (opciones: Recoger, Dejar)
+   │       ├─ Evento especial (diálogo, decisión, etc.)
+   │       └─ Nada relevante (opciones: Volver, Explorar de nuevo)
    ├─ 2. Entrenar
-   │   └─ Muestra: "Te diriges a la Escuela de Entrenamiento."
-   │   └─ Menú de entrenamiento:
-   │       ├─ Selecciona tipo de entrenamiento (fuerza, magia, destreza, etc.)
-   │       └─ Muestra resultado y mejora de atributos
-   ├─ 3. Ir a la Tienda
-   │   └─ Muestra: "Entras a la Tienda del Mercader."
-   │   └─ Menú de tienda:
-   │       ├─ Lista de objetos para comprar/vender
-   │       ├─ Opciones: Comprar, Vender, Ver detalles
-   │       └─ Volver al menú principal
-   ├─ 4. Gestionar Inventario
-   │   └─ Muestra: "Revisas tu inventario."
-   │   └─ Menú de inventario:
-   │       ├─ Lista de objetos
-   │       ├─ Opciones: Usar, Equipar, Eliminar, Ver detalles
-   │       └─ Volver al menú principal
-   ├─ 5. Guardar/Cargar Personaje
-   │   └─ Menú de guardado/carga:
-   │       ├─ 1. Guardar personaje
-   │       ├─ 2. Cargar personaje
-   │       └─ 3. Volver al menú principal
-   ├─ 6. Ver misiones y hablar con NPCs
-   │   └─ Lista de NPCs disponibles
-   │       ├─ Selecciona un NPC
-   │       │   └─ Muestra sus misiones disponibles
-   │       │       ├─ Selecciona una misión
-   │       │       │   └─ Muestra detalles y permite aceptar/completar la misión
-   │       └─ Muestra misiones tomadas (con su NPC asociado)
-   │
-   └─ 7. Salir de la ciudad (Viajar)
-   │    └─ Lista de rutas/ubicaciones disponibles
-   │        ├─ Selecciona una ruta/destino
-   │        │   └─ Muestra descripción y requisitos
-   │        │       ├─ 1. Viajar (cambia ubicación actual)
-   │        │       └─ 2. Volver al menú principal
-   ├─ 8. Salir del juego
-   │   └─ Ejecuta: Environment.Exit(0)
+   │   └─ Selecciona tipo de entrenamiento (fuerza, magia, destreza, etc.)
+   │   └─ Muestra resultado y mejora atributos
+   ├─ 3. Tienda
+   │   └─ Comprar, vender, ver detalles de objetos
+   │   └─ Volver al menú principal
+   ├─ 4. Inventario
+   │   └─ Usar, equipar, eliminar, ver detalles de objetos
+   │   └─ Volver al menú principal
+   ├─ 5. Guardar/Cargar
+   │   └─ Guardar partida actual, cargar otra partida, volver
+   ├─ 6. Misiones y NPCs
+   │   └─ Ver misiones activas, hablar con NPCs, aceptar/completar misiones
+   ├─ 7. Viajar
+   │   └─ Seleccionar destino, ver requisitos, viajar o volver
+   └─ 8. Salir del juego
+       └─ Confirma salida y termina el programa
 
-MENÚ ENTRE COMBATES (si ocurre combate)
-└─ Muestra: "Menú entre combates"
-   ├─ 1. Guardar personaje
-   ├─ 2. Cargar personaje
+MENÚ DE COMBATE
+└─ Opciones durante combate:
+   ├─ 1. Atacar
+   ├─ 2. Usar objeto
+   ├─ 3. Huir
+   └─ 4. Ver estado
+
+MENÚ ENTRE COMBATES
+└─ Opciones:
+   ├─ 1. Guardar partida
+   ├─ 2. Cargar partida
    ├─ 3. Continuar combatiendo
    └─ 4. Salir del juego
 
-OTROS SUBMENÚS
-- Menú de entrenamiento, (Agregar todos los entrenamientos que faltan segun los AtributosBase faltantes) 
-
- tienda implementar
- 
- inventario (implementar)
- misiones, (implementar)
- 
- guardado/carga, etc. según la opción elegida.
+SUBMENÚS ADICIONALES
+- Entrenamiento: lista todos los atributos base disponibles para mejorar.
+- Tienda: lista objetos, permite comprar/vender, ver detalles.
+- Inventario: lista objetos, permite usar, equipar, eliminar, ver detalles.
+- Misiones: muestra misiones activas, completadas, y permite interactuar con NPCs.
+- Guardado/Carga: permite gestionar partidas guardadas.
 
 FIN DEL JUEGO
 └─ Cuando el jugador selecciona "Salir del juego" o termina la partida.
+   

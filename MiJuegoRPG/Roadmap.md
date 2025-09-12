@@ -1,11 +1,8 @@
-Este archivo se ha movido a Roadmap.md para facilitar formato y lectura.
-
-Consulta ahora: Roadmap.md
-
----
-Plan (copia rápida a fecha de migración):
 PLAN DE REFACTORIZACIÓN Y PROGRESO (log incremental)
 =================================================
+
+Estado de avance (resumen): 29/179 Hecho · 3/179 Parcial · 147/179 Pendiente
+███████████░░░░░░ 16% completado (estimado por ítems del roadmap)
 
 Formato columnas: [ID] Estado | Área | Descripción breve | Próxima acción
 Estados posibles: Pendiente, En curso, Parcial, Hecho, Bloqueado
@@ -134,6 +131,126 @@ Legend inicial: Solo la 1.x se empieza ahora para evitar cambios masivos de golp
 [15.8] Pendiente | Economía | Integración con ShopService | Precios dinámicos de materiales/crafteados según reputación y facción; stock rotativo por ciudad
 [15.9] Pendiente | Testing | Determinismo y contratos | Tests de drop tables y crafteo con RandomService.SetSeed; validación de contratos JSON (10.6)
 [15.10] Pendiente | Telemetría | Métricas de crafting/drops | Tasas de éxito, consumo de materiales, progresión de skill de artesanía para balance futuro
+
+16. ESTADO POR ARCHIVO / MÓDULO (inventario actual)  
+----------------------------------------------------
+Agrupado por carpeta. Hecho = estable/usable; Parcial = base hecha pero faltan migraciones UI/tests/balance; Pendiente = por implementar/migrar.
+
+- Interfaces (Hecho):  
+  - Interfaces/IUserInterface.cs, IUsable.cs, IInventariable.cs, ICombatiente.cs, IBonificadorAtributo.cs
+
+- Servicios (mayoría Hecho):  
+  - Hecho: Motor/Servicios/{EventBus, RandomService, ProgressionService, PathProvider, Logger, ConsoleUserInterface, SilentUserInterface, ReputacionService, ReputacionPoliticas, ClaseDinamicaService}  
+  - Hecho: Motor/Servicios/RecoleccionService.cs, EnergiaService.cs  
+  - Parcial: Motor/Servicios/GuardadoService.cs (flujos interactivos UI por migrar)
+
+- Motor core:  
+  - Hecho: Motor/{Juego, Mapa, MapaLoader, Ubicacion, MotorRutas}  
+  - Parcial: Motor/CreadorPersonaje.cs (UI ya adaptada en parte)  
+  - Parcial: Motor/AvisosAventura.cs, GestorDesbloqueos.cs (conectar a UI/Logger)
+
+- Menús (Hecho salvo Combate/Inventario):  
+  - Hecho: Motor/Menus/{MenuCiudad, MenuFueraCiudad, MenuRecoleccion, MenuFijo, MenuAdmin}, MenusJuego.cs, MenuEntreCombate.cs  
+  - Pendiente: Integración de estilo unificado en todos (8.3)
+
+- Combate (Pendiente):  
+  - Pendiente: Motor/CombatePorTurnos.cs, Motor/MotorCombate.cs  
+  - Pendiente/Parcial: Habilidades/{AtaqueFisico, AtaqueMagico, Hechizo, Habilidad, GestorHabilidades, HabilidadLoader} (faltan estados/orden por Velocidad y UI)
+
+- Inventario y Personaje:  
+  - Dominio Hecho: Personaje/{Personaje, AtributosBase, ExpAtributo, Estadisticas, Clase, ClaseData, HabilidadProgreso, FuenteBonificador}  
+  - UI/Flujos Pendiente: Motor/MotorInventario.cs, Personaje/Inventario.cs (migrar a UI + mensajes consistentes)
+
+- Enemigos (Hecho base):  
+  - Enemigos/{Enemigo, EnemigoEstandar, Goblin, GranGoblin} + PjDatos/EnemigoData.cs; GeneradorEnemigos.cs (tests verdes)
+
+- Objetos y materiales:  
+  - Modelos Hecho: Objetos/{Objeto, ObjetoJsonConverter, EnumsObjetos, Material, Arma, Armadura, Casco, Botas, Cinturon, Collar, Pantalon, Accesorio, Pocion}  
+  - Gestores Parcial: Objetos/{GestorArmas, GestorMateriales, GestorPociones} (migrar logs a Logger y UI para feedback)  
+  - Generador De Objetos Parcial: Motor/GeneradorDeObjetos.cs + Motor/TestGeneradorObjetos.cs
+
+- Datos Pj (mappers/modelos de data) Hecho:  
+  - PjDatos/{AccesorioData, ArmaData, ArmaduraData, BotasData, CinturonData, CollarData, PantalonData, Categoria, Familia, SectorData, Rareza, ClasesData, ClasesData.cs, personajeData.cs, GuardaPersonaje.cs, PersonajeSqliteService.cs}
+
+- Comercio (Hecho):  
+  - Comercio/{ShopService, PriceService} con reputación integrada y PathProvider
+
+- Crafteo (Pendiente):  
+  - Crafteo/CraftingService.cs (esqueleto; dependerá de 15.x)
+
+- Herramientas / Datos (Parcial):  
+  - Herramientas/{ValidadorSectores, ReparadorSectores} (útiles; integrar en QA/CI)  
+  - DatosJuego/mapa/GeneradorSectores.cs (tool de generación; añadir tests/validación)
+
+- Program/Entrypoint (Hecho):  
+  - Program.cs migrado a UI
+
+17. HABILIDADES Y MAESTRÍAS
+---------------------------
+[17.1] Pendiente | Progresión por uso | Subir skill por tipo de arma/armadura/habilidad; bonifica precisión/daño/defensa | Integrar con ProgressionService y RandomService
+[17.2] Pendiente | Árboles por arquetipo | Guerrero/Explorador/Mago con sinergias por atributos | Data JSON y evaluador de requisitos
+[17.3] Pendiente | Costes y recursos | Mana/Concentración y cooldowns; recuperación y pociones | Hook a EnergiaService/recursos
+[17.4] Pendiente | Gating | Requisitos por nivel de skill/atributo/clase/reputación | Validación en uso de skills
+
+18. ITEMIZACIÓN AVANZADA
+------------------------
+[18.1] Pendiente | Afijos | Prefijos/Sufijos con rangos y rareza | Generador ponderado; validación de compatibilidades
+[18.2] Pendiente | Únicos/Sets | Objetos con propiedades fijas y bonos por set | Data-driven; bonus 2/3/4 piezas
+[18.3] Pendiente | Sockets/Gemas | Inserción/extracción con coste y riesgo | Interacción con crafteo y durabilidad
+[18.4] Pendiente | Calidad | Calidad del ítem que escala stats y precio | Afecta reparación y drop rate
+[18.5] Pendiente | Forja/Mejora | Mejora con probabilidad de fallo/retroceso | Integración con CraftingService
+
+19. ECONOMÍA Y SINKS
+--------------------
+[19.1] Pendiente | Costes de viaje | Oro/energía por rutas largas/peligrosas | Balance con reputación/facción
+[19.2] Pendiente | Entrenamiento avanzado | Tarifas en entrenadores por rango | Requiere reputación/licencias
+[19.3] Pendiente | Reparación y mantenimiento | Tasas crecientes según nivel/calidad | Vinculado a 15.6
+[19.4] Pendiente | Impuestos/Peajes | Zonas con peaje o tasa de comercio | Afecta ShopService
+[19.5] Pendiente | Licencias/Gremios | Acceso a crafteo avanzado/áreas | Gating de sistemas
+[19.6] Pendiente | Stock rotativo/eventos | Escasez/bonanza por ciudad/facción | Data eventos económicos
+
+20. MUNDO DINÁMICO Y EXPLORACIÓN
+---------------------------------
+[20.1] Pendiente | Encuentros | Tablas por sector/bioma con hora/clima | Integración con GeneradorEnemigos
+[20.2] Pendiente | Trampas/llaves | Cerraduras, llaves y trampas con detección | Usa Percepción/Agilidad
+[20.3] Pendiente | Eventos ambientales | Cofres, santuarios, anomalías con cooldown | Ver 15.3 loot por sector
+
+21. MISIONES CON CONSECUENCIAS
+------------------------------
+[21.1] Pendiente | Grafo con ramas | Rutas exclusivas por facción/decisiones | Impacta reputación y tiendas
+[21.2] Pendiente | Recompensas significativas | Blueprints/llaves/accesos en lugar de solo oro/XP | Data y gating
+[21.3] Pendiente | Persistencia de impacto | Cambios en NPC/stock/hostilidad | Servicio de mundo persistente
+
+22. LOGROS Y RETOS
+------------------
+[22.1] Pendiente | Sistema de logros | Tracking de hitos y retos | Export/telemetría opcional
+[22.2] Pendiente | Retos (ironman) | Muerte permanente/no usar X/tiempo límite | Flags de partida
+[22.3] Pendiente | Recompensas leves | Cosméticos/QoL leve para no romper balance | Evitar pay-to-win
+
+23. GUARDADO VERSIONADO Y MIGRACIONES
+-------------------------------------
+[23.1] Pendiente | Versionado | Save y datasets con versión | Comparador al cargar
+[23.2] Pendiente | Migradores | Pasos entre versiones | Backups automáticos
+[23.3] Pendiente | Compresión/Rotación | Archivos compactos y rotación de backups | Configurable
+
+24. LOCALIZACIÓN (i18n)
+-----------------------
+[24.1] Pendiente | Desacoplar textos | Recursos por clave | Sustituir literales gradualmente
+[24.2] Pendiente | Idiomas | Plantillas ES/EN | Selección de idioma en opciones
+[24.3] Pendiente | Longitudes UI | Revisar cortes/colores por idioma | Con UIStyleService
+
+25. PERFORMANCE Y CACHING
+-------------------------
+[25.1] Pendiente | Índices repos | Búsquedas por ID y nombre | Repositorios 7.x
+[25.2] Pendiente | Lazy/Caché | Carga diferida e invalidación | Calentamiento en menús
+[25.3] Pendiente | Reducir E/S | Minimizar lecturas de JSON | Batch y snapshots
+[25.4] Pendiente | Pooling | Reutilizar entidades temporales (enemigos/efectos) | Combate y generación
+
+26. ACCESIBILIDAD Y QoL
+-----------------------
+[26.1] Pendiente | Paleta accesible | Colorblind-safe en UIStyleService | Pruebas visuales
+[26.2] Pendiente | Verbosidad | Niveles de detalle en UI/Logger | Configurable por jugador
+[26.3] Pendiente | Confirmaciones | Acciones destructivas requieren confirmación | Consistente en menús
 
 ESTADO ACTUAL (snapshot):
 - Fundamentos base completos (1.1–1.6). GuardadoService reemplaza llamadas directas a GestorArchivos en Juego y Menús.
