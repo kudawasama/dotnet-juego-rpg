@@ -14,7 +14,7 @@ namespace MiJuegoRPG.Motor.Servicios
         private readonly ProgressionService progressionService;
     // Cache de nodos generados por bioma para mantener referencias (cooldowns estables)
     private readonly Dictionary<string, List<NodoRecoleccion>> cacheBiomaPorSector = new();
-    private readonly Random rng = new Random();
+    private readonly RandomService rngSvc = RandomService.Instancia;
     // Estado persistible multisector: sectorId -> (nombreNodo -> epochUltimoUso)
     private readonly Dictionary<string, Dictionary<string,long>> cooldownsMultiSector = new();
         public RecoleccionService(Juego juego)
@@ -98,7 +98,7 @@ namespace MiJuegoRPG.Motor.Servicios
                 var todos = ObtenerTodosNodos();
                 if (todos.Count == 0)
                 {
-                    Console.WriteLine("No hay nodos de recolección en este sector ni por bioma.");
+                    juego.Ui.WriteLine("No hay nodos de recolección en este sector ni por bioma.");
                     return;
                 }
 
@@ -110,7 +110,7 @@ namespace MiJuegoRPG.Motor.Servicios
                 {
                     var vista = FiltrarVista(todos, filtroTipo, terminoBusqueda, out var mapping);
                     MostrarVistaAgrupada(filtroTipo, terminoBusqueda, mapping);
-                    Console.Write("Comando (m/r/t/*, b=buscar, c=limpiar, 0=volver, número=acción): ");
+                    juego.Ui.Write("Comando (m/r/t/*, b=buscar, c=limpiar, 0=volver, número=acción): ");
                     var input = InputService.LeerOpcion();
                     if (input == "0") return; // salir del menú híbrido
                     switch (input.ToLower())
@@ -121,8 +121,8 @@ namespace MiJuegoRPG.Motor.Servicios
                         case "*": filtroTipo = "*"; continue;
                         case "c": terminoBusqueda = string.Empty; continue;
                         case "b":
-                            Console.Write("Buscar nombre contiene: ");
-                            terminoBusqueda = (Console.ReadLine() ?? string.Empty).Trim();
+                            juego.Ui.Write("Buscar nombre contiene: ");
+                            terminoBusqueda = (juego.Ui.ReadLine() ?? string.Empty).Trim();
                             continue;
                     }
                     if (int.TryParse(input, out int idx))
@@ -136,7 +136,7 @@ namespace MiJuegoRPG.Motor.Servicios
                             else
                             {
                                 // Nodo genérico: preguntar
-                                Console.WriteLine("Tipo para ejecutar: 1=Recolectar 2=Minar 3=Talar 0=Cancelar");
+                                juego.Ui.WriteLine("Tipo para ejecutar: 1=Recolectar 2=Minar 3=Talar 0=Cancelar");
                                 var opt = InputService.LeerOpcion();
                                 tipoExec = opt switch
                                 {
@@ -150,10 +150,10 @@ namespace MiJuegoRPG.Motor.Servicios
                             EjecutarAccion(tipoExec, nodoSel);
                             continue; // permanece en vista
                         }
-                        Console.WriteLine("Índice fuera de rango.");
+                        juego.Ui.WriteLine("Índice fuera de rango.");
                         continue;
                     }
-                    Console.WriteLine("Comando no reconocido.");
+                    juego.Ui.WriteLine("Comando no reconocido.");
                 }
             }
         }
@@ -220,15 +220,15 @@ namespace MiJuegoRPG.Motor.Servicios
 
     private void MostrarVistaAgrupada(string filtroTipo, string busqueda, Dictionary<int, NodoRecoleccion> mapping) // Render agrupado con secciones y estado de cooldown
         {
-            Console.WriteLine("\n=== Recolección (vista híbrida) ===");
-            Console.WriteLine($"Filtro Tipo: {(filtroTipo == "*" ? "Todos" : filtroTipo)} | Búsqueda: {(string.IsNullOrWhiteSpace(busqueda) ? "(ninguna)" : busqueda)}");
+            juego.Ui.WriteLine("\n=== Recolección (vista híbrida) ===");
+            juego.Ui.WriteLine($"Filtro Tipo: {(filtroTipo == "*" ? "Todos" : filtroTipo)} | Búsqueda: {(string.IsNullOrWhiteSpace(busqueda) ? "(ninguna)" : busqueda)}");
             if (juego.jugador != null)
             {
-                Console.WriteLine($"Energía: {juego.jugador.EnergiaActual}/{juego.jugador.EnergiaMaxima}");
+                juego.Ui.WriteLine($"Energía: {juego.jugador.EnergiaActual}/{juego.jugador.EnergiaMaxima}");
             }
             if (mapping.Count == 0)
             {
-                Console.WriteLine("(Sin nodos coincidentes)");
+                juego.Ui.WriteLine("(Sin nodos coincidentes)");
                 return;
             }
             // Volver a agrupar para mostrar con encabezados
@@ -244,7 +244,7 @@ namespace MiJuegoRPG.Motor.Servicios
             foreach (var g in gruposOrden)
             {
                 if (!grupos.TryGetValue(g.key, out var lista) || lista.Count == 0) continue;
-                Console.WriteLine($"-- {g.titulo} --");
+                juego.Ui.WriteLine($"-- {g.titulo} --");
                 foreach (var n in lista)
                 {
                     int idx = lookupIdx[n];
@@ -253,7 +253,7 @@ namespace MiJuegoRPG.Motor.Servicios
                     var cd = n.EstaEnCooldown() ? $" [CD {n.SegundosRestantesCooldown()}s]" : (n.CooldownEfectivo() > 0 ? $" [Listo {n.CooldownEfectivo()}s]" : "");
                     var rare = !string.IsNullOrWhiteSpace(n.Rareza) ? FormatearRarezaTag(n.Rareza!) : string.Empty;
                     var mats = (n.Materiales != null && n.Materiales.Count > 0) ? $" => {string.Join(", ", n.Materiales.Select(m => m.Cantidad + "x " + m.Nombre))}" : string.Empty;
-                    Console.WriteLine($"{idx}. {n.Nombre}{gen}{rare}{req}{cd}{mats}");
+                    juego.Ui.WriteLine($"{idx}. {n.Nombre}{gen}{rare}{req}{cd}{mats}");
                 }
             }
         }
@@ -269,7 +269,7 @@ namespace MiJuegoRPG.Motor.Servicios
                     juego.jugador.Inventario.NuevosObjetos.Any(o => o.Objeto.Nombre.Contains(nodo.Requiere));
                 if (!tieneHerramienta)
                 {
-                    Console.WriteLine($"Necesitas un {nodo.Requiere} para realizar esta acción.");
+                    juego.Ui.WriteLine($"Necesitas un {nodo.Requiere} para realizar esta acción.");
                     InputService.Pausa();
                     return;
                 }
@@ -277,7 +277,7 @@ namespace MiJuegoRPG.Motor.Servicios
             // Cooldown
             if (nodo.EstaEnCooldown())
             {
-                Console.WriteLine($"El nodo aún está en cooldown ({nodo.SegundosRestantesCooldown()}s restantes).");
+                juego.Ui.WriteLine($"El nodo aún está en cooldown ({nodo.SegundosRestantesCooldown()}s restantes).");
                 InputService.Pausa();
                 return;
             }
@@ -298,19 +298,19 @@ namespace MiJuegoRPG.Motor.Servicios
                 }
             }
             // Resultado (probabilidad de fallo)
-            bool fallo = rng.NextDouble() < 0.15; // 15% fallo base
+            bool fallo = rngSvc.NextDouble() < 0.15; // 15% fallo base
             nodo.UltimoUso = DateTime.UtcNow;
             RegistrarUsoNodo(nodo); // registrar para persistencia multisector
             if (fallo)
             {
                 nodo.UsosFallidosRecientes++;
-                Console.WriteLine($"Fallaste al recolectar en '{nodo.Nombre}'. No obtuviste recursos.");
+                juego.Ui.WriteLine($"Fallaste al recolectar en '{nodo.Nombre}'. No obtuviste recursos.");
                 // Pequeña compensación opcional: XP mínima? por ahora no
             }
             else
             {
                 nodo.UsosFallidosRecientes = 0;
-                Console.WriteLine($"Recolectaste en el nodo: {nodo.Nombre}");
+                juego.Ui.WriteLine($"Recolectaste en el nodo: {nodo.Nombre}");
                 if (nodo.Materiales != null && nodo.Materiales.Count > 0)
                 {
                     foreach (var mat in nodo.Materiales)
@@ -321,9 +321,9 @@ namespace MiJuegoRPG.Motor.Servicios
                         {
                             var min = nodo.ProduccionMin.Value;
                             var max = nodo.ProduccionMax.Value;
-                            cantidad = (min == max) ? min : rng.Next(min, max + 1);
+                            cantidad = (min == max) ? min : rngSvc.Next(min, max + 1);
                         }
-                        Console.WriteLine($"  - {cantidad}x {mat.Nombre}");
+                        juego.Ui.WriteLine($"  - {cantidad}x {mat.Nombre}");
                         if (juego.jugador != null && juego.jugador.Inventario != null)
                         {
                             // Rareza futura: mapear Rareza nodo a rareza material (por ahora Normal)
@@ -333,7 +333,7 @@ namespace MiJuegoRPG.Motor.Servicios
                 }
                 else
                 {
-                    Console.WriteLine("No encontraste materiales en este nodo.");
+                    juego.Ui.WriteLine("No encontraste materiales en este nodo.");
                 }
                 if (juego.jugador != null)
                     progressionService.AplicarExpRecoleccion(juego.jugador, tipo);

@@ -73,8 +73,7 @@ namespace MiJuegoRPG.Motor
 
         public static List<NodoRecoleccion> GenerarNodosParaBioma(string tipoBioma, Random? rng = null)
         {
-            // Si no se pasa RNG, usar el servicio centralizado
-            rng ??= new Random((int)DateTime.UtcNow.Ticks & 0x0000FFFF); // fallback mínimo
+            // Usar el servicio centralizado (el parámetro rng se mantiene por compatibilidad, no se usa)
             var randomSvc = MiJuegoRPG.Motor.Servicios.RandomService.Instancia;
             if (!Biomas.TryGetValue(tipoBioma, out var bioma))
                 return new List<NodoRecoleccion>();

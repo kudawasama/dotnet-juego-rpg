@@ -18,8 +18,7 @@ namespace MiJuegoRPG.Motor.Servicios
         {
             _sqlite = new PersonajeSqliteService(rutaDb);
             // Archivo adicional para cooldowns (persistencia ligera fuera de SQLite por simplicidad temporal)
-            var raiz = Juego.ObtenerRutaRaizProyecto();
-            rutaCooldowns = System.IO.Path.Combine(raiz, "MiJuegoRPG", "PjDatos", "cooldowns_nodos.json");
+            rutaCooldowns = PathProvider.PjDatosPath("cooldowns_nodos.json");
         }
 
         public void Guardar(Personaje.Personaje pj)

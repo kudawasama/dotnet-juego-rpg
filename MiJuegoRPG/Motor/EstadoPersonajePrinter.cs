@@ -8,24 +8,26 @@ namespace MiJuegoRPG.Motor
     {
         public static void MostrarEstadoPersonaje(Personaje.Personaje pj)
         {
-            Console.WriteLine("\n=== ESTADO DEL PERSONAJE ===");
-            Console.WriteLine($"Nombre: {pj.Nombre}");
-            Console.WriteLine($"Clase: {(pj.Clase != null ? pj.Clase.Nombre : "Sin clase")}");
-            Console.WriteLine($"Título: {pj.Titulo}");
-            Console.WriteLine($"Nivel: {pj.Nivel}");
-            Console.WriteLine($"Vida: {pj.Vida}/{pj.VidaMaxima}");
-            Console.WriteLine($"Maná: {pj.ManaActual}/{pj.ManaMaxima}");
-            Console.WriteLine($"Energía: {pj.EnergiaActual}/{pj.EnergiaMaxima}");
-            Console.WriteLine($"Oro: {pj.Oro}");
+            var ui = Juego.ObtenerInstanciaActual()?.Ui;
+            var write = new Action<string>(s => { if (ui != null) ui.WriteLine(s); else Console.WriteLine(s); });
+            write("\n=== ESTADO DEL PERSONAJE ===");
+            write($"Nombre: {pj.Nombre}");
+            write($"Clase: {(pj.Clase != null ? pj.Clase.Nombre : "Sin clase")}");
+            write($"Título: {pj.Titulo}");
+            write($"Nivel: {pj.Nivel}");
+            write($"Vida: {pj.Vida}/{pj.VidaMaxima}");
+            write($"Maná: {pj.ManaActual}/{pj.ManaMaxima}");
+            write($"Energía: {pj.EnergiaActual}/{pj.EnergiaMaxima}");
+            write($"Oro: {pj.Oro}");
             int expActual = pj.Experiencia;
             int expSiguiente = pj.ExperienciaSiguienteNivel;
             int expFaltante = expSiguiente - expActual;
             double porcentaje = expSiguiente > 0 ? (double)expActual / expSiguiente * 100.0 : 0.0;
-            Console.WriteLine($"Experiencia: {expActual} / {expSiguiente} (Faltan {expFaltante})");
-            Console.WriteLine($"Progreso al siguiente nivel: {porcentaje:F2}%");
-            Console.WriteLine($"Descansos realizados hoy: {pj.DescansosHoy}");
-            Console.WriteLine("\n--- Atributos Base ---");
-            Console.WriteLine("===================================");
+            write($"Experiencia: {expActual} / {expSiguiente} (Faltan {expFaltante})");
+            write($"Progreso al siguiente nivel: {porcentaje:F2}%");
+            write($"Descansos realizados hoy: {pj.DescansosHoy}");
+            write("\n--- Atributos Base ---");
+            write("===================================");
             var ab = pj.AtributosBase;
             var atributos = new Dictionary<string, (string abrev, double valor, double exp, double req)>
             {
@@ -55,9 +57,9 @@ namespace MiJuegoRPG.Motor
                 double prog = req > 0 ? exp / req * 100.0 : 0.0;
                 double faltante = req - exp;
                 string textoProg = req > 1 ? $" ({prog:F2}% de {req}, faltan {faltante:F2})" : "";
-                Console.WriteLine($"{abrev}: {total} (Base: {valor}, Bonif: {bonificador}){textoProg}");
+                write($"{abrev}: {total} (Base: {valor}, Bonif: {bonificador}){textoProg}");
             }
-            Console.WriteLine("\n--- Estadísticas Físicas ---");
+            write("\n--- Estadísticas Físicas ---");
             var est = pj.Estadisticas;
             var estadisticasFisicas = new Dictionary<string, double> {
                 {"Ataque", est.Ataque}, {"Defensa Física", est.DefensaFisica}, {"Daño", est.Daño}, {"Crítico", est.Critico},
@@ -68,19 +70,19 @@ namespace MiJuegoRPG.Motor
             {
                 double bonificador = pj.ObtenerBonificadorEstadistica(stat.Key);
                 double total = stat.Value + bonificador;
-                Console.WriteLine($"{stat.Key}: {stat.Value:F2} ({total:F2})");
+                write($"{stat.Key}: {stat.Value:F2} ({total:F2})");
                 if (bonificador > 0)
                 {
                     var fuentes = pj.ObtenerFuentesBonificadorEstadistica(stat.Key);
-                    Console.WriteLine($"  Bonificador por equipo:");
+                    write($"  Bonificador por equipo:");
                     foreach (var fuente in fuentes)
                     {
-                        Console.WriteLine($"    {fuente.Nombre}: +{fuente.Valor}");
+                        write($"    {fuente.Nombre}: +{fuente.Valor}");
                     }
                 }
             }
 
-            Console.WriteLine("\n--- Estadísticas Mágicas ---");
+            write("\n--- Estadísticas Mágicas ---");
             var estadisticasMagicas = new Dictionary<string, double> {
                 {"Poder Mágico", est.PoderMagico}, {"Defensa Mágica", est.DefensaMagica}, {"Regeneración Mana", est.RegeneracionMana},
                 {"Mana", est.Mana}, {"Poder Ofensivo Mágico", est.PoderOfensivoMagico}, {"Poder Defensivo Mágico", est.PoderDefensivoMagico},
@@ -91,19 +93,19 @@ namespace MiJuegoRPG.Motor
             {
                 double bonificador = pj.ObtenerBonificadorEstadistica(stat.Key);
                 double total = stat.Value + bonificador;
-                Console.WriteLine($"{stat.Key}: {stat.Value:F2} ({total:F2})");
+                write($"{stat.Key}: {stat.Value:F2} ({total:F2})");
                 if (bonificador > 0)
                 {
                     var fuentes = pj.ObtenerFuentesBonificadorEstadistica(stat.Key);
-                    Console.WriteLine($"  Bonificador por equipo:");
+                    write($"  Bonificador por equipo:");
                     foreach (var fuente in fuentes)
                     {
-                        Console.WriteLine($"    {fuente.Nombre}: +{fuente.Valor}");
+                        write($"    {fuente.Nombre}: +{fuente.Valor}");
                     }
                 }
             }
 
-            Console.WriteLine("\n--- Estadísticas Espirituales y Especiales ---");
+            write("\n--- Estadísticas Espirituales y Especiales ---");
             var estadisticasEspeciales = new Dictionary<string, double> {
                 {"Poder Espiritual", est.PoderEspiritual}, {"Poder Curativo", est.PoderCurativo}, {"Poder de Soporte", est.PoderDeSoporte},
                 {"Poder de Control", est.PoderDeControl}, {"Poder de Invocación", est.PoderDeInvocacion}, {"Poder de Transmutación", est.PoderDeTransmutacion},
@@ -115,20 +117,23 @@ namespace MiJuegoRPG.Motor
             {
                 double bonificador = pj.ObtenerBonificadorEstadistica(stat.Key);
                 double total = stat.Value + bonificador;
-                Console.WriteLine($"{stat.Key}: {stat.Value:F2} ({total:F2})");
+                write($"{stat.Key}: {stat.Value:F2} ({total:F2})");
                 if (bonificador > 0)
                 {
                     var fuentes = pj.ObtenerFuentesBonificadorEstadistica(stat.Key);
-                    Console.WriteLine($"  Bonificador por equipo:");
+                    write($"  Bonificador por equipo:");
                     foreach (var fuente in fuentes)
                     {
-                        Console.WriteLine($"    {fuente.Nombre}: +{fuente.Valor}");
+                        write($"    {fuente.Nombre}: +{fuente.Valor}");
                     }
                 }
             }
-
-            Console.WriteLine("\nPresiona cualquier tecla para continuar...");
-            Console.ReadKey();
+            if (!InputService.TestMode)
+            {
+                var ui2 = Juego.ObtenerInstanciaActual()?.Ui;
+                if (ui2 != null) ui2.Pause("\nPresiona cualquier tecla para continuar...");
+                else { Console.WriteLine("\nPresiona cualquier tecla para continuar..."); Console.ReadKey(); }
+            }
         }
     }
 }

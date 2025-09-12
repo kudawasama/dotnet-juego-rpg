@@ -1,0 +1,10 @@
+{
+  "NPC": {
+    "BloqueaFac": ["Hostil", "Perseguido"],
+    "BloqueaGlobal": ["Perseguido"]
+  },
+  "Tienda": {
+    "BloqueaFac": ["Hostil", "Perseguido"],
+    "BloqueaGlobal": ["Perseguido"]
+  }
+}

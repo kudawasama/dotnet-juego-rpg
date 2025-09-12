@@ -57,4 +57,32 @@ namespace MiJuegoRPG.Motor.Servicios
         public string Nombre { get; }
         public EventoMisionCompletada(string id, string nombre) { Id = id; Nombre = nombre; }
     }
+
+    // Eventos de reputación (12.3)
+    public class EventoReputacionUmbralGlobal : IEventoJuego
+    {
+        public string BandaId { get; }
+        public int ValorAnterior { get; }
+        public int ValorNuevo { get; }
+        public bool Subida { get; }
+        public string Mensaje { get; }
+        public EventoReputacionUmbralGlobal(string bandaId, int valorAnterior, int valorNuevo, bool subida, string mensaje)
+        {
+            BandaId = bandaId; ValorAnterior = valorAnterior; ValorNuevo = valorNuevo; Subida = subida; Mensaje = mensaje;
+        }
+    }
+
+    public class EventoReputacionUmbralFaccion : IEventoJuego
+    {
+        public string Faccion { get; }
+        public string BandaId { get; }
+        public int ValorAnterior { get; }
+        public int ValorNuevo { get; }
+        public bool Subida { get; }
+        public string Mensaje { get; }
+        public EventoReputacionUmbralFaccion(string faccion, string bandaId, int valorAnterior, int valorNuevo, bool subida, string mensaje)
+        {
+            Faccion = faccion; BandaId = bandaId; ValorAnterior = valorAnterior; ValorNuevo = valorNuevo; Subida = subida; Mensaje = mensaje;
+        }
+    }
 }

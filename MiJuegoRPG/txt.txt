@@ -19,7 +19,7 @@ Legend inicial: Solo la 1.x se empieza ahora para evitar cambios masivos de golp
 ----------------------------
 [2.1] Hecho | Infra | EventBus simple (pub/sub en memoria) | EventBus.cs + integración ProgressionService
 [2.2] Hecho | Progresión | Emitir eventos en subidas de nivel / atributo / misión | Atributos, nivel y misión integrados
-[2.3] Pendiente | UI | Sustituir Console directa por IUserInterface | Después de EventBus
+[2.3] Parcial | UI | Sustituir Console directa por IUserInterface | Interfaz creada + ConsoleUserInterface + SilentUserInterface para pruebas; InputService delega a Juego.Ui para lectura/pausa. Juego permite inyectar UI vía UiFactory. Progreso: Juego, menús modulares, MenusJuego y Program migrados; Servicios migrados en esta iteración: RecoleccionService, EnergiaService, EstadoPersonajePrinter y MotorMisiones. Pendiente: limpiar Console.* en dominio (Personaje, Inventario, CombatePorTurnos, objetos y gestores) y herramientas.
 
 3. PROGRESIÓN Y ATRIBUTOS
 -------------------------
@@ -55,22 +55,22 @@ Legend inicial: Solo la 1.x se empieza ahora para evitar cambios masivos de golp
 
 8. UI / PRESENTACIÓN
 --------------------
-[8.1] Pendiente | Abstracción | IUserInterface (WriteLine, ReadOption, Confirm) | Tras 2.3
+[8.1] Hecho | Abstracción | IUserInterface (WriteLine, ReadOption, Confirm) | Interfaz creada + adaptadores: ConsoleUserInterface y SilentUserInterface (para tests); InputService usa la UI para leer opciones/números y pausar. Añadido InputService.TestMode para evitar bloqueos en tests. Juego expone UiFactory para inyección. Logger central agregado y enlazado a la UI. Migradas salidas principales en Juego (menú, viaje, recolección, mazmorra, rutas) y GeneradorEnemigos. Menús migrados: MenuCiudad, MenuFueraCiudad, MenuRecoleccion, MenuFijo, MenuAdmin, MenuEntreCombate, MenusJuego y Program.cs. Pendiente: unificar colores/estilo.
 [8.2] Pendiente | Menús | Refactor menús a comandos (Command Pattern) | Tras 8.1
-[8.3] Pendiente | Estilo | Colores y layout unificados | Tras 8.1
+[8.3] Parcial | Estilo | Colores y layout unificados | Etiquetas de reputación colorizadas en ciudad/tienda/NPC/misiones; se migraron vistas de Recolección (híbrida), Energía, Estado del Personaje y Misiones a la UI unificada. Siguiente: CombatePorTurnos, Inventario detallado y Gestores de objetos. 
 
 9. TESTING
 ----------
-[9.1] Pendiente | Infra | Crear proyecto tests xUnit | Base
-[9.2] Pendiente | Test | Mapa.MoverseA casos | Prioridad alta
-[9.3] Pendiente | Test | GeneradorEnemigos nivel y drops | Prioridad media
-[9.4] Pendiente | Test | ProgressionService fórmula | Tras 1.3
-[9.5] Pendiente | Test | Recolección energía y requisitos | Tras 4.1
+[9.1] Hecho | Infra | Crear proyecto tests xUnit | Proyecto MiJuegoRPG.Tests creado (xUnit) y referenciado en la solución
+[9.2] Hecho | Test | Mapa.MoverseA casos | Tres casos cubiertos: inicialización (CiudadPrincipal), adyacencias y movimiento válido/ inválido + descubrimiento
+[9.3] Hecho | Test | GeneradorEnemigos nivel y drops | Tests deterministas con RandomService.SetSeed y filtro por nivel; E/S aislada a %TEMP% y opción DesactivarPersistenciaDrops para evitar escribir JSONs reales.
+[9.4] Hecho | Test | ProgressionService fórmula | Explorar (Percepción+Agilidad), Entrenamiento con subida y Recolección por tipo
+[9.5] Hecho | Test | Recolección energía y requisitos | Cooldown por nodo: aplicar y limpiar al entrar sector (persistencia multisector)
 
 10. LIMPIEZA / QUALITY
 ----------------------
-[10.1] Pendiente | Rutas | Centralizar rutas en PathProvider | Base
-[10.2] Pendiente | Random | Sustituir usos dispersos | Tras 1.4
+[10.1] Hecho | Rutas | Centralizar rutas en PathProvider | Servicio PathProvider agregado; refactors en Juego, ProgressionService, EnergiaService, ReputacionService, ReputacionPoliticas, ShopService, MenusJuego, MotorMisiones, GestorArmas, GestorPociones, GestorMateriales, GuardadoService, CreadorPersonaje, TestGeneradorObjetos
+[10.2] Hecho | Random | Sustituir usos dispersos | RecoleccionService y BiomaRecoleccion usan RandomService; agregado SetSeed(int) para tests deterministas
 [10.3] Pendiente | Nombres | Uniformar nombres archivos (GeneradorObjetos vs GeneradorDeObjetos) | Revisión
 [10.4] Pendiente | Comentarios | Podar comentarios redundantes | Continuo
 [10.5] Pendiente | Documentación | README arquitectura modular | Final intermedio
@@ -81,17 +81,18 @@ Legend inicial: Solo la 1.x se empieza ahora para evitar cambios masivos de golp
 [11.2] Hecho | Evaluación Requisitos | ClaseDinamicaService: nivel, clasesPrevias, clasesAlguna, exclusiones, atributos, estadísticas, actividad, reputación, misiones múltiple/única, objeto único | Lógica centralizada CumpleHardRequirements
 [11.3] Hecho | Bonos Iniciales | Aplicar AtributosGanados al desbloquear clase (incluye Oscuridad) | Método AplicarBonosAtributoInicial
 [11.4] Hecho | Desbloqueo Emergente | Score parcial (PesoEmergenteMin) | Dataset aún no lo usa (seguir monitoreo)
-[11.5] Pendiente | Reputación Facción | Campo ReputacionFaccionMin en ClaseData + check | Requiere extender JSON y servicio
+[11.5] Hecho | Reputación Facción | Campo ReputacionFaccionMin en ClaseData + check | Evaluado en ClaseDinamicaService
 [11.6] Pendiente | Bonificadores Globales | Servicio unificador (XP.*, Drop.*, Energia.*) | Diseñar BonosGlobalesService
-[11.7] Pendiente | Clamp Atributos | Evitar negativos / límites soft-hard | Añadir al modificar atributo y progression
+[11.7] Hecho | Clamp Atributos | Evitar negativos / límites soft-hard | Aplicado en bonos de clase y menú admin
 
 12. REPUTACIÓN
 --------------
 [12.1] Hecho | Persistencia | Reputacion global y por facción en Personaje | Campos Reputacion / ReputacionesFaccion
 [12.2] Hecho | Servicio | ReputacionService (modificar global/facción + reevaluar clases) | Integrado en Juego
-[12.3] Pendiente | Umbrales | Tabla reputacion_umbral.json + avisos (BusEventos) | Definir diseño
-[12.4] Pendiente | Alineación Negativa | Feedback visual y gating por reputación negativa | Después de umbrales
+[12.3] Hecho | Umbrales | reputacion_umbrales.json + eventos y avisos | ReputacionService publica EventoReputacionUmbral*
+[12.4] Hecho | Alineación Negativa | Feedback visual y gating por reputación negativa | Etiquetas compactas colorizadas + gating en NPC y tienda alineado a bandas; políticas en JSON
 [12.5] Pendiente | Métricas | Tracking de cambios reputación para balance | Requiere logger/telemetría ligera
+[12.6] Hecho | Tienda ↔ Reputación | Ganancia por compra (+1/100 oro) y venta (+1/200 oro); descuentos por rep global/facción | Lógica centralizada en ShopService (GetPrecioCompra/Venta, PuedeAtender); MenusJuego solo UI; facciones_ubicacion.json data-driven (fallback activo); unificación a IDs de mapa en curso
 
 13. ADMIN / HERRAMIENTAS QA
 ---------------------------
@@ -99,9 +100,9 @@ Legend inicial: Solo la 1.x se empieza ahora para evitar cambios masivos de golp
 [13.2] Hecho | Ajustes Directos | TP, reputación global/facción, verbose reputación, nivel +/- | MenuAdmin opciones 1–6
 [13.3] Hecho | Atributos | Modificar atributo individual con recálculo y reevaluación clases | Opción 7
 [13.4] Hecho | Diagnóstico | Listar clases (motivos bloqueo), atributos+stats, habilidades, inventario, resumen integral | Opciones 8–12
-[13.5] Pendiente | Forzar Clase | Desbloqueo manual (override) con marca debug | Añadir opción 13
-[13.6] Pendiente | Export Snapshot | Guardar resumen integral a archivo (logs/admin) | Usa GuardadoService
-[13.7] Pendiente | Batch Atributos | Parser múltiple (fuerza+5,int+3) | Extender opción 7
+[13.5] Hecho | Forzar Clase | Desbloqueo manual (override) con aplicación de bonos y reevaluación | Opción 13 en MenuAdmin
+[13.6] Hecho | Export Snapshot | Guardar resumen integral a archivo (logs/admin) | Opción 14 en MenuAdmin
+[13.7] Hecho | Batch Atributos | Parser múltiple (fuerza+5,int+3) | Opción 7 soporta entrada batch
 [13.8] Pendiente | Seguridad | Flag para ocultar menú admin en build release | Config build / preprocesador
 
 ESTADO ACTUAL (snapshot):
@@ -114,30 +115,41 @@ ESTADO ACTUAL (snapshot):
 - Sistema de clases dinámicas completo (11.2) con reputación integrada (12.1/12.2).
 - Menú Admin implementado (13.1–13.4) facilita balance y QA.
 
+- Testing: proyecto xUnit agregado (MiJuegoRPG.Tests). Pruebas de Mapa + ProgressionService + Recolección (cooldown multisector) + GeneradorEnemigos pasando (12/12). E/S de objetos aislada en tests a %TEMP% y limpieza automática. Logger permite reducir ruido en pruebas. Determinismo reforzado: SetSeed se aplica tras inicializar Juego y se desactivó la paralelización de xUnit (CollectionBehavior). Build OK tras migrar menús y Program a UI/Logger. Última corrida post-migración de servicios (Recolección/Energía/Estado/Misiones): 12/12 PASS.
+- UI: Base de IUserInterface implementada con ConsoleUserInterface; InputService ya delega lectura/pausas a Juego.Ui y soporta TestMode (evita bloqueos en tests).
+- Random: centralización completa y SetSeed disponible para determinismo en pruebas.
+
+- Reputación: bandas y colores parametrizados (DatosJuego/config/reputacion_bandas.json).
+- Políticas de bloqueo centralizadas (NPC/Tienda) en servicio `ReputacionPoliticas` con config en `DatosJuego/config/reputacion_politicas.json`.
+- Menús muestran etiquetas compactas de reputación con color y valor numérico en Ciudad, Tienda, NPCs y Misiones.
+- Gating por reputación negativa activo y alineado a bandas en NPC y Tienda.
+- Normalización de ubicaciones a IDs de sector aplicada en menús y tienda (compatibilidad con nombres durante migración de datos).
+ - Rutas centralizadas: nuevo `PathProvider` define carpetas canónicas de DatosJuego/PjDatos; eliminado código ad-hoc de combinaciones de rutas en servicios clave.
+
 MÉTRICAS / OBS (para futura instrumentación ligera):
 - Clases desbloqueadas por sesión y top motivos bloqueo.
 - Frecuencia ajustes reputación (detección abuso admin).
 - Atributos manualmente más alterados (apoyo tuning progresión).
 
 PRÓXIMOS PASOS SUGERIDOS (reordenados tras avances):
-1) (3.3 COMPLETADO) Parametrización lista (ver progression_config.md) — puede reajustarse tras pruebas iniciales.
-2) (4.2) Extender nodos: campos JSON sugeridos: Rareza (Comun/Raro/Épico), ProduccionMin/ProduccionMax, CooldownBase.
+
+1) (4.2) Extender nodos: campos JSON sugeridos: Rareza (Comun/Raro/Épico), ProduccionMin/ProduccionMax, CooldownBase.
 	- Persistir cooldown opcional: guardar timestamp último uso en guardado rápido (marcar diseño).
-3) (4.3) Coste de energía dinámico: IMPLEMENTADO (energia.json + cálculo en EnergiaService). Ajustar balance tras pruebas.
-4) (9.1 / 9.2 / 9.4 / 9.5) Iniciar proyecto de tests xUnit:
-	- Tests mínimos: Mapa.MoverseA (rutas válidas/invalidas), ProgressionService (aplicar recolección escala con nivel), RecoleccionService (filtro tipo y cooldown bloquea acción).
-5) (2.3 / 8.1) Definir interfaz IUserInterface (WriteLine, LeerOpcion, Confirmar, SeleccionarDeLista) + adaptador console.
-	- Preparar refactor incremental (inyectar en Juego y servicios nuevos primero).
-6) (10.1) PathProvider: clase estática central con métodos ObtenerRutaDatos(), ObtenerRutaMapas(), etc. Sustituir concatenaciones ad-hoc.
+2) (4.3) Coste de energía dinámico: IMPLEMENTADO (energia.json + cálculo en EnergiaService). Ajustar balance tras pruebas.
+3) (9.3) Pruebas para GeneradorEnemigos (nivel y drops) usando RandomService.SetSeed para determinismo.
+4) (8.1) Extender uso de IUserInterface a salidas de menús y servicios (Write/WriteLine, colores) para limpiar consola y facilitar pruebas. Progreso: Juego, GeneradorEnemigos y menús modularizados migrados; MenusJuego y Program.cs migrados. Nuevo: RecoleccionService, EnergiaService, EstadoPersonajePrinter y MotorMisiones migrados. Pendientes: CombatePorTurnos, Inventario/Personaje, GestorArmas/Pociones/Materiales, GuardadoService interactivo.
+5) (7.1) IRepository<T> base (LoadAll, SaveAll, GetById) + implementación JSON simple (sin cache) para Misiones como piloto.
 7) (7.1) IRepository<T> base (LoadAll, SaveAll, GetById) + implementación JSON simple (sin cache) para Misiones como piloto.
 8) (4.4 follow-up) Añadir comando rápido en recolección: 'f' para marcar nodo favorito y mostrarlo primero (persistencia posterior).
 9) (Observabilidad) Añadir listener ejemplo que acumule métricas básicas (contador subidas atributo) para futuro balance.
-10) (12.3) Implementar umbrales reputación y eventos visuales.
-11) (13.5) Forzar clase + marcar claseDebug para auditoría.
-12) (13.6) Exportar snapshot integral a logs.
-13) (11.5) Reputación por facción en requisitos de clase.
-14) (13.7) Batch atributos.
-15) (11.7) Clamp atributos >=0.
+10) (12.4) SEGUIMIENTO: Ajustar mensajes y balance tras pruebas; evaluar gating "suave" adicional (por ejemplo, recargos en Hostil antes de bloqueo total) si el diseño lo requiere.
+11) (12.6) Ajustar balance tienda-reputación (divisores y clamps) tras pruebas.
+12) (Datos) Completar unificación a IDs de mapa en npc.json y facciones_ubicacion.json; mantener compatibilidad durante migración.
+11) (13.5) Forzar clase implementado. Pendiente: marcar claseDebug para auditoría.
+12) (13.6) Exportar snapshot integral implementado (logs/admin).
+13) (11.5) Reputación por facción implementado.
+14) (13.7) Batch atributos implementado.
+15) (11.7) Clamp atributos >=0 implementado.
 
 NOTAS RIESGO / DEPENDENCIAS:
 - Persistir cooldown requiere definir formato (epoch segundos o ISO8601) y limpiar cooldowns expirados al cargar.

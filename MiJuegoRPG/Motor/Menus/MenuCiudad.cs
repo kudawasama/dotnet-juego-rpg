@@ -20,16 +20,16 @@ namespace MiJuegoRPG.Motor.Menus
             string opcion = "";
             while (!salir)
             {
-                Console.WriteLine(juego.FormatoRelojMundo);
-                Console.WriteLine($"Ubicación actual: {juego.mapa.UbicacionActual.Nombre}");
-                Console.WriteLine("=== Menú de Ciudad ===");
-                Console.WriteLine("1. Tienda");
-                Console.WriteLine("2. Escuela de Entrenamiento");
-                Console.WriteLine("3. Explorar sector");
-                Console.WriteLine("4. Descansar en posada");
-                Console.WriteLine("5. Viajar");
-                Console.WriteLine("9. Menú fijo");
-                Console.WriteLine("0. Volver al menú principal");
+                juego.Ui.WriteLine(juego.FormatoRelojMundo);
+                juego.Ui.WriteLine($"Ubicación actual: {juego.mapa.UbicacionActual.Nombre}");
+                juego.Ui.WriteLine("=== Menú de Ciudad ===");
+                juego.Ui.WriteLine("1. Tienda");
+                juego.Ui.WriteLine("2. Escuela de Entrenamiento");
+                juego.Ui.WriteLine("3. Explorar sector");
+                juego.Ui.WriteLine("4. Descansar en posada");
+                juego.Ui.WriteLine("5. Viajar");
+                juego.Ui.WriteLine("9. Menú fijo");
+                juego.Ui.WriteLine("0. Volver al menú principal");
                 opcion = InputService.LeerOpcion();
                 switch (opcion)
                 {
@@ -53,15 +53,15 @@ namespace MiJuegoRPG.Motor.Menus
                             juego.jugador.EnergiaActual = Math.Min(juego.jugador.EnergiaActual + energiaRecuperada, maxEnergia);
                             juego.jugador.Vida = juego.jugador.VidaMaxima;
 
-                            Console.WriteLine($"DEBUG: Energía tras descansar: {juego.jugador.EnergiaActual}/{juego.jugador.EnergiaMaxima}");
+                            juego.Ui.WriteLine($"DEBUG: Energía tras descansar: {juego.jugador.EnergiaActual}/{juego.jugador.EnergiaMaxima}");
                             if (energiaRecuperada == 0)
-                                Console.WriteLine("Ya no puedes recuperar más energía descansando hoy.");
+                                juego.Ui.WriteLine("Ya no puedes recuperar más energía descansando hoy.");
                             else
-                                Console.WriteLine("Has descansado y recuperado tu vida y parte de tu energía.");
+                                juego.Ui.WriteLine("Has descansado y recuperado tu vida y parte de tu energía.");
                         }
                         else
                         {
-                            Console.WriteLine("No hay personaje cargado.");
+                            juego.Ui.WriteLine("No hay personaje cargado.");
                         }
                         // NO volver a llamar a RecuperacionPasiva aquí
                         juego.MostrarMenuFijo(ref salir);
@@ -72,7 +72,7 @@ namespace MiJuegoRPG.Motor.Menus
                     case "9": juego.MostrarMenuFijo(ref salir); break;
                     case "0": return;
                     default:
-                        Console.WriteLine("Opción no válida.");
+                        juego.Ui.WriteLine("Opción no válida.");
                         InputService.Pausa();
                         break;
                 }

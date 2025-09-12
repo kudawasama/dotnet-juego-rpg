@@ -26,7 +26,7 @@ namespace MiJuegoRPG.Motor.Servicios
         {
             try
             {
-                rutaConfig ??= System.IO.Path.Combine(Juego.ObtenerRutaRaizProyecto(), "MiJuegoRPG", "DatosJuego", "progression.json");
+                rutaConfig ??= PathProvider.CombineData("progression.json");
                 if (System.IO.File.Exists(rutaConfig))
                 {
                     var json = System.IO.File.ReadAllText(rutaConfig);

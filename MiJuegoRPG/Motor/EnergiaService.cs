@@ -32,7 +32,7 @@ namespace MiJuegoRPG.Motor
             if (configCargada) return;
             try
             {
-                var ruta = System.IO.Path.Combine(Juego.ObtenerRutaRaizProyecto(), "MiJuegoRPG", "DatosJuego", "energia.json");
+                var ruta = MiJuegoRPG.Motor.Servicios.PathProvider.CombineData("energia.json");
                 if (System.IO.File.Exists(ruta))
                 {
                     var json = System.IO.File.ReadAllText(ruta);
@@ -57,7 +57,11 @@ namespace MiJuegoRPG.Motor
 
         public void MostrarEnergia(Personaje.Personaje jugador)
             {
-                Console.WriteLine($"Energía actual: {jugador.EnergiaActual}/{jugador.EnergiaMaxima}");
+                var ui = Juego.ObtenerInstanciaActual()?.Ui;
+                if (ui != null)
+                    ui.WriteLine($"Energía actual: {jugador.EnergiaActual}/{jugador.EnergiaMaxima}");
+                else
+                    Console.WriteLine($"Energía actual: {jugador.EnergiaActual}/{jugador.EnergiaMaxima}");
             }
 
 
@@ -139,11 +143,17 @@ namespace MiJuegoRPG.Motor
             int costo = CalcularCostoAccion(pj, tipoAccion, bioma, herramientaInferida);
             if (pj.EnergiaActual < costo)
             {
-                Console.WriteLine($"No tienes suficiente energía. Requiere {costo} y tienes {pj.EnergiaActual}.");
+                var ui = Juego.ObtenerInstanciaActual()?.Ui;
+                if (ui != null) ui.WriteLine($"No tienes suficiente energía. Requiere {costo} y tienes {pj.EnergiaActual}.");
+                else Console.WriteLine($"No tienes suficiente energía. Requiere {costo} y tienes {pj.EnergiaActual}.");
                 return false;
             }
             pj.EnergiaActual -= costo;
-            Console.WriteLine($"Energía gastada: {costo}. Queda {pj.EnergiaActual}/{pj.EnergiaMaxima}.");
+            {
+                var ui = Juego.ObtenerInstanciaActual()?.Ui;
+                if (ui != null) ui.WriteLine($"Energía gastada: {costo}. Queda {pj.EnergiaActual}/{pj.EnergiaMaxima}.");
+                else Console.WriteLine($"Energía gastada: {costo}. Queda {pj.EnergiaActual}/{pj.EnergiaMaxima}.");
+            }
             return true;
         }
 
@@ -170,8 +180,19 @@ namespace MiJuegoRPG.Motor
 
             pj.DescansosHoy++;
 
-            Console.WriteLine($"Descansas en la posada y recuperas {energiaARecuperar} puntos de energía ({porcentaje}%).");
-            Console.WriteLine($"Energía actual: {pj.EnergiaActual}/{pj.EnergiaMaxima}");
+            {
+                var ui = Juego.ObtenerInstanciaActual()?.Ui;
+                if (ui != null)
+                {
+                    ui.WriteLine($"Descansas en la posada y recuperas {energiaARecuperar} puntos de energía ({porcentaje}%).");
+                    ui.WriteLine($"Energía actual: {pj.EnergiaActual}/{pj.EnergiaMaxima}");
+                }
+                else
+                {
+                    Console.WriteLine($"Descansas en la posada y recuperas {energiaARecuperar} puntos de energía ({porcentaje}%).");
+                    Console.WriteLine($"Energía actual: {pj.EnergiaActual}/{pj.EnergiaMaxima}");
+                }
+            }
         }
 
         public void RecuperacionPasiva(Personaje.Personaje pj)
@@ -191,7 +212,11 @@ namespace MiJuegoRPG.Motor
 
                 pj.UltimaRecuperacionPasiva = DateTime.Now;
 
-                Console.WriteLine($"Recuperaste {puntosARecuperar} puntos de energía de manera pasiva.");
+                {
+                    var ui = Juego.ObtenerInstanciaActual()?.Ui;
+                    if (ui != null) ui.WriteLine($"Recuperaste {puntosARecuperar} puntos de energía de manera pasiva.");
+                    else Console.WriteLine($"Recuperaste {puntosARecuperar} puntos de energía de manera pasiva.");
+                }
             }
         }
     }

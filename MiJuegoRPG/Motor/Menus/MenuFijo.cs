@@ -15,22 +15,22 @@ namespace MiJuegoRPG.Motor.Menus
         {
             while (true)
             {
-                Console.WriteLine("\n=== Menú Fijo ===");
-                Console.WriteLine("1. Estado del personaje");
-                Console.WriteLine("2. Guardar personaje");
-                Console.WriteLine("3. Volver al menú principal");
-                Console.WriteLine("0. Salir del juego");
+                juego.Ui.WriteLine("\n=== Menú Fijo ===");
+                juego.Ui.WriteLine("1. Estado del personaje");
+                juego.Ui.WriteLine("2. Guardar personaje");
+                juego.Ui.WriteLine("3. Volver al menú principal");
+                juego.Ui.WriteLine("0. Salir del juego");
                 string opcion = InputService.LeerOpcion();
                 switch (opcion)
                 {
                     case "1":
                         if (juego.jugador != null) juego.MostrarEstadoPersonaje(juego.jugador);
-                        else Console.WriteLine("No hay personaje cargado.");
+                        else juego.Ui.WriteLine("No hay personaje cargado.");
                         InputService.Pausa();
                         break;
                     case "2":
                         juego.GuardarPersonaje();
-                        Console.WriteLine("¡Personaje guardado exitosamente!");
+                        juego.Ui.WriteLine("¡Personaje guardado exitosamente!");
                         InputService.Pausa();
                         break;
                     case "3":
@@ -38,10 +38,10 @@ namespace MiJuegoRPG.Motor.Menus
                         return;
                     case "0":
                         salir = true;
-                        Console.WriteLine("¡Gracias por jugar!");
+                        juego.Ui.WriteLine("¡Gracias por jugar!");
                         return;
                     default:
-                        Console.WriteLine("Opción no válida.");
+                        juego.Ui.WriteLine("Opción no válida.");
                         InputService.Pausa();
                         break;
                 }

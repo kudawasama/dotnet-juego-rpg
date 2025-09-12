@@ -23,14 +23,14 @@ namespace MiJuegoRPG.Motor.Menus
             string opcion = "";
             while (!salir)
             {
-                Console.WriteLine(juego.FormatoRelojMundo);
-                Console.WriteLine($"Ubicación actual: {juego.mapa.UbicacionActual.Nombre}");
-                Console.WriteLine("=== Menú Fuera de Ciudad ===");
-                Console.WriteLine("1. Explorar");
-                Console.WriteLine("2. Recolectar");
-                Console.WriteLine("5. Viajar");
-                Console.WriteLine("9. Menú fijo");
-                Console.WriteLine("0. Volver al menú principal");
+                juego.Ui.WriteLine(juego.FormatoRelojMundo);
+                juego.Ui.WriteLine($"Ubicación actual: {juego.mapa.UbicacionActual.Nombre}");
+                juego.Ui.WriteLine("=== Menú Fuera de Ciudad ===");
+                juego.Ui.WriteLine("1. Explorar");
+                juego.Ui.WriteLine("2. Recolectar");
+                juego.Ui.WriteLine("5. Viajar");
+                juego.Ui.WriteLine("9. Menú fijo");
+                juego.Ui.WriteLine("0. Volver al menú principal");
                 opcion = InputService.LeerOpcion();
                 switch (opcion)
                 {
@@ -45,7 +45,7 @@ namespace MiJuegoRPG.Motor.Menus
                     case "9": juego.MostrarMenuFijo(ref salir); break;
                     case "0": return;
                     default:
-                        Console.WriteLine("Opción no válida.");
+                        juego.Ui.WriteLine("Opción no válida.");
                         InputService.Pausa();
                         break;
                 }

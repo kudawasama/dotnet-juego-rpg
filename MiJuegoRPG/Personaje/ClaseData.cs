@@ -26,5 +26,7 @@ namespace MiJuegoRPG.Personaje
     public int Tier { get; set; } = 1; // Escalón o profundidad
     public string Rama { get; set; } = string.Empty; // Grupo temático (Oficio, Hibrida, Combate)
     public double PesoEmergenteMin { get; set; } = 0; // >0 habilita modo emergente por score
+    // Reputación mínima por facción: clave = nombre facción, valor = reputación mínima requerida
+    public Dictionary<string,int> ReputacionFaccionMin { get; set; } = new();
     }
 }

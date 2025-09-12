@@ -17,9 +17,7 @@ namespace MiJuegoRPG.Objetos
 
     public static class GestorArmas
     {
-        public static string RutaArmasJson = Path.Combine(
-            Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory)?.Parent?.Parent?.FullName ?? AppDomain.CurrentDomain.BaseDirectory,
-            "MiJuegoRPG", "DatosJuego","Equipo", "armas.json");
+        public static string RutaArmasJson = MiJuegoRPG.Motor.Servicios.PathProvider.EquipoPath("armas.json");
         public static List<Arma> ArmasDisponibles = new List<Arma>();
 
         public static void CargarArmas(string rutaArchivo)

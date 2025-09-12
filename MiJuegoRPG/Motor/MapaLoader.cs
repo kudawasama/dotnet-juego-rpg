@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
 using MiJuegoRPG.PjDatos;
+using MiJuegoRPG.Motor.Servicios;
 
 namespace MiJuegoRPG.Motor
 {
@@ -12,7 +13,7 @@ namespace MiJuegoRPG.Motor
             var sectores = new Dictionary<string, SectorData>();
             if (!Directory.Exists(carpeta))
             {
-                Console.WriteLine($"[MapaLoader] Carpeta de mapa no encontrada: {carpeta}");
+                Logger.Warn($"[MapaLoader] Carpeta de mapa no encontrada: {carpeta}");
                 return new Mapa(sectores);
             }
             var archivos = Directory.GetFiles(carpeta, "*.json", SearchOption.AllDirectories);
@@ -39,7 +40,7 @@ namespace MiJuegoRPG.Motor
                             sectores.Add(sector.Id, sector);
                             cargados++; agregado = true;
                             if (debugIds && (sector.Id == "8_22" || sector.Id == "8_24"))
-                                Console.WriteLine($"[MapaLoader][DEBUG] Cargado sector {sector.Id} desde {archivo} (modo objeto)");
+                                Logger.Debug($"[MapaLoader][DEBUG] Cargado sector {sector.Id} desde {archivo} (modo objeto)");
                         }
                         else
                         {
@@ -61,7 +62,7 @@ namespace MiJuegoRPG.Motor
                                 {
                                     sectores.Add(sector.Id, sector); cargados++; agregado = true;
                                     if (debugIds && (sector.Id == "8_22" || sector.Id == "8_24"))
-                                        Console.WriteLine($"[MapaLoader][DEBUG] Cargado sector {sector.Id} desde {archivo} (modo lista)");
+                                        Logger.Debug($"[MapaLoader][DEBUG] Cargado sector {sector.Id} desde {archivo} (modo lista)");
                                 }
                             }
                         }
@@ -71,19 +72,19 @@ namespace MiJuegoRPG.Motor
                     {
                         invalidos++;
                         if (debugIds && (archivo.EndsWith("8_22.json") || archivo.EndsWith("8_24.json")))
-                            Console.WriteLine($"[MapaLoader][DEBUG] Falló deserialización para {archivo}");
+                            Logger.Debug($"[MapaLoader][DEBUG] Falló deserialización para {archivo}");
                     }
                 }
             }
             if (vacios > 0 || invalidos > 0)
             {
-                Console.WriteLine($"[MapaLoader] Cargados: {cargados} | Vacíos ignorados: {vacios} | Inválidos: {invalidos}");
+                Logger.Info($"[MapaLoader] Cargados: {cargados} | Vacíos ignorados: {vacios} | Inválidos: {invalidos}");
                 if (vacios > 0)
-                    Console.WriteLine("[MapaLoader] Sugerencia: Ejecuta con --reparar-sectores para autocompletar archivos vacíos.");
+                    Logger.Info("[MapaLoader] Sugerencia: Ejecuta con --reparar-sectores para autocompletar archivos vacíos.");
             }
             if (debugIds)
             {
-                Console.WriteLine("[MapaLoader][DEBUG] ¿Existe 8_22?: " + sectores.ContainsKey("8_22") + " | ¿Existe 8_24?: " + sectores.ContainsKey("8_24"));
+                Logger.Debug("[MapaLoader][DEBUG] ¿Existe 8_22?: " + sectores.ContainsKey("8_22") + " | ¿Existe 8_24?: " + sectores.ContainsKey("8_24"));
             }
             return new Mapa(sectores);
         }

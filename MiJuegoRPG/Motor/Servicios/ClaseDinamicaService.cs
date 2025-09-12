@@ -137,6 +137,15 @@ namespace MiJuegoRPG.Motor.Servicios
                 int reputacionActual = ObtenerReputacion(pj);
                 if (reputacionActual < def.ReputacionMinima) return false;
             }
+            // Reputación por facción
+            if (def.ReputacionFaccionMin != null && def.ReputacionFaccionMin.Count > 0)
+            {
+                foreach (var kv in def.ReputacionFaccionMin)
+                {
+                    int actual = ObtenerReputacionFaccion(pj, kv.Key);
+                    if (actual < kv.Value) return false;
+                }
+            }
             // Misiones requeridas
             if (def.MisionesRequeridas != null && def.MisionesRequeridas.Count > 0)
             {
@@ -233,6 +242,24 @@ namespace MiJuegoRPG.Motor.Servicios
                     case "oscuridad": pj.AtributosBase.Oscuridad += kv.Value; break;
                 }
             }
+            // Clamp >= 0 tras aplicar bonos
+            var a = pj.AtributosBase;
+            a.Fuerza = Math.Max(0, a.Fuerza);
+            a.Destreza = Math.Max(0, a.Destreza);
+            a.Vitalidad = Math.Max(0, a.Vitalidad);
+            a.Agilidad = Math.Max(0, a.Agilidad);
+            a.Suerte = Math.Max(0, a.Suerte);
+            a.Defensa = Math.Max(0, a.Defensa);
+            a.Resistencia = Math.Max(0, a.Resistencia);
+            a.Sabiduría = Math.Max(0, a.Sabiduría);
+            a.Inteligencia = Math.Max(0, a.Inteligencia);
+            a.Fe = Math.Max(0, a.Fe);
+            a.Percepcion = Math.Max(0, a.Percepcion);
+            a.Persuasion = Math.Max(0, a.Persuasion);
+            a.Liderazgo = Math.Max(0, a.Liderazgo);
+            a.Carisma = Math.Max(0, a.Carisma);
+            a.Voluntad = Math.Max(0, a.Voluntad);
+            a.Oscuridad = Math.Max(0, a.Oscuridad);
         }
 
         public IEnumerable<KeyValuePair<string,double>> Bonificadores(Personaje.Personaje pj)
@@ -268,6 +295,12 @@ namespace MiJuegoRPG.Motor.Servicios
         private int ObtenerReputacion(Personaje.Personaje pj)
         {
             return pj.Reputacion;
+        }
+        private int ObtenerReputacionFaccion(Personaje.Personaje pj, string faccion)
+        {
+            if (string.IsNullOrWhiteSpace(faccion)) return 0;
+            pj.ReputacionesFaccion.TryGetValue(faccion, out var v);
+            return v;
         }
         private bool TieneMisionCompletada(Personaje.Personaje pj, string nombre)
         {

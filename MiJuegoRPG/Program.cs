@@ -9,55 +9,43 @@ class Program
 {
     static void Main(string[] args)
     {
-        // === BLOQUE UTILIDADES DEBUG (comentado / protegido) ===
-        // Las siguientes herramientas de generación / validación de sectores y reparación
-        // se dejan dentro de un bloque de compilación condicional para evitar ejecuciones
-        // accidentales en inicio estándar. Para usarlas, compilar en Debug y descomentar
-        // la(s) línea(s) deseada(s), o pasar el flag correspondiente.
-#if DEBUG
-        // Generar todos los sectores del mapa (costo: puede sobrescribir archivos existentes)
-        //GeneradorSectores.CrearMapaCompleto(@"C:\\RUTA\\A\\TU\\REPO\\MiJuegoRPG\\DatosJuego\\mapa\\SectoresMapa");
+        // Genera todos los archivos de regiones del mapa automáticamente al inicio
+        //GeneradorSectores.CrearMapaCompleto(@"C:\Users\ASUS\OneDrive\Documentos\GitHub\dotnet-juego-rpg\MiJuegoRPG\DatosJuego\mapa\SectoresMapa");
 
-        // Validar sectores (estructura / referencias)
-        //string rutaSectoresDebug = @"C:\\RUTA\\A\\TU\\REPO\\MiJuegoRPG\\DatosJuego\\mapa\\SectoresMapa";
-        //ValidadorSectores.ValidarSectores(rutaSectoresDebug);
+        // Cambia la ruta según la ubicación real de tus sectores
+        //string rutaSectores = @"c:\Users\jose.cespedes\Documents\GitHub\dotnet-juego-rpg\MiJuegoRPG\DatosJuego\mapa\SectoresMapa";
+        //ValidadorSectores.ValidarSectores(rutaSectores);
 
-        // Reparación opcional de sectores solo en Debug si se pasa argumento --reparar-sectores
+        // DEBUG OFF: Reparación opcional de sectores desactivada temporalmente para no ejecutarse al inicio
+        /*
+        // Reparación opcional de sectores (solo si se pasa argumento --reparar-sectores)
         if (args != null && Array.Exists(args, a => a.Equals("--reparar-sectores", StringComparison.OrdinalIgnoreCase)))
         {
-            try
+            var raiz = Juego.ObtenerRutaRaizProyecto();
+            var rutaSectores = Path.Combine(raiz, "MiJuegoRPG", "DatosJuego", "mapa", "SectoresMapa");
+            if (Directory.Exists(rutaSectores))
             {
-                var raiz = Juego.ObtenerRutaRaizProyecto();
-                var rutaSectores = Path.Combine(raiz, "MiJuegoRPG", "DatosJuego", "mapa", "SectoresMapa");
-                if (Directory.Exists(rutaSectores))
-                {
-                    Console.WriteLine($"[DEBUG] Reparando sectores en: {rutaSectores}");
-                    ReparadorSectores.RepararSectores(rutaSectores);
-                }
-                else
-                {
-                    Console.WriteLine($"[DEBUG] Ruta de sectores no encontrada: {rutaSectores} (omitida reparación)");
-                }
+                Console.WriteLine($"[INIT] Reparando sectores en: {rutaSectores}");
+                ReparadorSectores.RepararSectores(rutaSectores);
             }
-            catch (Exception ex)
+            else
             {
-                Console.WriteLine($"[DEBUG][ERROR] Falló reparación sectores: {ex.Message}");
+                Console.WriteLine($"[WARN] Ruta de sectores no encontrada: {rutaSectores} (se omite reparación)");
             }
         }
-#endif
-        // === FIN BLOQUE DEBUG ===
+        */
 
         // Aquí puedes agregar la lógica para iniciar el juego
         try
         {
             Juego juego = new Juego();
+            var ui = juego.Ui;
 
-            Console.WriteLine("¡Bienvenido a Mi Juego RPG!");
-            Console.WriteLine("1. Crear personaje nuevo");
-            Console.WriteLine("2. Cargar personaje guardado");
-            Console.WriteLine("0. Salir");
-            Console.Write("Selecciona una opción: ");
-            string opcion = Console.ReadLine() ?? "1";
+            ui.WriteLine("¡Bienvenido a Mi Juego RPG!");
+            ui.WriteLine("1. Crear personaje nuevo");
+            ui.WriteLine("2. Cargar personaje guardado");
+            ui.WriteLine("0. Salir");
+            string opcion = MiJuegoRPG.Motor.InputService.LeerOpcion("Selecciona una opción: ") ?? "1";
 
             switch (opcion)
             {
@@ -65,7 +53,7 @@ class Program
                     juego.CargarPersonaje();
                     if (juego.jugador == null)
                     {
-                        Console.WriteLine("No se pudo cargar el personaje. Se creará uno nuevo.");
+                        ui.WriteLine("No se pudo cargar el personaje. Se creará uno nuevo.");
                         juego.CrearPersonaje();
                     }
                     break;
@@ -73,7 +61,7 @@ class Program
                     juego.CrearPersonaje();
                     break;
                 case "0":
-                    Console.WriteLine("¡Hasta pronto!");
+                    ui.WriteLine("¡Hasta pronto!");
                     return;
                 default:
                     juego.CrearPersonaje();
@@ -85,26 +73,25 @@ class Program
             // Preguntar si quiere guardar solo si el personaje fue creado o cargado correctamente
             if (juego.jugador != null)
             {
-                Console.WriteLine("\n¿Deseas guardar tu personaje? (s/n):");
-                string respuesta = Console.ReadLine() ?? string.Empty;
-
-                if (respuesta.ToLower() == "s" || respuesta.ToLower() == "si")
+                var respuesta = MiJuegoRPG.Motor.InputService.LeerOpcion("\n¿Deseas guardar tu personaje? (s/n): ") ?? string.Empty;
+                if (respuesta.Equals("s", StringComparison.OrdinalIgnoreCase) || respuesta.Equals("si", StringComparison.OrdinalIgnoreCase))
                 {
                     juego.GuardarPersonaje();
-                    Console.WriteLine("¡Personaje guardado exitosamente!");
+                    ui.WriteLine("¡Personaje guardado exitosamente!");
                 }
             }
             else
             {
-                Console.WriteLine("No hay personaje para guardar.");
+                ui.WriteLine("No hay personaje para guardar.");
             }
+            ui.WriteLine("Presiona cualquier tecla para salir...");
+            MiJuegoRPG.Motor.InputService.Pausa();
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Error en el juego: {ex.Message}");
+            Console.WriteLine("Presiona cualquier tecla para salir...");
+            Console.ReadKey();
         }
-
-        Console.WriteLine("Presiona cualquier tecla para salir...");
-        Console.ReadKey();
     }
 }

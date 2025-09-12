@@ -1,0 +1,28 @@
+{
+  "Global": [-100, -50, 0, 50, 100],
+  "MensajesGlobal": {
+    "-100": "Eres una leyenda oscura. Los ciudadanos te temen.",
+    "-50": "Tu reputación es temida. Algunos comercios te rechazarán.",
+    "0": "Eres un desconocido. Pocos te reconocen.",
+    "50": "Eres bien visto. Se abren algunas puertas.",
+    "100": "Eres un héroe del pueblo. Recibes trato preferencial."
+  },
+  "Facciones": {
+    "Guardia de Bairan": [-50, 0, 50, 100],
+    "Gremio de Ladrones": [-50, 0, 30, 80]
+  },
+  "MensajesPorFaccion": {
+    "Guardia de Bairan": {
+      "-50": "La guardia te tiene en la mira.",
+      "0": "La guardia te ignora en su mayoría.",
+      "50": "La guardia confía en ti.",
+      "100": "La guardia te honra como protector."
+    },
+    "Gremio de Ladrones": {
+      "-50": "El gremio desconfía de ti.",
+      "0": "El gremio no te reconoce.",
+      "30": "El gremio te considera un aliado menor.",
+      "80": "Eres mano derecha del gremio."
+    }
+  }
+}
