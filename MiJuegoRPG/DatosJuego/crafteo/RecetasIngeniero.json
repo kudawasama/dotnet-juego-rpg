@@ -1,0 +1,16 @@
+[
+  {
+    "Nombre": "Trampa de Pinchos",
+    "Materiales": [
+      { "Nombre": "Madera Resistente", "Cantidad": 2 },
+      { "Nombre": "Clavos", "Cantidad": 2 }
+    ]
+  },
+  {
+    "Nombre": "Bomba de Humo",
+    "Materiales": [
+      { "Nombre": "Polvo Negro", "Cantidad": 1 },
+      { "Nombre": "Frasco Vacío", "Cantidad": 1 }
+    ]
+  }
+]

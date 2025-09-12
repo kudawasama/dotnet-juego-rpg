@@ -1,0 +1,335 @@
+[
+{
+    "TipoBioma": "Bosque Encantado",
+    "NodosComunes": [
+        {
+            "Nombre": "Árboles de Roble Mágico",
+            "Tipo": "Talar",
+            "Requiere": "Hacha Hierro Encantada",
+            "Materiales": [ 
+              { "Nombre": "Madera Encantada", "Cantidad": 2 },
+              { "Nombre": "Hoja Mágica", "Cantidad": 1 },
+              { "Nombre": "Savia Mágica", "Cantidad": 1 },
+              { "Nombre": "Fruto Mágico", "Cantidad": 1 },
+              { "Nombre": "Polvo de Estrellas", "Cantidad": 1 }
+
+            ],
+            "Cooldown": 3
+        },
+        {
+            "Nombre": "Setas Luminosas",
+            "Materiales": [ { "Nombre": "Seta Brillante", "Cantidad": 1 } ],
+            "Cooldown": 2
+        }
+    ],
+    "NodosRaros": [
+        {
+            "Nombre": "Árbol de Luz",
+            "Materiales": [ { "Nombre": "Esencia de Luz", "Cantidad": 1 } ],
+            "Cooldown": 6
+        },
+        {
+            "Nombre": "Flor de Hada",
+            "Materiales": [ { "Nombre": "Pétalo de Hada", "Cantidad": 1 } ],
+            "Cooldown": 5
+        }
+    ]
+},
+{
+    "TipoBioma": "Bosque",
+    "NodosComunes": [
+      {
+        "Nombre": "Árboles de Roble",
+        "Materiales": [ { "Nombre": "Madera Resistente", "Cantidad": 2 } ],
+        "Cooldown": 2
+      },
+      {
+        "Nombre": "Arbustos de Hierbas",
+        "Materiales": [ { "Nombre": "Hierba Curativa", "Cantidad": 1 } ],
+        "Cooldown": 1
+      }
+    ],
+    "NodosRaros": [
+      {
+        "Nombre": "Árbol Sagrado",
+        "Materiales": [ { "Nombre": "Madera Sagrada", "Cantidad": 1 } ],
+        "Cooldown": 5
+      },
+      {
+        "Nombre": "Flores Azules",
+        "Materiales": [ { "Nombre": "Flor Azul", "Cantidad": 1 } ],
+        "Cooldown": 4
+      }
+    ]
+  },
+
+
+
+
+  {
+    "TipoBioma": "Montaña",
+    "NodosComunes": [
+      {
+        "Nombre": "Mina de Hierro",
+        "Tipo": "Minar",
+        "Requiere": "Pico de Hierro",
+        "Materiales": [ 
+          { "Nombre": "Mineral de Hierro", "Cantidad": 1 },
+          { "Nombre": "Piedra", "Cantidad": 2 }
+          ],
+        "Cooldown": 3
+      },
+      {
+        "Nombre": "Mina de Cobre",
+        "Tipo": "Minar",
+        "Requiere": "Pico de Hierro",
+        "Materiales": [ 
+          { "Nombre": "Mineral de Cobre", "Cantidad": 1 },
+          { "Nombre": "Piedra", "Cantidad": 2 }
+          ],
+        "Cooldown": 3
+      },
+      {
+        "Nombre": "Mina de Carbon",
+        "Tipo": "Minar",
+        "Requiere": "Pico de Hierro",
+        "Materiales": [ 
+          { "Nombre": "Mineral de Carbon", "Cantidad": 1 },
+          { "Nombre": "Piedra", "Cantidad": 2 }
+          ],
+        "Cooldown": 3
+      },
+      {
+        "Nombre": "Cantera",
+        "Materiales": [ { "Nombre": "Piedra", "Cantidad": 2 } ],
+        "Cooldown": 2
+      }
+    ],
+    "NodosRaros": [
+      {
+        "Nombre": "Mina de Plata",
+        "Materiales": [ { "Nombre": "Lingote de Plata", "Cantidad": 1 } ],
+        "Cooldown": 6
+      },
+      {
+        "Nombre": "Veta de Rubí",
+        "Materiales": [ { "Nombre": "Rubí", "Cantidad": 1 } ],
+        "Cooldown": 8
+      }
+    ]
+  },
+
+
+
+  {
+    "TipoBioma": "Lago",
+    "NodosComunes": [
+      {
+        "Nombre": "Ribera",
+        "Materiales": [ { "Nombre": "Agua Pura", "Cantidad": 1 } ],
+        "Cooldown": 1
+      },
+      {
+        "Nombre": "Arcilla",
+        "Materiales": [ { "Nombre": "Arcilla", "Cantidad": 1 } ],
+        "Cooldown": 2
+      }
+    ],
+    "NodosRaros": [
+      {
+        "Nombre": "Perla",
+        "Materiales": [ { "Nombre": "Perla", "Cantidad": 1 } ],
+        "Cooldown": 7
+      }
+    ]
+  },
+  {
+    "TipoBioma": "Desierto",
+    "NodosComunes": [
+      {
+        "Nombre": "Cactus",
+        "Materiales": [ { "Nombre": "Espinas de Cactus", "Cantidad": 1 } ],
+        "Cooldown": 2
+      },
+      {
+        "Nombre": "Arena",
+        "Materiales": [ { "Nombre": "Arena", "Cantidad": 2 } ],
+        "Cooldown": 1
+      }
+    ],
+    "NodosRaros": [
+      {
+        "Nombre": "Cristal de Arena",
+        "Materiales": [ { "Nombre": "Cristal de Arena", "Cantidad": 1 } ],
+        "Cooldown": 5
+      }
+    ]
+  },
+  {
+    "TipoBioma": "Cueva",
+    "NodosComunes": [
+      {
+        "Nombre": "Piedra Brillante",
+        "Materiales": [ { "Nombre": "Piedra Brillante", "Cantidad": 1 } ],
+        "Cooldown": 3
+      },
+      {
+        "Nombre": "Cristales",
+        "Materiales": [ { "Nombre": "Cristales", "Cantidad": 2 } ],
+        "Cooldown": 2
+      }
+    ],
+    "NodosRaros": [
+      {
+        "Nombre": "Gema Rara",
+        "Materiales": [ { "Nombre": "Gema Rara", "Cantidad": 1 } ],
+        "Cooldown": 5
+      }
+    ]
+  },
+  {
+    "TipoBioma": "CuevaProfunda",
+    "NodosComunes": [
+      {
+        "Nombre": "Piedra Brillante",
+        "Materiales": [ { "Nombre": "Piedra Brillante", "Cantidad": 1 } ],
+        "Cooldown": 3
+      },
+      {
+        "Nombre": "Cristales",
+        "Materiales": [ { "Nombre": "Cristales", "Cantidad": 2 } ],
+        "Cooldown": 2
+      }
+    ],
+    "NodosRaros": [
+      {
+        "Nombre": "Gema Rara",
+        "Materiales": [ { "Nombre": "Gema Rara", "Cantidad": 1 } ],
+        "Cooldown": 5
+      }
+    ]
+  },
+  {
+    "TipoBioma": "Cañon",
+    "NodosComunes": [
+      {
+        "Nombre": "Pared Rocosa",
+        "Materiales": [ { "Nombre": "Piedra", "Cantidad": 2 } ],
+        "Cooldown": 3
+      },
+      {
+        "Nombre": "Planta Resistente",
+        "Materiales": [ { "Nombre": "Hierba", "Cantidad": 1 } ],
+        "Cooldown": 2
+      },
+      {
+        "Nombre": "Cactus del Cañon",
+        "Materiales": [ { "Nombre": "Espinas de Cactus", "Cantidad": 1 } ],
+        "Cooldown": 2
+      },
+      {
+        "Nombre": "Tronco Seco",
+        "Materiales": [ { "Nombre": "Madera Seca", "Cantidad": 1 } ],
+        "Cooldown": 2
+      }
+    ],
+    "NodosRaros": [
+      {
+        "Nombre": "Cristal de Cañon",
+        "Materiales": [ { "Nombre": "Cristal", "Cantidad": 1 } ],
+        "Cooldown": 5
+      }
+    ]
+  },
+  {
+    "TipoBioma": "Oceano Lejano",
+    "NodosComunes": [
+      {
+        "Nombre": "Coral Abisal",
+        "Materiales": [ { "Nombre": "Fragmento de Coral Abisal", "Cantidad": 1 } ],
+        "Cooldown": 6
+      },
+      {
+        "Nombre": "Alga Gigante",
+        "Materiales": [ { "Nombre": "Alga Gigante", "Cantidad": 1 } ],
+        "Cooldown": 4
+      }
+    ],
+    "NodosRaros": [
+      {
+        "Nombre": "Perla Negra",
+        "Materiales": [ { "Nombre": "Perla Negra", "Cantidad": 1 } ],
+        "Cooldown": 10
+      },
+      {
+        "Nombre": "Restos de Naufragio",
+        "Materiales": [ { "Nombre": "Madera Antigua", "Cantidad": 2 } ],
+        "Cooldown": 12
+      }
+    ]
+  },
+  {
+    "TipoBioma": "Oceano",
+    "NodosComunes": [
+      {
+        "Nombre": "Coral",
+        "Materiales": [ { "Nombre": "Fragmento de Coral", "Cantidad": 1 } ],
+        "Cooldown": 5
+      },
+      {
+        "Nombre": "Alga Marina",
+        "Materiales": [ { "Nombre": "Alga Marina", "Cantidad": 1 } ],
+        "Cooldown": 3
+      },
+      {
+        "Nombre": "Conchas",
+        "Materiales": [ { "Nombre": "Concha Marina", "Cantidad": 1 } ],
+        "Cooldown": 4
+      }
+    ],
+    "NodosRaros": [
+      {
+        "Nombre": "Perla",
+        "Materiales": [ { "Nombre": "Perla", "Cantidad": 1 } ],
+        "Cooldown": 7
+      },
+      {
+        "Nombre": "Estrella de Mar",
+        "Materiales": [ { "Nombre": "Estrella de Mar", "Cantidad": 1 } ],
+        "Cooldown": 8
+      }
+    ]
+  },
+  {
+    "TipoBioma": "Campo",
+    "NodosComunes": [
+      {
+        "Nombre": "Árboles de Sauce",
+        "Materiales": [ { "Nombre": "Madera Flexible", "Cantidad": 2 } ],
+        "Cooldown": 2
+      },
+      {
+        "Nombre": "Pradera de Flores",
+        "Materiales": [ { "Nombre": "Flor Silvestre", "Cantidad": 1 },
+         { "Nombre": "Hierba Curativa", "Cantidad": 1 },
+         { "Nombre": "Hierba Antídoto", "Cantidad": 1 },
+         { "Nombre": "Hierba Energizante", "Cantidad": 1 }
+       ],
+       "Cooldown": 1
+     }
+   ],
+   "NodosRaros": [
+     {
+        "Nombre": "Árbol Antiguo",
+        "Materiales": [ { "Nombre": "Madera Antigua", "Cantidad": 1 } ],
+        "Cooldown": 5
+      },
+      {
+        "Nombre": "Flor Dorada",
+        "Materiales": [ { "Nombre": "Flor Dorada", "Cantidad": 1 } ],
+        "Cooldown": 4
+      }
+    ]
+  }
+  
+]

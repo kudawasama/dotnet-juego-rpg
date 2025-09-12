@@ -6,8 +6,10 @@ namespace MiJuegoRPG.Objetos
     {
         public int Perfeccion { get; set; }
         public string TipoObjeto { get; set; } = "Arma";
-        public int Daño { get; set; }
+        public int DañoFisico { get; set; }
+        public int DañoMagico { get; set; }
         public int Nivel { get; set; }
+        public Dictionary<string, double>? BonificadorAtributos { get; set; }
 
         private static readonly Dictionary<Rareza, double> MultiplicadoresRareza = new Dictionary<Rareza, double>
         {
@@ -23,23 +25,25 @@ namespace MiJuegoRPG.Objetos
         public Arma(string nombre, int dañoBase, int nivel = 1, Rareza rareza = Rareza.Normal, string categoria = "UnaMano") : base(nombre, rareza, categoria)
         {
             Nivel = nivel;
-            Daño = CalcularDaño(dañoBase, nivel, rareza);
+            DañoFisico = CalcularDaño(dañoBase, nivel, rareza);
+            DañoMagico = CalcularDaño(dañoBase, nivel, rareza);
             Perfeccion = 50;
         }
 
         public Arma() : base("", Rareza.Normal, "UnaMano") { }
         // Constructor extendido para permitir setear perfección
-        public Arma(string nombre, int dañoBase, int nivel, Rareza rareza, string categoria, int perfeccion)
+        public Arma(string nombre, int dañoBase, int nivel, Rareza rareza, string categoria, int perfeccion, int bonificadorAtributos)
             : base(nombre, rareza, categoria)
         {
             Nivel = nivel;
-            Daño = CalcularDaño(dañoBase, nivel, rareza);
+            DañoFisico = CalcularDaño(dañoBase, nivel, rareza);
+            DañoMagico = CalcularDaño(dañoBase, nivel, rareza);
             Perfeccion = perfeccion;
         }
 
         private int CalcularDaño(int dañoBase, int nivel, Rareza rareza)
         {
-            var random = new Random();
+            var random = MiJuegoRPG.Motor.Servicios.RandomService.Instancia;
             // Daño base escalado por nivel (ejemplo: dañoBase * nivel)
             int dañoEscalado = dañoBase + (int)(dañoBase * (nivel - 1) * 0.5);
             // Multiplicador por rareza
@@ -51,13 +55,13 @@ namespace MiJuegoRPG.Objetos
 
         public override void Usar(MiJuegoRPG.Personaje.Personaje personaje)
         {
-            Console.WriteLine($"{personaje.Nombre} equipa el arma {Nombre} ({Rareza}, {Categoria}, Daño: {Daño}, Nivel: {Nivel}).");
+            Console.WriteLine($"{personaje.Nombre} equipa el arma {Nombre} ({Rareza}, {Categoria}, DañoFisico: {DañoFisico}, Daño Mágico: {DañoMagico}, Nivel: {Nivel}).");
         }
         // Implementación de bonificador de estadística
         public double ObtenerBonificador(string estadistica)
         {
             if (estadistica == "Daño" || estadistica == "Ataque")
-                return Daño;
+                return DañoFisico;
             return 0;
         }
     }

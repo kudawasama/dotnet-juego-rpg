@@ -1,5 +1,5 @@
 [
-  {
+  { 
     "Id": "ResistenciaVenenoBasica",
     "Nombre": "Resistencia al veneno básica",
     "Tipo": "Pasiva",
@@ -34,6 +34,386 @@
         "Condiciones": [ { "Tipo": "NvHabilidad", "Cantidad": 200 } ],
         "Beneficio": "Inmune a todos los venenos y toxinas",
         "Mejoras": ["Regeneración de vida al recibir veneno"]
+      }
+    ]
+  },
+
+  {
+    "Id": "MaestriaMagiaBasica",
+    "Nombre": "Maestría en magia básica",
+    "Tipo": "Pasiva",
+    "Categoria": "Magia",
+    "Descripcion": "Aumenta el daño y la eficiencia de los hechizos.",
+    "AtributosNecesarios": { "Inteligencia": 10, "Sabiduria": 5 },
+    "Condiciones": [
+      { "Tipo": "UsoMagia", "Cantidad": 100 }
+    ],
+    "Beneficio": "+5% daño mágico y -5% coste de maná",
+    "Mejoras": ["+10% daño mágico si lanzas 250 hechizos"],
+    "Oculta": false,
+    "Exp": 0,
+    "Evoluciones": [
+      {
+        "Id": "MaestriaMagiaIntermedia",
+        "Nombre": "Maestría en magia intermedia",
+        "Condiciones": [ { "Tipo": "NvHabilidad", "Cantidad": 50 } ],
+        "Beneficio": "+10% daño mágico y -10% coste de maná",
+        "Mejoras": ["+15% daño mágico si lanzas 500 hechizos"]
+      },
+      {
+        "Id": "MaestriaMagiaAvanzada",
+        "Nombre": "Maestría en magia avanzada",
+        "Condiciones": [ { "Tipo": "NvHabilidad", "Cantidad": 100 } ],
+        "Beneficio": "+20% daño mágico y -15% coste de maná",
+        "Mejoras": ["+25% probabilidad de crítico mágico"]
+      },
+      {
+        "Id": "MaestriaMagiaLegendaria",
+        "Nombre": "Maestría en magia legendaria",
+        "Condiciones": [ { "Tipo": "NvHabilidad", "Cantidad": 200 } ],
+        "Beneficio": "+30% daño mágico y -20% coste de maná",
+        "Mejoras": ["Hechizos ignoran resistencia mágica enemiga"]
+      }
+    ]
+  },
+  {
+    "Id": "ReflejosFelinos",
+    "Nombre": "Reflejos felinos",
+    "Tipo": "Pasiva",
+    "Categoria": "Agilidad",
+    "Descripcion": "Aumenta la probabilidad de esquivar ataques.",
+    "AtributosNecesarios": { "Agilidad": 8 },
+    "Condiciones": [
+      { "Tipo": "Esquivar", "Cantidad": 50 }
+    ],
+    "Beneficio": "+5% probabilidad de esquivar",
+    "Mejoras": ["+10% si esquivas 150 ataques"],
+    "Oculta": false,
+    "Exp": 0,
+    "Evoluciones": [
+      {
+        "Id": "ReflejosFelinosIntermedios",
+        "Nombre": "Reflejos felinos intermedios",
+        "Condiciones": [ { "Tipo": "NvHabilidad", "Cantidad": 50 } ],
+        "Beneficio": "+10% probabilidad de esquivar",
+        "Mejoras": ["+15% si esquivas 300 ataques"]
+      },
+      {
+        "Id": "ReflejosFelinosAvanzados",
+        "Nombre": "Reflejos felinos avanzados",
+        "Condiciones": [ { "Tipo": "NvHabilidad", "Cantidad": 100 } ],
+        "Beneficio": "+15% probabilidad de esquivar",
+        "Mejoras": ["Inmune a ataques sorpresa"]
+      }
+    ]
+  },
+  {
+    "Id": "PielDeHierro",
+    "Nombre": "Piel de hierro",
+    "Tipo": "Pasiva",
+    "Categoria": "Defensa",
+    "Descripcion": "Reduce el daño físico recibido.",
+    "AtributosNecesarios": { "Constitucion": 12 },
+    "Condiciones": [
+      { "Tipo": "RecibirDanio", "Cantidad": 200 }
+    ],
+    "Beneficio": "-5% daño físico recibido",
+    "Mejoras": ["-10% si recibes 500 de daño"],
+    "Oculta": false,
+    "Exp": 0,
+    "Evoluciones": [
+      {
+        "Id": "PielDeAcero",
+        "Nombre": "Piel de acero",
+        "Condiciones": [ { "Tipo": "NvHabilidad", "Cantidad": 50 } ],
+        "Beneficio": "-10% daño físico recibido",
+        "Mejoras": ["-15% si recibes 1000 de daño"]
+      },
+      {
+        "Id": "PielDeDiamante",
+        "Nombre": "Piel de diamante",
+        "Condiciones": [ { "Tipo": "NvHabilidad", "Cantidad": 100 } ],
+        "Beneficio": "-20% daño físico recibido",
+        "Mejoras": ["Refleja 5% del daño recibido"]
+      }
+    ]
+  },
+  {
+    "Id": "VoluntadInquebrantable",
+    "Nombre": "Voluntad inquebrantable",
+    "Tipo": "Pasiva",
+    "Categoria": "Mental",
+    "Descripcion": "Reduce la duración de efectos negativos mentales.",
+    "AtributosNecesarios": { "Voluntad": 10 },
+    "Condiciones": [
+      { "Tipo": "ResistirEfectoMental", "Cantidad": 30 }
+    ],
+    "Beneficio": "-10% duración de efectos mentales",
+    "Mejoras": ["-20% si resistes 100 efectos"],
+    "Oculta": false,
+    "Exp": 0,
+    "Evoluciones": [
+      {
+        "Id": "VoluntadDeAcero",
+        "Nombre": "Voluntad de acero",
+        "Condiciones": [ { "Tipo": "NvHabilidad", "Cantidad": 50 } ],
+        "Beneficio": "-20% duración de efectos mentales",
+        "Mejoras": ["Inmune a miedo"]
+      },
+      {
+        "Id": "VoluntadLegendaria",
+        "Nombre": "Voluntad legendaria",
+        "Condiciones": [ { "Tipo": "NvHabilidad", "Cantidad": 100 } ],
+        "Beneficio": "Inmune a todos los efectos mentales",
+        "Mejoras": ["Recupera maná al resistir efectos"]
+      }
+    ]
+  },
+  {
+    "Id": "MaestriaEspadaBasica",
+    "Nombre": "Maestría con espada básica",
+    "Tipo": "Pasiva",
+    "Categoria": "Armas",
+    "Descripcion": "Aumenta el daño y la precisión al usar espadas.",
+    "AtributosNecesarios": { "Fuerza": 8, "Destreza": 6 },
+    "Condiciones": [
+      { "Tipo": "UsarEspada", "Cantidad": 100 }
+    ],
+    "Beneficio": "+5% daño y +5% precisión con espadas",
+    "Mejoras": ["+10% daño si derrotas 200 enemigos con espada"],
+    "Oculta": false,
+    "Exp": 0,
+    "Evoluciones": [
+      {
+        "Id": "MaestriaEspadaIntermedia",
+        "Nombre": "Maestría con espada intermedia",
+        "Condiciones": [ { "Tipo": "NvHabilidad", "Cantidad": 50 } ],
+        "Beneficio": "+10% daño y +10% precisión con espadas",
+        "Mejoras": ["+15% crítico con espadas"]
+      },
+      {
+        "Id": "MaestriaEspadaAvanzada",
+        "Nombre": "Maestría con espada avanzada",
+        "Condiciones": [ { "Tipo": "NvHabilidad", "Cantidad": 100 } ],
+        "Beneficio": "+20% daño y +15% precisión con espadas",
+        "Mejoras": ["Ataques con espada ignoran 10% defensa enemiga"]
+      }
+    ]
+  },
+  {
+    "Id": "MaestriaArcoBasica",
+    "Nombre": "Maestría con arco básica",
+    "Tipo": "Pasiva",
+    "Categoria": "Armas",
+    "Descripcion": "Aumenta la precisión y el daño al usar arcos.",
+    "AtributosNecesarios": { "Destreza": 10, "Percepcion": 7 },
+    "Condiciones": [
+      { "Tipo": "UsarArco", "Cantidad": 100 }
+    ],
+    "Beneficio": "+5% daño y +10% precisión con arcos",
+    "Mejoras": ["+10% daño si aciertas 250 disparos"],
+    "Oculta": false,
+    "Exp": 0,
+    "Evoluciones": [
+      {
+        "Id": "MaestriaArcoIntermedia",
+        "Nombre": "Maestría con arco intermedia",
+        "Condiciones": [ { "Tipo": "NvHabilidad", "Cantidad": 50 } ],
+        "Beneficio": "+10% daño y +15% precisión con arcos",
+        "Mejoras": ["+20% crítico con arcos"]
+      },
+      {
+        "Id": "MaestriaArcoAvanzada",
+        "Nombre": "Maestría con arco avanzada",
+        "Condiciones": [ { "Tipo": "NvHabilidad", "Cantidad": 100 } ],
+        "Beneficio": "+20% daño y +20% precisión con arcos",
+        "Mejoras": ["Disparos atraviesan armaduras ligeras"]
+      }
+    ]
+  },
+  {
+    "Id": "MaestriaHachaBasica",
+    "Nombre": "Maestría con hacha básica",
+    "Tipo": "Pasiva",
+    "Categoria": "Armas",
+    "Descripcion": "Aumenta el daño y la probabilidad de romper defensas al usar hachas.",
+    "AtributosNecesarios": { "Fuerza": 12 },
+    "Condiciones": [
+      { "Tipo": "UsarHacha", "Cantidad": 80 }
+    ],
+    "Beneficio": "+7% daño con hachas",
+    "Mejoras": ["+15% probabilidad de romper escudos"],
+    "Oculta": false,
+    "Exp": 0,
+    "Evoluciones": [
+      {
+        "Id": "MaestriaHachaIntermedia",
+        "Nombre": "Maestría con hacha intermedia",
+        "Condiciones": [ { "Tipo": "NvHabilidad", "Cantidad": 50 } ],
+        "Beneficio": "+15% daño con hachas",
+        "Mejoras": ["Ignora 10% de armadura enemiga"]
+      },
+      {
+        "Id": "MaestriaHachaAvanzada",
+        "Nombre": "Maestría con hacha avanzada",
+        "Condiciones": [ { "Tipo": "NvHabilidad", "Cantidad": 100 } ],
+        "Beneficio": "+25% daño con hachas",
+        "Mejoras": ["Ataques con hacha pueden aturdir"]
+      }
+    ]
+  },
+  {
+    "Id": "MaestriaLanzaBasica",
+    "Nombre": "Maestría con lanza básica",
+    "Tipo": "Pasiva",
+    "Categoria": "Armas",
+    "Descripcion": "Aumenta el alcance y la precisión al usar lanzas.",
+    "AtributosNecesarios": { "Destreza": 8, "Fuerza": 7 },
+    "Condiciones": [
+      { "Tipo": "UsarLanza", "Cantidad": 60 }
+    ],
+    "Beneficio": "+10% alcance y +5% precisión con lanzas",
+    "Mejoras": ["+10% daño si aciertas 150 ataques"],
+    "Oculta": false,
+    "Exp": 0,
+    "Evoluciones": [
+      {
+        "Id": "MaestriaLanzaIntermedia",
+        "Nombre": "Maestría con lanza intermedia",
+        "Condiciones": [ { "Tipo": "NvHabilidad", "Cantidad": 50 } ],
+        "Beneficio": "+15% alcance y +10% precisión con lanzas",
+        "Mejoras": ["Ataques con lanza atraviesan enemigos"]
+      },
+      {
+        "Id": "MaestriaLanzaAvanzada",
+        "Nombre": "Maestría con lanza avanzada",
+        "Condiciones": [ { "Tipo": "NvHabilidad", "Cantidad": 100 } ],
+        "Beneficio": "+20% alcance y +15% precisión con lanzas",
+        "Mejoras": ["+20% probabilidad de crítico con lanzas"]
+      }
+    ]
+  },
+  {
+    "Id": "MaestriaMazaBasica",
+    "Nombre": "Maestría con maza básica",
+    "Tipo": "Pasiva",
+    "Categoria": "Armas",
+    "Descripcion": "Aumenta el daño y la probabilidad de aturdir al usar mazas.",
+    "AtributosNecesarios": { "Fuerza": 10 },
+    "Condiciones": [
+      { "Tipo": "UsarMaza", "Cantidad": 70 }
+    ],
+    "Beneficio": "+8% daño con mazas",
+    "Mejoras": ["+10% probabilidad de aturdir si aciertas 100 golpes"],
+    "Oculta": false,
+    "Exp": 0,
+    "Evoluciones": [
+      {
+        "Id": "MaestriaMazaIntermedia",
+        "Nombre": "Maestría con maza intermedia",
+        "Condiciones": [ { "Tipo": "NvHabilidad", "Cantidad": 50 } ],
+        "Beneficio": "+15% daño con mazas",
+        "Mejoras": ["Aturdes enemigos con armadura pesada"]
+      },
+      {
+        "Id": "MaestriaMazaAvanzada",
+        "Nombre": "Maestría con maza avanzada",
+        "Condiciones": [ { "Tipo": "NvHabilidad", "Cantidad": 100 } ],
+        "Beneficio": "+25% daño con mazas",
+        "Mejoras": ["Aturdes a todos los enemigos cercanos al golpear"]
+      }
+    ]
+  },
+  {
+    "Id": "MaestriaDagaBasica",
+    "Nombre": "Maestría con daga básica",
+    "Tipo": "Pasiva",
+    "Categoria": "Armas",
+    "Descripcion": "Aumenta la velocidad y el daño crítico al usar dagas.",
+    "AtributosNecesarios": { "Destreza": 10 },
+    "Condiciones": [
+      { "Tipo": "UsarDaga", "Cantidad": 90 }
+    ],
+    "Beneficio": "+10% velocidad de ataque con dagas",
+    "Mejoras": ["+15% daño crítico si aciertas 200 ataques"],
+    "Oculta": false,
+    "Exp": 0,
+    "Evoluciones": [
+      {
+        "Id": "MaestriaDagaIntermedia",
+        "Nombre": "Maestría con daga intermedia",
+        "Condiciones": [ { "Tipo": "NvHabilidad", "Cantidad": 50 } ],
+        "Beneficio": "+20% velocidad de ataque y +10% crítico con dagas",
+        "Mejoras": ["Ataques por la espalda siempre críticos"]
+      },
+      {
+        "Id": "MaestriaDagaAvanzada",
+        "Nombre": "Maestría con daga avanzada",
+        "Condiciones": [ { "Tipo": "NvHabilidad", "Cantidad": 100 } ],
+        "Beneficio": "+30% velocidad de ataque y +20% crítico con dagas",
+        "Mejoras": ["Ignoras armadura al atacar por la espalda"]
+      }
+    ]
+  },
+  {
+    "Id": "MaestriaBastonBasica",
+    "Nombre": "Maestría con bastón básica",
+    "Tipo": "Pasiva",
+    "Categoria": "Armas",
+    "Descripcion": "Aumenta el daño mágico y la defensa al usar bastones.",
+    "AtributosNecesarios": { "Inteligencia": 8, "Sabiduria": 8 },
+    "Condiciones": [
+      { "Tipo": "UsarBaston", "Cantidad": 60 }
+    ],
+    "Beneficio": "+5% daño mágico y +5% defensa con bastones",
+    "Mejoras": ["+10% daño mágico si lanzas 100 hechizos con bastón"],
+    "Oculta": false,
+    "Exp": 0,
+    "Evoluciones": [
+      {
+        "Id": "MaestriaBastonIntermedia",
+        "Nombre": "Maestría con bastón intermedia",
+        "Condiciones": [ { "Tipo": "NvHabilidad", "Cantidad": 50 } ],
+        "Beneficio": "+10% daño mágico y +10% defensa con bastones",
+        "Mejoras": ["Hechizos con bastón restauran maná"]
+      },
+      {
+        "Id": "MaestriaBastonAvanzada",
+        "Nombre": "Maestría con bastón avanzada",
+        "Condiciones": [ { "Tipo": "NvHabilidad", "Cantidad": 100 } ],
+        "Beneficio": "+20% daño mágico y +15% defensa con bastones",
+        "Mejoras": ["Hechizos con bastón ignoran resistencia mágica"]
+      }
+    ]
+  },
+  {
+    "Id": "MaestriaBallestaBasica",
+    "Nombre": "Maestría con ballesta básica",
+    "Tipo": "Pasiva",
+    "Categoria": "Armas",
+    "Descripcion": "Aumenta la precisión y el daño al usar ballestas.",
+    "AtributosNecesarios": { "Destreza": 9, "Percepcion": 8 },
+    "Condiciones": [
+      { "Tipo": "UsarBallesta", "Cantidad": 80 }
+    ],
+    "Beneficio": "+7% daño y +10% precisión con ballestas",
+    "Mejoras": ["+15% daño si aciertas 200 disparos"],
+    "Oculta": false,
+    "Exp": 0,
+    "Evoluciones": [
+      {
+        "Id": "MaestriaBallestaIntermedia",
+        "Nombre": "Maestría con ballesta intermedia",
+        "Condiciones": [ { "Tipo": "NvHabilidad", "Cantidad": 50 } ],
+        "Beneficio": "+15% daño y +15% precisión con ballestas",
+        "Mejoras": ["Disparos atraviesan escudos"]
+      },
+      {
+        "Id": "MaestriaBallestaAvanzada",
+        "Nombre": "Maestría con ballesta avanzada",
+        "Condiciones": [ { "Tipo": "NvHabilidad", "Cantidad": 100 } ],
+        "Beneficio": "+25% daño y +20% precisión con ballestas",
+        "Mejoras": ["Disparos pueden aturdir al objetivo"]
       }
     ]
   }

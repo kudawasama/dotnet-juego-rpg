@@ -1,0 +1,59 @@
+[
+  {
+    "Nombre": "Espada Oxidada",
+    "Materiales": [
+      { "Nombre": "Lingote de Hierro", "Cantidad": 2 },
+      { "Nombre": "Madera Resistente", "Cantidad": 1 },
+      { "Nombre": "Fragmento de Gelatina", "Cantidad": 1 }
+    ]
+  },
+ 
+  {
+    "Nombre": "Arco Simple",
+    "Materiales": [
+      { "Nombre": "Madera Flexible", "Cantidad": 2 },
+      { "Nombre": "Cuerda", "Cantidad": 1 },
+      { "Nombre": "Pluma de Ave", "Cantidad": 2 }
+    ]
+  },
+  {
+    "Nombre": "Vara de Novato",
+    "Materiales": [
+      { "Nombre": "Madera Sagrada", "Cantidad": 1 },
+      { "Nombre": "Cristal Mágico", "Cantidad": 1 },
+      { "Nombre": "Raíz Mágica", "Cantidad": 1 }
+    ]
+  }
+  ,
+  {
+    "Nombre": "Espada de Hierro",
+    "Materiales": [
+      { "Nombre": "Lingote de Hierro", "Cantidad": 3 },
+      { "Nombre": "Madera Resistente", "Cantidad": 1 }
+    ]
+  },
+  {
+    "Nombre": "Hacha de Batalla",
+    "Materiales": [
+      { "Nombre": "Lingote de Hierro", "Cantidad": 4 },
+      { "Nombre": "Madera Resistente", "Cantidad": 2 }
+    ]
+  },
+  {
+    "Nombre": "Armadura de Placas",
+    "Materiales": [
+      { "Nombre": "Lingote de Hierro", "Cantidad": 8 },
+      { "Nombre": "Cuero", "Cantidad": 2 }
+    ]
+  },
+  
+  {
+    "Nombre": "Lingote de Hierro",
+    "Materiales": [
+      { "Nombre": "Mineral de Hierro", "Cantidad": 2 },
+      { "Nombre": "Carbón", "Cantidad": 1 }
+    ]
+  }
+
+  
+]

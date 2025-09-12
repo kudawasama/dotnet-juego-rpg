@@ -1,0 +1,14 @@
+{
+  "Id": "2_32",
+  "nombre": "Sector 2_32",
+  "bioma": "Campo",
+  "parteCiudad": "",
+  "ciudadPrincipal": false,
+  "esCentroCiudad": false,
+  "nodosRecoleccion": [],
+  "Requisitos": {},
+  "enemigos": [],
+  "Conexiones": [],
+  "eventos": [],
+  "descripcion": "Sector autocompletado."
+}

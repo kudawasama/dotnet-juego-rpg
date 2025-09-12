@@ -1,0 +1,16 @@
+[
+  {
+    "Nombre": "Ungüento Calmante",
+    "Materiales": [
+      { "Nombre": "Hierba Calmante", "Cantidad": 2 },
+      { "Nombre": "Aceite", "Cantidad": 1 }
+    ]
+  },
+  {
+    "Nombre": "Remedio Herbal",
+    "Materiales": [
+      { "Nombre": "Hierba Curativa", "Cantidad": 1 },
+      { "Nombre": "Raíz Mágica", "Cantidad": 1 }
+    ]
+  }
+]

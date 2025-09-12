@@ -79,8 +79,8 @@ namespace MiJuegoRPG.Motor
         {
             if (botasDisponibles != null && botasDisponibles.Count > 0)
             {
-                var random = new Random();
-                var botasData = botasDisponibles[random.Next(botasDisponibles.Count)];
+                var rand = MiJuegoRPG.Motor.Servicios.RandomService.Instancia;
+                var botasData = botasDisponibles[rand.Next(botasDisponibles.Count)];
                 int defensaFinal = (int)(botasData.Defensa * (botasData.Perfeccion / 50.0));
                 MiJuegoRPG.Objetos.Rareza rareza = MiJuegoRPG.Objetos.Rareza.Normal;
                 Enum.TryParse(botasData.Rareza, true, out rareza);
@@ -97,8 +97,8 @@ namespace MiJuegoRPG.Motor
         {
             if (cinturonesDisponibles != null && cinturonesDisponibles.Count > 0)
             {
-                var random = new Random();
-                var cinturonData = cinturonesDisponibles[random.Next(cinturonesDisponibles.Count)];
+                var rand = MiJuegoRPG.Motor.Servicios.RandomService.Instancia;
+                var cinturonData = cinturonesDisponibles[rand.Next(cinturonesDisponibles.Count)];
                 int bonifCarga = (int)(cinturonData.BonificacionCarga * (cinturonData.Perfeccion / 50.0));
                 MiJuegoRPG.Objetos.Rareza rareza = MiJuegoRPG.Objetos.Rareza.Normal;
                 Enum.TryParse(cinturonData.Rareza, true, out rareza);
@@ -115,8 +115,8 @@ namespace MiJuegoRPG.Motor
         {
             if (collaresDisponibles != null && collaresDisponibles.Count > 0)
             {
-                var random = new Random();
-                var collarData = collaresDisponibles[random.Next(collaresDisponibles.Count)];
+                var rand = MiJuegoRPG.Motor.Servicios.RandomService.Instancia;
+                var collarData = collaresDisponibles[rand.Next(collaresDisponibles.Count)];
                 int bonifDefensa = (int)(collarData.BonificacionDefensa * (collarData.Perfeccion / 50.0));
                 int bonifEnergia = (int)(collarData.BonificacionEnergia * (collarData.Perfeccion / 50.0));
                 MiJuegoRPG.Objetos.Rareza rareza = MiJuegoRPG.Objetos.Rareza.Normal;
@@ -134,8 +134,8 @@ namespace MiJuegoRPG.Motor
         {
             if (pantalonesDisponibles != null && pantalonesDisponibles.Count > 0)
             {
-                var random = new Random();
-                var pantalonData = pantalonesDisponibles[random.Next(pantalonesDisponibles.Count)];
+                var rand = MiJuegoRPG.Motor.Servicios.RandomService.Instancia;
+                var pantalonData = pantalonesDisponibles[rand.Next(pantalonesDisponibles.Count)];
                 int defensaFinal = (int)(pantalonData.Defensa * (pantalonData.Perfeccion / 50.0));
                 MiJuegoRPG.Objetos.Rareza rareza = MiJuegoRPG.Objetos.Rareza.Normal;
                 Enum.TryParse(pantalonData.Rareza, true, out rareza);
@@ -180,8 +180,8 @@ namespace MiJuegoRPG.Motor
         {
             if (armadurasDisponibles != null && armadurasDisponibles.Count > 0)
             {
-                var random = new Random();
-                var armaduraData = armadurasDisponibles[random.Next(armadurasDisponibles.Count)];
+                var rand = MiJuegoRPG.Motor.Servicios.RandomService.Instancia;
+                var armaduraData = armadurasDisponibles[rand.Next(armadurasDisponibles.Count)];
                 int defensaFinal = (int)(armaduraData.Defensa * (armaduraData.Perfeccion / 50.0));
                 MiJuegoRPG.Objetos.Rareza rareza = MiJuegoRPG.Objetos.Rareza.Normal;
                 Enum.TryParse(armaduraData.Rareza, true, out rareza);
@@ -198,8 +198,8 @@ namespace MiJuegoRPG.Motor
         {
             if (accesoriosDisponibles != null && accesoriosDisponibles.Count > 0)
             {
-                var random = new Random();
-                var accesorioData = accesoriosDisponibles[random.Next(accesoriosDisponibles.Count)];
+                var rand = MiJuegoRPG.Motor.Servicios.RandomService.Instancia;
+                var accesorioData = accesoriosDisponibles[rand.Next(accesoriosDisponibles.Count)];
                 int bonifAtaque = (int)(accesorioData.BonificacionAtaque * (accesorioData.Perfeccion / 50.0));
                 int bonifDefensa = (int)(accesorioData.BonificacionDefensa * (accesorioData.Perfeccion / 50.0));
                 MiJuegoRPG.Objetos.Rareza rareza = MiJuegoRPG.Objetos.Rareza.Normal;
@@ -232,9 +232,9 @@ namespace MiJuegoRPG.Motor
         {
             if (armasDisponibles != null && armasDisponibles.Count > 0)
             {
-                var random = new Random();
-                // Selección aleatoria ponderada por rareza y perfección
-                var armaData = armasDisponibles[random.Next(armasDisponibles.Count)];
+                var rand = MiJuegoRPG.Motor.Servicios.RandomService.Instancia;
+                // Selección aleatoria (ponderación futura)
+                var armaData = armasDisponibles[rand.Next(armasDisponibles.Count)];
                 // Ajustar daño según perfección (ejemplo: daño * (perfeccion / 50.0))
                 int danoFinal = (int)(armaData.Daño * (armaData.Perfeccion / 50.0));
                 // Determinar rareza (si tienes enum, puedes mapearlo aquí)

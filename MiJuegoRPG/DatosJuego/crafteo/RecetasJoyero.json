@@ -1,0 +1,16 @@
+[
+  {
+    "Nombre": "Anillo de Plata",
+    "Materiales": [
+      { "Nombre": "Lingote de Plata", "Cantidad": 1 },
+      { "Nombre": "Gema Pequeña", "Cantidad": 1 }
+    ]
+  },
+  {
+    "Nombre": "Collar de Rubí",
+    "Materiales": [
+      { "Nombre": "Lingote de Oro", "Cantidad": 1 },
+      { "Nombre": "Rubí", "Cantidad": 1 }
+    ]
+  }
+]

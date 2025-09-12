@@ -1,0 +1,63 @@
+INICIO DEL JUEGO
+└─ Muestra pantalla de inicio con título y opciones:
+   ├─ 1. Nuevo Juego
+   │   └─ Solicita nombre y clase del personaje
+   │   └─ Crea personaje y pasa al Menú Principal
+   ├─ 2. Cargar Juego
+   │   └─ Si hay partidas guardadas, permite seleccionar y cargar
+   │   └─ Si no hay, pregunta si crear un nuevo personaje
+   ├─ 3. Créditos
+   │   └─ Muestra información de los creadores y vuelve al inicio
+   └─ 4. Salir
+       └─ Confirma salida (¿Seguro? s/n)
+
+MENÚ PRINCIPAL (CIUDAD INICIAL)
+└─ Muestra: "¿Qué deseas hacer?"
+   ├─ 1. Aventura (Explorar el sector)
+   │   └─ Explora el entorno, posibles eventos:
+   │       ├─ Combate (abre Menú de Combate)
+   │       ├─ Encuentro de objeto (opciones: Recoger, Dejar)
+   │       ├─ Evento especial (diálogo, decisión, etc.)
+   │       └─ Nada relevante (opciones: Volver, Explorar de nuevo)
+   ├─ 2. Entrenar
+   │   └─ Selecciona tipo de entrenamiento (fuerza, magia, destreza, etc.)
+   │   └─ Muestra resultado y mejora atributos
+   ├─ 3. Tienda
+   │   └─ Comprar, vender, ver detalles de objetos
+   │   └─ Volver al menú principal
+   ├─ 4. Inventario
+   │   └─ Usar, equipar, eliminar, ver detalles de objetos
+   │   └─ Volver al menú principal
+   ├─ 5. Guardar/Cargar
+   │   └─ Guardar partida actual, cargar otra partida, volver
+   ├─ 6. Misiones y NPCs
+   │   └─ Ver misiones activas, hablar con NPCs, aceptar/completar misiones
+   ├─ 7. Viajar
+   │   └─ Seleccionar destino, ver requisitos, viajar o volver
+   └─ 8. Salir del juego
+       └─ Confirma salida y termina el programa
+
+MENÚ DE COMBATE
+└─ Opciones durante combate:
+   ├─ 1. Atacar
+   ├─ 2. Usar objeto
+   ├─ 3. Huir
+   └─ 4. Ver estado
+
+MENÚ ENTRE COMBATES
+└─ Opciones:
+   ├─ 1. Guardar partida
+   ├─ 2. Cargar partida
+   ├─ 3. Continuar combatiendo
+   └─ 4. Salir del juego
+
+SUBMENÚS ADICIONALES
+- Entrenamiento: lista todos los atributos base disponibles para mejorar.
+- Tienda: lista objetos, permite comprar/vender, ver detalles.
+- Inventario: lista objetos, permite usar, equipar, eliminar, ver detalles.
+- Misiones: muestra misiones activas, completadas, y permite interactuar con NPCs.
+- Guardado/Carga: permite gestionar partidas guardadas.
+
+FIN DEL JUEGO
+└─ Cuando el jugador selecciona "Salir del juego" o termina la partida.
+   

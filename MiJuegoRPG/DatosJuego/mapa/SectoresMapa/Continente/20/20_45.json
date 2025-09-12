@@ -1,0 +1,14 @@
+{
+  "Id": "20_45",
+  "nombre": "Sector 20_45",
+  "bioma": "Campo",
+  "parteCiudad": "",
+  "ciudadPrincipal": false,
+  "esCentroCiudad": false,
+  "nodosRecoleccion": [],
+  "Requisitos": {},
+  "enemigos": [],
+  "Conexiones": [],
+  "eventos": [],
+  "descripcion": "Sector autocompletado."
+}

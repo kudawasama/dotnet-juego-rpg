@@ -1,0 +1,14 @@
+{
+  "Id": "7_31",
+  "nombre": "Sector 7_31",
+  "bioma": "Campo",
+  "parteCiudad": "",
+  "ciudadPrincipal": false,
+  "esCentroCiudad": false,
+  "nodosRecoleccion": [],
+  "Requisitos": {},
+  "enemigos": [],
+  "Conexiones": [],
+  "eventos": [],
+  "descripcion": "Sector autocompletado."
+}

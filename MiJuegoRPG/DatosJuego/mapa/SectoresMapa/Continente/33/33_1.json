@@ -1,0 +1,14 @@
+{
+  "Id": "33_1",
+  "nombre": "Sector 33_1",
+  "bioma": "Campo",
+  "parteCiudad": "",
+  "ciudadPrincipal": false,
+  "esCentroCiudad": false,
+  "nodosRecoleccion": [],
+  "Requisitos": {},
+  "enemigos": [],
+  "Conexiones": [],
+  "eventos": [],
+  "descripcion": "Sector autocompletado."
+}

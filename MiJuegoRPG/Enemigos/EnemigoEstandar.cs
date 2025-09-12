@@ -9,8 +9,8 @@ namespace MiJuegoRPG.Enemigos
     public class EnemigoEstandar : Enemigo
     {
         // El constructor simplemente llama al constructor de la clase base (Enemigo).
-        public EnemigoEstandar(string nombre, int vidaBase, int ataqueBase, int defensaBase, int nivel, int experienciaRecompensa, int oroRecompensa)
-            : base(nombre, vidaBase, ataqueBase, defensaBase, nivel, experienciaRecompensa, oroRecompensa)
+        public EnemigoEstandar(string nombre, int vidaBase, int ataqueBase, int defensaBase, int defensaMagicaBase, int nivel, int experienciaRecompensa, int oroRecompensa)
+            : base(nombre, vidaBase, ataqueBase, defensaBase, defensaMagicaBase, nivel, experienciaRecompensa, oroRecompensa)
         {
             // No se necesita lógica adicional aquí, ya que el comportamiento es estándar.
         }

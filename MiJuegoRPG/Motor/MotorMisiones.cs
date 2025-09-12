@@ -16,42 +16,41 @@ namespace MiJuegoRPG.Motor
         }
         public void MostrarMenuMisionesNPC()
         {
-            Console.Clear();
-            Console.WriteLine(juego.FormatoRelojMundo);
-            Console.WriteLine("--- Menú de Misiones y NPC ---");
-            Console.WriteLine("1. Ver misiones disponibles");
-            Console.WriteLine("2. Ver NPCs");
-            Console.WriteLine("3. Volver");
-            Console.Write("Seleccione una opción: ");
-            var opcion = Console.ReadLine();
+            // Console.Clear();
+            juego.Ui.WriteLine(juego.FormatoRelojMundo);
+            juego.Ui.WriteLine("--- Menú de Misiones y NPC ---");
+            juego.Ui.WriteLine("1. Ver misiones disponibles");
+            juego.Ui.WriteLine("2. Ver NPCs");
+            juego.Ui.WriteLine("3. Volver");
+            var opcion = InputService.LeerOpcion("Seleccione una opción: ");
             switch (opcion)
             {
                 case "1":
                     MostrarMisiones();
-                    Console.ReadKey();
+                    InputService.Pausa();
                     MostrarMenuMisionesNPC();
                     break;
                 case "2":
                     MostrarNPCs();
-                    Console.ReadKey();
+                    InputService.Pausa();
                     MostrarMenuMisionesNPC();
                     break;
                 case "3":
                     break;
                 default:
-                    Console.WriteLine("Opción inválida");
-                    Console.ReadKey();
+                    juego.Ui.WriteLine("Opción inválida");
+                    InputService.Pausa();
                     MostrarMenuMisionesNPC();
                     break;
             }
         }
         public void MostrarMisiones()
         {
-            Console.Clear();
-            Console.WriteLine("--- Misiones Disponibles ---");
+            // Console.Clear();
+            juego.Ui.WriteLine("--- Misiones Disponibles ---");
             try
             {
-                var rutaMisiones = Path.Combine(Environment.CurrentDirectory, "DatosJuego", "misiones", "misiones.json");
+                var rutaMisiones = MiJuegoRPG.Motor.Servicios.PathProvider.MisionesPath("misiones.json");
                 if (File.Exists(rutaMisiones))
                 {
                     var json = File.ReadAllText(rutaMisiones);
@@ -60,32 +59,32 @@ namespace MiJuegoRPG.Motor
                     {
                         foreach (var m in misiones)
                         {
-                            Console.WriteLine($"- {m.Nombre}: {m.Descripcion}");
+                            juego.Ui.WriteLine($"- {m.Nombre}: {m.Descripcion}");
                         }
                     }
                     else
                     {
-                        Console.WriteLine("No hay misiones disponibles.");
+                        juego.Ui.WriteLine("No hay misiones disponibles.");
                     }
                 }
                 else
                 {
-                    Console.WriteLine("Archivo de misiones no encontrado.");
+                    juego.Ui.WriteLine("Archivo de misiones no encontrado.");
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error al leer misiones: {ex.Message}");
+                juego.Ui.WriteLine($"Error al leer misiones: {ex.Message}");
             }
         }
         public void MostrarNPCs()
         {
-            Console.Clear();
-            Console.WriteLine("--- NPCs ---");
+            // Console.Clear();
+            juego.Ui.WriteLine("--- NPCs ---");
             try
             {
-                var rutaNPCs = Path.Combine(Environment.CurrentDirectory, "DatosJuego", "npcs", "npc.json");
-                var rutaMisiones = Path.Combine(Environment.CurrentDirectory, "DatosJuego", "misiones", "misiones.json");
+                var rutaNPCs = MiJuegoRPG.Motor.Servicios.PathProvider.NpcsPath("npc.json");
+                var rutaMisiones = MiJuegoRPG.Motor.Servicios.PathProvider.MisionesPath("misiones.json");
                 List<Mision> misiones = new List<Mision>();
                 if (File.Exists(rutaMisiones))
                 {
@@ -102,48 +101,48 @@ namespace MiJuegoRPG.Motor
                     {
                         foreach (var npc in npcs)
                         {
-                            Console.WriteLine($"- {npc.Nombre}: {npc.Descripcion}");
+                            juego.Ui.WriteLine($"- {npc.Nombre}: {npc.Descripcion}");
                             if (npc.Misiones != null && npc.Misiones.Count > 0)
                             {
-                                Console.WriteLine("  Misiones:");
+                                juego.Ui.WriteLine("  Misiones:");
                                 foreach (var idMision in npc.Misiones)
                                 {
                                     var mision = misiones.Find(m => m.Nombre == idMision);
                                     if (mision != null)
-                                        Console.WriteLine($"    * {mision.Nombre}: {mision.Descripcion}");
+                                        juego.Ui.WriteLine($"    * {mision.Nombre}: {mision.Descripcion}");
                                     else
-                                        Console.WriteLine($"    * (Misión no encontrada: {idMision})");
+                                        juego.Ui.WriteLine($"    * (Misión no encontrada: {idMision})");
                                 }
                             }
                             else
                             {
-                                Console.WriteLine("  No tiene misiones asociadas.");
+                                juego.Ui.WriteLine("  No tiene misiones asociadas.");
                             }
                         }
                     }
                     else
                     {
-                        Console.WriteLine("No hay NPCs disponibles.");
+                        juego.Ui.WriteLine("No hay NPCs disponibles.");
                     }
                 }
                 else
                 {
-                    Console.WriteLine("Archivo de NPCs no encontrado.");
+                    juego.Ui.WriteLine("Archivo de NPCs no encontrado.");
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error al leer NPCs: {ex.Message}");
+                juego.Ui.WriteLine($"Error al leer NPCs: {ex.Message}");
             }
         }
         public void RevisarMisiones()
         {
-            Console.Clear();
-            Console.WriteLine("=== Misiones activas ===");
+            // Console.Clear();
+            juego.Ui.WriteLine("=== Misiones activas ===");
             if (juego.jugador == null || juego.jugador.Inventario == null)
             {
-                Console.WriteLine("No hay personaje cargado.");
-                Console.ReadKey();
+                juego.Ui.WriteLine("No hay personaje cargado.");
+                InputService.Pausa();
                 return;
             }
             var misionesEjemplo = new List<Mision> {
@@ -157,15 +156,14 @@ namespace MiJuegoRPG.Motor
             };
             foreach (var mision in misionesEjemplo)
             {
-                Console.WriteLine($"Misión: {mision.Nombre}");
-                Console.WriteLine($"Solicitante: Herrero");
-                Console.WriteLine($"Item solicitado: {string.Join(", ", mision.Requisitos)}");
-                Console.WriteLine($"Ubicación del NPC: {mision.UbicacionNPC}");
-                Console.WriteLine($"Estado: {mision.Estado}");
-                Console.WriteLine("---");
+                juego.Ui.WriteLine($"Misión: {mision.Nombre}");
+                juego.Ui.WriteLine($"Solicitante: Herrero");
+                juego.Ui.WriteLine($"Item solicitado: {string.Join(", ", mision.Requisitos)}");
+                juego.Ui.WriteLine($"Ubicación del NPC: {mision.UbicacionNPC}");
+                juego.Ui.WriteLine($"Estado: {mision.Estado}");
+                juego.Ui.WriteLine("---");
             }
-            Console.WriteLine("Presiona cualquier tecla para volver al menú...");
-            Console.ReadKey();
+            InputService.Pausa("Presiona cualquier tecla para volver al menú...");
         }
     }
 }

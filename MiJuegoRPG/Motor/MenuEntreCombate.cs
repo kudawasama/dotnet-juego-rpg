@@ -24,39 +24,34 @@ namespace MiJuegoRPG.Motor
 
         public void MostrarMenu()
         {
-            Console.WriteLine("Menú entre combates:");
-            Console.WriteLine("1. Guardar personaje");
-            Console.WriteLine("2. Cargar personaje");
-            Console.WriteLine("3. Continuar combatiendo");
-            Console.WriteLine("4. Menú principal fijo");
-            Console.WriteLine("5. Salir del juego");
+            juego.Ui.WriteLine("Menú entre combates:");
+            juego.Ui.WriteLine("1. Guardar personaje");
+            juego.Ui.WriteLine("2. Cargar personaje");
+            juego.Ui.WriteLine("3. Continuar combatiendo");
+            juego.Ui.WriteLine("4. Menú principal fijo");
+            juego.Ui.WriteLine("5. Salir del juego");
 
-            var opcion = Console.ReadLine();
+            var opcion = InputService.LeerOpcion();
 
             switch (opcion)
             {
                 case "1":
-                    juego.AvanzarTiempo(1);
                     juego.GuardarPersonaje();
                     break;
                 case "2":
-                    juego.AvanzarTiempo(1);
                     juego.CargarPersonaje();
                     break;
                 case "3":
-                    juego.AvanzarTiempo(1);
-                    juego.ComenzarCombate();
+                    juego.motorCombate.ComenzarCombate();
                     break;
                 case "4":
-                    juego.AvanzarTiempo(1);
                     menusJuego.MostrarMenuPrincipalFijo();
                     break;
                 case "5":
-                    juego.AvanzarTiempo(1);
                     Environment.Exit(0);
                     break;
                 default:
-                    Console.WriteLine("Opción no válida.");
+                    juego.Ui.WriteLine("Opción no válida.");
                     break;
             }
         }

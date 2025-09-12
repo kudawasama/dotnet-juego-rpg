@@ -41,7 +41,7 @@ namespace MiJuegoRPG.PjDatos
         /// </summary>
         public static void CargarDesdeJson(string? rutaJson = null)
         {
-            rutaJson ??= Path.Combine(Environment.CurrentDirectory, "PjDatos", "clases.json");
+            rutaJson ??= MiJuegoRPG.Motor.Servicios.PathProvider.CombineData("clases.json");
             if (File.Exists(rutaJson))
             {
                 string json = File.ReadAllText(rutaJson);

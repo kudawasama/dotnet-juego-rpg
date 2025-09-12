@@ -24,9 +24,7 @@ namespace MiJuegoRPG.Motor  // Debe ser este espacio de nombres
                 // Usar ruta por defecto si no se proporciona una
                 if (rutaArchivo == null)
                 {
-                    var dir = Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory);
-                    string rutaProyecto = dir?.Parent?.Parent?.FullName ?? AppDomain.CurrentDomain.BaseDirectory;
-                    rutaArchivo = Path.Combine(rutaProyecto, "PjDatos", "PjGuardados", "Grid.json");
+                    rutaArchivo = MiJuegoRPG.Motor.Servicios.PathProvider.PjDatosPath("PjGuardados", "Grid.json");
                 }
 
                 // Crear directorio si no existe
@@ -84,7 +82,8 @@ namespace MiJuegoRPG.Motor  // Debe ser este espacio de nombres
         public static MiJuegoRPG.Personaje.Personaje CrearSinClase()
         {
             Console.WriteLine("Nombre de tu personaje:");
-            string nombre = Console.ReadLine() ?? "Héroe Sin Nombre";
+            string nombre = InputService.LeerOpcion();
+            if (string.IsNullOrWhiteSpace(nombre)) nombre = "Héroe Sin Nombre";
 
             // Atributos base neutros
             var atributosBase = new AtributosBase(5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5);

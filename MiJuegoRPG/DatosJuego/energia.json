@@ -1,0 +1,32 @@
+{
+  "BasePorTipo": {
+    "Recolectar": 8,
+    "Minar": 12,
+    "Talar": 10
+  },
+  "ModHerramienta": {
+    "Pico": -0.15,
+    "Hacha": -0.10,
+    "Hocico": -0.05
+  },
+  "ModBioma": {
+    "Bosque": 0.05,
+    "Montana": 0.10,
+    "Campo": -0.05
+  },
+  "AtributoRelevantePorTipo": {
+    "Recolectar": "Percepcion",
+    "Minar": "Fuerza",
+    "Talar": "Fuerza"
+  },
+  "UmbralAtributo": 25,
+  "FactorReduccionAtributo": 0.4,
+  "CostoMinimo": 3,
+  "CostoMaximo": 25
+  ,
+  "ModClase": {
+    "Minero": -0.20,
+    "Leñador": -0.15,
+    "Recolector": -0.10
+  }
+}

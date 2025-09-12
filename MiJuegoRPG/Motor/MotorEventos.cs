@@ -8,7 +8,7 @@ namespace MiJuegoRPG.Motor
     public class MotorEventos
     {
         private Juego juego;
-        private Random random = new Random();
+    // Random local eliminado: usar RandomService centralizado
         public MotorEventos(Juego juego)
         {
             this.juego = juego;
@@ -16,8 +16,9 @@ namespace MiJuegoRPG.Motor
 
         public void ExplorarSector()
         {
-            Console.WriteLine($"Sectores disponibles en {juego.ubicacionActual.Nombre}:");
-            var opciones = new List<string>(juego.ubicacionActual.EventosPosibles);
+            var sectorActual = juego.mapa.UbicacionActual;
+            Console.WriteLine($"Sectores disponibles en {sectorActual.Nombre}:");
+            var opciones = new List<string>(sectorActual.Eventos);
             Console.WriteLine("Elige una opción:");
             var opcion = Console.ReadLine();
             int seleccion;
@@ -28,7 +29,7 @@ namespace MiJuegoRPG.Motor
                 if (eventoElegido == "Explorar" || eventoElegido == "Explorar sector")
                 {
                     accionExploracion = true;
-                    int resultado = random.Next(100);
+                    int resultado = MiJuegoRPG.Motor.Servicios.RandomService.Instancia.Next(100);
                     if (resultado < 40)
                     {
                         Console.WriteLine("¡Te has encontrado con un enemigo!");
@@ -56,11 +57,17 @@ namespace MiJuegoRPG.Motor
                 else if (eventoElegido == "Recolectar" || eventoElegido == "Minar" || eventoElegido == "Talar")
                 {
                     accionExploracion = true;
-                    RealizarAccionRecoleccion(eventoElegido);
+                    var tipo = eventoElegido switch {
+                        "Recolectar" => MiJuegoRPG.Dominio.TipoRecoleccion.Recolectar,
+                        "Minar" => MiJuegoRPG.Dominio.TipoRecoleccion.Minar,
+                        "Talar" => MiJuegoRPG.Dominio.TipoRecoleccion.Talar,
+                        _ => MiJuegoRPG.Dominio.TipoRecoleccion.Recolectar
+                    };
+                    juego.recoleccionService.EjecutarAccion(tipo, new NodoRecoleccion { Nombre = eventoElegido, Tipo = eventoElegido });
                 }
                 else if (eventoElegido == "Escuela de Entrenamiento")
                 {
-                    juego.Entrenar();
+                    juego.motorEntrenamiento.Entrenar();
                 }
                 else if (eventoElegido == "Tienda")
                 {
@@ -82,10 +89,10 @@ namespace MiJuegoRPG.Motor
             // Solo ejecutar eventos aleatorios si realmente se exploró
             if (accionExploracion)
             {
-                int probMonstruo = random.Next(100);
-                int probObjeto = random.Next(100);
-                int probMazmorra = random.Next(100);
-                int probEvento = random.Next(100);
+                int probMonstruo = MiJuegoRPG.Motor.Servicios.RandomService.Instancia.Next(100);
+                int probObjeto = MiJuegoRPG.Motor.Servicios.RandomService.Instancia.Next(100);
+                int probMazmorra = MiJuegoRPG.Motor.Servicios.RandomService.Instancia.Next(100);
+                int probEvento = MiJuegoRPG.Motor.Servicios.RandomService.Instancia.Next(100);
                 bool monstruo = probMonstruo < juego.ProbMonstruo;
                 bool objeto = probObjeto < juego.ProbObjeto;
                 bool mazmorra = probMazmorra < juego.ProbMazmorra;
@@ -94,7 +101,7 @@ namespace MiJuegoRPG.Motor
                 if (monstruo)
                 {
                     Console.WriteLine("¡Un monstruo aparece!");
-                    juego.ComenzarCombate();
+                    juego.motorCombate.ComenzarCombate();
                     juego.ProgresionPorActividad("combate");
                 }
                 if (objeto)
@@ -123,48 +130,6 @@ namespace MiJuegoRPG.Motor
             }
         }
 
-        public void RealizarAccionRecoleccion(string tipo)
-        {
-            var random = new Random();
-            switch (tipo)
-            {
-                case "Recolectar":
-                    if (random.Next(100) < 60)
-                    {
-                        Console.WriteLine("Recolectaste hierbas curativas.");
-                        if (juego.jugador != null)
-                            juego.jugador.Inventario.AgregarObjeto(new Pocion("Hierba Curativa", 10));
-                    }
-                    else
-                    {
-                        Console.WriteLine("No encontraste nada útil.");
-                    }
-                    break;
-                case "Minar":
-                    if (random.Next(100) < 40)
-                    {
-                        Console.WriteLine("Minaste mineral raro.");
-                        if (juego.jugador != null)
-                            juego.jugador.Inventario.AgregarObjeto(new Pocion("Mineral Raro", 0));
-                    }
-                    else
-                    {
-                        Console.WriteLine("No encontraste minerales.");
-                    }
-                    break;
-                case "Talar":
-                    if (random.Next(100) < 50)
-                    {
-                        Console.WriteLine("Talarte madera resistente.");
-                        if (juego.jugador != null)
-                            juego.jugador.Inventario.AgregarObjeto(new Pocion("Madera Resistente", 0));
-                    }
-                    else
-                    {
-                        Console.WriteLine("No encontraste árboles útiles.");
-                    }
-                    break;
-            }
-        }
+    // Método RealizarAccionRecoleccion eliminado: ahora gestionado por RecoleccionService
     }
 }

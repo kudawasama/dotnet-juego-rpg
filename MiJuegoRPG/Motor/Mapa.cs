@@ -11,12 +11,13 @@ namespace MiJuegoRPG.Motor
         public List<string> Eventos { get; set; } = new List<string>();
         public List<string> EnemigosPosibles { get; set; } = new List<string>();
         public List<string> ObjetosPosibles { get; set; } = new List<string>();
+        public List<string> Conexiones { get; set; } = new List<string>();
     }
 
     public class Mapa
-    {
+    {   
         private Dictionary<string, PjDatos.SectorData> sectores = new Dictionary<string, PjDatos.SectorData>();
-        public PjDatos.SectorData UbicacionActual { get; private set; }
+        public PjDatos.SectorData UbicacionActual { get; set; }
         public Dictionary<string, bool> SectoresDescubiertos { get; private set; } = new Dictionary<string, bool>();
 
         public List<PjDatos.SectorData> ObtenerSectores()
@@ -24,49 +25,83 @@ namespace MiJuegoRPG.Motor
             return new List<PjDatos.SectorData>(sectores.Values);
         }
 
-        public Mapa(Dictionary<string, PjDatos.SectorData> sectoresDict)
-        {
-            sectores = sectoresDict ?? new Dictionary<string, PjDatos.SectorData>();
-                PjDatos.SectorData? ubicacionInicial = null;
-                foreach (var sector in sectores.Values)
-                {
-                    if (sector.CiudadInicial)
-                    {
-                        ubicacionInicial = sector;
-                        break;
-                    }
-                }
-                if (ubicacionInicial == null)
-                {
-                    ubicacionInicial = sectores.Count > 0 ? new List<PjDatos.SectorData>(sectores.Values)[0] : null;
-                }
-                if (ubicacionInicial == null)
-                {
-                    throw new InvalidOperationException("No se encontró ninguna ubicación válida en el mapa. Verifica los archivos de mapa.");
-                }
-                UbicacionActual = ubicacionInicial;
-                SectoresDescubiertos[UbicacionActual.Id] = true;
-        }
-
-    // Método de carga por archivo eliminado, ahora se usa el constructor con diccionario
-
-        public void MoverseA(string idSectorDestino)
+    public bool MoverseA(string idSectorDestino)
         {
             if (sectores.TryGetValue(idSectorDestino, out var sectorDestino))
             {
-                if (UbicacionActual.Conexiones.Contains(sectorDestino.Id))
+                if (UbicacionActual.Conexiones.Contains(idSectorDestino))
                 {
                     UbicacionActual = sectorDestino;
-                    Console.WriteLine($"Te has movido a {UbicacionActual.Nombre}.");
+                    // Notificar cambio de sector para restaurar cooldowns
+                    var juego = Juego.ObtenerInstanciaActual();
+                    try { juego?.recoleccionService?.AlEntrarSector(UbicacionActual.Id); } catch { }
                     if (!SectoresDescubiertos.ContainsKey(UbicacionActual.Id))
                         SectoresDescubiertos[UbicacionActual.Id] = true;
+                    return true;
                 }
                 else
                 {
-                    Console.WriteLine("No puedes viajar directamente a esa ubicación.");
+                    Console.WriteLine($"No puedes moverte a: {idSectorDestino}. Conexiones disponibles: {string.Join(", ", UbicacionActual.Conexiones)}");
+                    return false;
                 }
             }
+            else
+            {
+                Console.WriteLine($"El sector con ID '{idSectorDestino}' no existe en el mapa.");
+                return false;
+            }
         }
+
+        public Mapa(Dictionary<string, PjDatos.SectorData> sectoresDict)
+        {
+            sectores = sectoresDict ?? new Dictionary<string, PjDatos.SectorData>();
+            PjDatos.SectorData? ubicacionInicial = null;
+            // Prioridad 1: CiudadPrincipal
+            foreach (var s in sectores.Values)
+            {
+                if (s.CiudadPrincipal)
+                {
+                    ubicacionInicial = s;
+                    break;
+                }
+            }
+            // Prioridad 2: CiudadInicial (compatibilidad)
+            if (ubicacionInicial == null)
+            {
+                foreach (var s in sectores.Values)
+                {
+                    if (s.CiudadInicial)
+                    {
+                        ubicacionInicial = s;
+                        break;
+                    }
+                }
+            }
+            // Prioridad 3: Primer sector disponible
+            if (ubicacionInicial == null && sectores.Count > 0)
+                ubicacionInicial = new List<PjDatos.SectorData>(sectores.Values)[0];
+            if (ubicacionInicial == null)
+                throw new InvalidOperationException("No se encontró ninguna ubicación válida en el mapa. Verifica los archivos de mapa.");
+            UbicacionActual = ubicacionInicial;
+            SectoresDescubiertos[UbicacionActual.Id] = true;
+
+            // Validación de conexiones rotas para diagnóstico
+            int conexionesRota = 0;
+            foreach (var s in sectores.Values)
+            {
+                foreach (var idConn in s.Conexiones)
+                {
+                    if (!sectores.ContainsKey(idConn))
+                    {
+                        conexionesRota++;
+                        Console.WriteLine($"[Mapa] Conexión inexistente referenciada: {s.Id} -> {idConn}");
+                    }
+                }
+            }
+            if (conexionesRota > 0)
+                Console.WriteLine($"[Mapa] Total conexiones rotas: {conexionesRota}");
+        }
+
 
         public List<PjDatos.SectorData> ObtenerSectoresAdyacentes()
         {

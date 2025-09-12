@@ -18,12 +18,10 @@ namespace MiJuegoRPG.Motor.Menus
             var accionRecoleccion = new AccionRecoleccion(juego);
             while (!salir)
             {
-                Console.WriteLine("=== Menú de Recolección ===");
-                Console.WriteLine("1. Buscar materiales");
-                Console.WriteLine("2. Volver");
-                Console.Write("Selecciona una opción: ");
-                var key = Console.ReadKey(true);
-                opcion = key.KeyChar.ToString();
+                juego.Ui.WriteLine("=== Menú de Recolección ===");
+                juego.Ui.WriteLine("1. Buscar materiales");
+                juego.Ui.WriteLine("2. Volver");
+                opcion = InputService.LeerOpcion();
                 switch (opcion)
                 {
                     case "1":
@@ -32,7 +30,8 @@ namespace MiJuegoRPG.Motor.Menus
                     case "2":
                         return;
                     default:
-                        Console.WriteLine("Opción no válida.");
+                        juego.Ui.WriteLine("Opción no válida.");
+                        InputService.Pausa();
                         break;
                 }
             }

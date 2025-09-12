@@ -27,7 +27,6 @@ namespace MiJuegoRPG.Motor
 
             Console.WriteLine($"\n¡Un {string.Join(", ", enemigos.Select(e => e.Nombre))} salvaje ha aparecido!");
             Console.WriteLine($"¡Comienza el combate entre {jugador.Nombre} y {string.Join(", ", enemigos.Select(e => e.Nombre))}!");
-            Console.WriteLine("----------------------------------------");
             MostrarEstadoCombate();
             Console.WriteLine("----------------------------------------\n");
 
@@ -41,8 +40,7 @@ namespace MiJuegoRPG.Motor
                     Console.WriteLine("1. Atacar");
                     Console.WriteLine("2. Usar poción (si tienes)");
                     Console.WriteLine("3. Huir");
-                    Console.Write("Elige una acción: ");
-                    var accion = Console.ReadLine();
+                    var accion = InputService.LeerOpcion("Elige una acción: ");
 
                     switch (accion)
                     {
@@ -52,7 +50,7 @@ namespace MiJuegoRPG.Motor
                             if (enemigosVivos.Count == 1)
                             {
                                 var objetivo = enemigosVivos[0];
-                                int danio = jugador.Atacar(objetivo);
+                                int danio = jugador.AtacarFisico(objetivo);
                                 Console.WriteLine($"{jugador.Nombre} ataca a {objetivo.Nombre} y le hace {danio} de daño.");
                             }
                             else
@@ -60,12 +58,12 @@ namespace MiJuegoRPG.Motor
                                 Console.WriteLine("Elige enemigo a atacar:");
                                 for (int i = 0; i < enemigosVivos.Count; i++)
                                     Console.WriteLine($"{i + 1}. {enemigosVivos[i].Nombre} ({enemigosVivos[i].Vida}/{enemigosVivos[i].VidaMaxima} HP)");
-                                var sel = Console.ReadLine();
+                                var sel = InputService.LeerOpcion("Elige enemigo a atacar: ");
                                 int idx;
                                 if (int.TryParse(sel, out idx) && idx > 0 && idx <= enemigosVivos.Count)
                                 {
                                     var objetivo = enemigosVivos[idx - 1];
-                                    int danio = jugador.Atacar(objetivo);
+                                    int danio = jugador.AtacarFisico(objetivo);
                                     Console.WriteLine($"{jugador.Nombre} ataca a {objetivo.Nombre} y le hace {danio} de daño.");
                                 }
                                 else
@@ -79,26 +77,11 @@ namespace MiJuegoRPG.Motor
                             break;
                         case "3":
                             Console.WriteLine($"{jugador.Nombre} intenta huir...");
-                            if (new Random().Next(100) < 60) // 60% probabilidad de huir
+                            if (MiJuegoRPG.Motor.Servicios.RandomService.Instancia.Next(100) < 60) // 60% probabilidad de huir
                             {
                                 Console.WriteLine("¡Has logrado huir del combate!");
-                                Console.WriteLine("¿Qué deseas hacer?");
-                                Console.WriteLine("1. Buscar otro combate");
-                                Console.WriteLine("2. Volver al sector anterior");
-                                var opcionHuir = Console.ReadLine();
-                                if (opcionHuir == "1")
-                                {
-                                    // Iniciar otro combate en el mismo sector
-                                    var juego = MiJuegoRPG.Motor.Juego.ObtenerInstanciaActual();
-                                    if (juego != null && jugador is MiJuegoRPG.Personaje.Personaje pj)
-                                    {
-                                        var enemigoNuevo = MiJuegoRPG.Motor.GeneradorEnemigos.GenerarEnemigoAleatorio(pj);
-                                        var nuevoCombate = new CombatePorTurnos(jugador, enemigoNuevo);
-                                        nuevoCombate.IniciarCombate();
-                                    }
-                                }
-                                // Si elige 2 o cualquier otra opción, termina el combate y vuelve al sector
-                                return; 
+                                // Volver al menú de ubicación
+                                return;
                             }
                             else
                             {
@@ -116,7 +99,7 @@ namespace MiJuegoRPG.Motor
                     foreach (var enemigo in enemigos.Where(e => e.EstaVivo))
                     {
                         Console.WriteLine($"\nTurno de {enemigo.Nombre}:");
-                        int danioEnemigo = enemigo.Atacar(jugador);
+                        int danioEnemigo = enemigo.AtacarFisico(jugador);
                         Console.WriteLine($"{enemigo.Nombre} ataca a {jugador.Nombre} y le hace {danioEnemigo} de daño.");
                     }
                 }

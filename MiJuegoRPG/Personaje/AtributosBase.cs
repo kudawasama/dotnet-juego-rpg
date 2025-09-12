@@ -21,6 +21,8 @@ namespace MiJuegoRPG.Personaje
         public double Liderazgo { get; set; }
         public double Carisma { get; set; }
         public double Voluntad { get; set; }
+    // Atributo especial para clases oscuras / alineaciones negativas
+    public double Oscuridad { get; set; }
 
         [JsonConstructor]
         public AtributosBase() { }

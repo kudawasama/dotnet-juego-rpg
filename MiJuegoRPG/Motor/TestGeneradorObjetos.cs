@@ -9,17 +9,18 @@ namespace MiJuegoRPG.Motor
         public static void Probar()
         {
             // Cargar archivos JSON (ajusta las rutas si es necesario)
-            GeneradorObjetos.CargarArmas("PjDatos/Equipo/armas.json");
-            GeneradorObjetos.CargarArmaduras("PjDatos/Equipo/Armaduras.json");
-            GeneradorObjetos.CargarAccesorios("PjDatos/Equipo/Accesorios.json");
-            GeneradorObjetos.CargarBotas("PjDatos/Equipo/Botas.json");
-            GeneradorObjetos.CargarCinturones("PjDatos/Equipo/Cinturones.json");
-            GeneradorObjetos.CargarCollares("PjDatos/Equipo/Collares.json");
-            GeneradorObjetos.CargarPantalones("PjDatos/Equipo/Pantalones.json");
+            var baseEquipo = MiJuegoRPG.Motor.Servicios.PathProvider.PjDatosPath("Equipo");
+            GeneradorObjetos.CargarArmas(System.IO.Path.Combine(baseEquipo, "armas.json"));
+            GeneradorObjetos.CargarArmaduras(System.IO.Path.Combine(baseEquipo, "Armaduras.json"));
+            GeneradorObjetos.CargarAccesorios(System.IO.Path.Combine(baseEquipo, "Accesorios.json"));
+            GeneradorObjetos.CargarBotas(System.IO.Path.Combine(baseEquipo, "Botas.json"));
+            GeneradorObjetos.CargarCinturones(System.IO.Path.Combine(baseEquipo, "Cinturones.json"));
+            GeneradorObjetos.CargarCollares(System.IO.Path.Combine(baseEquipo, "Collares.json"));
+            GeneradorObjetos.CargarPantalones(System.IO.Path.Combine(baseEquipo, "Pantalones.json"));
 
             Console.WriteLine("--- Prueba de generación de objetos aleatorios ---");
             var arma = GeneradorObjetos.GenerarArmaAleatoria(1);
-            Console.WriteLine($"Arma: {arma.Nombre}, Daño: {arma.Daño}, Rareza: {arma.Rareza}, Perfección: {arma.Perfeccion}");
+            Console.WriteLine($"Arma: {arma.Nombre}, Daño: {arma.DañoFisico}/{arma.DañoMagico}, Rareza: {arma.Rareza}, Perfección: {arma.Perfeccion}");
 
             var armadura = GeneradorObjetos.GenerarArmaduraAleatoria(1);
             Console.WriteLine($"Armadura: {armadura.Nombre}, Defensa: {armadura.Defensa}, Rareza: {armadura.Rareza}, Perfección: {armadura.Perfeccion}");

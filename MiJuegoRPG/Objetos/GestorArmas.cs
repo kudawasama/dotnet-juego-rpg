@@ -17,9 +17,7 @@ namespace MiJuegoRPG.Objetos
 
     public static class GestorArmas
     {
-        public static string RutaArmasJson = Path.Combine(
-            Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory)?.Parent?.Parent?.FullName ?? AppDomain.CurrentDomain.BaseDirectory,
-            "MiJuegoRPG", "PjDatos", "armas.json");
+        public static string RutaArmasJson = MiJuegoRPG.Motor.Servicios.PathProvider.EquipoPath("armas.json");
         public static List<Arma> ArmasDisponibles = new List<Arma>();
 
         public static void CargarArmas(string rutaArchivo)
@@ -39,13 +37,17 @@ namespace MiJuegoRPG.Objetos
                 {
                     foreach (var arma in armasJson)
                     {
-                        ArmasDisponibles.Add(new Arma(
-                            arma.Nombre,
-                            arma.Daño,
-                            arma.NivelRequerido,
-                            arma.Rareza,
-                            arma.Categoria
-                        ));
+                        ArmasDisponibles.Add(new Arma
+                        {
+                            Nombre = arma.Nombre,
+                            DañoFisico = arma.DañoFisico,
+                            DañoMagico = arma.DañoMagico,
+                            Nivel = arma.NivelRequerido,
+                            Rareza = arma.Rareza,
+                            Categoria = arma.Categoria,
+                            Perfeccion = arma.Perfeccion,
+                            BonificadorAtributos = arma.BonificadorAtributos // <-- asegúrate que la propiedad BonificadorAtributos en la clase Arma sea Dictionary<string, double>?
+                        });
                     }
                 }
             }
@@ -80,10 +82,13 @@ namespace MiJuegoRPG.Objetos
             armasJson.Add(new ArmaJson
             {
                 Nombre = arma.Nombre,
-                Daño = arma.Daño,
+                DañoFisico = arma.DañoFisico,
+                DañoMagico = arma.DañoMagico,
                 NivelRequerido = arma.Nivel,
                 Rareza = arma.Rareza,
-                Categoria = arma.Categoria
+                Categoria = arma.Categoria,
+                Perfeccion = arma.Perfeccion,
+                BonificadorAtributos = arma.BonificadorAtributos
             });
             // Guardar en JSON
             var opciones = new JsonSerializerOptions { WriteIndented = true };
@@ -96,9 +101,12 @@ namespace MiJuegoRPG.Objetos
     public class ArmaJson
     {
         public required string Nombre { get; set; }
-        public int Daño { get; set; }
+        public int DañoFisico { get; set; }
+        public int DañoMagico { get; set; }
         public int NivelRequerido { get; set; }
         public Rareza Rareza { get; set; }
         public required string Categoria { get; set; }
+        public int Perfeccion { get; set; }
+        public Dictionary<string, double>? BonificadorAtributos { get; set; }
     }
 }

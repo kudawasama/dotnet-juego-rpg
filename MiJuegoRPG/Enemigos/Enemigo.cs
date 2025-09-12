@@ -8,6 +8,44 @@ namespace MiJuegoRPG.Enemigos
     // Clase base abstracta para todos los enemigos del juego.
     public abstract class Enemigo : ICombatiente
     {
+
+        // Implementación básica de ICombatiente
+        public string Nombre { get; set; }
+        public int Vida { get; set; }
+        public int VidaMaxima { get; set; }
+        public int Defensa { get; private set; }
+        public int DefensaMagica { get; set; }
+        public bool EstaVivo => Vida > 0;
+        public int Ataque { get; set; }
+
+        // Implementación explícita de los métodos de ICombatiente
+        public virtual int AtacarFisico(ICombatiente objetivo)
+        {
+            int danio = Ataque;
+            objetivo.RecibirDanioFisico(danio);
+            return danio;
+        }
+
+        public virtual int AtacarMagico(ICombatiente objetivo)
+        {
+            int danio = Ataque; // Puedes ajustar la lógica si tienes un atributo de ataque mágico
+            objetivo.RecibirDanioMagico(danio);
+            return danio;
+        }
+
+        public virtual void RecibirDanioFisico(int danioFisico)
+        {
+            int danioReal = Math.Max(1, danioFisico - Defensa);
+            Vida -= danioReal;
+            if (Vida < 0) Vida = 0;
+        }
+
+        public virtual void RecibirDanioMagico(int danioMagico)
+        {
+            int danioReal = Math.Max(1, danioMagico - DefensaMagica);
+            Vida -= danioReal;
+            if (Vida < 0) Vida = 0;
+        }
         // Drop de objetos
         public List<MiJuegoRPG.Objetos.Objeto> ObjetosDrop { get; set; } = new List<MiJuegoRPG.Objetos.Objeto>();
         public Dictionary<string, double> ProbabilidadesDrop { get; set; } = new Dictionary<string, double>();
@@ -24,7 +62,7 @@ namespace MiJuegoRPG.Enemigos
 
         public MiJuegoRPG.Objetos.Objeto? IntentarDrop()
         {
-            var random = new Random();
+            var random = MiJuegoRPG.Motor.Servicios.RandomService.Instancia;
             foreach (var obj in ObjetosDrop)
             {
                 double rate = BASE_DROP_RATE;
@@ -57,21 +95,16 @@ namespace MiJuegoRPG.Enemigos
         }
     
         // Propiedades del enemigo. 'set' es privado para evitar cambios externos.
-        public string Nombre { get; set; }
-        public int Vida { get; set; }
-        public int VidaMaxima { get; set; }
-        public int Ataque { get; private set; }
-        public int Defensa { get; private set; }
+        // Defensa ya está arriba
         public int Nivel { get; private set; }
         public int ExperienciaRecompensa { get; private set; }
         public int OroRecompensa { get; private set; }
         
-        // Propiedad de solo lectura para verificar si el enemigo está vivo.
-        public bool EstaVivo => Vida > 0;
+               
 
         // Constructor modificado. Ahora recibe atributos base y el nivel.
         // Las variables del constructor deben tener los mismos nombres que las propiedades.
-        protected Enemigo(string nombre, int vidaBase, int ataqueBase, int defensaBase, int nivel, int experienciaRecompensa, int oroRecompensa)
+        protected Enemigo(string nombre, int vidaBase, int ataqueBase, int defensaBase, int defensaMagicaBase, int nivel, int experienciaRecompensa, int oroRecompensa)
         {
             Nombre = nombre;
             Nivel = nivel;
@@ -79,29 +112,22 @@ namespace MiJuegoRPG.Enemigos
             OroRecompensa = oroRecompensa;
 
             // Llamamos a un método para calcular los atributos basados en el nivel.
-            CalcularAtributos(vidaBase, ataqueBase, defensaBase);
+            CalcularAtributos(vidaBase, ataqueBase, defensaBase, defensaMagicaBase);
         }
 
         // Nuevo método privado para calcular los atributos escalados.
-        private void CalcularAtributos(int vidaBase, int ataqueBase, int defensaBase)
+        private void CalcularAtributos(int vidaBase, int ataqueBase, int defensaBase, int defensaMagicaBase)
         {
-            int factorEscalado = Nivel; 
+            int factorEscalado = Nivel;
 
             VidaMaxima = vidaBase + (vidaBase * factorEscalado / 2);
-            Vida = VidaMaxima; 
+            Vida = VidaMaxima;
 
             Ataque = ataqueBase + (ataqueBase * factorEscalado / 2);
             Defensa = defensaBase + (defensaBase * factorEscalado / 2);
+            DefensaMagica = defensaMagicaBase + (defensaMagicaBase * factorEscalado / 2);
         }
 
-        // Método para atacar, que ahora es virtual para que los enemigos específicos
-        // puedan sobrescribirlo y tener ataques únicos.
-        public virtual int Atacar(ICombatiente objetivo)
-        {
-            int danio = Ataque;
-            objetivo.RecibirDanio(danio);
-            return danio;
-        }
 
         // Método para recibir daño.
         public void RecibirDanio(int danio)

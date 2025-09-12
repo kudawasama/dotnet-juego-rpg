@@ -24,19 +24,15 @@ namespace MiJuegoRPG.Motor
             while (!salir)
             {
                 Console.Clear();
-                Console.WriteLine("=== Inventario ===");
                 if (juego.jugador.Inventario.NuevosObjetos.Count == 0)
                 {
+                    Console.WriteLine("=== Inventario ===");
                     Console.WriteLine("Tu inventario está vacío.");
                     Console.WriteLine("Presiona cualquier tecla para volver al menú...");
                     Console.ReadKey();
                     return;
                 }
-                for (int i = 0; i < juego.jugador.Inventario.NuevosObjetos.Count; i++)
-                {
-                    var objCant = juego.jugador.Inventario.NuevosObjetos[i];
-                    Console.WriteLine($"{i + 1}. {objCant.Objeto.Nombre} x{objCant.Cantidad}");
-                }
+                juego.jugador.Inventario.MostrarInventario();
                 Console.WriteLine("\nOpciones:");
                 Console.WriteLine("1. Usar objeto");
                 Console.WriteLine("2. Equipar objeto");
@@ -60,13 +56,11 @@ namespace MiJuegoRPG.Motor
                         break;
                     default:
                         Console.WriteLine("Opción no válida.");
-                        Console.ReadKey();
                         break;
                 }
             }
-        }
-
-        private void UsarObjeto()
+    }
+    private void UsarObjeto()
         {
             Console.Write("Ingresa el número del objeto a usar: ");
             var input = Console.ReadLine();

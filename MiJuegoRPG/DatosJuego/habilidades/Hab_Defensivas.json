@@ -1,0 +1,45 @@
+[
+    {
+        
+        "Id": "Escudo",
+        "Nombre": "Escudo Protector",
+        "Tipo": "Pasiva",
+        "Categoria": "Defensiva",
+        "Descripcion": "Aumenta la defensa y reduce el daño recibido.",
+        "AtributosNecesarios": { "Defensa": 10, "Resistencia": 8 },
+        "Condiciones": [
+        { "Tipo": "Exploracion", "Accion": "DetectarTrampas", "Cantidad": 30 }
+        ],
+        "Beneficio": "+15% defensa y +20% reducción de daño",
+        "Mejoras": ["+30% defensa si la salud < 50%", "Absorbe el 20% del daño recibido si la salud < 30%"],
+        "Oculta": true,
+        "Exp": 0,
+        "CostoMana": 0,
+        "Evoluciones": [
+            {
+                "Id": "EscudoAvanzado",
+                "Nombre": "Escudo Avanzado",
+                "Condiciones": [ { "Tipo": "NvHabilidad", "Cantidad": 50 } ],
+                "Beneficio": "+25% defensa y +30% reducción de daño",
+                "Mejoras": ["+40% defensa si la salud < 50%", "Absorbe el 30% del daño recibido si la salud < 30%"],
+                "CostoMana": 0
+            },
+            {
+                "Id": "EscudoMaestro",
+                "Nombre": "Escudo Maestro",
+                "Condiciones": [ { "Tipo": "NvHabilidad", "Cantidad": 100 } ],
+                "Beneficio": "+40% defensa y +50% reducción de daño",
+                "Mejoras": ["+60% defensa si la salud < 50%", "Absorbe el 40% del daño recibido si la salud < 30%"],
+                "CostoMana": 0
+            },
+            {
+                "Id": "EscudoLegendario",
+                "Nombre": "Escudo Legendario",
+                "Condiciones": [ { "Tipo": "NvHabilidad", "Cantidad": 200 } ],
+                "Beneficio": "Defensa perfecta y reducción total de daño",
+                "Mejoras": ["+100% defensa si la salud < 50%", "Absorbe el 100% del daño recibido si la salud < 30%"],
+                "CostoMana": 0
+            }
+        ]
+    }
+]

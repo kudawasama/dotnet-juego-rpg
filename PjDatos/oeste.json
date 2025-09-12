@@ -1,0 +1,12 @@
+[
+  {
+    "Id": "VlkyrPen",
+    "Nombre": "Valkyr Peninsula",
+    "Region": "Oeste",
+    "Descripcion": "Península al oeste, con costas y acantilados.",
+    "NivelMinimo": 2,
+    "NivelMaximo": 6,
+    "Enemigos": ["Pirata", "Lobo"],
+    "Conexiones": ["VlkyrPen_N_C1", "VlkyrPen_S_C1", "VlkyrPen_E_C1", "VlkyrPen_O_C1"]
+  }
+]

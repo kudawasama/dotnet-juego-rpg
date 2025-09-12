@@ -8,7 +8,7 @@ namespace MiJuegoRPG.Objetos
 {
     public static class GestorPociones
     {
-    public static string RutaPocionesJson = Path.Combine(AppContext.BaseDirectory, "PjDatos", "pociones.json");
+    public static string RutaPocionesJson = MiJuegoRPG.Motor.Servicios.PathProvider.PjDatosPath("pociones.json");
         public static List<Pocion> PocionesDisponibles = new List<Pocion>();
 
         public static void GuardarPocionSiNoExiste(Pocion pocion)

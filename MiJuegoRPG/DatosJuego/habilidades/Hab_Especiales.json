@@ -12,6 +12,7 @@
     ],
     "Beneficio": "+30% ataque y velocidad por 3 turnos",
     "Mejoras": ["+50% si recibes 500 de daño", "Duración aumentada si Agilidad > 12"],
-    "Oculta": true
+    "Oculta": true,
+    "CostoMana": 20
   }
 ]

@@ -1,0 +1,16 @@
+[
+  {
+    "Nombre": "Capa de Tela",
+    "Materiales": [
+      { "Nombre": "Tela", "Cantidad": 3 },
+      { "Nombre": "Hilo", "Cantidad": 2 }
+    ]
+  },
+  {
+    "Nombre": "Bolsa de Aventura",
+    "Materiales": [
+      { "Nombre": "Tela", "Cantidad": 2 },
+      { "Nombre": "Cuero", "Cantidad": 1 }
+    ]
+  }
+]

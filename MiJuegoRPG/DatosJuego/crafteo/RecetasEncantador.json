@@ -1,0 +1,26 @@
+[
+  {
+    "Nombre": "Encantamiento de Fuego",
+    "Materiales": [
+      { "Nombre": "Gema de Fuego", "Cantidad": 1 },
+      { "Nombre": "Polvo de Maná", "Cantidad": 2 },
+      { "Nombre": "Catalizador Arcano", "Cantidad": 1 }
+    ]
+  },
+  {
+    "Nombre": "Encantamiento de Protección",
+    "Materiales": [
+      { "Nombre": "Gema de Luz", "Cantidad": 1 },
+      { "Nombre": "Polvo de Maná", "Cantidad": 2 },
+      { "Nombre": "Catalizador Arcano", "Cantidad": 1 }
+    ]
+  },
+  {
+    "Nombre": "Encantamiento de Velocidad",
+    "Materiales": [
+      { "Nombre": "Gema de Viento", "Cantidad": 1 },
+      { "Nombre": "Polvo de Maná", "Cantidad": 2 },
+      { "Nombre": "Catalizador Arcano", "Cantidad": 1 }
+    ]
+  }
+]

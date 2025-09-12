@@ -35,9 +35,9 @@ namespace MiJuegoRPG.Comercio
 
             // pequeño plus por atributos comunes (si existen)
             int plus = 0;
-            if (item is Arma a) plus += Math.Max(0, a.Daño);
-            if (item is Armadura ar) plus += Math.Max(0, ar.Defensa/2);
-            if (item is Pocion p) plus += Math.Max(0, p.Curacion/2);
+            if (item is Arma a) plus += Math.Max(0, a.DañoFisico + a.DañoMagico);
+            if (item is Armadura ar) plus += Math.Max(0, ar.Defensa / 2);
+            if (item is Pocion p) plus += Math.Max(0, p.Curacion / 2);
 
             var precio = (int)Math.Ceiling((baseCat + plus) * multRareza);
             return Math.Max(precio, 1);

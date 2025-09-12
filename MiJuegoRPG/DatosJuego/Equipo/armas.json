@@ -1,7 +1,7 @@
 [
     {
         "Nombre": "Espada Oxidada",
-        "Daño": 3,
+        "DañoFisico": 3,
         "NivelRequerido": 1,
         "Rareza": "Rota",
         "Categoria": "Arma",
@@ -10,7 +10,7 @@
     },
     {
         "Nombre": "Arco Simple",
-        "Daño": 7,
+        "DañoFisico": 7,
         "NivelRequerido": 1,
         "Rareza": "Comun",
         "Categoria": "Arma",
@@ -19,7 +19,7 @@
     },
     {
         "Nombre": "Vara de Novato",
-        "Daño": 6,
+        "DañoMagico": 6,
         "NivelRequerido": 1,
         "Rareza": "Comun",
         "Categoria": "Arma",
@@ -28,7 +28,7 @@
     },
     {
         "Nombre": "Daga Ligera",
-        "Daño": 10,
+        "DañoFisico": 10,
         "NivelRequerido": 1,
         "Rareza": "PocoComun",
         "Categoria": "Arma",
@@ -37,7 +37,7 @@
     },
     {
         "Nombre": "Maza de Madera",
-        "Daño": 8,
+        "DañoFisico": 8,
         "NivelRequerido": 1,
         "Rareza": "Comun",
         "Categoria": "Arma",
@@ -52,5 +52,113 @@
         "Categoria": "Escudo",
         "TipoObjeto": "Escudo",
         "Perfeccion": 18
+    },
+    {
+        "Nombre": "Espada de Aprendiz",
+        "DañoFisico": 5,
+        "NivelRequerido": 1,
+        "Rareza": "Comun",
+        "Categoria": "Arma",
+        "TipoObjeto": "Arma",
+        "Perfeccion": 30,
+        "BonificadorAtributos": { "Fuerza": 1 }
+    },
+    {
+        "Nombre": "Báculo de Mente Clara",
+        "DañoMagico": 6,
+        "NivelRequerido": 1,
+        "Rareza": "Comun",
+        "Categoria": "Arma",
+        "TipoObjeto": "Arma",
+        "Perfeccion": 30,
+        "BonificadorAtributos": { "Inteligencia": 2 }
+    },
+    {
+        "Nombre": "Daga de la Suerte",
+        "DañoFisico": 3,
+        "NivelRequerido": 1,
+        "Rareza": "Comun",
+        "Categoria": "Arma",
+        "TipoObjeto": "Arma",
+        "Perfeccion": 30,
+        "BonificadorAtributos": { "Suerte": 1 }
+    },
+    {
+        "Nombre": "Martillo Robusto",
+        "DañoFisico": 6,
+        "NivelRequerido": 1,
+        "Rareza": "Comun",
+        "Categoria": "Arma",
+        "TipoObjeto": "Arma",
+        "Perfeccion": 30,
+        "BonificadorAtributos": { "Vitalidad": 2 }
+    },
+    {
+        "Nombre": "Espada de Hierro",
+        "DañoFisico": 12,
+        "NivelRequerido": 2,
+        "Rareza": "PocoComun",
+        "Categoria": "Arma",
+        "TipoObjeto": "Arma",
+        "Perfeccion": 75
+    },
+    {
+        "Nombre": "Arco de Cazador",
+        "DañoFisico": 14,
+        "NivelRequerido": 2,
+        "Rareza": "PocoComun",
+        "Categoria": "Arma",
+        "TipoObjeto": "Arma",
+        "Perfeccion": 80,
+        "BonificadorAtributos": { "Destreza": 2 }
+    },
+    {
+        "Nombre": "Vara de Fuego",
+        "DañoMagico": 15,
+        "NivelRequerido": 3,
+        "Rareza": "Rara",
+        "Categoria": "Arma",
+        "TipoObjeto": "Arma",
+        "Perfeccion": 90,
+        "BonificadorAtributos": { "Inteligencia": 3 }
+    },
+    {
+        "Nombre": "Daga Envenenada",
+        "DañoFisico": 9,
+        "NivelRequerido": 2,
+        "Rareza": "PocoComun",
+        "Categoria": "Arma",
+        "TipoObjeto": "Arma",
+        "Perfeccion": 65,
+        "BonificadorAtributos": { "Suerte": 2 }
+    },
+    {
+        "Nombre": "Espadón de Acero",
+        "DañoFisico": 18,
+        "NivelRequerido": 4,
+        "Rareza": "Rara",
+        "Categoria": "Arma",
+        "TipoObjeto": "Arma",
+        "Perfeccion": 100,
+        "BonificadorAtributos": { "Fuerza": 3 }
+    },
+    {
+        "Nombre": "Báculo de Hielo",
+        "DañoMagico": 17,
+        "NivelRequerido": 4,
+        "Rareza": "Rara",
+        "Categoria": "Arma",
+        "TipoObjeto": "Arma",
+        "Perfeccion": 105,
+        "BonificadorAtributos": { "Inteligencia": 4 }
+    },
+    {
+        "Nombre": "Lanza Ligera",
+        "DañoFisico": 11,
+        "NivelRequerido": 2,
+        "Rareza": "Comun",
+        "Categoria": "Arma",
+        "TipoObjeto": "Arma",
+        "Perfeccion": 60
     }
 ]

@@ -8,6 +8,7 @@ namespace MiJuegoRPG.PjDatos
         public int VidaBase { get; set; }
         public int AtaqueBase { get; set; }
         public int DefensaBase { get; set; }
+        public int DefensaMagicaBase { get; set; }
         public int Nivel { get; set; }
         public int ExperienciaRecompensa { get; set; }
         public int OroRecompensa { get; set; }

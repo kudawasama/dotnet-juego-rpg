@@ -1,0 +1,35 @@
+[
+{
+    "Nombre": "Poción Pequeña",
+    "Materiales": [
+      { "Nombre": "Hierba Curativa", "Cantidad": 1 },
+      { "Nombre": "Agua Pura", "Cantidad": 1 },
+      { "Nombre": "Frasco Vacío", "Cantidad": 1 }
+    ]
+  }
+  ,
+  {
+    "Nombre": "Poción de Curación",
+    "Materiales": [
+      { "Nombre": "Hierba Curativa", "Cantidad": 2 },
+      { "Nombre": "Agua Pura", "Cantidad": 1 },
+      { "Nombre": "Frasco Vacío", "Cantidad": 1 }
+    ]
+  },
+  {
+    "Nombre": "Antídoto",
+    "Materiales": [
+      { "Nombre": "Hierba Antídoto", "Cantidad": 1 },
+      { "Nombre": "Agua Pura", "Cantidad": 1 },
+      { "Nombre": "Frasco Vacío", "Cantidad": 1 }
+    ]
+  },
+  {
+    "Nombre": "Elixir de Maná",
+    "Materiales": [
+      { "Nombre": "Flor Azul", "Cantidad": 2 },
+      { "Nombre": "Agua Pura", "Cantidad": 1 },
+      { "Nombre": "Frasco Vacío", "Cantidad": 1 }
+    ]
+  }
+]

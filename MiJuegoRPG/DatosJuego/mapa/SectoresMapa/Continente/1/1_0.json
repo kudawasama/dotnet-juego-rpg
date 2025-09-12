@@ -1,0 +1,14 @@
+{
+  "Id": "1_0",
+  "nombre": "Sector 1_0",
+  "bioma": "Campo",
+  "parteCiudad": "",
+  "ciudadPrincipal": false,
+  "esCentroCiudad": false,
+  "nodosRecoleccion": [],
+  "Requisitos": {},
+  "enemigos": [],
+  "Conexiones": ["0_0"],
+  "eventos": [],
+  "descripcion": "Sector autocompletado."
+}
