@@ -6,6 +6,12 @@
   "EscaladoNivelEntrenamiento": 1.05,
   "EscaladoNivelExploracion": 1.03,
   "FactorMinExp": 0.0001,
+  "ManaRegenCombateBase": 0.2,
+  "ManaRegenCombateFactor": 0.02,
+  "ManaRegenCombateMaxPorTurno": 1.0,
+  "ManaRegenFueraBase": 0.5,
+  "ManaRegenFueraFactor": 0.05,
+  "ManaRegenFueraMaxPorTick": 3.0,
   "Indices": {
     "Fuerza": 3.0,
     "Inteligencia": 8.0,

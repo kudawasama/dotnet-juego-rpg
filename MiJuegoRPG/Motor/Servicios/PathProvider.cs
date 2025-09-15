@@ -68,7 +68,26 @@ namespace MiJuegoRPG.Motor.Servicios
         public static string MapasDir()
             => CombineData("mapa");
 
+        /// <summary>
+        /// Ruta al archivo de grilla del mapa (mapa.txt) bajo MiJuegoRPG.
+        /// </summary>
+        public static string MapaTxtPath()
+            => Path.Combine(MiJuegoRPG.Motor.Juego.ObtenerRutaRaizProyecto(), "MiJuegoRPG", "mapa.txt");
+
+        /// <summary>
+        /// Carpeta base de Sectores del mapa (DatosJuego/mapa/SectoresMapa).
+        /// </summary>
+        public static string SectoresDir()
+            => CombineData("mapa", "SectoresMapa");
+
         public static string PjDatosPath(params string[] parts)
             => Path.Combine(PjDatosDir(), Path.Combine(parts));
+
+        /// <summary>
+        /// Carpeta de definición de enemigos individuales (DatosJuego/enemigos).
+        /// Permite colocar múltiples archivos JSON, uno por enemigo o por lote.
+        /// </summary>
+        public static string EnemigosDir()
+            => CombineData("enemigos");
     }
 }

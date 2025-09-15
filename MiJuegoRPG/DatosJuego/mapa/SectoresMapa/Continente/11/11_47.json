@@ -2,13 +2,57 @@
   "Id": "11_47",
   "nombre": "Sector 11_47",
   "bioma": "Campo",
-  "parteCiudad": "",
+  "Tipo": "Ruta",
+  "Descripcion": "Sector autocompletado.",
+  "NivelMinimo": 0,
+  "NivelMaximo": 0,
+  "Enemigos": [],
+  "Conexiones": [
+    "10_47",
+    "11_46",
+    "11_48",
+    "12_47"
+  ],
+  "CiudadInicial": false,
+  "Eventos": [],
+  "Requisitos": {},
+  "NodosRecoleccion": [
+    {
+      "Nombre": "\u00C1rboles de Sauce",
+      "Materiales": [],
+      "Cooldown": 2,
+      "CooldownBase": null,
+      "Tipo": null,
+      "Requiere": null,
+      "Rareza": null,
+      "ProduccionMin": 1,
+      "ProduccionMax": 2
+    },
+    {
+      "Nombre": "Pradera de Flores",
+      "Materiales": [],
+      "Cooldown": 1,
+      "CooldownBase": null,
+      "Tipo": null,
+      "Requiere": null,
+      "Rareza": null,
+      "ProduccionMin": null,
+      "ProduccionMax": null
+    },
+    {
+      "Nombre": "Flor Dorada",
+      "Materiales": [],
+      "Cooldown": 4,
+      "CooldownBase": null,
+      "Tipo": null,
+      "Requiere": null,
+      "Rareza": "Raro",
+      "ProduccionMin": 1,
+      "ProduccionMax": 1
+    }
+  ],
   "ciudadPrincipal": false,
   "esCentroCiudad": false,
-  "nodosRecoleccion": [],
-  "Requisitos": {},
-  "enemigos": [],
-  "Conexiones": [],
-  "eventos": [],
-  "descripcion": "Sector autocompletado."
+  "parteCiudad": "",
+  "Rutas": ""
 }

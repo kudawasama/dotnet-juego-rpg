@@ -19,6 +19,8 @@
         {
             "Nombre": "Setas Luminosas",
             "Materiales": [ { "Nombre": "Seta Brillante", "Cantidad": 1 } ],
+            "ProduccionMin": 1,
+            "ProduccionMax": 1,
             "Cooldown": 2
         }
     ],
@@ -26,11 +28,17 @@
         {
             "Nombre": "Árbol de Luz",
             "Materiales": [ { "Nombre": "Esencia de Luz", "Cantidad": 1 } ],
+            "Rareza": "Raro",
+            "ProduccionMin": 1,
+            "ProduccionMax": 1,
             "Cooldown": 6
         },
         {
             "Nombre": "Flor de Hada",
             "Materiales": [ { "Nombre": "Pétalo de Hada", "Cantidad": 1 } ],
+            "Rareza": "Raro",
+            "ProduccionMin": 1,
+            "ProduccionMax": 1,
             "Cooldown": 5
         }
     ]
@@ -41,11 +49,15 @@
       {
         "Nombre": "Árboles de Roble",
         "Materiales": [ { "Nombre": "Madera Resistente", "Cantidad": 2 } ],
+        "ProduccionMin": 1,
+        "ProduccionMax": 2,
         "Cooldown": 2
       },
       {
         "Nombre": "Arbustos de Hierbas",
         "Materiales": [ { "Nombre": "Hierba Curativa", "Cantidad": 1 } ],
+        "ProduccionMin": 1,
+        "ProduccionMax": 2,
         "Cooldown": 1
       }
     ],
@@ -53,11 +65,17 @@
       {
         "Nombre": "Árbol Sagrado",
         "Materiales": [ { "Nombre": "Madera Sagrada", "Cantidad": 1 } ],
+        "Rareza": "Raro",
+        "ProduccionMin": 1,
+        "ProduccionMax": 1,
         "Cooldown": 5
       },
       {
         "Nombre": "Flores Azules",
         "Materiales": [ { "Nombre": "Flor Azul", "Cantidad": 1 } ],
+        "Rareza": "Raro",
+        "ProduccionMin": 1,
+        "ProduccionMax": 1,
         "Cooldown": 4
       }
     ]
@@ -102,6 +120,8 @@
       {
         "Nombre": "Cantera",
         "Materiales": [ { "Nombre": "Piedra", "Cantidad": 2 } ],
+        "ProduccionMin": 1,
+        "ProduccionMax": 2,
         "Cooldown": 2
       }
     ],
@@ -109,11 +129,17 @@
       {
         "Nombre": "Mina de Plata",
         "Materiales": [ { "Nombre": "Lingote de Plata", "Cantidad": 1 } ],
+        "Rareza": "Raro",
+        "ProduccionMin": 1,
+        "ProduccionMax": 1,
         "Cooldown": 6
       },
       {
         "Nombre": "Veta de Rubí",
         "Materiales": [ { "Nombre": "Rubí", "Cantidad": 1 } ],
+        "Rareza": "Raro",
+        "ProduccionMin": 1,
+        "ProduccionMax": 1,
         "Cooldown": 8
       }
     ]
@@ -127,11 +153,15 @@
       {
         "Nombre": "Ribera",
         "Materiales": [ { "Nombre": "Agua Pura", "Cantidad": 1 } ],
+        "ProduccionMin": 1,
+        "ProduccionMax": 1,
         "Cooldown": 1
       },
       {
         "Nombre": "Arcilla",
         "Materiales": [ { "Nombre": "Arcilla", "Cantidad": 1 } ],
+        "ProduccionMin": 1,
+        "ProduccionMax": 1,
         "Cooldown": 2
       }
     ],
@@ -139,6 +169,9 @@
       {
         "Nombre": "Perla",
         "Materiales": [ { "Nombre": "Perla", "Cantidad": 1 } ],
+        "Rareza": "Raro",
+        "ProduccionMin": 1,
+        "ProduccionMax": 1,
         "Cooldown": 7
       }
     ]
@@ -149,11 +182,15 @@
       {
         "Nombre": "Cactus",
         "Materiales": [ { "Nombre": "Espinas de Cactus", "Cantidad": 1 } ],
+        "ProduccionMin": 1,
+        "ProduccionMax": 1,
         "Cooldown": 2
       },
       {
         "Nombre": "Arena",
         "Materiales": [ { "Nombre": "Arena", "Cantidad": 2 } ],
+        "ProduccionMin": 2,
+        "ProduccionMax": 2,
         "Cooldown": 1
       }
     ],
@@ -161,6 +198,9 @@
       {
         "Nombre": "Cristal de Arena",
         "Materiales": [ { "Nombre": "Cristal de Arena", "Cantidad": 1 } ],
+        "Rareza": "Raro",
+        "ProduccionMin": 1,
+        "ProduccionMax": 1,
         "Cooldown": 5
       }
     ]
@@ -171,11 +211,15 @@
       {
         "Nombre": "Piedra Brillante",
         "Materiales": [ { "Nombre": "Piedra Brillante", "Cantidad": 1 } ],
+        "ProduccionMin": 1,
+        "ProduccionMax": 1,
         "Cooldown": 3
       },
       {
         "Nombre": "Cristales",
         "Materiales": [ { "Nombre": "Cristales", "Cantidad": 2 } ],
+        "ProduccionMin": 2,
+        "ProduccionMax": 2,
         "Cooldown": 2
       }
     ],
@@ -183,6 +227,9 @@
       {
         "Nombre": "Gema Rara",
         "Materiales": [ { "Nombre": "Gema Rara", "Cantidad": 1 } ],
+        "Rareza": "Raro",
+        "ProduccionMin": 1,
+        "ProduccionMax": 1,
         "Cooldown": 5
       }
     ]
@@ -193,11 +240,15 @@
       {
         "Nombre": "Piedra Brillante",
         "Materiales": [ { "Nombre": "Piedra Brillante", "Cantidad": 1 } ],
+        "ProduccionMin": 1,
+        "ProduccionMax": 1,
         "Cooldown": 3
       },
       {
         "Nombre": "Cristales",
         "Materiales": [ { "Nombre": "Cristales", "Cantidad": 2 } ],
+        "ProduccionMin": 2,
+        "ProduccionMax": 2,
         "Cooldown": 2
       }
     ],
@@ -205,6 +256,9 @@
       {
         "Nombre": "Gema Rara",
         "Materiales": [ { "Nombre": "Gema Rara", "Cantidad": 1 } ],
+        "Rareza": "Raro",
+        "ProduccionMin": 1,
+        "ProduccionMax": 1,
         "Cooldown": 5
       }
     ]
@@ -215,21 +269,29 @@
       {
         "Nombre": "Pared Rocosa",
         "Materiales": [ { "Nombre": "Piedra", "Cantidad": 2 } ],
+        "ProduccionMin": 1,
+        "ProduccionMax": 2,
         "Cooldown": 3
       },
       {
         "Nombre": "Planta Resistente",
         "Materiales": [ { "Nombre": "Hierba", "Cantidad": 1 } ],
+        "ProduccionMin": 1,
+        "ProduccionMax": 2,
         "Cooldown": 2
       },
       {
         "Nombre": "Cactus del Cañon",
         "Materiales": [ { "Nombre": "Espinas de Cactus", "Cantidad": 1 } ],
+        "ProduccionMin": 1,
+        "ProduccionMax": 2,
         "Cooldown": 2
       },
       {
         "Nombre": "Tronco Seco",
         "Materiales": [ { "Nombre": "Madera Seca", "Cantidad": 1 } ],
+        "ProduccionMin": 1,
+        "ProduccionMax": 2,
         "Cooldown": 2
       }
     ],
@@ -237,6 +299,9 @@
       {
         "Nombre": "Cristal de Cañon",
         "Materiales": [ { "Nombre": "Cristal", "Cantidad": 1 } ],
+        "Rareza": "Raro",
+        "ProduccionMin": 1,
+        "ProduccionMax": 1,
         "Cooldown": 5
       }
     ]
@@ -247,11 +312,15 @@
       {
         "Nombre": "Coral Abisal",
         "Materiales": [ { "Nombre": "Fragmento de Coral Abisal", "Cantidad": 1 } ],
+        "ProduccionMin": 1,
+        "ProduccionMax": 1,
         "Cooldown": 6
       },
       {
         "Nombre": "Alga Gigante",
         "Materiales": [ { "Nombre": "Alga Gigante", "Cantidad": 1 } ],
+        "ProduccionMin": 1,
+        "ProduccionMax": 1,
         "Cooldown": 4
       }
     ],
@@ -259,11 +328,17 @@
       {
         "Nombre": "Perla Negra",
         "Materiales": [ { "Nombre": "Perla Negra", "Cantidad": 1 } ],
+        "Rareza": "Raro",
+        "ProduccionMin": 1,
+        "ProduccionMax": 1,
         "Cooldown": 10
       },
       {
         "Nombre": "Restos de Naufragio",
         "Materiales": [ { "Nombre": "Madera Antigua", "Cantidad": 2 } ],
+        "Rareza": "Raro",
+        "ProduccionMin": 2,
+        "ProduccionMax": 2,
         "Cooldown": 12
       }
     ]
@@ -274,16 +349,22 @@
       {
         "Nombre": "Coral",
         "Materiales": [ { "Nombre": "Fragmento de Coral", "Cantidad": 1 } ],
+        "ProduccionMin": 1,
+        "ProduccionMax": 1,
         "Cooldown": 5
       },
       {
         "Nombre": "Alga Marina",
         "Materiales": [ { "Nombre": "Alga Marina", "Cantidad": 1 } ],
+        "ProduccionMin": 1,
+        "ProduccionMax": 1,
         "Cooldown": 3
       },
       {
         "Nombre": "Conchas",
         "Materiales": [ { "Nombre": "Concha Marina", "Cantidad": 1 } ],
+        "ProduccionMin": 1,
+        "ProduccionMax": 1,
         "Cooldown": 4
       }
     ],
@@ -291,11 +372,17 @@
       {
         "Nombre": "Perla",
         "Materiales": [ { "Nombre": "Perla", "Cantidad": 1 } ],
+        "Rareza": "Raro",
+        "ProduccionMin": 1,
+        "ProduccionMax": 1,
         "Cooldown": 7
       },
       {
         "Nombre": "Estrella de Mar",
         "Materiales": [ { "Nombre": "Estrella de Mar", "Cantidad": 1 } ],
+        "Rareza": "Raro",
+        "ProduccionMin": 1,
+        "ProduccionMax": 1,
         "Cooldown": 8
       }
     ]
@@ -306,6 +393,8 @@
       {
         "Nombre": "Árboles de Sauce",
         "Materiales": [ { "Nombre": "Madera Flexible", "Cantidad": 2 } ],
+        "ProduccionMin": 1,
+        "ProduccionMax": 2,
         "Cooldown": 2
       },
       {
@@ -322,11 +411,17 @@
      {
         "Nombre": "Árbol Antiguo",
         "Materiales": [ { "Nombre": "Madera Antigua", "Cantidad": 1 } ],
+        "Rareza": "Raro",
+        "ProduccionMin": 1,
+        "ProduccionMax": 1,
         "Cooldown": 5
       },
       {
         "Nombre": "Flor Dorada",
         "Materiales": [ { "Nombre": "Flor Dorada", "Cantidad": 1 } ],
+        "Rareza": "Raro",
+        "ProduccionMin": 1,
+        "ProduccionMax": 1,
         "Cooldown": 4
       }
     ]

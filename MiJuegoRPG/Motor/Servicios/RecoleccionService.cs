@@ -187,13 +187,115 @@ namespace MiJuegoRPG.Motor.Servicios
             if (sector == null) return new List<NodoRecoleccion>();
             // Si el sector define nodos propios se usan directamente (persisten en objeto SectorData)
             if (sector.NodosRecoleccion != null && sector.NodosRecoleccion.Count > 0)
+            {
+                // Hidratación: si el nodo del sector no tiene materiales (autocompletado),
+                // intentar completar desde la plantilla del bioma por nombre
+                foreach (var n in sector.NodosRecoleccion)
+                {
+                    if (n.Materiales == null || n.Materiales.Count == 0)
+                        HidratarNodoDesdeBioma(n);
+                }
                 return sector.NodosRecoleccion;
+            }
             // Caso bioma: cachear para mantener referencias (cooldown)
             var clave = $"bioma:{sector.Id}:{sector.Region}";
             if (cacheBiomaPorSector.TryGetValue(clave, out var cached)) return cached;
             var generados = (!string.IsNullOrWhiteSpace(sector.Region)) ? TablaBiomas.GenerarNodosParaBioma(sector.Region) : new List<NodoRecoleccion>();
             cacheBiomaPorSector[clave] = generados;
             return generados;
+        }
+
+        private bool HidratarNodoDesdeBioma(NodoRecoleccion nodo)
+        {
+            try
+            {
+                var nombre = (nodo.Nombre ?? string.Empty).Trim();
+                if (string.IsNullOrEmpty(nombre)) return false;
+                var region = juego.mapa?.UbicacionActual?.Region;
+
+                // 1) Intentar en el bioma del sector (si existe)
+                if (!string.IsNullOrWhiteSpace(region) && TablaBiomas.Biomas.TryGetValue(region!, out var bioma))
+                {
+                    var plantilla = BuscarNodoEnBiomaPorNombre(bioma, nombre);
+                    if (plantilla != null)
+                    {
+                        CopiarPropsNodo(plantilla, nodo);
+                        return true;
+                    }
+                }
+                // 2) Búsqueda global (fallback) en todos los biomas
+                foreach (var kv in TablaBiomas.Biomas)
+                {
+                    var plantilla = BuscarNodoEnBiomaPorNombre(kv.Value, nombre);
+                    if (plantilla != null)
+                    {
+                        CopiarPropsNodo(plantilla, nodo);
+                        return true;
+                    }
+                }
+            }
+            catch { /* no-op: hidratación best-effort */ }
+            return false;
+        }
+
+        private static NodoRecoleccion? BuscarNodoEnBiomaPorNombre(BiomaRecoleccion bioma, string nombre)
+        {
+            static string Norm(string s)
+            {
+                s = s.Trim().ToLowerInvariant();
+                try
+                {
+                    var form = s.Normalize(System.Text.NormalizationForm.FormD);
+                    var sb = new System.Text.StringBuilder(form.Length);
+                    foreach (var ch in form)
+                    {
+                        var uc = System.Globalization.CharUnicodeInfo.GetUnicodeCategory(ch);
+                        if (uc != System.Globalization.UnicodeCategory.NonSpacingMark)
+                            sb.Append(ch);
+                    }
+                    return sb.ToString().Normalize(System.Text.NormalizationForm.FormC);
+                }
+                catch { return s; }
+            }
+
+            var target = Norm(nombre);
+            foreach (var lista in new[] { bioma.NodosComunes, bioma.NodosRaros })
+            {
+                if (lista == null) continue;
+                foreach (var n in lista)
+                {
+                    if (Norm(n.Nombre ?? string.Empty) == target)
+                        return n;
+                }
+            }
+            return null;
+        }
+
+        private static void CopiarPropsNodo(NodoRecoleccion origen, NodoRecoleccion destino)
+        {
+            // Copiar solo si faltan datos en el destino
+            if (string.IsNullOrWhiteSpace(destino.Tipo) && !string.IsNullOrWhiteSpace(origen.Tipo))
+                destino.Tipo = origen.Tipo;
+            if (string.IsNullOrWhiteSpace(destino.Requiere) && !string.IsNullOrWhiteSpace(origen.Requiere))
+                destino.Requiere = origen.Requiere;
+            if ((destino.Materiales == null || destino.Materiales.Count == 0) && (origen.Materiales != null && origen.Materiales.Count > 0))
+            {
+                destino.Materiales = new List<MaterialCantidad>();
+                foreach (var m in origen.Materiales)
+                    destino.Materiales.Add(new MaterialCantidad { Nombre = m.Nombre, Cantidad = m.Cantidad });
+            }
+            if (!destino.ProduccionMin.HasValue && origen.ProduccionMin.HasValue)
+                destino.ProduccionMin = origen.ProduccionMin;
+            if (!destino.ProduccionMax.HasValue && origen.ProduccionMax.HasValue)
+                destino.ProduccionMax = origen.ProduccionMax;
+            if (string.IsNullOrWhiteSpace(destino.Rareza) && !string.IsNullOrWhiteSpace(origen.Rareza))
+                destino.Rareza = origen.Rareza;
+            // Cooldown: si el destino no define uno, usar base del origen
+            if (destino.Cooldown <= 0)
+            {
+                if (origen.Cooldown > 0) destino.CooldownBase = origen.Cooldown;
+                else if (origen.CooldownBase.HasValue) destino.CooldownBase = origen.CooldownBase;
+            }
         }
 
     private List<NodoRecoleccion> FiltrarVista(List<NodoRecoleccion> baseList, string filtroTipo, string busqueda, out Dictionary<int, NodoRecoleccion> mapping) // Aplica búsqueda y filtro de tipo, genera índice estable
@@ -252,8 +354,15 @@ namespace MiJuegoRPG.Motor.Servicios
                     var gen = string.IsNullOrWhiteSpace(n.Tipo) ? " [Gen]" : "";
                     var cd = n.EstaEnCooldown() ? $" [CD {n.SegundosRestantesCooldown()}s]" : (n.CooldownEfectivo() > 0 ? $" [Listo {n.CooldownEfectivo()}s]" : "");
                     var rare = !string.IsNullOrWhiteSpace(n.Rareza) ? FormatearRarezaTag(n.Rareza!) : string.Empty;
+                    var prod = "";
+                    if (n.ProduccionMin.HasValue && n.ProduccionMax.HasValue && n.ProduccionMin.Value > 0)
+                    {
+                        prod = n.ProduccionMin.Value == n.ProduccionMax.Value
+                            ? $" [Prod {n.ProduccionMin.Value}]"
+                            : $" [Prod {n.ProduccionMin.Value}-{n.ProduccionMax.Value}]";
+                    }
                     var mats = (n.Materiales != null && n.Materiales.Count > 0) ? $" => {string.Join(", ", n.Materiales.Select(m => m.Cantidad + "x " + m.Nombre))}" : string.Empty;
-                    juego.Ui.WriteLine($"{idx}. {n.Nombre}{gen}{rare}{req}{cd}{mats}");
+                    juego.Ui.WriteLine($"{idx}. {n.Nombre}{gen}{rare}{prod}{req}{cd}{mats}");
                 }
             }
         }
@@ -305,12 +414,20 @@ namespace MiJuegoRPG.Motor.Servicios
             {
                 nodo.UsosFallidosRecientes++;
                 juego.Ui.WriteLine($"Fallaste al recolectar en '{nodo.Nombre}'. No obtuviste recursos.");
+                try
+                {
+                    var biomaLog = juego.mapa?.UbicacionActual?.Region ?? "?";
+                    var rarezaLog = string.IsNullOrEmpty(nodo.Rareza) ? "" : nodo.Rareza;
+                    MiJuegoRPG.Motor.Servicios.Logger.Info($"[Recolectar][FALLO] Nodo='{nodo.Nombre}' Bioma='{biomaLog}' Rareza='{rarezaLog}' CD={nodo.CooldownEfectivo()}s");
+                }
+                catch { }
                 // Pequeña compensación opcional: XP mínima? por ahora no
             }
             else
             {
                 nodo.UsosFallidosRecientes = 0;
                 juego.Ui.WriteLine($"Recolectaste en el nodo: {nodo.Nombre}");
+                int totalObtenido = 0;
                 if (nodo.Materiales != null && nodo.Materiales.Count > 0)
                 {
                     foreach (var mat in nodo.Materiales)
@@ -324,10 +441,11 @@ namespace MiJuegoRPG.Motor.Servicios
                             cantidad = (min == max) ? min : rngSvc.Next(min, max + 1);
                         }
                         juego.Ui.WriteLine($"  - {cantidad}x {mat.Nombre}");
+                        totalObtenido += cantidad;
                         if (juego.jugador != null && juego.jugador.Inventario != null)
                         {
                             // Rareza futura: mapear Rareza nodo a rareza material (por ahora Normal)
-                            juego.jugador.Inventario.AgregarObjeto(new Objetos.Material(mat.Nombre, Objetos.Rareza.Normal));
+                            juego.jugador.Inventario.AgregarObjeto(new Objetos.Material(mat.Nombre, Objetos.Rareza.Normal), cantidad);
                         }
                     }
                 }
@@ -335,6 +453,13 @@ namespace MiJuegoRPG.Motor.Servicios
                 {
                     juego.Ui.WriteLine("No encontraste materiales en este nodo.");
                 }
+                try
+                {
+                    var biomaLog = juego.mapa?.UbicacionActual?.Region ?? "?";
+                    var rarezaLog = string.IsNullOrEmpty(nodo.Rareza) ? "" : nodo.Rareza;
+                    MiJuegoRPG.Motor.Servicios.Logger.Info($"[Recolectar][OK] Nodo='{nodo.Nombre}' Bioma='{biomaLog}' Rareza='{rarezaLog}' Total={totalObtenido} CD={nodo.CooldownEfectivo()}s");
+                }
+                catch { }
                 if (juego.jugador != null)
                     progressionService.AplicarExpRecoleccion(juego.jugador, tipo);
                 if (juego.jugador != null)

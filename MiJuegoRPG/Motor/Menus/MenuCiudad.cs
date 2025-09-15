@@ -1,6 +1,7 @@
 using System;
 using MiJuegoRPG.Personaje;
 using MiJuegoRPG.Motor;
+using MiJuegoRPG.Motor.Servicios;
 
 namespace MiJuegoRPG.Motor.Menus
 {
@@ -20,9 +21,9 @@ namespace MiJuegoRPG.Motor.Menus
             string opcion = "";
             while (!salir)
             {
-                juego.Ui.WriteLine(juego.FormatoRelojMundo);
-                juego.Ui.WriteLine($"Ubicación actual: {juego.mapa.UbicacionActual.Nombre}");
-                juego.Ui.WriteLine("=== Menú de Ciudad ===");
+                UIStyle.Header(juego.Ui, "Menú de Ciudad");
+                UIStyle.SubHeader(juego.Ui, $"Ubicación: {juego.mapa.UbicacionActual.Nombre}");
+                UIStyle.Hint(juego.Ui, juego.FormatoRelojMundo);
                 juego.Ui.WriteLine("1. Tienda");
                 juego.Ui.WriteLine("2. Escuela de Entrenamiento");
                 juego.Ui.WriteLine("3. Explorar sector");
@@ -52,12 +53,15 @@ namespace MiJuegoRPG.Motor.Menus
                             int energiaRecuperada = Math.Max(maxEnergia - reduccion, 0);
                             juego.jugador.EnergiaActual = Math.Min(juego.jugador.EnergiaActual + energiaRecuperada, maxEnergia);
                             juego.jugador.Vida = juego.jugador.VidaMaxima;
+                            // Recuperación de maná fuera de combate (lenta, parametrizada)
+                            var rules = new ActionRulesService();
+                            var manaRec = rules.RegenerarManaFueraCombate(juego.jugador);
 
                             juego.Ui.WriteLine($"DEBUG: Energía tras descansar: {juego.jugador.EnergiaActual}/{juego.jugador.EnergiaMaxima}");
                             if (energiaRecuperada == 0)
                                 juego.Ui.WriteLine("Ya no puedes recuperar más energía descansando hoy.");
                             else
-                                juego.Ui.WriteLine("Has descansado y recuperado tu vida y parte de tu energía.");
+                                juego.Ui.WriteLine($"Has descansado, recuperado tu vida y parte de tu energía. Maná +{manaRec}.");
                         }
                         else
                         {

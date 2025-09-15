@@ -1,4 +1,3 @@
-
 using System;
 using System.IO;
 using System.Text.Json;
@@ -12,6 +11,8 @@ using MiJuegoRPG.Motor;
 using MiJuegoRPG.Objetos;
 using MiJuegoRPG.Dominio; // Enums dominio
 using MiJuegoRPG.Motor.Servicios; // GuardadoService, ProgressionService, etc.
+using Serv = MiJuegoRPG.Motor.Servicios;
+using TipoEncuentro = MiJuegoRPG.Motor.Servicios.TipoEncuentro;
 
 namespace MiJuegoRPG.Motor
 {
@@ -126,10 +127,13 @@ namespace MiJuegoRPG.Motor
             }
             else
                 throw new Exception("No hay ubicaciones disponibles para asignar al personaje.");
-            Ui.WriteLine($"Personaje creado: {jugador.Nombre} en {mapa.UbicacionActual.Nombre}");
+            var nombreUbic = mapa.UbicacionActual != null ? mapa.UbicacionActual.Nombre : "[sin ubicación]";
+            Ui.WriteLine($"Personaje creado: {jugador.Nombre} en {nombreUbic}");
             // ...después de crear el personaje y asignar atributos base...
             jugador.Estadisticas = new Estadisticas(jugador.AtributosBase);
             jugador.ManaActual = jugador.ManaMaxima;
+            // Aplicar preferencias iniciales del logger del PJ (si existen)
+            try { AplicarPreferenciasLoggerDeJugador(); } catch { }
         }
         // Menú de recolección fuera de ciudad
         public void MostrarMenuRecoleccion()
@@ -244,6 +248,36 @@ namespace MiJuegoRPG.Motor
         {
             // Implementación pendiente
         }
+
+        // --- Control de tiempo para QA/admin ---
+        /// <summary>
+        /// Ajusta los minutos transcurridos en el mundo. Acepta valores positivos o negativos.
+        /// </summary>
+        public void AjustarMinutosMundo(int delta)
+        {
+            try
+            {
+                checked { MinutosMundo += delta; }
+            }
+            catch (OverflowException)
+            {
+                MinutosMundo = delta > 0 ? int.MaxValue : int.MinValue;
+            }
+            if (MinutosMundo < 0) MinutosMundo = 0; // no permitir tiempo negativo desde el inicio
+            MiJuegoRPG.Motor.Servicios.Logger.Info($"[Tiempo] Nuevo tiempo del mundo: {FormatoRelojMundo}");
+        }
+
+        /// <summary>
+        /// Establece la hora del día (0-23) conservando la fecha y los minutos/segundos actuales.
+        /// </summary>
+        public void EstablecerHoraDelDia(int hora)
+        {
+            hora = Math.Clamp(hora, 0, 23);
+            var actual = FechaActual;
+            var objetivo = new DateTime(actual.Year, actual.Month, actual.Day, hora, actual.Minute, actual.Second);
+            var deltaMin = (int)(objetivo - actual).TotalMinutes;
+            AjustarMinutosMundo(deltaMin);
+        }
         public void ProgresionPorActividad(string actividad)
         {
             // Aquí puedes definir la lógica de progresión según la actividad
@@ -269,6 +303,7 @@ namespace MiJuegoRPG.Motor
     // Exposición controlada para servicios internos (evitar reflection)
     public MiJuegoRPG.Motor.Servicios.ProgressionService ProgressionService => progressionService!;
     public MiJuegoRPG.Motor.Servicios.RecoleccionService recoleccionService { get; private set; }
+    public MiJuegoRPG.Motor.Servicios.EncuentrosService? encuentrosService { get; private set; }
     public MiJuegoRPG.Motor.Servicios.ClaseDinamicaService claseService { get; private set; }
     public MiJuegoRPG.Motor.Servicios.ReputacionService reputacionService { get; private set; }
         public MiJuegoRPG.Personaje.Personaje? jugador;
@@ -291,13 +326,15 @@ namespace MiJuegoRPG.Motor
         {
             energiaService = new EnergiaService();
             Ui = UiFactory != null ? UiFactory() : new MiJuegoRPG.Motor.Servicios.ConsoleUserInterface();
-            // Redirigir Logger a la UI seleccionada
+            // Redirigir Logger a la UI seleccionada (no forzar nivel para respetar flags CLI)
             MiJuegoRPG.Motor.Servicios.Logger.SetSink(Ui);
-            MiJuegoRPG.Motor.Servicios.Logger.Level = MiJuegoRPG.Motor.Servicios.LogLevel.Info;
             progressionService = new MiJuegoRPG.Motor.Servicios.ProgressionService();
             progressionService.Verbose = true; // se puede ajustar dinámicamente
             guardadoService = new GuardadoService(); // inicializa servicio de guardado
             recoleccionService = new MiJuegoRPG.Motor.Servicios.RecoleccionService(this);
+            // Inicializamos EncuentrosService una vez por juego y cargamos tablas
+            encuentrosService = new Serv.EncuentrosService();
+            if (!encuentrosService.CargarDesdeJsonPorDefecto()) encuentrosService.RegistrarTablasPorDefecto();
             claseService = new MiJuegoRPG.Motor.Servicios.ClaseDinamicaService(this);
             reputacionService = new MiJuegoRPG.Motor.Servicios.ReputacionService(this);
             Instancia = this;
@@ -306,8 +343,8 @@ namespace MiJuegoRPG.Motor
             InstanciaActual = this;
             menuPrincipal = new MenusJuego(this);
             estadoMundo = new EstadoMundo();
-            string rutaEnemigos = MiJuegoRPG.Motor.Servicios.PathProvider.CombineData("enemigos.json");
-            GeneradorEnemigos.CargarEnemigos(rutaEnemigos);
+            // Cargar enemigos desde carpeta DatosJuego/enemigos (si existe) o caer a enemigos.json
+            GeneradorEnemigos.CargarEnemigosPorDefecto();
 
             // Llenar estadoMundo.Ubicaciones con todos los sectores del mapa
             foreach (var sector in mapa.ObtenerSectores())
@@ -618,7 +655,13 @@ namespace MiJuegoRPG.Motor
         public void MostrarTienda()
         {
             // Usar ID de sector como clave canónica (evita ambigüedad de nombres)
-            menuPrincipal.MostrarMenuTienda(mapa.UbicacionActual.Id);
+            var ubic = mapa.UbicacionActual;
+            if (ubic == null)
+            {
+                Ui.WriteLine("[Aviso] No hay ubicación actual válida para abrir la tienda.");
+                return;
+            }
+            menuPrincipal.MostrarMenuTienda(ubic.Id);
         }
 
     
@@ -667,76 +710,98 @@ namespace MiJuegoRPG.Motor
                 jugador.AtributosBase.Agilidad += 0.0001;
                 jugador.AtributosBase.Percepcion += 0.0002;
             }
-            // 1. Probabilidad de Mazmorra
-            if (MiJuegoRPG.Motor.Servicios.RandomService.Instancia.Next(100) < ProbMazmorra) //
+            // Sistema de encuentros por bioma (instancia única por juego)
+            if (encuentrosService == null)
             {
-                Ui.WriteLine("¡Has encontrado una mazmorra!");
-                MostrarMenuMazmorra();
-                return;
+                encuentrosService = new Serv.EncuentrosService();
+                if (!encuentrosService.CargarDesdeJsonPorDefecto()) encuentrosService.RegistrarTablasPorDefecto();
             }
-            // 2. Probabilidad de encontrar objetos
-            if (MiJuegoRPG.Motor.Servicios.RandomService.Instancia.Next(100) < ProbObjeto)
+            var bioma = mapa.UbicacionActual?.Region ?? "";
+            var nivel = jugador?.Nivel ?? 1;
+            int GetKills(string clave)
             {
-                string[] objetos = { "Oro", "Material", "Equipo" };
-                string tipoObjeto = objetos[MiJuegoRPG.Motor.Servicios.RandomService.Instancia.Next(objetos.Length)];
-                switch (tipoObjeto)
-                {
-                    case "Oro":
-                        int oro = MiJuegoRPG.Motor.Servicios.RandomService.Instancia.Next(5, 21);
-                        if (jugador != null)
-                        {
-                            jugador.Oro += oro;
-                            Ui.WriteLine($"¡Has encontrado {oro} monedas de oro!");
-                        }
-                        else
-                        {
-                            Ui.WriteLine($"¡Has encontrado {oro} monedas de oro! (No hay personaje cargado)");
-                        }
-                        break;
-                    case "Material":
-                        // Ahora se requiere un nodo de recolección específico. Si hay nodos disponibles, usar el primero; si no, mostrar advertencia.
-                        var sectorActual = mapa.ObtenerSectores().Find(s => s.Id == mapa.UbicacionActual.Id);
-                        List<NodoRecoleccion> nodosMaterial = new List<NodoRecoleccion>();
+                if (jugador == null) return 0;
+                return jugador.GetKills(clave, bioma);
+            }
+            var res = (jugador != null)
+                ? encuentrosService.Resolver(bioma, jugador, clave => GetKills(clave))
+                : encuentrosService.Resolver(bioma, nivel, clave => GetKills(clave));
+            switch (res.Tipo)
+            {
+                case TipoEncuentro.Nada:
+                    Ui.WriteLine("No ha ocurrido nada especial en la exploración.");
+                    InputService.Pausa("Presiona cualquier tecla para continuar...");
+                    break;
+                case TipoEncuentro.BotinComun:
+                    {
+                        int oro = MiJuegoRPG.Motor.Servicios.RandomService.Instancia.Next(3, 12);
+                        if (jugador != null) jugador.Oro += oro;
+                        Ui.WriteLine($"Encuentras un pequeño botín: {oro} de oro.");
+                        InputService.Pausa();
+                    }
+                    break;
+                case TipoEncuentro.Materiales:
+                    {
+                        var ubicActual = mapa.UbicacionActual;
+                        var sectorActual = ubicActual != null
+                            ? mapa.ObtenerSectores().Find(s => s.Id == ubicActual.Id)
+                            : null;
+                        var nodosMaterial = new List<NodoRecoleccion>();
                         if (sectorActual != null && sectorActual.NodosRecoleccion != null && sectorActual.NodosRecoleccion.Count > 0)
-                        {
                             nodosMaterial.AddRange(sectorActual.NodosRecoleccion);
-                        }
-                        else if (sectorActual != null)
-                        {
-                            nodosMaterial.AddRange(MiJuegoRPG.Motor.TablaBiomas.GenerarNodosParaBioma(sectorActual.Region));
-                        }
+                        else if (sectorActual != null && !string.IsNullOrWhiteSpace(sectorActual.Region))
+                            nodosMaterial.AddRange(MiJuegoRPG.Motor.TablaBiomas.GenerarNodosParaBioma(sectorActual.Region!));
                         if (nodosMaterial.Count > 0)
-                        {
                             recoleccionService.EjecutarAccion(MiJuegoRPG.Dominio.TipoRecoleccion.Recolectar, nodosMaterial[0]);
-                        }
                         else
-                        {
-                            Ui.WriteLine("No hay nodos de recolección disponibles para obtener materiales.");
-                        }
-                        break;
-                    case "Equipo":
+                            Ui.WriteLine("No hay nodos de recolección disponibles.");
+                    }
+                    break;
+                case TipoEncuentro.NPC:
+                    Ui.WriteLine("Te cruzas con un viajero. (Ganchos de misión por implementar)");
+                    InputService.Pausa();
+                    break;
+                case TipoEncuentro.CombateComunes:
+                case TipoEncuentro.CombateBioma:
+                case TipoEncuentro.MiniJefe:
+                    {
+                        Ui.WriteLine("¡Un enemigo aparece!");
                         if (jugador != null)
                         {
-                            jugador.Inventario.AgregarObjeto(new Objetos.Arma("Espada Misteriosa", 10));
-                            Ui.WriteLine("¡Has encontrado un arma misteriosa!");
+                            try
+                            {
+                                // Si el encuentro trae un filtro de tipos (Param), úsalo para generar el enemigo acorde
+                                string? filtro = res.Param;
+                                // Soportar formato "lider_manada:lobo" -> usar parte derecha como filtro
+                                if (!string.IsNullOrWhiteSpace(filtro) && filtro.Contains(':'))
+                                    filtro = filtro.Split(':').Last();
+                                var enemigo = string.IsNullOrWhiteSpace(filtro)
+                                    ? GeneradorEnemigos.GenerarEnemigoAleatorio(jugador)
+                                    : GeneradorEnemigos.GenerarEnemigoAleatorio(jugador, filtro);
+                                GeneradorEnemigos.IniciarCombate(jugador, enemigo);
+                            }
+                            catch (Exception ex)
+                            {
+                                Ui.WriteLine($"Error al iniciar combate: {ex.Message}");
+                                InputService.Pausa();
+                            }
                         }
                         else
                         {
-                            Ui.WriteLine("¡Has encontrado un arma misteriosa! (No hay personaje cargado)");
+                            Ui.WriteLine("No hay personaje cargado.");
+                            InputService.Pausa();
                         }
-                        break;
-                }
+                    }
+                    break;
+                case TipoEncuentro.MazmorraRara:
+                    Ui.WriteLine("¡Has encontrado una entrada a una mazmorra!");
+                    MostrarMenuMazmorra();
+                    break;
+                case TipoEncuentro.EventoRaro:
+                    Ui.WriteLine("¡Ocurre un evento extraño en la zona! (placeholder)");
+                    InputService.Pausa();
+                    break;
             }
-            // 3. Probabilidad de batalla
-            if (MiJuegoRPG.Motor.Servicios.RandomService.Instancia.Next(100) < ProbMonstruo)
-            {
-                Ui.WriteLine("¡Un monstruo aparece!");
-                // ComenzarCombate(); // Método no implementado, comentar o implementar si es necesario
-                Ui.WriteLine("(Combate no implementado)");
-                return;
-            }
-            Ui.WriteLine("No ha ocurrido nada especial en la exploración.");
-            InputService.Pausa("Presiona cualquier tecla para continuar...");
             MostrarMenuPorUbicacion();
         }
 
@@ -772,6 +837,7 @@ namespace MiJuegoRPG.Motor
             jugador = pj;
             jugador.Estadisticas = new Estadisticas(jugador.AtributosBase);
             jugador.ManaActual = jugador.ManaMaxima;
+            try { AplicarPreferenciasLoggerDeJugador(); } catch { }
             Ui.WriteLine($"Personaje '{jugador.Nombre}' cargado correctamente.");
             if (!string.IsNullOrEmpty(jugador.UbicacionActualId))
             {
@@ -797,6 +863,17 @@ namespace MiJuegoRPG.Motor
                     if (primerSector != null) mapa.UbicacionActual = primerSector;
                 }
             }
+        }
+
+        private void AplicarPreferenciasLoggerDeJugador()
+        {
+            if (jugador == null) return;
+            // Respetar apagado total si viene de CLI (--log-off) ya aplicado en Program
+            if (MiJuegoRPG.Motor.Servicios.Logger.Enabled)
+                MiJuegoRPG.Motor.Servicios.Logger.Enabled = jugador.PreferenciaLoggerEnabled;
+            var nivel = jugador.PreferenciaLoggerLevel ?? "Info";
+            if (Enum.TryParse<MiJuegoRPG.Motor.Servicios.LogLevel>(nivel, true, out var lvl))
+                MiJuegoRPG.Motor.Servicios.Logger.Level = lvl;
         }
         // Sincronizar el ID de ubicación antes de guardar
         public void GuardarPersonaje()
@@ -840,9 +917,12 @@ namespace MiJuegoRPG.Motor
             // Mostrar sectores disponibles fuera de la ciudad
             var sectores = mapa.ObtenerSectores();
             // Buscar el sector actual por ID
-            var sectorActual = sectores.Find(s => s.Id == mapa.UbicacionActual.Id);
+            var sectorActual = mapa.UbicacionActual != null
+                ? sectores.Find(s => s.Id == mapa.UbicacionActual.Id)
+                : null;
             // DEBUG: Mostrar ID de ubicación actual y conexiones
-            MiJuegoRPG.Motor.Servicios.Logger.Debug($"[DEBUG] Ubicación actual: {mapa.UbicacionActual.Nombre} (ID: {mapa.UbicacionActual.Id})");
+            if (mapa.UbicacionActual != null)
+                MiJuegoRPG.Motor.Servicios.Logger.Debug($"[DEBUG] Ubicación actual: {mapa.UbicacionActual.Nombre} (ID: {mapa.UbicacionActual.Id})");
             if (sectorActual != null)
             {
                 MiJuegoRPG.Motor.Servicios.Logger.Debug($"[DEBUG] Conexiones de {sectorActual.Nombre}:");

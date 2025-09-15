@@ -40,29 +40,185 @@ namespace MiJuegoRPG.Motor
                 enemigosDisponibles = new List<EnemigoData>();
             }
         }
+
+        /// <summary>
+        /// Carga enemigos priorizando carpeta DatosJuego/enemigos (todos los *.json),
+        /// soportando tanto listas como un único objeto por archivo. Si no hay archivos
+        /// válidos, cae a DatosJuego/enemigos.json. Mantiene compatibilidad con CargarEnemigos(string).
+        /// </summary>
+        public static void CargarEnemigosPorDefecto()
+        {
+            var dir = PathProvider.EnemigosDir();
+            var acumulados = new List<EnemigoData>();
+            var options = new JsonSerializerOptions();
+            options.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
+            bool algunArchivo = false;
+            try
+            {
+                if (Directory.Exists(dir))
+                {
+                    foreach (var file in Directory.EnumerateFiles(dir, "*.json", SearchOption.AllDirectories))
+                    {
+                        try
+                        {
+                            var json = File.ReadAllText(file);
+                            if (string.IsNullOrWhiteSpace(json)) continue;
+                            algunArchivo = true;
+
+                            using var doc = JsonDocument.Parse(json);
+                            var kind = doc.RootElement.ValueKind;
+                            if (kind == JsonValueKind.Array)
+                            {
+                                var lista = JsonSerializer.Deserialize<List<EnemigoData>>(json, options);
+                                if (lista != null && lista.Count > 0)
+                                {
+                                    acumulados.AddRange(lista);
+                                }
+                                else
+                                {
+                                    Logger.Warn($"[GeneradorEnemigos] Lista vacía en '{file}'");
+                                }
+                            }
+                            else if (kind == JsonValueKind.Object)
+                            {
+                                var uno = JsonSerializer.Deserialize<EnemigoData>(json, options);
+                                if (uno != null && !string.IsNullOrWhiteSpace(uno.Nombre))
+                                {
+                                    acumulados.Add(uno);
+                                }
+                                else
+                                {
+                                    Logger.Warn($"[GeneradorEnemigos] Objeto enemigo inválido en '{file}'");
+                                }
+                            }
+                            else
+                            {
+                                Logger.Warn($"[GeneradorEnemigos] Raíz JSON no válida en '{file}' (se esperaba objeto o lista)");
+                            }
+                        }
+                        catch (Exception exFile)
+                        {
+                            Logger.Warn($"[GeneradorEnemigos] Error leyendo '{file}': {exFile.Message}");
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Warn($"[GeneradorEnemigos] Error al enumerar carpeta de enemigos: {ex.Message}");
+            }
+
+            if (acumulados.Count > 0)
+            {
+                enemigosDisponibles = acumulados;
+                Logger.Info($"[GeneradorEnemigos] Cargados {enemigosDisponibles.Count} enemigos desde carpeta 'enemigos/'.");
+                return;
+            }
+
+            // Fallback al archivo tradicional enemigos.json
+            var rutaArchivo = PathProvider.CombineData("enemigos.json");
+            if (!algunArchivo && !File.Exists(rutaArchivo))
+            {
+                Logger.Warn("[GeneradorEnemigos] No existe carpeta/archivos en 'enemigos/' ni 'enemigos.json'. Lista vacía.");
+                enemigosDisponibles = new List<EnemigoData>();
+                return;
+            }
+            CargarEnemigos(rutaArchivo);
+        }
         
         // Método para generar un enemigo aleatorio basado en el JSON.
         public static Enemigo GenerarEnemigoAleatorio(MiJuegoRPG.Personaje.Personaje jugador)
+        {
+            return GenerarEnemigoAleatorio(jugador, null);
+        }
+
+        // Sobrecarga: permite filtrar por tipos (separados por '|'), se matchea por nombre/Tag
+        public static Enemigo GenerarEnemigoAleatorio(MiJuegoRPG.Personaje.Personaje jugador, string? filtroTipos)
         {
             if (enemigosDisponibles == null || enemigosDisponibles.Count == 0)
             {
                 Logger.Warn("No se encontraron enemigos. Generando Goblin por defecto.");
                 // Creamos un enemigo por defecto si no hay JSON
-                return new EnemigoEstandar("Goblin", 50, 10, 5, 5, 1, 5, 5);
+                var def = new EnemigoEstandar("Goblin", 50, 10, 5, 5, 1, 5, 5);
+                def.Tag = "goblin";
+                return def;
             }
 
             var enemigosApropiados = enemigosDisponibles
                 .Where(e => e.Nivel <= jugador.Nivel + 2) // Filtra enemigos para que no sean demasiado difíciles
                 .ToList();
+
+            if (!string.IsNullOrWhiteSpace(filtroTipos))
+            {
+                var tipos = filtroTipos.Split('|', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                                        .Select(t => t.ToLowerInvariant()).ToHashSet();
+                // Coincidencia por nombre o por tags (si existen)
+                var filtrados = enemigosApropiados.Where(e =>
+                    tipos.Any(t => e.Nombre.ToLowerInvariant().Contains(t))
+                    || (e.Tags != null && e.Tags.Any(tag => tipos.Contains(tag.ToLowerInvariant())))
+                ).ToList();
+                if (filtrados.Count > 0)
+                {
+                    enemigosApropiados = filtrados;
+                }
+                else
+                {
+                    Logger.Warn($"Filtro de tipos '{filtroTipos}' no coincidió, usando lista sin filtrar.");
+                }
+            }
             
             if (!enemigosApropiados.Any())
             {
                 Logger.Warn("No se encontraron enemigos apropiados. Generando Goblin por defecto.");
-                return new EnemigoEstandar("Goblin", 50, 10, 5, 5, 1, 5, 5);
+                var def = new EnemigoEstandar("Goblin", 50, 10, 5, 5, 1, 5, 5);
+                def.Tag = "goblin";
+                return def;
             }
 
-            int indice = MiJuegoRPG.Motor.Servicios.RandomService.Instancia.Next(0, enemigosApropiados.Count);
-            EnemigoData enemigoData = enemigosApropiados[indice];
+            // Aplicar SpawnChance (si está definido) como pre-filtro suave: se incluye si pasa el roll
+            var rng = MiJuegoRPG.Motor.Servicios.RandomService.Instancia;
+            var candidatos = new List<EnemigoData>();
+            bool habiaConChance = false;
+            foreach (var e in enemigosApropiados)
+            {
+                if (e.SpawnChance.HasValue)
+                {
+                    habiaConChance = true;
+                    var p = Math.Clamp(e.SpawnChance.Value, 0.0, 1.0);
+                    if (rng.NextDouble() < p) candidatos.Add(e);
+                }
+                else
+                {
+                    candidatos.Add(e); // si no tiene chance, siempre es elegible en esta fase
+                }
+            }
+            if (candidatos.Count == 0)
+            {
+                // Si todos fallaron el roll y había SpawnChance definidos, relajar: usar la lista original para no quedarse sin enemigo
+                if (habiaConChance) candidatos = enemigosApropiados;
+                // Si no había SpawnChance, ya estaría vacío por otra razón (pero no debería), caer a lista original
+                if (candidatos.Count == 0) candidatos = enemigosApropiados;
+            }
+
+            // Selección ponderada por SpawnWeight (default 1). Si todos tienen peso <=0, hacer uniforme.
+            int totalPeso = candidatos.Sum(e => Math.Max(0, e.SpawnWeight ?? 1));
+            EnemigoData enemigoData;
+            if (totalPeso <= 0)
+            {
+                int idx = rng.Next(0, candidatos.Count);
+                enemigoData = candidatos[idx];
+            }
+            else
+            {
+                int r = rng.Next(1, totalPeso + 1);
+                int acc = 0;
+                enemigoData = candidatos[0];
+                foreach (var e in candidatos)
+                {
+                    acc += Math.Max(0, e.SpawnWeight ?? 1);
+                    if (r <= acc) { enemigoData = e; break; }
+                }
+            }
 
             // Buscar arma por nombre si existe en el JSON del enemigo
             Objetos.Arma? arma = null;
@@ -85,6 +241,170 @@ namespace MiJuegoRPG.Motor
             {
                 enemigo.ArmaEquipada = arma;
             }
+            // Tag básico: si hay filtro usa el primer valor como tag, si no usa el nombre en minúsculas
+            var tagBase = enemigoData.Nombre.ToLowerInvariant();
+            if (!string.IsNullOrWhiteSpace(filtroTipos))
+            {
+                var prim = filtroTipos.Split('|', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).FirstOrDefault();
+                if (!string.IsNullOrWhiteSpace(prim)) tagBase = prim.ToLowerInvariant();
+            }
+            // Aplicar tags adicionales desde data si existen
+            if (enemigoData.Tags != null && enemigoData.Tags.Count > 0)
+            {
+                enemigo.Tag = enemigoData.Tags[0].ToLowerInvariant();
+            }
+            else
+            {
+                enemigo.Tag = tagBase;
+            }
+
+            // Aplicar configuración avanzada desde data
+            if (enemigoData.Inmunidades != null)
+            {
+                foreach (var kv in enemigoData.Inmunidades)
+                {
+                    enemigo.Inmunidades[kv.Key] = kv.Value;
+                }
+            }
+            // Defaults por familia (p. ej., NoMuerto inmune a veneno si no está especificado)
+            if (enemigoData.Familia == PjDatos.Familia.NoMuerto && !enemigo.Inmunidades.ContainsKey("veneno"))
+            {
+                enemigo.Inmunidades["veneno"] = true;
+            }
+            if (enemigoData.MitigacionFisicaPorcentaje.HasValue)
+            {
+                enemigo.MitigacionFisicaPorcentaje = Math.Clamp(enemigoData.MitigacionFisicaPorcentaje.Value, 0.0, 0.9);
+            }
+            if (enemigoData.MitigacionMagicaPorcentaje.HasValue)
+            {
+                enemigo.MitigacionMagicaPorcentaje = Math.Clamp(enemigoData.MitigacionMagicaPorcentaje.Value, 0.0, 0.9);
+            }
+
+            // Resistencias elementales (mitigación adicional por tipo)
+            if (enemigoData.ResistenciasElementales != null)
+            {
+                foreach (var kv in enemigoData.ResistenciasElementales)
+                {
+                    enemigo.EstablecerMitigacionElemental(kv.Key, kv.Value);
+                }
+            }
+
+            // Daño elemental base
+            if (enemigoData.DanioElementalBase != null)
+            {
+                foreach (var kv in enemigoData.DanioElementalBase)
+                {
+                    enemigo.AgregarDanioElementalBase(kv.Key, kv.Value);
+                }
+            }
+
+            // Equipo inicial (arma)
+            if (enemigoData.EquipoInicial != null && !string.IsNullOrWhiteSpace(enemigoData.EquipoInicial.Arma))
+            {
+                try
+                {
+                    var armaIni = Objetos.GestorArmas.BuscarArmaPorNombre(enemigoData.EquipoInicial.Arma);
+                    if (armaIni != null)
+                    {
+                        ((EnemigoEstandar)enemigo).ArmaEquipada = armaIni;
+                    }
+                    else
+                    {
+                        Logger.Warn($"[GeneradorEnemigos] Arma inicial no encontrada: '{enemigoData.EquipoInicial.Arma}' para {enemigo.Nombre}");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logger.Warn($"[GeneradorEnemigos] Error equipando arma inicial '{enemigoData.EquipoInicial.Arma}': {ex.Message}");
+                }
+            }
+
+            // Drops configurados por JSON (por ahora: chance individual por objeto; cantidades/UniqueOnce pendientes)
+            if (enemigoData.Drops != null && enemigoData.Drops.Count > 0)
+            {
+                foreach (var drop in enemigoData.Drops)
+                {
+                    if (string.IsNullOrWhiteSpace(drop?.Tipo) || string.IsNullOrWhiteSpace(drop?.Nombre))
+                        continue;
+                    var tipo = drop.Tipo.Trim().ToLowerInvariant();
+                    var nombre = drop.Nombre.Trim();
+                    double chance = Math.Clamp(drop.Chance, 0.0, 1.0);
+
+                    switch (tipo)
+                    {
+                        case "material":
+                        {
+                            var mat = Objetos.GestorMateriales.BuscarMaterialPorNombre(nombre);
+                            if (mat == null)
+                            {
+                                // Crear stub si no existe
+                                var rzStr = string.IsNullOrWhiteSpace(drop.Rareza) ? "Normal" : drop.Rareza;
+                                if (!Enum.TryParse<Objetos.Rareza>(rzStr, true, out var rzObj)) rzObj = Objetos.Rareza.Normal;
+                                mat = new Objetos.Material(nombre, rzObj, "Material");
+                                if (!DesactivarPersistenciaDrops)
+                                    Objetos.GestorMateriales.GuardarMaterialSiNoExiste(mat);
+                            }
+                            enemigo.ProbabilidadesDrop[nombre] = chance;
+                            enemigo.ObjetosDrop.Add(mat);
+                            break;
+                        }
+                        case "arma":
+                        {
+                            var armaDrop = Objetos.GestorArmas.BuscarArmaPorNombre(nombre);
+                            if (armaDrop != null)
+                            {
+                                enemigo.ProbabilidadesDrop[nombre] = chance;
+                                enemigo.ObjetosDrop.Add(armaDrop);
+                            }
+                            else
+                            {
+                                Logger.Warn($"[GeneradorEnemigos] Drop arma no encontrada '{nombre}' para {enemigo.Nombre}");
+                            }
+                            break;
+                        }
+                        case "pocion":
+                        {
+                            var poc = Objetos.GestorPociones.BuscarPocionPorNombre(nombre);
+                            if (poc != null)
+                            {
+                                enemigo.ProbabilidadesDrop[nombre] = chance;
+                                enemigo.ObjetosDrop.Add(poc);
+                            }
+                            else
+                            {
+                                Logger.Warn($"[GeneradorEnemigos] Drop poción no encontrada '{nombre}' para {enemigo.Nombre}");
+                            }
+                            break;
+                        }
+                        default:
+                            Logger.Warn($"[GeneradorEnemigos] Tipo de drop no soportado '{drop.Tipo}' en {enemigo.Nombre}");
+                            break;
+                    }
+
+                    if (drop.CantidadMax > 1 || drop.CantidadMin > 1)
+                    {
+                        Logger.Debug($"[GeneradorEnemigos] Cantidades de drop >1 no soportadas aún (se ignorará multiplicidad) para '{nombre}'");
+                    }
+                    if (drop.UniqueOnce)
+                    {
+                        Logger.Debug($"[GeneradorEnemigos] UniqueOnce requiere persistencia en GuardadoService (pendiente)");
+                    }
+                }
+            }
+
+            // Ajuste contextual de dificultad si el jugador es muy novato y sin equipo
+            try
+            {
+                bool novato = jugador.Nivel <= 2;
+                bool sinEquipo = (jugador.ObtenerObjetosEquipados()?.Count ?? 0) == 0;
+                if (novato && sinEquipo)
+                {
+                    enemigo.VidaMaxima = (int)Math.Round(enemigo.VidaMaxima * 1.10);
+                    enemigo.Vida = enemigo.VidaMaxima;
+                    enemigo.Ataque = (int)Math.Round(enemigo.Ataque * 1.10);
+                }
+            }
+            catch { }
 
             // Ejemplo de drops básicos según tipo de enemigo
             if (enemigo.Nombre.ToLower().Contains("goblin"))
@@ -176,6 +496,7 @@ namespace MiJuegoRPG.Motor
                 {
                     enemigo.ArmaEquipada = arma;
                 }
+                enemigo.Tag = enemigoData.Nombre.ToLowerInvariant();
                 lista.Add(enemigo);
             }
             return lista;

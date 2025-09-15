@@ -35,6 +35,10 @@ namespace MiJuegoRPG.Motor.Menus
                 juego.Ui.WriteLine("12. Resumen integral");
                 juego.Ui.WriteLine("13. Forzar desbloqueo de clase");
                 juego.Ui.WriteLine("14. Exportar resumen integral a archivo");
+                juego.Ui.WriteLine("15. Ajustar tiempo del mundo (+/-minutos o h=HH)");
+                juego.Ui.WriteLine("16. Ver cooldowns de encuentros");
+                juego.Ui.WriteLine("17. Limpiar cooldowns de encuentros (solo vencidos)");
+                juego.Ui.WriteLine("18. Limpiar TODOS los cooldowns de encuentros");
                 juego.Ui.WriteLine("0. Volver");
                 var op = InputService.LeerOpcion("Opción: ");
                 switch (op)
@@ -142,6 +146,18 @@ namespace MiJuegoRPG.Motor.Menus
                     case "14":
                         ExportarResumenIntegral();
                         break;
+                    case "15":
+                        AjustarTiempoDelMundo();
+                        break;
+                    case "16":
+                        ListarCooldownsEncuentros();
+                        break;
+                    case "17":
+                        LimpiarCooldownsEncuentros(true);
+                        break;
+                    case "18":
+                        LimpiarCooldownsEncuentros(false);
+                        break;
                     case "0":
                         return;
                     default:
@@ -149,6 +165,27 @@ namespace MiJuegoRPG.Motor.Menus
                         break;
                 }
             }
+        }
+
+        private void ListarCooldownsEncuentros()
+        {
+            if (juego.encuentrosService == null) { juego.Ui.WriteLine("[ADMIN] EncuentrosService no inicializado."); return; }
+            var estados = juego.encuentrosService.ObtenerEstadoCooldowns();
+            if (estados.Count == 0) { juego.Ui.WriteLine("[ADMIN] No hay cooldowns registrados."); return; }
+            juego.Ui.WriteLine("=== Cooldowns de Encuentros ===");
+            foreach (var e in estados)
+            {
+                var rest = e.RestanteMinutos;
+                string restTxt = rest <= 0.01 ? "(libre)" : $"restante ~{rest:F1} min";
+                juego.Ui.WriteLine($"- {e.Bioma} | {e.Tipo} | {e.Param ?? ""} → último {e.UltimoDisparo:yyyy-MM-dd HH:mm} CD={e.CooldownMinutos?.ToString() ?? "-"} {restTxt}");
+            }
+        }
+
+        private void LimpiarCooldownsEncuentros(bool soloVencidos)
+        {
+            if (juego.encuentrosService == null) { juego.Ui.WriteLine("[ADMIN] EncuentrosService no inicializado."); return; }
+            int n = juego.encuentrosService.LimpiarCooldowns(soloVencidos);
+            juego.Ui.WriteLine(soloVencidos ? $"[ADMIN] Eliminados cooldowns vencidos: {n}" : $"[ADMIN] Eliminados TODOS los cooldowns: {n}");
         }
 
         private void AjustarNivelAdmin(Personaje.Personaje pj, int delta)
@@ -619,6 +656,31 @@ namespace MiJuegoRPG.Motor.Menus
             {
                 juego.Ui.WriteLine($"[ADMIN] Error exportando resumen: {ex.Message}");
             }
+        }
+
+        private void AjustarTiempoDelMundo()
+        {
+            juego.Ui.WriteLine($"Hora actual del mundo: {juego.FormatoRelojMundo}");
+            var val = InputService.LeerOpcion("Ingresa delta en minutos (p.ej., +60, -30) o 'h=HH' para fijar hora: ").Trim();
+            if (string.IsNullOrWhiteSpace(val)) { juego.Ui.WriteLine("Sin cambios."); return; }
+            if (val.StartsWith("h=", StringComparison.OrdinalIgnoreCase))
+            {
+                var hh = val.Substring(2);
+                if (int.TryParse(hh, out var hora))
+                {
+                    juego.EstablecerHoraDelDia(hora);
+                }
+                else juego.Ui.WriteLine("Formato inválido. Ejemplos válidos: h=20, h=5");
+                return;
+            }
+            // delta +/- minutos
+            var numTxt = val.Replace("+", string.Empty);
+            if (int.TryParse(numTxt, out var delta))
+            {
+                if (val.StartsWith("-")) delta *= -1;
+                juego.AjustarMinutosMundo(delta);
+            }
+            else juego.Ui.WriteLine("Valor inválido. Usa +N, -N o h=HH.");
         }
     }
 }

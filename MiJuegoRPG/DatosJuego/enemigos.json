@@ -15,6 +15,32 @@
     "ArmaNombre": "Espada Oxidada"
   },
   {
+    "Nombre": "Rata",
+    "VidaBase": 30,
+    "AtaqueBase": 5,
+    "DefensaBase": 2,
+    "DefensaMagicaBase": 2,
+    "Nivel": 1,
+    "ExperienciaRecompensa": 2,
+    "OroRecompensa": 1,
+    "Familia": "Bestia",
+    "Rareza": "Comun",
+    "Categoria": "Normal"
+  },
+  {
+    "Nombre": "Zombi",
+    "VidaBase": 55,
+    "AtaqueBase": 11,
+    "DefensaBase": 4,
+    "DefensaMagicaBase": 4,
+    "Nivel": 1,
+    "ExperienciaRecompensa": 6,
+    "OroRecompensa": 4,
+    "Familia": "NoMuerto",
+    "Rareza": "Comun",
+    "Categoria": "Normal"
+  },
+  {
     "Nombre": "Slime",
     "VidaBase": 40,
     "AtaqueBase": 8,

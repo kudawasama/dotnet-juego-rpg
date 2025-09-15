@@ -1,14 +1,58 @@
 {
   "Id": "2_12",
   "nombre": "Sector 2_12",
-  "bioma": "Campo",
-  "parteCiudad": "",
+  "bioma": "Oceano",
+  "Tipo": "Ruta",
+  "Descripcion": "Sector autocompletado.",
+  "NivelMinimo": 0,
+  "NivelMaximo": 0,
+  "Enemigos": [],
+  "Conexiones": [
+    "1_12",
+    "2_11",
+    "2_13",
+    "3_12"
+  ],
+  "CiudadInicial": false,
+  "Eventos": [],
+  "Requisitos": {},
+  "NodosRecoleccion": [
+    {
+      "Nombre": "Coral",
+      "Materiales": [],
+      "Cooldown": 5,
+      "CooldownBase": null,
+      "Tipo": null,
+      "Requiere": null,
+      "Rareza": null,
+      "ProduccionMin": 1,
+      "ProduccionMax": 1
+    },
+    {
+      "Nombre": "Alga Marina",
+      "Materiales": [],
+      "Cooldown": 3,
+      "CooldownBase": null,
+      "Tipo": null,
+      "Requiere": null,
+      "Rareza": null,
+      "ProduccionMin": 1,
+      "ProduccionMax": 1
+    },
+    {
+      "Nombre": "Conchas",
+      "Materiales": [],
+      "Cooldown": 4,
+      "CooldownBase": null,
+      "Tipo": null,
+      "Requiere": null,
+      "Rareza": null,
+      "ProduccionMin": 1,
+      "ProduccionMax": 1
+    }
+  ],
   "ciudadPrincipal": false,
   "esCentroCiudad": false,
-  "nodosRecoleccion": [],
-  "Requisitos": {},
-  "enemigos": [],
-  "Conexiones": [],
-  "eventos": [],
-  "descripcion": "Sector autocompletado."
+  "parteCiudad": "",
+  "Rutas": ""
 }

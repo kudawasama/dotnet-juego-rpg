@@ -1,0 +1,26 @@
+{
+  "Nombre": "Zombi del Pantano",
+  "VidaBase": 60,
+  "AtaqueBase": 8,
+  "DefensaBase": 4,
+  "DefensaMagicaBase": 2,
+  "Nivel": 2,
+  "ExperienciaRecompensa": 12,
+  "OroRecompensa": 5,
+  "Familia": "NoMuerto",
+  "Rareza": "Comun",
+  "Categoria": "Normal",
+  "ArmaNombre": "Puños",
+  "Inmunidades": { "veneno": true },
+  "MitigacionFisicaPorcentaje": 0.25,
+  "Tags": ["zombi", "no-muerto", "pantano"],
+  "ResistenciasElementales": { "sombra": 0.3, "fuego": 0.05 },
+  "DanioElementalBase": { "sombra": 3 },
+  "SpawnChance": 0.25,
+  "EquipoInicial": { "Arma": "Puños" },
+  "Drops": [
+    { "Tipo": "Material", "Nombre": "Carne Podrida", "Rareza": "Pobre", "Chance": 0.2, "CantidadMin": 1, "CantidadMax": 1 },
+    { "Tipo": "Material", "Nombre": "Hueso", "Rareza": "Normal", "Chance": 0.1 },
+    { "Tipo": "Pocion", "Nombre": "Poción Pequeña", "Chance": 0.03 }
+  ]
+}

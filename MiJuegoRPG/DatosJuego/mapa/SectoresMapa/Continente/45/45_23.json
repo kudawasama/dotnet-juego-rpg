@@ -2,13 +2,46 @@
   "Id": "45_23",
   "nombre": "Sector 45_23",
   "bioma": "Campo",
-  "parteCiudad": "",
+  "Tipo": "Ruta",
+  "Descripcion": "Sector autocompletado.",
+  "NivelMinimo": 0,
+  "NivelMaximo": 0,
+  "Enemigos": [],
+  "Conexiones": [
+    "44_23",
+    "45_22",
+    "45_24",
+    "46_23"
+  ],
+  "CiudadInicial": false,
+  "Eventos": [],
+  "Requisitos": {},
+  "NodosRecoleccion": [
+    {
+      "Nombre": "\u00C1rboles de Sauce",
+      "Materiales": [],
+      "Cooldown": 2,
+      "CooldownBase": null,
+      "Tipo": null,
+      "Requiere": null,
+      "Rareza": null,
+      "ProduccionMin": 1,
+      "ProduccionMax": 2
+    },
+    {
+      "Nombre": "Pradera de Flores",
+      "Materiales": [],
+      "Cooldown": 1,
+      "CooldownBase": null,
+      "Tipo": null,
+      "Requiere": null,
+      "Rareza": null,
+      "ProduccionMin": null,
+      "ProduccionMax": null
+    }
+  ],
   "ciudadPrincipal": false,
   "esCentroCiudad": false,
-  "nodosRecoleccion": [],
-  "Requisitos": {},
-  "enemigos": [],
-  "Conexiones": [],
-  "eventos": [],
-  "descripcion": "Sector autocompletado."
+  "parteCiudad": "",
+  "Rutas": ""
 }

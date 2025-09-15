@@ -13,12 +13,14 @@ namespace MiJuegoRPG.Motor.Servicios
         private readonly PersonajeSqliteService _sqlite;
         public bool Verbose { get; set; } = true;
     private readonly string rutaCooldowns;
+    private readonly string rutaEncuentrosCooldowns;
 
         public GuardadoService(string? rutaDb = null)
         {
             _sqlite = new PersonajeSqliteService(rutaDb);
             // Archivo adicional para cooldowns (persistencia ligera fuera de SQLite por simplicidad temporal)
             rutaCooldowns = PathProvider.PjDatosPath("cooldowns_nodos.json");
+            rutaEncuentrosCooldowns = PathProvider.PjDatosPath("cooldowns_encuentros.json");
         }
 
         public void Guardar(Personaje.Personaje pj)
@@ -37,6 +39,13 @@ namespace MiJuegoRPG.Motor.Servicios
                     var data = juego.recoleccionService.ExportarCooldownsMultiSector();
                     var jsonCd = System.Text.Json.JsonSerializer.Serialize(data, new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
                     System.IO.File.WriteAllText(rutaCooldowns, jsonCd);
+                }
+                // Guardar cooldowns de encuentros si existe servicio de encuentros
+                if (juego?.encuentrosService != null)
+                {
+                    var dataE = juego.encuentrosService.ExportarCooldowns();
+                    var jsonE = System.Text.Json.JsonSerializer.Serialize(dataE, new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
+                    System.IO.File.WriteAllText(rutaEncuentrosCooldowns, jsonE);
                 }
                 if (Verbose) Console.WriteLine($"[Guardado] Personaje '{pj.Nombre}' guardado.");
             }
@@ -64,7 +73,7 @@ namespace MiJuegoRPG.Motor.Servicios
                 {
                     var pj = _sqlite.Cargar(nombres[idx - 1]);
                     if (pj != null && Verbose) Console.WriteLine($"[Guardado] Personaje '{pj.Nombre}' cargado.");
-                    // Cargar cooldowns si archivo existe y recoleccionService ya inicializado
+                    // Cargar cooldowns si archivo existe y servicios ya inicializados
                     try
                     {
                         var juego = Juego.ObtenerInstanciaActual();
@@ -73,6 +82,12 @@ namespace MiJuegoRPG.Motor.Servicios
                             var jsonCd = System.IO.File.ReadAllText(rutaCooldowns);
                             var dic = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, Dictionary<string,long>>>(jsonCd) ?? new();
                             juego.recoleccionService.ImportarCooldownsMultiSector(dic);
+                        }
+                        if (pj != null && juego?.encuentrosService != null && System.IO.File.Exists(rutaEncuentrosCooldowns))
+                        {
+                            var jsonE = System.IO.File.ReadAllText(rutaEncuentrosCooldowns);
+                            var dicE = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, DateTime>>(jsonE) ?? new();
+                            juego.encuentrosService.ImportarCooldowns(dicE);
                         }
                     }
                     catch (Exception exCd)
