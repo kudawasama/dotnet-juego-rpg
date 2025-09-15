@@ -1,0 +1,25 @@
+{
+  "Nombre": "Murciélago",
+  "VidaBase": 16,
+  "AtaqueBase": 6,
+  "DefensaBase": 1,
+  "DefensaMagicaBase": 1,
+  "Nivel": 1,
+  "ExperienciaRecompensa": 3,
+  "OroRecompensa": 1,
+  "Familia": "Bestia",
+  "Rareza": "Comun",
+  "Categoria": "Normal",
+  "ArmaNombre": "Mordisco",
+  "MitigacionFisicaPorcentaje": 0.01,
+  "Tags": ["murcielago", "bosque", "bestia"],
+  "ResistenciasElementales": { "sombra": 0.08 },
+  "DanioElementalBase": { "sombra": 1 },
+  "EquipoInicial": { "Arma": "Mordisco" },
+  "EvasionFisica": 0.21,
+  "EvasionMagica": 0.04,
+  "SpawnWeight": 7,
+  "Drops": [
+    { "Tipo": "Material", "Nombre": "Ala de Murciélago", "Rareza": "Normal", "Chance": 0.13, "CantidadMin": 1, "CantidadMax": 2 }
+  ]
+}

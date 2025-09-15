@@ -1,0 +1,26 @@
+{
+  "Nombre": "Gárgola Viviente",
+  "VidaBase": 130,
+  "AtaqueBase": 28,
+  "DefensaBase": 24,
+  "DefensaMagicaBase": 16,
+  "Nivel": 10,
+  "ExperienciaRecompensa": 48,
+  "OroRecompensa": 28,
+  "Familia": "Elemental",
+  "Rareza": "Epico",
+  "Categoria": "Elite",
+  "ArmaNombre": "Garras de Piedra",
+  "MitigacionFisicaPorcentaje": 0.32,
+  "Tags": ["gargola", "ruinas", "elemental"],
+  "ResistenciasElementales": { "fuego": 0.20, "hielo": 0.20 },
+  "DanioElementalBase": { "aplastamiento": 12 },
+  "EquipoInicial": { "Arma": "Garras de Piedra" },
+  "EvasionFisica": 0.10,
+  "EvasionMagica": 0.18,
+  "SpawnWeight": 0.5,
+  "Drops": [
+    { "Tipo": "Material", "Nombre": "Fragmento de Gárgola", "Rareza": "Epico", "Chance": 0.13, "CantidadMin": 1, "CantidadMax": 2 },
+    { "Tipo": "Pocion", "Nombre": "Poción de Defensa", "Chance": 0.04 }
+  ]
+}

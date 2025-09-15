@@ -1,0 +1,26 @@
+{
+  "Nombre": "Escorpión de Arena",
+  "VidaBase": 44,
+  "AtaqueBase": 15,
+  "DefensaBase": 5,
+  "DefensaMagicaBase": 3,
+  "Nivel": 5,
+  "ExperienciaRecompensa": 14,
+  "OroRecompensa": 7,
+  "Familia": "Insecto",
+  "Rareza": "Comun",
+  "Categoria": "Normal",
+  "ArmaNombre": "Aguijón de Arena",
+  "MitigacionFisicaPorcentaje": 0.09,
+  "Tags": ["escorpion", "desierto", "insecto"],
+  "ResistenciasElementales": { "fuego": 0.10, "veneno": 0.30 },
+  "DanioElementalBase": { "veneno": 5 },
+  "EquipoInicial": { "Arma": "Aguijón de Arena" },
+  "EvasionFisica": 0.18,
+  "EvasionMagica": 0.08,
+  "SpawnWeight": 7,
+  "Drops": [
+    { "Tipo": "Material", "Nombre": "Pinza de Escorpión", "Rareza": "Normal", "Chance": 0.15, "CantidadMin": 1, "CantidadMax": 2 },
+    { "Tipo": "Material", "Nombre": "Veneno de Escorpión", "Rareza": "Normal", "Chance": 0.10, "CantidadMin": 1, "CantidadMax": 1 }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "Nombre": "Quimera",
+  "VidaBase": 220,
+  "AtaqueBase": 45,
+  "DefensaBase": 25,
+  "DefensaMagicaBase": 18,
+  "Nivel": 12,
+  "ExperienciaRecompensa": 120,
+  "OroRecompensa": 100,
+  "Familia": "Bestia",
+  "Rareza": "Legendario",
+  "Categoria": "Jefe",
+  "ArmaNombre": "Garras y Aliento Múltiple",
+  "MitigacionFisicaPorcentaje": 0.32,
+  "Tags": ["quimera", "montana", "jefe", "bestia"],
+  "ResistenciasElementales": { "fuego": 0.50, "hielo": 0.20, "veneno": 0.30 },
+  "DanioElementalBase": { "fuego": 15, "veneno": 8 },
+  "EquipoInicial": { "Arma": "Garras y Aliento Múltiple" },
+  "EvasionFisica": 0.14,
+  "EvasionMagica": 0.20,
+  "SpawnWeight": 0.1,
+  "Drops": [
+    { "Tipo": "Material", "Nombre": "Cuerno de Quimera", "Rareza": "Legendario", "Chance": 0.12, "CantidadMin": 1, "CantidadMax": 1 },
+    { "Tipo": "Equipo", "Nombre": "Melena de Quimera", "Rareza": "Legendario", "Chance": 0.01, "CantidadMin": 1, "CantidadMax": 1 },
+    { "Tipo": "Pocion", "Nombre": "Elixir Supremo", "Chance": 0.08 }
+  ]
+}

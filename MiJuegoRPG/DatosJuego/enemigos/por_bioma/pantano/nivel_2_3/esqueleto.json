@@ -1,0 +1,26 @@
+{
+  "Nombre": "Esqueleto",
+  "VidaBase": 60,
+  "AtaqueBase": 12,
+  "DefensaBase": 6,
+  "DefensaMagicaBase": 6,
+  "Nivel": 3,
+  "ExperienciaRecompensa": 10,
+  "OroRecompensa": 7,
+  "Familia": "NoMuerto",
+  "Rareza": "Comun",
+  "Categoria": "Normal",
+  "ArmaNombre": "Hueso Afilado",
+  "MitigacionFisicaPorcentaje": 0.10,
+  "Tags": ["esqueleto", "pantano", "no_muerto"],
+  "ResistenciasElementales": { "hielo": 0.05, "fuego": -0.10 },
+  "DanioElementalBase": { "putrefaccion": 2 },
+  "EquipoInicial": { "Arma": "Hueso Afilado" },
+  "EvasionFisica": 0.08,
+  "EvasionMagica": 0.06,
+  "SpawnWeight": 6,
+  "Drops": [
+    { "Tipo": "Material", "Nombre": "Hueso de Esqueleto", "Rareza": "Normal", "Chance": 0.15, "CantidadMin": 1, "CantidadMax": 2 },
+    { "Tipo": "Pocion", "Nombre": "Poción Pequeña", "Chance": 0.01 }
+  ]
+}

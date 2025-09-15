@@ -1,0 +1,26 @@
+{
+  "Nombre": "Serpiente de Fuego",
+  "VidaBase": 38,
+  "AtaqueBase": 17,
+  "DefensaBase": 4,
+  "DefensaMagicaBase": 6,
+  "Nivel": 6,
+  "ExperienciaRecompensa": 16,
+  "OroRecompensa": 8,
+  "Familia": "Bestia",
+  "Rareza": "Raro",
+  "Categoria": "Normal",
+  "ArmaNombre": "Colmillos Ígneos",
+  "MitigacionFisicaPorcentaje": 0.10,
+  "Tags": ["serpiente", "desierto", "fuego"],
+  "ResistenciasElementales": { "fuego": 0.60, "hielo": -0.20 },
+  "DanioElementalBase": { "fuego": 6 },
+  "EquipoInicial": { "Arma": "Colmillos Ígneos" },
+  "EvasionFisica": 0.22,
+  "EvasionMagica": 0.14,
+  "SpawnWeight": 5,
+  "Drops": [
+    { "Tipo": "Material", "Nombre": "Escama Ígnea", "Rareza": "Raro", "Chance": 0.13, "CantidadMin": 1, "CantidadMax": 2 },
+    { "Tipo": "Pocion", "Nombre": "Poción de Fuego", "Chance": 0.04 }
+  ]
+}

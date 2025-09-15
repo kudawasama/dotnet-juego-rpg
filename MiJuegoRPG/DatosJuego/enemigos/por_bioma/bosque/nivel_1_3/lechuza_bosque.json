@@ -1,0 +1,26 @@
+{
+  "Nombre": "Lechuza del Bosque",
+  "VidaBase": 20,
+  "AtaqueBase": 7,
+  "DefensaBase": 2,
+  "DefensaMagicaBase": 3,
+  "Nivel": 2,
+  "ExperienciaRecompensa": 6,
+  "OroRecompensa": 2,
+  "Familia": "Bestia",
+  "Rareza": "Comun",
+  "Categoria": "Normal",
+  "ArmaNombre": "Garras",
+  "MitigacionFisicaPorcentaje": 0.04,
+  "Tags": ["lechuza", "bosque", "bestia"],
+  "ResistenciasElementales": { "hielo": 0.07 },
+  "DanioElementalBase": { "sangrado": 2 },
+  "EquipoInicial": { "Arma": "Garras" },
+  "EvasionFisica": 0.24,
+  "EvasionMagica": 0.14,
+  "SpawnWeight": 8,
+  "Drops": [
+    { "Tipo": "Material", "Nombre": "Pluma de Lechuza", "Rareza": "Normal", "Chance": 0.15, "CantidadMin": 1, "CantidadMax": 2 },
+    { "Tipo": "Material", "Nombre": "Garra de Lechuza", "Rareza": "Normal", "Chance": 0.10, "CantidadMin": 1, "CantidadMax": 1 }
+  ]
+}

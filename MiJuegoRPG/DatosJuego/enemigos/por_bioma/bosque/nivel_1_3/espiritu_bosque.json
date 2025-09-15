@@ -1,0 +1,26 @@
+{
+  "Nombre": "Espíritu del Bosque",
+  "VidaBase": 38,
+  "AtaqueBase": 12,
+  "DefensaBase": 7,
+  "DefensaMagicaBase": 10,
+  "Nivel": 3,
+  "ExperienciaRecompensa": 16,
+  "OroRecompensa": 9,
+  "Familia": "Elemental",
+  "Rareza": "Raro",
+  "Categoria": "Elite",
+  "ArmaNombre": "Raíces Fantasmales",
+  "MitigacionFisicaPorcentaje": 0.12,
+  "Tags": ["espiritu", "bosque", "elite"],
+  "ResistenciasElementales": { "magia": 0.30, "fuego": -0.20 },
+  "DanioElementalBase": { "magia": 7 },
+  "EquipoInicial": { "Arma": "Raíces Fantasmales" },
+  "EvasionFisica": 0.18,
+  "EvasionMagica": 0.22,
+  "SpawnWeight": 1,
+  "Drops": [
+    { "Tipo": "Material", "Nombre": "Esencia del Bosque", "Rareza": "Raro", "Chance": 0.14, "CantidadMin": 1, "CantidadMax": 1 },
+    { "Tipo": "Material", "Nombre": "Raíz Viva", "Rareza": "Raro", "Chance": 0.10, "CantidadMin": 1, "CantidadMax": 1 }
+  ]
+}

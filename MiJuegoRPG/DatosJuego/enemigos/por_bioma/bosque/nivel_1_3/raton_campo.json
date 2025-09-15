@@ -1,0 +1,26 @@
+{
+  "Nombre": "Ratón de Campo",
+  "VidaBase": 10,
+  "AtaqueBase": 3,
+  "DefensaBase": 1,
+  "DefensaMagicaBase": 1,
+  "Nivel": 1,
+  "ExperienciaRecompensa": 2,
+  "OroRecompensa": 1,
+  "Familia": "Bestia",
+  "Rareza": "Comun",
+  "Categoria": "Normal",
+  "ArmaNombre": "Dientes Pequeños",
+  "MitigacionFisicaPorcentaje": 0.01,
+  "Tags": ["raton", "bosque", "bestia"],
+  "ResistenciasElementales": { "hielo": 0.02 },
+  "DanioElementalBase": { "sangrado": 1 },
+  "EquipoInicial": { "Arma": "Dientes Pequeños" },
+  "EvasionFisica": 0.18,
+  "EvasionMagica": 0.06,
+  "SpawnWeight": 14,
+  "Drops": [
+    { "Tipo": "Material", "Nombre": "Cola de Ratón", "Rareza": "Normal", "Chance": 0.18, "CantidadMin": 1, "CantidadMax": 2 },
+    { "Tipo": "Material", "Nombre": "Queso Salvaje", "Rareza": "Normal", "Chance": 0.10, "CantidadMin": 1, "CantidadMax": 1 }
+  ]
+}

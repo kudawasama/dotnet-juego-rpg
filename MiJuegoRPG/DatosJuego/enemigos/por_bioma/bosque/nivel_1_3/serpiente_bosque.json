@@ -1,0 +1,26 @@
+{
+  "Nombre": "Serpiente del Bosque",
+  "VidaBase": 19,
+  "AtaqueBase": 7,
+  "DefensaBase": 2,
+  "DefensaMagicaBase": 2,
+  "Nivel": 2,
+  "ExperienciaRecompensa": 5,
+  "OroRecompensa": 2,
+  "Familia": "Bestia",
+  "Rareza": "Comun",
+  "Categoria": "Normal",
+  "ArmaNombre": "Colmillos Venenosos",
+  "MitigacionFisicaPorcentaje": 0.03,
+  "Tags": ["serpiente", "bosque", "bestia"],
+  "ResistenciasElementales": { "veneno": 0.18 },
+  "DanioElementalBase": { "veneno": 2 },
+  "EquipoInicial": { "Arma": "Colmillos Venenosos" },
+  "EvasionFisica": 0.20,
+  "EvasionMagica": 0.10,
+  "SpawnWeight": 9,
+  "Drops": [
+    { "Tipo": "Material", "Nombre": "Piel de Serpiente", "Rareza": "Normal", "Chance": 0.15, "CantidadMin": 1, "CantidadMax": 2 },
+    { "Tipo": "Material", "Nombre": "Veneno de Serpiente", "Rareza": "Normal", "Chance": 0.10, "CantidadMin": 1, "CantidadMax": 1 }
+  ]
+}

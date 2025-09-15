@@ -1,0 +1,26 @@
+{
+  "Nombre": "Bandido",
+  "VidaBase": 65,
+  "AtaqueBase": 13,
+  "DefensaBase": 6,
+  "DefensaMagicaBase": 6,
+  "Nivel": 4,
+  "ExperienciaRecompensa": 13,
+  "OroRecompensa": 12,
+  "Familia": "Humanoide",
+  "Rareza": "Comun",
+  "Categoria": "Normal",
+  "ArmaNombre": "Daga Rota",
+  "MitigacionFisicaPorcentaje": 0.09,
+  "Tags": ["bandido", "bosque", "humanoide"],
+  "ResistenciasElementales": { "veneno": 0.05 },
+  "DanioElementalBase": { "sangrado": 2 },
+  "EquipoInicial": { "Arma": "Daga Rota" },
+  "EvasionFisica": 0.15,
+  "EvasionMagica": 0.10,
+  "SpawnWeight": 6,
+  "Drops": [
+    { "Tipo": "Material", "Nombre": "Capa de Bandido", "Rareza": "Normal", "Chance": 0.10, "CantidadMin": 1, "CantidadMax": 1 },
+    { "Tipo": "Pocion", "Nombre": "Poción Mediana", "Chance": 0.02 }
+  ]
+}

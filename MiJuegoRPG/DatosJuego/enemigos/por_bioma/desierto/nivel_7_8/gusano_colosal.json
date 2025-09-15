@@ -1,0 +1,26 @@
+{
+  "Nombre": "Gusano Colosal",
+  "VidaBase": 180,
+  "AtaqueBase": 30,
+  "DefensaBase": 18,
+  "DefensaMagicaBase": 8,
+  "Nivel": 8,
+  "ExperienciaRecompensa": 40,
+  "OroRecompensa": 25,
+  "Familia": "Bestia",
+  "Rareza": "Epico",
+  "Categoria": "Jefe",
+  "ArmaNombre": "Mandíbulas Gigantes",
+  "MitigacionFisicaPorcentaje": 0.22,
+  "Tags": ["gusano", "desierto", "jefe"],
+  "ResistenciasElementales": { "fuego": 0.10, "veneno": 0.40 },
+  "DanioElementalBase": { "aplastamiento": 10 },
+  "EquipoInicial": { "Arma": "Mandíbulas Gigantes" },
+  "EvasionFisica": 0.08,
+  "EvasionMagica": 0.10,
+  "SpawnWeight": 0.3,
+  "Drops": [
+    { "Tipo": "Material", "Nombre": "Diente Colosal", "Rareza": "Epico", "Chance": 0.12, "CantidadMin": 1, "CantidadMax": 1 },
+    { "Tipo": "Pocion", "Nombre": "Elixir de Arena", "Chance": 0.08 }
+  ]
+}

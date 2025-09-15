@@ -1,0 +1,26 @@
+{
+  "Nombre": "Ogro del Bosque",
+  "VidaBase": 120,
+  "AtaqueBase": 22,
+  "DefensaBase": 10,
+  "DefensaMagicaBase": 6,
+  "Nivel": 6,
+  "ExperienciaRecompensa": 22,
+  "OroRecompensa": 15,
+  "Familia": "Humanoide",
+  "Rareza": "Raro",
+  "Categoria": "Elite",
+  "ArmaNombre": "Garrote Gigante",
+  "MitigacionFisicaPorcentaje": 0.18,
+  "Tags": ["ogro", "bosque", "humanoide"],
+  "ResistenciasElementales": { "veneno": 0.10 },
+  "DanioElementalBase": { "aplastamiento": 5 },
+  "EquipoInicial": { "Arma": "Garrote Gigante" },
+  "EvasionFisica": 0.06,
+  "EvasionMagica": 0.04,
+  "SpawnWeight": 2,
+  "Drops": [
+    { "Tipo": "Material", "Nombre": "Diente de Ogro", "Rareza": "Raro", "Chance": 0.10, "CantidadMin": 1, "CantidadMax": 1 },
+    { "Tipo": "Pocion", "Nombre": "Poción de Fuerza", "Chance": 0.04 }
+  ]
+}

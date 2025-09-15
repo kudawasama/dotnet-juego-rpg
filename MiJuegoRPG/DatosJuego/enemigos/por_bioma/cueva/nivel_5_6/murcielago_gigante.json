@@ -1,0 +1,26 @@
+{
+  "Nombre": "Murciélago Gigante",
+  "VidaBase": 55,
+  "AtaqueBase": 13,
+  "DefensaBase": 5,
+  "DefensaMagicaBase": 4,
+  "Nivel": 5,
+  "ExperienciaRecompensa": 13,
+  "OroRecompensa": 6,
+  "Familia": "Bestia",
+  "Rareza": "Raro",
+  "Categoria": "Normal",
+  "ArmaNombre": "Mordisco",
+  "MitigacionFisicaPorcentaje": 0.07,
+  "Tags": ["murcielago", "cueva", "bestia"],
+  "ResistenciasElementales": { "hielo": 0.10 },
+  "DanioElementalBase": { "sangrado": 3 },
+  "EquipoInicial": { "Arma": "Mordisco" },
+  "EvasionFisica": 0.28,
+  "EvasionMagica": 0.12,
+  "SpawnWeight": 4,
+  "Drops": [
+    { "Tipo": "Material", "Nombre": "Ala de Murciélago Gigante", "Rareza": "Raro", "Chance": 0.13, "CantidadMin": 1, "CantidadMax": 2 },
+    { "Tipo": "Pocion", "Nombre": "Poción de Agilidad", "Chance": 0.02 }
+  ]
+}

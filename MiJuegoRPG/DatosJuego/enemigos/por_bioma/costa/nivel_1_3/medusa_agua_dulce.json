@@ -1,0 +1,26 @@
+{
+  "Nombre": "Medusa de Agua Dulce",
+  "VidaBase": 18,
+  "AtaqueBase": 6,
+  "DefensaBase": 1,
+  "DefensaMagicaBase": 4,
+  "Nivel": 1,
+  "ExperienciaRecompensa": 5,
+  "OroRecompensa": 1,
+  "Familia": "Bestia",
+  "Rareza": "Comun",
+  "Categoria": "Normal",
+  "ArmaNombre": "Tentáculos",
+  "MitigacionFisicaPorcentaje": 0.02,
+  "Tags": ["medusa", "costa", "bestia"],
+  "ResistenciasElementales": { "agua": 0.40 },
+  "DanioElementalBase": { "veneno": 2 },
+  "EquipoInicial": { "Arma": "Tentáculos" },
+  "EvasionFisica": 0.18,
+  "EvasionMagica": 0.12,
+  "SpawnWeight": 8,
+  "Drops": [
+    { "Tipo": "Material", "Nombre": "Gelatina de Medusa", "Rareza": "Normal", "Chance": 0.18, "CantidadMin": 1, "CantidadMax": 2 },
+    { "Tipo": "Pocion", "Nombre": "Antídoto", "Chance": 0.05 }
+  ]
+}

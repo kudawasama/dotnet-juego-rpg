@@ -1,0 +1,26 @@
+{
+  "Nombre": "Araña de Caverna",
+  "VidaBase": 28,
+  "AtaqueBase": 9,
+  "DefensaBase": 2,
+  "DefensaMagicaBase": 2,
+  "Nivel": 3,
+  "ExperienciaRecompensa": 8,
+  "OroRecompensa": 3,
+  "Familia": "Insecto",
+  "Rareza": "Comun",
+  "Categoria": "Normal",
+  "ArmaNombre": "Colmillos Venenosos",
+  "MitigacionFisicaPorcentaje": 0.05,
+  "Tags": ["arana", "cueva", "insecto"],
+  "ResistenciasElementales": { "veneno": 0.30 },
+  "DanioElementalBase": { "veneno": 3 },
+  "EquipoInicial": { "Arma": "Colmillos Venenosos" },
+  "EvasionFisica": 0.22,
+  "EvasionMagica": 0.10,
+  "SpawnWeight": 8,
+  "Drops": [
+    { "Tipo": "Material", "Nombre": "Seda de Araña", "Rareza": "Normal", "Chance": 0.18, "CantidadMin": 1, "CantidadMax": 2 },
+    { "Tipo": "Material", "Nombre": "Veneno de Araña", "Rareza": "Normal", "Chance": 0.10, "CantidadMin": 1, "CantidadMax": 1 }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "Nombre": "Topo Ciego",
+  "VidaBase": 17,
+  "AtaqueBase": 5,
+  "DefensaBase": 2,
+  "DefensaMagicaBase": 1,
+  "Nivel": 1,
+  "ExperienciaRecompensa": 3,
+  "OroRecompensa": 1,
+  "Familia": "Bestia",
+  "Rareza": "Comun",
+  "Categoria": "Normal",
+  "ArmaNombre": "Arañazo",
+  "MitigacionFisicaPorcentaje": 0.02,
+  "Tags": ["topo", "bosque", "bestia"],
+  "ResistenciasElementales": { "tierra": 0.12 },
+  "DanioElementalBase": { "tierra": 1 },
+  "EquipoInicial": { "Arma": "Arañazo" },
+  "EvasionFisica": 0.14,
+  "EvasionMagica": 0.03,
+  "SpawnWeight": 6,
+  "Drops": [
+    { "Tipo": "Material", "Nombre": "Garra de Topo", "Rareza": "Normal", "Chance": 0.13, "CantidadMin": 1, "CantidadMax": 1 }
+  ]
+}

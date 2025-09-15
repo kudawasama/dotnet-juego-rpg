@@ -1,0 +1,26 @@
+{
+  "Nombre": "Momia Errante",
+  "VidaBase": 90,
+  "AtaqueBase": 22,
+  "DefensaBase": 12,
+  "DefensaMagicaBase": 10,
+  "Nivel": 8,
+  "ExperienciaRecompensa": 30,
+  "OroRecompensa": 18,
+  "Familia": "NoMuerto",
+  "Rareza": "Raro",
+  "Categoria": "Elite",
+  "ArmaNombre": "Vendajes Malditos",
+  "MitigacionFisicaPorcentaje": 0.18,
+  "Tags": ["momia", "desierto", "no_muerto"],
+  "ResistenciasElementales": { "fuego": 0.20, "veneno": 0.30 },
+  "DanioElementalBase": { "putrefaccion": 7 },
+  "EquipoInicial": { "Arma": "Vendajes Malditos" },
+  "EvasionFisica": 0.10,
+  "EvasionMagica": 0.18,
+  "SpawnWeight": 2,
+  "Drops": [
+    { "Tipo": "Material", "Nombre": "Vendaje Antiguo", "Rareza": "Raro", "Chance": 0.10, "CantidadMin": 1, "CantidadMax": 1 },
+    { "Tipo": "Pocion", "Nombre": "Poción de Resistencia", "Chance": 0.03 }
+  ]
+}

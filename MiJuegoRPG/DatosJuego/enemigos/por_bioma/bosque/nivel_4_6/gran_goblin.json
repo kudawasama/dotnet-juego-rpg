@@ -1,0 +1,26 @@
+{
+  "Nombre": "Gran Goblin",
+  "VidaBase": 80,
+  "AtaqueBase": 15,
+  "DefensaBase": 8,
+  "DefensaMagicaBase": 8,
+  "Nivel": 3,
+  "ExperienciaRecompensa": 15,
+  "OroRecompensa": 10,
+  "Familia": "Humanoide",
+  "Rareza": "Raro",
+  "Categoria": "Normal",
+  "ArmaNombre": "Espada Grande",
+  "MitigacionFisicaPorcentaje": 0.12,
+  "Tags": ["gran_goblin", "bosque", "humanoide"],
+  "ResistenciasElementales": { "veneno": 0.10 },
+  "DanioElementalBase": { "sangrado": 2 },
+  "EquipoInicial": { "Arma": "Espada Grande" },
+  "EvasionFisica": 0.10,
+  "EvasionMagica": 0.08,
+  "SpawnWeight": 5,
+  "Drops": [
+    { "Tipo": "Material", "Nombre": "Diente de Gran Goblin", "Rareza": "Raro", "Chance": 0.10, "CantidadMin": 1, "CantidadMax": 1 },
+    { "Tipo": "Pocion", "Nombre": "Poción Mediana", "Chance": 0.02 }
+  ]
+}

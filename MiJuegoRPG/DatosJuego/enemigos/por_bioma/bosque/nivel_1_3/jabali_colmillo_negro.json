@@ -1,0 +1,26 @@
+{
+  "Nombre": "Jabalí Colmillo Negro",
+  "VidaBase": 48,
+  "AtaqueBase": 16,
+  "DefensaBase": 7,
+  "DefensaMagicaBase": 3,
+  "Nivel": 3,
+  "ExperienciaRecompensa": 14,
+  "OroRecompensa": 7,
+  "Familia": "Bestia",
+  "Rareza": "Raro",
+  "Categoria": "Elite",
+  "ArmaNombre": "Colmillos Negros",
+  "MitigacionFisicaPorcentaje": 0.11,
+  "Tags": ["jabali", "bosque", "elite"],
+  "ResistenciasElementales": { "hielo": 0.10 },
+  "DanioElementalBase": { "sangrado": 4 },
+  "EquipoInicial": { "Arma": "Colmillos Negros" },
+  "EvasionFisica": 0.14,
+  "EvasionMagica": 0.08,
+  "SpawnWeight": 2,
+  "Drops": [
+    { "Tipo": "Material", "Nombre": "Colmillo Negro", "Rareza": "Raro", "Chance": 0.15, "CantidadMin": 1, "CantidadMax": 1 },
+    { "Tipo": "Material", "Nombre": "Carne de Jabalí", "Rareza": "Raro", "Chance": 0.10, "CantidadMin": 1, "CantidadMax": 2 }
+  ]
+}

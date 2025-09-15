@@ -1,0 +1,26 @@
+{
+  "Nombre": "Liche Menor",
+  "VidaBase": 90,
+  "AtaqueBase": 32,
+  "DefensaBase": 10,
+  "DefensaMagicaBase": 28,
+  "Nivel": 10,
+  "ExperienciaRecompensa": 50,
+  "OroRecompensa": 30,
+  "Familia": "NoMuerto",
+  "Rareza": "Epico",
+  "Categoria": "Jefe",
+  "ArmaNombre": "Báculo de Hueso",
+  "MitigacionFisicaPorcentaje": 0.18,
+  "Tags": ["liche", "ruinas", "jefe", "no_muerto"],
+  "ResistenciasElementales": { "magia_oscura": 0.60, "fuego": -0.20 },
+  "DanioElementalBase": { "magia_oscura": 18 },
+  "EquipoInicial": { "Arma": "Báculo de Hueso" },
+  "EvasionFisica": 0.14,
+  "EvasionMagica": 0.32,
+  "SpawnWeight": 0.2,
+  "Drops": [
+    { "Tipo": "Material", "Nombre": "Fragmento de Filacteria", "Rareza": "Epico", "Chance": 0.12, "CantidadMin": 1, "CantidadMax": 1 },
+    { "Tipo": "Pocion", "Nombre": "Elixir de Sabiduría", "Chance": 0.08 }
+  ]
+}

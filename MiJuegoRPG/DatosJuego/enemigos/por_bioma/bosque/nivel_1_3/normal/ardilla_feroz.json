@@ -1,0 +1,25 @@
+{
+  "Nombre": "Ardilla Feroz",
+  "VidaBase": 20,
+  "AtaqueBase": 8,
+  "DefensaBase": 2,
+  "DefensaMagicaBase": 1,
+  "Nivel": 1,
+  "ExperienciaRecompensa": 5,
+  "OroRecompensa": 2,
+  "Familia": "Bestia",
+  "Rareza": "Comun",
+  "Categoria": "Normal",
+  "ArmaNombre": "Mordisco",
+  "MitigacionFisicaPorcentaje": 0.02,
+  "Tags": ["ardilla", "bosque", "bestia"],
+  "ResistenciasElementales": { "hielo": 0.05 },
+  "DanioElementalBase": { "sangrado": 1 },
+  "EquipoInicial": { "Arma": "Mordisco" },
+  "EvasionFisica": 0.18,
+  "EvasionMagica": 0.03,
+  "SpawnWeight": 6,
+  "Drops": [
+    { "Tipo": "Material", "Nombre": "Cola de Ardilla", "Rareza": "Normal", "Chance": 0.15, "CantidadMin": 1, "CantidadMax": 1 }
+  ]
+}

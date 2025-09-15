@@ -1,0 +1,26 @@
+{
+  "Nombre": "Slime",
+  "VidaBase": 40,
+  "AtaqueBase": 8,
+  "DefensaBase": 2,
+  "DefensaMagicaBase": 2,
+  "Nivel": 1,
+  "ExperienciaRecompensa": 3,
+  "OroRecompensa": 2,
+  "Familia": "Bestia",
+  "Rareza": "Comun",
+  "Categoria": "Normal",
+  "ArmaNombre": "Cuerpo Gelatinoso",
+  "MitigacionFisicaPorcentaje": 0.12,
+  "Tags": ["slime", "pantano", "bosque"],
+  "ResistenciasElementales": { "agua": 0.15, "fuego": -0.10 },
+  "DanioElementalBase": { "acido": 2 },
+  "EquipoInicial": { "Arma": "Cuerpo Gelatinoso" },
+  "EvasionFisica": 0.10,
+  "EvasionMagica": 0.10,
+  "SpawnWeight": 9,
+  "Drops": [
+    { "Tipo": "Material", "Nombre": "Gelatina", "Rareza": "Normal", "Chance": 0.20, "CantidadMin": 1, "CantidadMax": 2 },
+    { "Tipo": "Pocion", "Nombre": "Poción Pequeña", "Chance": 0.01 }
+  ]
+}

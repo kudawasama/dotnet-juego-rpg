@@ -1,8 +1,8 @@
 {
-  "Nombre": "Conejo del Bosque",
-  "VidaBase": 25,
-  "AtaqueBase": 5,
-  "DefensaBase": 2,
+  "Nombre": "Lobo del Bosque",
+  "VidaBase": 40,
+  "AtaqueBase": 10,
+  "DefensaBase": 3,
   "DefensaMagicaBase": 1,
   "Nivel": 1,
   "ExperienciaRecompensa": 8,
@@ -12,15 +12,15 @@
   "Categoria": "Normal",
   "ArmaNombre": "Mordisco",
   "MitigacionFisicaPorcentaje": 0.05,
-  "Tags": ["conejo", "bosque"],
+  "Tags": ["lobo", "bosque"],
   "ResistenciasElementales": { "hielo": 0.1 },
   "DanioElementalBase": { "sangrado": 2 },
   "EquipoInicial": { "Arma": "Mordisco" },
-  "EvasionFisica": 0.60,
-  "EvasionMagica": 0.60,
+  "EvasionFisica": 0.2,
+  "EvasionMagica": 0.05,
   "SpawnWeight": 10,
   "Drops": [
-    { "Tipo": "Material", "Nombre": "Piel de Conejo", "Rareza": "Normal", "Chance": 0.15, "CantidadMin": 1, "CantidadMax": 2 },
+    { "Tipo": "Material", "Nombre": "Piel de Lobo", "Rareza": "Normal", "Chance": 0.15, "CantidadMin": 1, "CantidadMax": 2 },
     { "Tipo": "Pocion", "Nombre": "Poción Pequeña", "Chance": 0.05 }
   ]
 }

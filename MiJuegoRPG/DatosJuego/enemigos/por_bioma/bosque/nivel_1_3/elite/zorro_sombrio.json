@@ -1,0 +1,26 @@
+{
+  "Nombre": "Zorro Sombrío",
+  "VidaBase": 30,
+  "AtaqueBase": 13,
+  "DefensaBase": 4,
+  "DefensaMagicaBase": 5,
+  "Nivel": 2,
+  "ExperienciaRecompensa": 12,
+  "OroRecompensa": 5,
+  "Familia": "Bestia",
+  "Rareza": "Raro",
+  "Categoria": "Elite",
+  "ArmaNombre": "Mordisco Sombrío",
+  "MitigacionFisicaPorcentaje": 0.09,
+  "Tags": ["zorro", "bosque", "elite"],
+  "ResistenciasElementales": { "hielo": 0.14 },
+  "DanioElementalBase": { "sangrado": 3 },
+  "EquipoInicial": { "Arma": "Mordisco Sombrío" },
+  "EvasionFisica": 0.30,
+  "EvasionMagica": 0.16,
+  "SpawnWeight": 2,
+  "Drops": [
+    { "Tipo": "Material", "Nombre": "Cola Sombría", "Rareza": "Raro", "Chance": 0.16, "CantidadMin": 1, "CantidadMax": 1 },
+    { "Tipo": "Material", "Nombre": "Piel de Zorro", "Rareza": "Raro", "Chance": 0.10, "CantidadMin": 1, "CantidadMax": 2 }
+  ]
+}

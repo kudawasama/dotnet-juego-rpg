@@ -1,0 +1,26 @@
+{
+  "Nombre": "Abeja del Bosque",
+  "VidaBase": 12,
+  "AtaqueBase": 4,
+  "DefensaBase": 1,
+  "DefensaMagicaBase": 1,
+  "Nivel": 1,
+  "ExperienciaRecompensa": 3,
+  "OroRecompensa": 1,
+  "Familia": "Insecto",
+  "Rareza": "Comun",
+  "Categoria": "Normal",
+  "ArmaNombre": "Aguijón",
+  "MitigacionFisicaPorcentaje": 0.01,
+  "Tags": ["abeja", "bosque", "insecto"],
+  "ResistenciasElementales": { "veneno": 0.20 },
+  "DanioElementalBase": { "veneno": 2 },
+  "EquipoInicial": { "Arma": "Aguijón" },
+  "EvasionFisica": 0.30,
+  "EvasionMagica": 0.10,
+  "SpawnWeight": 13,
+  "Drops": [
+    { "Tipo": "Material", "Nombre": "Ala de Abeja", "Rareza": "Normal", "Chance": 0.18, "CantidadMin": 1, "CantidadMax": 2 },
+    { "Tipo": "Material", "Nombre": "Miel", "Rareza": "Normal", "Chance": 0.10, "CantidadMin": 1, "CantidadMax": 1 }
+  ]
+}

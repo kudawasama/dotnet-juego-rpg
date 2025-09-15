@@ -1,0 +1,26 @@
+{
+  "Nombre": "Topo Ciego",
+  "VidaBase": 15,
+  "AtaqueBase": 5,
+  "DefensaBase": 3,
+  "DefensaMagicaBase": 1,
+  "Nivel": 1,
+  "ExperienciaRecompensa": 4,
+  "OroRecompensa": 1,
+  "Familia": "Bestia",
+  "Rareza": "Comun",
+  "Categoria": "Normal",
+  "ArmaNombre": "Dientes Pequeños",
+  "MitigacionFisicaPorcentaje": 0.03,
+  "Tags": ["topo", "bosque", "bestia"],
+  "ResistenciasElementales": { "hielo": 0.04 },
+  "DanioElementalBase": { "sangrado": 1 },
+  "EquipoInicial": { "Arma": "Dientes Pequeños" },
+  "EvasionFisica": 0.16,
+  "EvasionMagica": 0.06,
+  "SpawnWeight": 10,
+  "Drops": [
+    { "Tipo": "Material", "Nombre": "Diente de Topo", "Rareza": "Normal", "Chance": 0.14, "CantidadMin": 1, "CantidadMax": 2 },
+    { "Tipo": "Material", "Nombre": "Piel de Topo", "Rareza": "Normal", "Chance": 0.10, "CantidadMin": 1, "CantidadMax": 1 }
+  ]
+}

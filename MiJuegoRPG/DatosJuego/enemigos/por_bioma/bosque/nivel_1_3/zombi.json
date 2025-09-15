@@ -1,0 +1,26 @@
+{
+  "Nombre": "Zombi",
+  "VidaBase": 55,
+  "AtaqueBase": 11,
+  "DefensaBase": 4,
+  "DefensaMagicaBase": 4,
+  "Nivel": 1,
+  "ExperienciaRecompensa": 6,
+  "OroRecompensa": 4,
+  "Familia": "NoMuerto",
+  "Rareza": "Comun",
+  "Categoria": "Normal",
+  "ArmaNombre": "Brazos Putrefactos",
+  "MitigacionFisicaPorcentaje": 0.07,
+  "Tags": ["zombi", "pantano", "no_muerto"],
+  "ResistenciasElementales": { "veneno": 0.20, "hielo": -0.10 },
+  "DanioElementalBase": { "putrefaccion": 2 },
+  "EquipoInicial": { "Arma": "Brazos Putrefactos" },
+  "EvasionFisica": 0.05,
+  "EvasionMagica": 0.02,
+  "SpawnWeight": 7,
+  "Drops": [
+    { "Tipo": "Material", "Nombre": "Carne Putrefacta", "Rareza": "Normal", "Chance": 0.15, "CantidadMin": 1, "CantidadMax": 2 },
+    { "Tipo": "Pocion", "Nombre": "Poción Pequeña", "Chance": 0.01 }
+  ]
+}

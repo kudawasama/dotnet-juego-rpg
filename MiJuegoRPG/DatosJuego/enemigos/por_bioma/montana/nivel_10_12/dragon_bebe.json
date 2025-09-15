@@ -1,0 +1,26 @@
+{
+  "Nombre": "Dragón Bebé",
+  "VidaBase": 180,
+  "AtaqueBase": 40,
+  "DefensaBase": 22,
+  "DefensaMagicaBase": 22,
+  "Nivel": 10,
+  "ExperienciaRecompensa": 100,
+  "OroRecompensa": 80,
+  "Familia": "Dragon",
+  "Rareza": "Legendario",
+  "Categoria": "Jefe",
+  "ArmaNombre": "Aliento de Fuego",
+  "MitigacionFisicaPorcentaje": 0.30,
+  "Tags": ["dragon_bebe", "montana", "jefe", "dragon"],
+  "ResistenciasElementales": { "fuego": 0.90, "hielo": -0.20 },
+  "DanioElementalBase": { "fuego": 20 },
+  "EquipoInicial": { "Arma": "Aliento de Fuego" },
+  "EvasionFisica": 0.12,
+  "EvasionMagica": 0.18,
+  "SpawnWeight": 0.2,
+  "Drops": [
+    { "Tipo": "Material", "Nombre": "Escama de Dragón", "Rareza": "Legendario", "Chance": 0.15, "CantidadMin": 1, "CantidadMax": 2 },
+    { "Tipo": "Pocion", "Nombre": "Poción de Gran Poder", "Chance": 0.10 }
+  ]
+}

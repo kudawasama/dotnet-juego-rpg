@@ -1,5 +1,24 @@
 [
   {
+    "Nombre": "Cuero",
+    "Descripcion": "Material básico obtenido del curtido de pieles.",
+    "Materiales": [
+      { "Nombre": "Piel de Lobo", "Cantidad": 2 },
+      { "Nombre": "Hilo", "Cantidad": 1 }
+    ],
+    "TiempoCrafteoSegundos": 10,
+    "ExperienciaOtorgada": 5
+  },
+
+
+
+
+
+
+
+
+  
+  {
     "Nombre": "Botas de Cuero",
     "Materiales": [
       { "Nombre": "Cuero", "Cantidad": 3 },

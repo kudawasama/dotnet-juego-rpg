@@ -1,0 +1,26 @@
+{
+  "Nombre": "Murciélago",
+  "VidaBase": 35,
+  "AtaqueBase": 7,
+  "DefensaBase": 3,
+  "DefensaMagicaBase": 3,
+  "Nivel": 2,
+  "ExperienciaRecompensa": 4,
+  "OroRecompensa": 3,
+  "Familia": "Bestia",
+  "Rareza": "Comun",
+  "Categoria": "Normal",
+  "ArmaNombre": "Mordisco",
+  "MitigacionFisicaPorcentaje": 0.04,
+  "Tags": ["murcielago", "bosque", "cueva"],
+  "ResistenciasElementales": { "hielo": 0.05 },
+  "DanioElementalBase": { "sangrado": 1 },
+  "EquipoInicial": { "Arma": "Mordisco" },
+  "EvasionFisica": 0.25,
+  "EvasionMagica": 0.10,
+  "SpawnWeight": 11,
+  "Drops": [
+    { "Tipo": "Material", "Nombre": "Ala de Murciélago", "Rareza": "Normal", "Chance": 0.13, "CantidadMin": 1, "CantidadMax": 2 },
+    { "Tipo": "Pocion", "Nombre": "Poción Pequeña", "Chance": 0.01 }
+  ]
+}

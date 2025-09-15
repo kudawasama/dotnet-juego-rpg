@@ -1,0 +1,26 @@
+{
+  "Nombre": "Ciervo Juvenil",
+  "VidaBase": 28,
+  "AtaqueBase": 7,
+  "DefensaBase": 3,
+  "DefensaMagicaBase": 2,
+  "Nivel": 2,
+  "ExperienciaRecompensa": 6,
+  "OroRecompensa": 2,
+  "Familia": "Bestia",
+  "Rareza": "Comun",
+  "Categoria": "Normal",
+  "ArmaNombre": "Cornamenta",
+  "MitigacionFisicaPorcentaje": 0.04,
+  "Tags": ["ciervo", "bosque", "bestia"],
+  "ResistenciasElementales": { "hielo": 0.08 },
+  "DanioElementalBase": { "aplastamiento": 1 },
+  "EquipoInicial": { "Arma": "Cornamenta" },
+  "EvasionFisica": 0.18,
+  "EvasionMagica": 0.08,
+  "SpawnWeight": 10,
+  "Drops": [
+    { "Tipo": "Material", "Nombre": "Cuerno de Ciervo", "Rareza": "Normal", "Chance": 0.15, "CantidadMin": 1, "CantidadMax": 1 },
+    { "Tipo": "Material", "Nombre": "Carne de Ciervo", "Rareza": "Normal", "Chance": 0.12, "CantidadMin": 1, "CantidadMax": 2 }
+  ]
+}

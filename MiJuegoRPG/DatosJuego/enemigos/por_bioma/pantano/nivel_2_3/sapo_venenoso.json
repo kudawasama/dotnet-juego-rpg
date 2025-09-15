@@ -1,0 +1,26 @@
+{
+  "Nombre": "Sapo Venenoso",
+  "VidaBase": 28,
+  "AtaqueBase": 8,
+  "DefensaBase": 3,
+  "DefensaMagicaBase": 2,
+  "Nivel": 2,
+  "ExperienciaRecompensa": 8,
+  "OroRecompensa": 2,
+  "Familia": "Bestia",
+  "Rareza": "Comun",
+  "Categoria": "Normal",
+  "ArmaNombre": "Lengua Venenosa",
+  "MitigacionFisicaPorcentaje": 0.04,
+  "Tags": ["sapo", "pantano", "venenoso"],
+  "ResistenciasElementales": { "veneno": 0.40 },
+  "DanioElementalBase": { "veneno": 4 },
+  "EquipoInicial": { "Arma": "Lengua Venenosa" },
+  "EvasionFisica": 0.22,
+  "EvasionMagica": 0.10,
+  "SpawnWeight": 8,
+  "Drops": [
+    { "Tipo": "Material", "Nombre": "Glándula Venenosa", "Rareza": "Normal", "Chance": 0.15, "CantidadMin": 1, "CantidadMax": 1 },
+    { "Tipo": "Pocion", "Nombre": "Antídoto", "Chance": 0.05 }
+  ]
+}

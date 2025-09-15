@@ -1,0 +1,26 @@
+{
+  "Nombre": "Lobo",
+  "VidaBase": 70,
+  "AtaqueBase": 14,
+  "DefensaBase": 7,
+  "DefensaMagicaBase": 7,
+  "Nivel": 4,
+  "ExperienciaRecompensa": 12,
+  "OroRecompensa": 8,
+  "Familia": "Bestia",
+  "Rareza": "Comun",
+  "Categoria": "Normal",
+  "ArmaNombre": "Mordisco",
+  "MitigacionFisicaPorcentaje": 0.08,
+  "Tags": ["lobo", "bosque"],
+  "ResistenciasElementales": { "hielo": 0.12 },
+  "DanioElementalBase": { "sangrado": 3 },
+  "EquipoInicial": { "Arma": "Mordisco" },
+  "EvasionFisica": 0.18,
+  "EvasionMagica": 0.08,
+  "SpawnWeight": 7,
+  "Drops": [
+    { "Tipo": "Material", "Nombre": "Piel de Lobo", "Rareza": "Normal", "Chance": 0.18, "CantidadMin": 1, "CantidadMax": 2 },
+    { "Tipo": "Pocion", "Nombre": "Poción Mediana", "Chance": 0.03 }
+  ]
+}
