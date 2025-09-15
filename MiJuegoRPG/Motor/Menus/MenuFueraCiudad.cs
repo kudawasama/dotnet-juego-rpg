@@ -27,6 +27,8 @@ namespace MiJuegoRPG.Motor.Menus
                 UIStyle.Header(juego.Ui, "Fuera de Ciudad");
                 UIStyle.SubHeader(juego.Ui, $"Ubicación: {juego.mapa.UbicacionActual.Nombre}");
                 UIStyle.Hint(juego.Ui, juego.FormatoRelojMundo);
+                // Indicador compacto de supervivencia (hambre/sed/fatiga/temp)
+                UIStyle.SurvivalCompact(juego.Ui, juego);
                 juego.Ui.WriteLine("1. Explorar");
                 juego.Ui.WriteLine("2. Recolectar");
                 juego.Ui.WriteLine("3. Combatir");

@@ -7,7 +7,7 @@ using MiJuegoRPG.Motor;
 using System.Text.Json.Serialization; // Necesario para [JsonIgnore]
 namespace MiJuegoRPG.Personaje
 {
-    public class Personaje : ICombatiente
+    public class Personaje : ICombatiente, IEvadible
     {
     // Atributos base del personaje (faltaba propiedad pública explícita para uso en servicios)
     public AtributosBase AtributosBase { get; set; } = new AtributosBase();
@@ -326,6 +326,27 @@ namespace MiJuegoRPG.Personaje
         public int ExperienciaSiguienteNivel { get; set; }
         public int Oro { get; set; }
 
+        // Estados de supervivencia (27.x)
+        // Valores normalizados 0..1 para Hambre, Sed y Fatiga. TempActual en °C (aprox.).
+        public double Hambre { get; set; } = 0.0;
+        public double Sed { get; set; } = 0.0;
+        public double Fatiga { get; set; } = 0.0;
+        public double TempActual { get; set; } = 20.0; // Ambiente templado por defecto
+
+        public void ClampEstadosSupervivencia()
+        {
+            static double C(double v) => Math.Max(0.0, Math.Min(1.0, v));
+            Hambre = C(Hambre);
+            Sed = C(Sed);
+            Fatiga = C(Fatiga);
+            // TempActual sin clamp duro: se regula vía reglas de bioma y recuperación
+        }
+
+        // Estados previos de etiqueta (no persistentes) para avisos de transición de umbral
+        [JsonIgnore] public string UltHambreEstado { get; set; } = "OK";
+        [JsonIgnore] public string UltSedEstado { get; set; } = "OK";
+        [JsonIgnore] public string UltFatigaEstado { get; set; } = "OK";
+
     // Reputación global básica y reputaciones por facción (extensible)
     public int Reputacion { get; set; } = 0; // usada por ReputacionMinima genérica
     public Dictionary<string,int> ReputacionesFaccion { get; set; } = new();
@@ -345,6 +366,13 @@ namespace MiJuegoRPG.Personaje
         // Ataque físico
         public int AtacarFisico(ICombatiente objetivo)
         {
+            // Si el objetivo puede evadir, chequear antes de aplicar daño
+            if (objetivo is IEvadible evasivo && evasivo.IntentarEvadir(false))
+            {
+                var ui0 = MiJuegoRPG.Motor.Juego.ObtenerInstanciaActual()?.Ui;
+                ui0?.WriteLine($"¡{objetivo.Nombre} evadió el ataque físico de {Nombre}!");
+                return 0;
+            }
             int danio = (int)(Atributos.Fuerza + Estadisticas.Ataque + ObtenerBonificadorAtributo("Fuerza") + ObtenerBonificadorEstadistica("Ataque"));
             objetivo.RecibirDanioFisico(danio);
             MiJuegoRPG.Motor.Servicios.Logger.Debug($"{Nombre} ataca físicamente y causa {danio} de daño a {objetivo.Nombre}");
@@ -354,6 +382,12 @@ namespace MiJuegoRPG.Personaje
         // Ataque mágico
         public int AtacarMagico(ICombatiente objetivo)
         {
+            if (objetivo is IEvadible evasivo && evasivo.IntentarEvadir(true))
+            {
+                var ui0 = MiJuegoRPG.Motor.Juego.ObtenerInstanciaActual()?.Ui;
+                ui0?.WriteLine($"¡{objetivo.Nombre} evadió el hechizo de {Nombre}!");
+                return 0;
+            }
             int danio = (int)(Atributos.Inteligencia + Estadisticas.PoderMagico + ObtenerBonificadorAtributo("Inteligencia") + ObtenerBonificadorEstadistica("Poder Mágico"));
             objetivo.RecibirDanioMagico(danio);
             MiJuegoRPG.Motor.Servicios.Logger.Debug($"{Nombre} lanza un ataque mágico y causa {danio} de daño a {objetivo.Nombre}");
@@ -363,6 +397,13 @@ namespace MiJuegoRPG.Personaje
         // Recibir daño físico
         public void RecibirDanioFisico(int danio)
         {
+            // Oportunidad de evadir ataques físicos entrantes
+            if (IntentarEvadir(false))
+            {
+                var ui = MiJuegoRPG.Motor.Juego.ObtenerInstanciaActual()?.Ui;
+                ui?.WriteLine($"¡{Nombre} evadió un ataque físico!");
+                return;
+            }
             double defensaTotal = Defensa + ObtenerBonificadorAtributo("Defensa") + ObtenerBonificadorEstadistica("Defensa Física");
             double danioReal = Math.Max(1, danio - defensaTotal);
             Vida -= (int)danioReal;
@@ -373,11 +414,46 @@ namespace MiJuegoRPG.Personaje
         // Recibir daño mágico
         public void RecibirDanioMagico(int danio)
         {
+            if (IntentarEvadir(true))
+            {
+                var ui = MiJuegoRPG.Motor.Juego.ObtenerInstanciaActual()?.Ui;
+                ui?.WriteLine($"¡{Nombre} evadió un hechizo!");
+                return;
+            }
             double defensaMagicaTotal = DefensaMagica + ObtenerBonificadorAtributo("Resistencia") + ObtenerBonificadorEstadistica("Defensa Mágica");
             double danioReal = Math.Max(1, danio - defensaMagicaTotal);
             Vida -= (int)danioReal;
             if (Vida < 0) Vida = 0;
             MiJuegoRPG.Motor.Servicios.Logger.Debug($"{Nombre} recibió {danioReal} de daño mágico. Vida restante: {Vida}");
+        }
+
+        // Implementación de IEvadible en jugador
+        public bool IntentarEvadir(bool esAtaqueMagico)
+        {
+            // Base desde Estadisticas.Evasion (0..1) + bonificadores de equipo
+            double baseEv = Estadisticas?.Evasion ?? 0.0;
+            // Permitir bonificadores por estadística "Evasion" en equipo
+            baseEv += ObtenerBonificadorEstadistica("Evasion");
+            // Pequeño ajuste si el ataque es mágico (generalmente más difícil de evadir)
+            if (esAtaqueMagico) baseEv *= 0.8;
+
+            // Penalización por estados de Supervivencia (27.4): sólo si hay servicio y config cargada
+            try
+            {
+                var juego = MiJuegoRPG.Motor.Juego.ObtenerInstanciaActual();
+                var sup = juego?.supervivenciaService;
+                if (sup != null)
+                {
+                    var (etH, etS, etF) = sup.EtiquetasHSF(Hambre, Sed, Fatiga);
+                    double factor = sup.FactorEvasion(etH, etS, etF); // típicamente <= 1.0
+                    baseEv *= factor;
+                }
+            }
+            catch { /* tolerante: si no hay config, no penaliza */ }
+
+            baseEv = Math.Clamp(baseEv, 0.0, 0.5); // cap conservador jugador
+            var rng = MiJuegoRPG.Motor.Servicios.RandomService.Instancia;
+            return rng.NextDouble() < baseEv;
         }
 
         // Habilidades aprendidas y progreso

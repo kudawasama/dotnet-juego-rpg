@@ -203,3 +203,12 @@ Notas:
 - También puedes cambiar el logger en runtime desde el Menú Principal → `Opciones`.
 - Las preferencias del logger se guardan por partida y se aplican al cargar/crear personaje.
 - Si pasas `--log-off`, ese apagado tiene precedencia y se mantendrá al iniciar, aunque luego puedes reactivarlo desde `Opciones`.
+
+---
+
+## Drops de enemigos (resumen)
+
+- Los enemigos pueden tener una tabla de drops por ítem con `Chance` individual y rango de cantidades `CantidadMin/Max` definida en `DatosJuego/enemigos/**/*.json`.
+- Para una progresión lenta y desafiante, se aplican clamps anti-farming: por kill como máximo 3 unidades (o 5 si la rareza del ítem es `Rota` o `Pobre`).
+- Los ítems marcados como `UniqueOnce` solo pueden obtenerse una vez por partida y enemigo lógico (clave `e:{IdData}|i:{NombreItem}`).
+- La persistencia de `UniqueOnce` queda en `PjDatos/drops_unicos.json` y es gestionada por `Motor/Servicios/DropsService.cs` y `GuardadoService.cs`.

@@ -14,6 +14,7 @@ namespace MiJuegoRPG.Motor.Servicios
         public bool Verbose { get; set; } = true;
     private readonly string rutaCooldowns;
     private readonly string rutaEncuentrosCooldowns;
+    private readonly string rutaDropsUnicos;
 
         public GuardadoService(string? rutaDb = null)
         {
@@ -21,6 +22,7 @@ namespace MiJuegoRPG.Motor.Servicios
             // Archivo adicional para cooldowns (persistencia ligera fuera de SQLite por simplicidad temporal)
             rutaCooldowns = PathProvider.PjDatosPath("cooldowns_nodos.json");
             rutaEncuentrosCooldowns = PathProvider.PjDatosPath("cooldowns_encuentros.json");
+            rutaDropsUnicos = PathProvider.PjDatosPath("drops_unicos.json");
         }
 
         public void Guardar(Personaje.Personaje pj)
@@ -46,6 +48,17 @@ namespace MiJuegoRPG.Motor.Servicios
                     var dataE = juego.encuentrosService.ExportarCooldowns();
                     var jsonE = System.Text.Json.JsonSerializer.Serialize(dataE, new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
                     System.IO.File.WriteAllText(rutaEncuentrosCooldowns, jsonE);
+                }
+                // Guardar flags de drops únicos
+                try
+                {
+                    var claves = DropsService.ExportarKeys();
+                    var jsonD = System.Text.Json.JsonSerializer.Serialize(claves, new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
+                    System.IO.File.WriteAllText(rutaDropsUnicos, jsonD);
+                }
+                catch (Exception exD)
+                {
+                    Console.WriteLine($"[Guardado] No se pudieron guardar drops únicos: {exD.Message}");
                 }
                 if (Verbose) Console.WriteLine($"[Guardado] Personaje '{pj.Nombre}' guardado.");
             }
@@ -88,6 +101,20 @@ namespace MiJuegoRPG.Motor.Servicios
                             var jsonE = System.IO.File.ReadAllText(rutaEncuentrosCooldowns);
                             var dicE = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, DateTime>>(jsonE) ?? new();
                             juego.encuentrosService.ImportarCooldowns(dicE);
+                        }
+                        // Restaurar drops únicos
+                        try
+                        {
+                            if (System.IO.File.Exists(rutaDropsUnicos))
+                            {
+                                var jsonD = System.IO.File.ReadAllText(rutaDropsUnicos);
+                                var claves = System.Text.Json.JsonSerializer.Deserialize<List<string>>(jsonD) ?? new();
+                                DropsService.ImportarKeys(claves);
+                            }
+                        }
+                        catch (Exception exD)
+                        {
+                            Console.WriteLine($"[Guardado] No se pudieron restaurar drops únicos: {exD.Message}");
                         }
                     }
                     catch (Exception exCd)

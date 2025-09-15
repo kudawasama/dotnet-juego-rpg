@@ -39,6 +39,8 @@ namespace MiJuegoRPG.Motor.Menus
                 juego.Ui.WriteLine("16. Ver cooldowns de encuentros");
                 juego.Ui.WriteLine("17. Limpiar cooldowns de encuentros (solo vencidos)");
                 juego.Ui.WriteLine("18. Limpiar TODOS los cooldowns de encuentros");
+                juego.Ui.WriteLine("19. Ver drops únicos (UniqueOnce)");
+                juego.Ui.WriteLine("20. Limpiar TODOS los drops únicos");
                 juego.Ui.WriteLine("0. Volver");
                 var op = InputService.LeerOpcion("Opción: ");
                 switch (op)
@@ -158,12 +160,56 @@ namespace MiJuegoRPG.Motor.Menus
                     case "18":
                         LimpiarCooldownsEncuentros(false);
                         break;
+                    case "19":
+                        VerDropsUnicos();
+                        break;
+                    case "20":
+                        LimpiarDropsUnicos();
+                        break;
                     case "0":
                         return;
                     default:
                         juego.Ui.WriteLine("Opción inválida.");
                         break;
                 }
+            }
+        }
+
+        private void VerDropsUnicos()
+        {
+            try
+            {
+                var n = Motor.Servicios.DropsService.Count();
+                juego.Ui.WriteLine($"[Drops únicos] Total claves marcadas: {n}");
+                if (n == 0) return;
+                var keys = Motor.Servicios.DropsService.KeysSnapshot();
+                // Mostrar un resumen limitado para no saturar
+                const int maxMostrar = 30;
+                int i = 0;
+                foreach (var k in keys)
+                {
+                    if (i++ >= maxMostrar) { juego.Ui.WriteLine($"... (+{n - maxMostrar} más)"); break; }
+                    juego.Ui.WriteLine("- " + k);
+                }
+            }
+            catch (Exception ex)
+            {
+                juego.Ui.WriteLine($"[ADMIN] Error al listar drops únicos: {ex.Message}");
+            }
+        }
+
+        private void LimpiarDropsUnicos()
+        {
+            var conf = InputService.LeerOpcion("Confirmar limpieza de TODOS los drops únicos? (si/no): ").Trim().ToLowerInvariant();
+            if (conf != "si" && conf != "sí") { juego.Ui.WriteLine("Cancelado."); return; }
+            try
+            {
+                int n = Motor.Servicios.DropsService.ClearAll();
+                juego.Ui.WriteLine($"[Drops únicos] Eliminados: {n}");
+            }
+            catch (Exception ex)
+            {
+                juego.Ui.WriteLine($"[ADMIN] Error limpiando drops únicos: {ex.Message}");
             }
         }
 

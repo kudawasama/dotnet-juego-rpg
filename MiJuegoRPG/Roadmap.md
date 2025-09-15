@@ -2,8 +2,8 @@
 PLAN DE REFACTORIZACIÓN Y PROGRESO (log incremental)
 =================================================
 
-Estado de avance (resumen): 31/179 Hecho · 7/179 Parcial · 141/179 Pendiente
-████████████░░░░░ 18% completado (estimado por ítems del roadmap)
+Estado de avance (resumen): 31/221 Hecho · 13/221 Parcial · 177/221 Pendiente
+███████░░░░░░░░░░ 14% completado (estimado por ítems del roadmap)
 
 Formato columnas: [ID] Estado | Área | Descripción breve | Próxima acción
 Estados posibles: Pendiente, En curso, Parcial, Hecho, Bloqueado
@@ -37,6 +37,7 @@ Legend inicial: Solo la 1.x se empieza ahora para evitar cambios masivos de golp
 - [23. GUARDADO VERSIONADO Y MIGRACIONES](#23-guardado-versionado-y-migraciones)
 - [25. PERFORMANCE Y CACHING](#25-performance-y-caching)
 - [26. ACCESIBILIDAD Y QoL](#26-accesibilidad-y-qol)
+- [27. SUPERVIVENCIA Y SISTEMAS REALISTAS](#27-supervivencia-y-sistemas-realistas)
 
 ## 1. FUNDAMENTOS (Infra / Enumeraciones / Servicios base)
 
@@ -58,6 +59,7 @@ Legend inicial: Solo la 1.x se empieza ahora para evitar cambios masivos de golp
 [3.1] Hecho | Dominio | Unificar experiencia de atributos en estructura (ExpAtributo) | Implementado ExpAtributo
 [3.2] Hecho | Dominio | Migrar Personaje a diccionario <Atributo, ExpAtributo> | Personaje.ExperienciaAtributos + migración legacy
 [3.3] Hecho | Balance | Parametrizar fórmula en ProgressionConfig (JSON) | progression.json actualizado con escalados y factorMinExp + documentación añadida
+[3.4] Pendiente | Stats de combate | Añadir parámetros de progresión para `Precision`, `CritChance`, `CritMult`, `Penetracion` y `Stamina` | Definir en `progression.json` curvas/base/caps por nivel/atributos; integrarlo en cálculo de `Estadisticas`.
 
 ## 4. RECOLECCIÓN Y MUNDO
 
@@ -77,6 +79,13 @@ Legend inicial: Solo la 1.x se empieza ahora para evitar cambios masivos de golp
 
 [5.7] Hecho | Resistencias | Inmunidades/mitigaciones por enemigo | Se añadió a `Enemigo` soporte de `Inmunidades` (por clave, ej. "veneno") y `MitigacionFisicaPorcentaje`/`MitigacionMagicaPorcentaje` aplicadas tras la defensa. `AplicarVenenoAccion` ahora respeta la inmunidad de no-muertos (zombi/esqueleto). Resultado: peleas más duras y coherentes con fantasía de mundo hostil.
 
+[5.8] Parcial | Pipeline de daño | `DamageResolver` con pasos (`IDamageStep`): Hit/Evasión, Crítico, Defensa, Mitigación, Resistencias, Aplicación de daño, OnHit/OnKill | Diseñar contrato y ensamblar pasos en orden determinista; centralizar mensajería en un único resultado (`ResultadoAccion`). Tests básicos hit/miss/crit/resist.
+[5.9] Pendiente | Iniciativa y orden | Turnos por Velocidad/Agilidad + ruido RNG, penalizados por Carga de equipo | Definir cálculo e integrar en `CombatePorTurnos`.
+[5.10] Pendiente | Precisión/Crítico/Penetración | Añadir `Precision`, `CritChance`, `CritMult`, `Penetracion` a `Estadisticas` y armas (data) | Integrar a Pipeline de daño; documentar caps y floors.
+[5.11] Pendiente | Stamina/Poise | Recurso `Stamina` para acciones físicas y `Poise` para aturdimientos | Costes por arma/peso; caída de Poise causa `Stun` 1 turno. Integración con acciones y estados.
+[5.12] Pendiente | Estados avanzados | Sangrado/Aturdimiento/Buffs data-driven | Extender `IEfecto`, resistencias y stacking; aplicar en pipeline y UI.
+[5.13] Pendiente | Mensajería unificada | Centralizar mensajes de combate | Evitar duplicados/"0 de daño" confuso; una sola capa imprime en base a `ResultadoAccion`.
+
 ## 6. MISIONES Y REQUISITOS
 
 [6.1] Pendiente | Dominio | Reemplazar strings requisitos por IRequisito | Base
@@ -88,6 +97,7 @@ Legend inicial: Solo la 1.x se empieza ahora para evitar cambios masivos de golp
 [7.1] Pendiente | Infra | `IRepository<T>` genérico JSON | Base
 [7.2] Pendiente | Infra | Repos específico Misiones / Enemigos / Objetos | Tras 7.1
 [7.3] Pendiente | Cache | Carga diferida + invalidación | Tras 7.2
+[7.4] Pendiente | Esquema objetos | Incluir en JSON de armas/armaduras campos `Precision`, `CritChance`, `CritMult`, `Penetracion`, `DurabilidadBase` | Compatibilidad retro con campos faltantes; validación en 10.6
 
 ## 8. UI / PRESENTACIÓN
 
@@ -105,6 +115,9 @@ Legend inicial: Solo la 1.x se empieza ahora para evitar cambios masivos de golp
 [9.5] Hecho | Test | Recolección energía y requisitos | Cooldown por nodo: aplicar y limpiar al entrar sector (persistencia multisector)
 [9.6] Hecho | Test | EncuentrosService: MinKills y ventanas horarias (incluye cruce de medianoche) | Pruebas unitarias que ejercitan gating por kills y por HoraMin/HoraMax con control de hora en `Juego` y `RandomService.SetSeed` para determinismo
 [9.7] Hecho | Test | EncuentrosService: Chance/Prioridad y Cooldown | Pruebas unitarias verifican activación por `Chance` (1.0 y 0.0), desempate por `Prioridad` y bloqueo temporal por `CooldownMinutos` con proveedor de fecha/hora inyectado, incluyendo expiración de cooldown.
+[9.8] Pendiente | Test | Pipeline de combate | Cobertura de Hit/Evadir/Crítico/Defensa/Mitigación/Resistencias y orden de pasos en `DamageResolver`.
+[9.9] Pendiente | Test | Estados avanzados | Aplicación/decadencia/stacking de Sangrado/Aturdimiento/Buffs y resistencias.
+[9.10] Pendiente | Test | Supervivencia | Tick de hambre/sed/fatiga/temperatura; penalizaciones por umbral y multiplicadores por contexto/bioma.
 
 ## 10. LIMPIEZA / QUALITY
 
@@ -118,6 +131,8 @@ Legend inicial: Solo la 1.x se empieza ahora para evitar cambios masivos de golp
 [10.7] Parcial | Higiene Git | Decidir si versionar juego.db; si no, añadir a .gitignore y documentar | Se excluyeron mapas JPG pesados (Mapa*.jpg) mediante .gitignore para evitar límites de GitHub (>100MB). Pendiente decidir el estatus de DatosCompartidos/juego.db (ignorar o versionar con migraciones) y documentarlo.
 [10.8] Hecho | Null-safety | Endurecer accesos a `mapa.UbicacionActual` | Añadidos null-checks en `Juego.MostrarTienda`, `ExplorarSector` (rama Materiales) y `MostrarMenuRutas` (logs de depuración). Limpieza menor en `GuardarPersonaje` para evitar ifs duplicados. Reduce warnings CS8602 intermitentes en IDE.
 [10.10] Hecho | Reparación Data | Reparador automático de `nodosRecoleccion` con materiales inválidos | Nueva herramienta `Herramientas/ReparadorMateriales.cs` recorre `DatosJuego/mapa/SectoresMapa` y elimina materiales nulos, con `Nombre` vacío o `Cantidad <= 0`; normaliza listas null a `[]`. Flags CLI añadidos en `Program.cs`: `--reparar-materiales=report[;ruta]` (dry-run, no modifica archivos, genera reporte) y `--reparar-materiales=write[;ruta]` (aplica cambios + reporte). Reportes se guardan por defecto en `PjDatos/validacion/materiales_reparacion_*.txt`. Integrado con `PathProvider` y contrato real `PjDatos.SectorData`/`Motor.NodoRecoleccion`/`MaterialCantidad`. Tests existentes (36/36) se mantienen verdes.
+[10.11] Pendiente | Documentación | Especificación pipeline de combate | Diagrama y pseudocódigo con orden de pasos; contratos `IDamageStep` y `ResultadoAccion`; criterios de éxito/edge cases.
+[10.12] Pendiente | Documentación | Manual de tuning de supervivencia | Guía para `DatosJuego/config/supervivencia.json` (tasas, umbrales, climas, consumos) y cómo validar con pruebas.
 
 ## 11. CLASES DINÁMICAS / PROGRESIÓN AVANZADA
 
@@ -166,11 +181,12 @@ Legend inicial: Solo la 1.x se empieza ahora para evitar cambios masivos de golp
 ## 15. OBJETOS / CRAFTEO / DROPS
 
 [15.1] Pendiente | Data | Esquema común de objetos/materiales (JSON) + repositorios | Consolidar GestorArmas/Materiales/Pociones bajo repos JSON; IDs únicos, Rareza, NivelRequerido, BonosAtributo/Stats, DurabilidadBase (opcional). Integrar con PathProvider y validar con 10.6
-[15.2] Parcial | Drops Enemigos | Tablas de botín por enemigo (base) + modificadores por sector/bioma/dificultad | Extendido `EnemigoData.Drops` con `Tipo/Nombre/Rareza(texto)/Chance/CantidadMin/Max/UniqueOnce`. Mapeado en runtime en `GeneradorEnemigos` con probabilidad por ítem y creación de stub de material si falta en catálogo (persistencia desactivable en tests). Pendiente: soportar cantidades >1, `UniqueOnce` con persistencia en `GuardadoService` y clamps anti-farming
+[15.2] Hecho | Drops Enemigos | Tablas de botín por enemigo (base) + modificadores por sector/bioma/dificultad | `EnemigoData.Drops` soporta `Tipo/Nombre/Rareza(texto)/Chance/CantidadMin/Max/UniqueOnce`. Runtime: `GeneradorEnemigos` mapea probabilidades + metadatos de cantidad y UniqueOnce; `Enemigo.DarRecompensas` aplica sorteo con clamps anti-farming (máx 3 por kill, 5 para rarezas bajas) y respeta `UniqueOnce` persistiendo claves en `PjDatos/drops_unicos.json` vía `DropsService` integrado en `GuardadoService`. Tests usan `GeneradorEnemigos.DesactivarPersistenciaDrops` para evitar escritura real.
 [15.3] Pendiente | Drops Mapa | Tablas de botín por sector (cofres/eventos ambientales) | Archivo loot/sectores.json; gating por reputación/llaves/misiones; sincronizar con IDs de sector
 [15.4] Pendiente | Crafteo | Sistema de recetas (recetas.json) + blueprints desbloqueables | Requisitos por atributos/habilidad/misiones; coste de energía/tiempo; chance de fallo; calidad resultante; estaciones de trabajo por ciudad/ubicación
 [15.5] Pendiente | Desmontaje | Desmontar objetos para recuperar materiales | Rendimiento según skill y estado del objeto; pérdida parcial en fallos; economía anti-exploit
 [15.6] Pendiente | Durabilidad/Repair | Degradación y reparación con materiales | Integrar con EnergiaService; estaciones de reparación; opcional pero recomendado para progresión lenta
+[15.6.1] Pendiente | Servicio de reparación | `RepairService` con costes por calidad/nivel/materiales/herramientas | UI en tienda/taller; hooks para durabilidad en combate y recolección.
 [15.7] Pendiente | Balance | Rareza, caps y cooldowns | Límites por nodo/sector, cooldown por crafteo avanzado, protección contra rachas RNG (bad luck protection)
 [15.8] Pendiente | Economía | Integración con ShopService | Precios dinámicos de materiales/crafteados según reputación y facción; stock rotativo por ciudad
 [15.9] Pendiente | Testing | Determinismo y contratos | Tests de drop tables y crafteo con RandomService.SetSeed; validación de contratos JSON (10.6)
@@ -261,6 +277,7 @@ Agrupado por carpeta. Hecho = estable/usable; Parcial = base hecha pero faltan m
 [-] Fix | Exploración | NRE al explorar en sectores con `Region` nula/vacía | Endurecidas comprobaciones en `Juego.ExplorarSector` (rama Materiales) y en `TablaBiomas.GenerarNodosParaBioma` para no invocar generación sin bioma válido. Ahora, si no hay nodos personalizados y el bioma es vacío, se muestra "No hay nodos de recolección disponibles." en lugar de fallar.
 [20.2] Pendiente | Trampas/llaves | Cerraduras, llaves y trampas con detección | Usa Percepción/Agilidad
 [20.3] Pendiente | Eventos ambientales | Cofres, santuarios, anomalías con cooldown | Ver 15.3 loot por sector
+[20.4] Pendiente | Clima/Condiciones | Modificadores de encuentros por clima y hora (golpe de calor/frío) | Vincular con `supervivencia.json` (27.x) y bioma.
 
 ## 21. MISIONES CON CONSECUENCIAS
 
@@ -299,6 +316,19 @@ Agrupado por carpeta. Hecho = estable/usable; Parcial = base hecha pero faltan m
 [26.2] Hecho | Verbosidad | Niveles de detalle en UI/Logger | Agregado `MenuOpciones` (Menú Principal → Opciones) para alternar Logger ON/OFF y cambiar `LogLevel` (Error/Warn/Info/Debug) en runtime. Preferencias por partida persistidas en `Personaje` (`PreferenciaLoggerEnabled`, `PreferenciaLoggerLevel`), aplicadas al crear/cargar personaje. Flags CLI en `Program` (`--log-level=debug|info|warn|error|off`, `--log-off`, `--help`) siguen disponibles y tienen precedencia al inicio (si `--log-off`, se respeta apagado al cargar). Documentación de flags añadida a `README_EXPLICACION.txt`.
 [26.3] Parcial | Confirmaciones | Acciones destructivas requieren confirmación | Confirmación añadida al uso de pociones en Inventario y en combate; pendiente extender a descartar/desmontar/venta y otras operaciones.
 
+## 27. SUPERVIVENCIA Y SISTEMAS REALISTAS
+
+[27.1] Parcial | Infraestructura | Configuración data-driven de supervivencia (hambre/sed/fatiga/temperatura) | Archivo `DatosJuego/config/supervivencia.json` creado; modelos `PjDatos/SupervivenciaConfig.cs` y servicio `SupervivenciaService` añadidos (carga y acceso). Aún sin cableado en bucles del juego para no romper tests.
+[27.2] Pendiente | Estados jugador | Añadir estados de Hambre, Sed, Fatiga, Temperatura al `Personaje` (persistentes) | Definir acumuladores 0..1 (hambre/sed/fatiga) y TempActual (°C), con inicialización segura y migración.
+[27.3] Pendiente | Tick de mundo | Aplicar `TickSupervivencia` en exploración/viaje/comercio/entrenamiento/combate | Factores por acción desde `supervivencia.json` (Multiplicadores por contexto) y por bioma/clima.
+[27.4] Parcial | Penalizaciones | Reducir precisión/evasión/regen según umbrales | Implementado: factores de penalización en `SupervivenciaService` (`FactorEvasion`, `FactorRegen`, `FactorPrecision` listo para usar). Aplicado a: evasión del jugador (`Personaje.IntentarEvadir`) y regeneración de maná (en combate y fuera) en `ActionRulesService`. Pendiente: afectar precisión del atacante cuando se integre el chequeo de acierto en el pipeline; penalizaciones a atributos y regeneración de vida/energía cuando se formalicen servicios correspondientes.
+[27.5] Pendiente | Consumos | Integrar consumo de `Comida/Bebida/Medico` desde inventario | Reducción de hambre/sed/fatiga/sangrado/infección según `Consumo` del JSON; feedback UI y confirmaciones.
+[27.6] Pendiente | Refugios/Hogueras | Beneficios en descanso y mitigación de temperatura | `BonosRefugio` del JSON y acciones de campamento (crear hoguera, descansar), con requerimientos de materiales.
+[27.7] Pendiente | Clima y bioma | Temperatura y oscilación por bioma y hora | `ReglasPorBioma` del JSON; variación diurna/nocturna, eventos (ola de calor/frío) básicos.
+[27.8] Pendiente | Enfermedades | Sangrado e Infección como efectos de estado | Integrar con `IEfecto` (5.3) y botiquín/antibióticos en `Consumo`.
+[27.9] Parcial | UI/Feedback | Indicadores de hambre/sed/fatiga/temperatura | `EstadoPersonajePrinter` muestra barras (% y 10 segmentos) y etiquetas por umbral (OK/ADVERTENCIA/CRÍTICO) para Hambre/Sed/Fatiga, y estado de temperatura (FRÍO/CALOR/HIPOTERMIA/GOLPE DE CALOR/CONFORT) usando `SupervivenciaService`. Replicado un indicador compacto en `MenuCiudad` y `MenuFueraCiudad` vía `UIStyle.SurvivalCompact` (colores + % + etiqueta). Añadido evento `EventoSupervivenciaUmbralCruzado` publicado desde `SupervivenciaRuntimeService.ApplyTick` y suscrito en `Juego` para mostrar avisos al cruzar umbrales. Pendiente: sonidos/efectos visuales y configuración de severidad/colores en `UIStyleService`.
+[27.10] Pendiente | Tests | Unit tests de progresión de barras y penalizaciones | Deterministas con `RandomService.SetSeed`; escenarios por bioma y por contexto.
+
 ESTADO ACTUAL (snapshot):
 
 - Fundamentos base completos (1.1–1.6). GuardadoService reemplaza llamadas directas a GestorArchivos en Juego y Menús.
@@ -332,7 +362,7 @@ ESTADO ACTUAL (snapshot):
 - Hecho | Spawn | Campos `SpawnChance` (0..1) y `SpawnWeight` (>0) agregados a `EnemigoData` y usados en la selección de `GeneradorEnemigos` (pre-filtro por chance y sorteo ponderado por weight). Retrocompatibilidad con selección uniforme.
 - Hecho | Elemental | `ResistenciasElementales {tipo:0..0.9}` y `DanioElementalBase {tipo:int}` mapeados a `Enemigo` con helpers.
 - Hecho | Equipo inicial | Soporte para `EquipoInicial.Arma` (por nombre) con warnings si no existe en catálogo.
-- Parcial | Drops por enemigo | `EnemigoData.Drops[]` mapeado con chance por ítem y soporte para tipos `material|arma|pocion`. Pendiente `UniqueOnce` y cantidades >1.
+- Hecho | Drops por enemigo | `EnemigoData.Drops[]` con chance por ítem, cantidades (min/max) y `UniqueOnce` persistente. Tipos soportados: `material|arma|pocion`. Clamps anti-farming aplicados.
 - Hecho | Mapeo en `Motor/GeneradorEnemigos`: aplica inmunidades/mitigaciones/tags desde data; default por `Familia.NoMuerto` -> `veneno` inmune si no está definido.
 - Hecho | `PathProvider.EnemigosDir()` para resolver carpeta canónica.
 - Parcial | Unificación catálogo objetos | Aún falta consolidar repos JSON de objetos (15.1) para eliminar stubs y warnings.

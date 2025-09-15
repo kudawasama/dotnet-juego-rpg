@@ -237,6 +237,7 @@ namespace MiJuegoRPG.Motor
                 enemigoData.ExperienciaRecompensa,
                 enemigoData.OroRecompensa
             );
+            enemigo.IdData = string.IsNullOrWhiteSpace(enemigoData.Id) ? enemigoData.Nombre : enemigoData.Id!;
             if (arma != null)
             {
                 enemigo.ArmaEquipada = arma;
@@ -280,6 +281,16 @@ namespace MiJuegoRPG.Motor
                 enemigo.MitigacionMagicaPorcentaje = Math.Clamp(enemigoData.MitigacionMagicaPorcentaje.Value, 0.0, 0.9);
             }
 
+            // Evasión por data (clamp defensivo)
+            if (enemigoData.EvasionFisica.HasValue)
+            {
+                enemigo.EvasionFisica = Math.Clamp(enemigoData.EvasionFisica.Value, 0.0, 0.95); // mientras mas alto, menos probabilidad de ser golpeado
+            }
+            if (enemigoData.EvasionMagica.HasValue)
+            {
+                enemigo.EvasionMagica = Math.Clamp(enemigoData.EvasionMagica.Value, 0.0, 0.95); // mientras mas alto, menos probabilidad de ser golpeado
+            }
+
             // Resistencias elementales (mitigación adicional por tipo)
             if (enemigoData.ResistenciasElementales != null)
             {
@@ -319,7 +330,7 @@ namespace MiJuegoRPG.Motor
                 }
             }
 
-            // Drops configurados por JSON (por ahora: chance individual por objeto; cantidades/UniqueOnce pendientes)
+            // Drops configurados por JSON (chance individual por objeto + cantidades y UniqueOnce)
             if (enemigoData.Drops != null && enemigoData.Drops.Count > 0)
             {
                 foreach (var drop in enemigoData.Drops)
@@ -329,6 +340,14 @@ namespace MiJuegoRPG.Motor
                     var tipo = drop.Tipo.Trim().ToLowerInvariant();
                     var nombre = drop.Nombre.Trim();
                     double chance = Math.Clamp(drop.Chance, 0.0, 1.0);
+                    // Registrar metadatos de cantidad y unique
+                    int cmin = Math.Max(1, drop.CantidadMin);
+                    int cmax = Math.Max(cmin, drop.CantidadMax);
+                    // clamp duro acorde a progresión lenta
+                    int hardCap = 5; // se recorta luego según rareza en Enemigo.DarRecompensas
+                    cmax = Math.Min(cmax, hardCap);
+                    enemigo.RangoCantidadDrop[nombre] = (cmin, cmax);
+                    if (drop.UniqueOnce) enemigo.DropsUniqueOnce.Add(nombre);
 
                     switch (tipo)
                     {
@@ -381,14 +400,7 @@ namespace MiJuegoRPG.Motor
                             break;
                     }
 
-                    if (drop.CantidadMax > 1 || drop.CantidadMin > 1)
-                    {
-                        Logger.Debug($"[GeneradorEnemigos] Cantidades de drop >1 no soportadas aún (se ignorará multiplicidad) para '{nombre}'");
-                    }
-                    if (drop.UniqueOnce)
-                    {
-                        Logger.Debug($"[GeneradorEnemigos] UniqueOnce requiere persistencia en GuardadoService (pendiente)");
-                    }
+                    // Mensajería reducida; ya aplicamos metadatos arriba
                 }
             }
 

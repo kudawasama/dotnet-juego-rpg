@@ -128,6 +128,40 @@ namespace MiJuegoRPG.Motor
                     }
                 }
             }
+
+            // Indicadores de Supervivencia (27.9): Hambre/Sed/Fatiga/Temperatura con avisos por umbral
+            try
+            {
+                var juego = Juego.ObtenerInstanciaActual();
+                var sup = juego?.supervivenciaService;
+                if (sup != null)
+                {
+                    var (wH, wS, wF) = sup.ObtenerUmbralesAdvertencia();
+                    var (cH, cS, cF) = sup.ObtenerUmbralesCriticos();
+                    string Bar(double v)
+                    {
+                        // Barra simple 10 segmentos
+                        int llenos = (int)Math.Round(v * 10);
+                        llenos = Math.Max(0, Math.Min(10, llenos));
+                        return new string('#', llenos).PadRight(10, '-');
+                    }
+                    double pct(double v) => Math.Clamp(v, 0.0, 1.0) * 100.0;
+
+                    write("\n--- Supervivencia ---");
+                    var etH = sup.EtiquetaDesdeUmbrales(pj.Hambre, wH, cH);
+                    var etS = sup.EtiquetaDesdeUmbrales(pj.Sed, wS, cS);
+                    var etF = sup.EtiquetaDesdeUmbrales(pj.Fatiga, wF, cF);
+                    write($"Hambre: {pct(pj.Hambre):F0}% [{Bar(pj.Hambre)}] ({etH})");
+                    write($"Sed:    {pct(pj.Sed):F0}% [{Bar(pj.Sed)}] ({etS})");
+                    write($"Fatiga: {pct(pj.Fatiga):F0}% [{Bar(pj.Fatiga)}] ({etF})");
+
+                    // Temperatura ambiente percibida
+                    double t = pj.TempActual;
+                    string estadoTemp = sup.EstadoTemperatura(t);
+                    write($"Temperatura: {t:F1} °C ({estadoTemp})");
+                }
+            }
+            catch { /* Evitar romper UI si falta config */ }
             if (!InputService.TestMode)
             {
                 var ui2 = Juego.ObtenerInstanciaActual()?.Ui;

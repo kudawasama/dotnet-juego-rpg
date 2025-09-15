@@ -50,6 +50,10 @@ namespace MiJuegoRPG.PjDatos
 
     // NUEVO: Reglas de botín data-driven
     public List<DropRuleData>? Drops { get; set; }
+
+    // NUEVO: Evasión (0..0.95). Si no se especifica, se asume 0.
+    public double? EvasionFisica { get; set; }
+    public double? EvasionMagica { get; set; }
     }
 
     public class EquipoInicialData

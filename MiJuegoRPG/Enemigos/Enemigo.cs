@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using MiJuegoRPG.Interfaces;
 using MiJuegoRPG.Personaje;
 using MiJuegoRPG.Objetos;
@@ -6,7 +7,7 @@ using MiJuegoRPG.Objetos;
 namespace MiJuegoRPG.Enemigos
 {
     // Clase base abstracta para todos los enemigos del juego.
-    public abstract class Enemigo : ICombatiente
+    public abstract class Enemigo : ICombatiente, IEvadible
     {
 
         // Implementación básica de ICombatiente
@@ -29,9 +30,27 @@ namespace MiJuegoRPG.Enemigos
     // Daño elemental plano adicional por tipo (informativo para futuro cálculo detallado)
     public Dictionary<string, int> DanioElementalBase { get; } = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
 
+        // Evasión (0..0.95) configurable, por tipo de ataque
+        public double EvasionFisica { get; set; } = 0.0;
+        public double EvasionMagica { get; set; } = 0.0;
+        public bool IntentarEvadir(bool esAtaqueMagico)
+        {
+            var rng = MiJuegoRPG.Motor.Servicios.RandomService.Instancia;
+            double p = esAtaqueMagico ? EvasionMagica : EvasionFisica;
+            p = Math.Clamp(p, 0.0, 0.95);
+            return rng.NextDouble() < p;
+        }
+
         // Implementación explícita de los métodos de ICombatiente
         public virtual int AtacarFisico(ICombatiente objetivo)
         {
+            // Chequeo de evasión del objetivo
+            if (objetivo is IEvadible evasivo && evasivo.IntentarEvadir(false))
+            {
+                var ui = MiJuegoRPG.Motor.Juego.ObtenerInstanciaActual()?.Ui;
+                ui?.WriteLine($"¡{objetivo.Nombre} evadió el ataque físico de {Nombre}!");
+                return 0;
+            }
             int danio = Ataque;
             objetivo.RecibirDanioFisico(danio);
             return danio;
@@ -39,6 +58,12 @@ namespace MiJuegoRPG.Enemigos
 
         public virtual int AtacarMagico(ICombatiente objetivo)
         {
+            if (objetivo is IEvadible evasivo && evasivo.IntentarEvadir(true))
+            {
+                var ui = MiJuegoRPG.Motor.Juego.ObtenerInstanciaActual()?.Ui;
+                ui?.WriteLine($"¡{objetivo.Nombre} evadió el hechizo de {Nombre}!");
+                return 0;
+            }
             int danio = Ataque; // Puedes ajustar la lógica si tienes un atributo de ataque mágico
             objetivo.RecibirDanioMagico(danio);
             return danio;
@@ -67,9 +92,14 @@ namespace MiJuegoRPG.Enemigos
             Vida -= danioReal;
             if (Vida < 0) Vida = 0;
         }
-        // Drop de objetos
-        public List<MiJuegoRPG.Objetos.Objeto> ObjetosDrop { get; set; } = new List<MiJuegoRPG.Objetos.Objeto>();
-        public Dictionary<string, double> ProbabilidadesDrop { get; set; } = new Dictionary<string, double>();
+    // Drop de objetos
+    public List<MiJuegoRPG.Objetos.Objeto> ObjetosDrop { get; set; } = new List<MiJuegoRPG.Objetos.Objeto>();
+    public Dictionary<string, double> ProbabilidadesDrop { get; set; } = new Dictionary<string, double>();
+    // Metadatos de drop por nombre de ítem
+    public Dictionary<string, (int min, int max)> RangoCantidadDrop { get; } = new Dictionary<string, (int min, int max)>(StringComparer.OrdinalIgnoreCase);
+    public HashSet<string> DropsUniqueOnce { get; } = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+    // Identificador lógico de data para clave de UniqueOnce (Id o Nombre)
+    public string IdData { get; set; } = string.Empty;
 
         // Constantes para ajustar la dificultad del drop
         public const double BASE_DROP_RATE = 0.05; // 5% base
@@ -89,6 +119,13 @@ namespace MiJuegoRPG.Enemigos
                 // Si hay probabilidad específica configurada para este objeto, úsala
                 if (ProbabilidadesDrop != null && ProbabilidadesDrop.TryGetValue(obj.Nombre, out var chanceCfg))
                 {
+                    // Bloqueo por UniqueOnce antes de sortear
+                    if (DropsUniqueOnce.Contains(obj.Nombre))
+                    {
+                        var clave = MiJuegoRPG.Motor.Servicios.DropsService.ClaveUnique(string.IsNullOrWhiteSpace(IdData) ? Nombre : IdData, obj.Nombre);
+                        if (MiJuegoRPG.Motor.Servicios.DropsService.Marcado(clave))
+                            continue; // ya obtenido en esta partida
+                    }
                     if (random.NextDouble() < Math.Clamp(chanceCfg, 0.0, 1.0))
                         return obj;
                     else
@@ -206,8 +243,40 @@ namespace MiJuegoRPG.Enemigos
                 var drop = IntentarDrop();
                 if (drop != null)
                 {
-                    ui?.WriteLine($"¡Has obtenido el objeto: {drop.Nombre} ({drop.Rareza})!");
-                    try { jugador.Inventario.AgregarObjeto(drop, 1, jugador); } catch { }
+                    // Determinar cantidad según metadatos (con clamps defensivos)
+                    int cant = 1;
+                    if (RangoCantidadDrop.TryGetValue(drop.Nombre, out var rango))
+                    {
+                        int min = Math.Max(1, rango.min);
+                        int max = Math.Max(min, rango.max);
+                        // clamp anti-exploit (progresión lenta): máximo 3 por kill salvo drops de calidad Rota/Pobre
+                        int hardCap = (drop.Rareza == Objetos.Rareza.Rota || drop.Rareza == Objetos.Rareza.Pobre) ? 5 : 3;
+                        max = Math.Min(max, hardCap);
+                        if (min > max) min = max;
+                        cant = (min == max) ? min : MiJuegoRPG.Motor.Servicios.RandomService.Instancia.Next(min, max + 1);
+                    }
+                    // Encolar UniqueOnce si aplica y sorteo múltiple terminó
+                    bool esUnique = DropsUniqueOnce.Contains(drop.Nombre);
+                    if (esUnique)
+                    {
+                        cant = 1; // unique no se multiplica
+                        var clave = MiJuegoRPG.Motor.Servicios.DropsService.ClaveUnique(string.IsNullOrWhiteSpace(IdData) ? Nombre : IdData, drop.Nombre);
+                        // Marca y persiste por GuardadoService al guardar partida
+                        if (!MiJuegoRPG.Motor.Servicios.DropsService.Marcado(clave))
+                        {
+                            MiJuegoRPG.Motor.Servicios.DropsService.MarcarSiNoExiste(clave);
+                        }
+                        else
+                        {
+                            // Ya existía marcado (carrera rara). Evitar duplicado.
+                            cant = 0;
+                        }
+                    }
+                    if (cant > 0)
+                    {
+                        ui?.WriteLine($"¡Has obtenido {cant}x: {drop.Nombre} ({drop.Rareza})!");
+                        try { jugador.Inventario.AgregarObjeto(drop, cant, jugador); } catch { }
+                    }
                 }
             }
         }

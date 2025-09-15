@@ -217,6 +217,12 @@
 			"command": "dotnet test MiJuegoRPG.Tests\\MiJuegoRPG.Tests.csproj -nologo",
 			"isBackground": false,
 			"group": "test"
+		},
+		{
+			"label": "Build .NET project",
+			"type": "shell",
+			"command": "dotnet build",
+			"group": "build"
 		}
 	]
 }

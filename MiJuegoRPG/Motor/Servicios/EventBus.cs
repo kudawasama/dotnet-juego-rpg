@@ -85,4 +85,17 @@ namespace MiJuegoRPG.Motor.Servicios
             Faccion = faccion; BandaId = bandaId; ValorAnterior = valorAnterior; ValorNuevo = valorNuevo; Subida = subida; Mensaje = mensaje;
         }
     }
+
+    // Eventos de supervivencia (27.9)
+    public class EventoSupervivenciaUmbralCruzado : IEventoJuego
+    {
+        public string Tipo { get; } // "Hambre" | "Sed" | "Fatiga"
+        public string EstadoAnterior { get; } // OK | ADVERTENCIA | CRÍTICO
+        public string EstadoNuevo { get; }
+        public double Valor { get; } // 0..1 en el momento del cambio
+        public EventoSupervivenciaUmbralCruzado(string tipo, string estadoAnterior, string estadoNuevo, double valor)
+        {
+            Tipo = tipo; EstadoAnterior = estadoAnterior; EstadoNuevo = estadoNuevo; Valor = valor;
+        }
+    }
 }
