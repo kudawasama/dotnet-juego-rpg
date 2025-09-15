@@ -55,6 +55,10 @@ namespace MiJuegoRPG.Herramientas
                         File.WriteAllText(file, JsonSerializer.Serialize(sector, opciones));
                         Console.WriteLine($"[REPARADO] {file}");
                     }
+                    else
+                    {
+                        // Si ya es válido, no tocarlo. Esto permite que GeneradorConexiones complete conexiones sin conflictos.
+                    }
                 }
                 catch (Exception ex)
                 {

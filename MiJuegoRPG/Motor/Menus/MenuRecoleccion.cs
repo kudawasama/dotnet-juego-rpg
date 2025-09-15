@@ -2,6 +2,7 @@ using System;
 using MiJuegoRPG.Personaje;
 using MiJuegoRPG.Motor;
 using MiJuegoRPG.Motor.Acciones;
+using MiJuegoRPG.Motor.Servicios;
 
 namespace MiJuegoRPG.Motor.Menus
 {
@@ -18,7 +19,8 @@ namespace MiJuegoRPG.Motor.Menus
             var accionRecoleccion = new AccionRecoleccion(juego);
             while (!salir)
             {
-                juego.Ui.WriteLine("=== Menú de Recolección ===");
+                UIStyle.Header(juego.Ui, "Recolección");
+                UIStyle.Hint(juego.Ui, "Filtra por rareza con el menú híbrido");
                 juego.Ui.WriteLine("1. Buscar materiales");
                 juego.Ui.WriteLine("2. Volver");
                 opcion = InputService.LeerOpcion();

@@ -10,7 +10,15 @@
   "nodosRecoleccion": [],
   "Requisitos": {},
   "enemigos": [],
-  "Conexiones": ["8_22", "8_24"],
-  "eventos": ["Mercado", "Misión principal"],
+  "Conexiones": [
+    "7_23",
+    "8_22",
+    "8_24",
+    "9_23"
+  ],
+  "eventos": [
+    "Mercado",
+    "Misi\u00F3n principal"
+  ],
   "descripcion": "La ciudad fortaleza de Bairan, famosa por su muralla y su mercado central. Ciudad principal del continente."
 }

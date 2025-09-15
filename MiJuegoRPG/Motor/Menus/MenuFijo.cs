@@ -1,6 +1,7 @@
 using System;
 using MiJuegoRPG.Personaje;
 using MiJuegoRPG.Motor;
+using MiJuegoRPG.Motor.Servicios;
 
 namespace MiJuegoRPG.Motor.Menus
 {
@@ -15,7 +16,7 @@ namespace MiJuegoRPG.Motor.Menus
         {
             while (true)
             {
-                juego.Ui.WriteLine("\n=== Menú Fijo ===");
+                UIStyle.Header(juego.Ui, "Menú Fijo");
                 juego.Ui.WriteLine("1. Estado del personaje");
                 juego.Ui.WriteLine("2. Guardar personaje");
                 juego.Ui.WriteLine("3. Volver al menú principal");

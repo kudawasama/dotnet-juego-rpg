@@ -1,14 +1,46 @@
 {
   "Id": "26_54",
   "nombre": "Sector 26_54",
-  "bioma": "Campo",
-  "parteCiudad": "",
+  "bioma": "Oceano Lejano",
+  "Tipo": "Ruta",
+  "Descripcion": "Sector autocompletado.",
+  "NivelMinimo": 0,
+  "NivelMaximo": 0,
+  "Enemigos": [],
+  "Conexiones": [
+    "25_54",
+    "26_53",
+    "27_54"
+  ],
+  "CiudadInicial": false,
+  "Eventos": [],
+  "Requisitos": {},
+  "NodosRecoleccion": [
+    {
+      "Nombre": "Coral Abisal",
+      "Materiales": [],
+      "Cooldown": 6,
+      "CooldownBase": null,
+      "Tipo": null,
+      "Requiere": null,
+      "Rareza": null,
+      "ProduccionMin": 1,
+      "ProduccionMax": 1
+    },
+    {
+      "Nombre": "Alga Gigante",
+      "Materiales": [],
+      "Cooldown": 4,
+      "CooldownBase": null,
+      "Tipo": null,
+      "Requiere": null,
+      "Rareza": null,
+      "ProduccionMin": 1,
+      "ProduccionMax": 1
+    }
+  ],
   "ciudadPrincipal": false,
   "esCentroCiudad": false,
-  "nodosRecoleccion": [],
-  "Requisitos": {},
-  "enemigos": [],
-  "Conexiones": [],
-  "eventos": [],
-  "descripcion": "Sector autocompletado."
+  "parteCiudad": "",
+  "Rutas": ""
 }

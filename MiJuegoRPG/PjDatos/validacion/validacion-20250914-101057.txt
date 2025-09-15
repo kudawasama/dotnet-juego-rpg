@@ -1,0 +1,4 @@
+[Validador] Fecha: 2025-09-14T10:10:57.6507975-03:00
+[Validador] Resultado: Errores=0, Advertencias=0
+
+[Validador] Sectores disponibles: 3025

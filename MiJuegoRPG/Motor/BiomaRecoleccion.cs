@@ -4,10 +4,16 @@ using System.Text.Json.Serialization;
 
 namespace MiJuegoRPG.Motor
 {
+    public class MaterialCantidad
+    {
+        public string Nombre { get; set; } = string.Empty;
+        public int Cantidad { get; set; }
+    }
+
     public class NodoRecoleccion
     {
         public string? Nombre { get; set; }
-        public List<(string Nombre, int Cantidad)>? Materiales { get; set; }
+        public List<MaterialCantidad>? Materiales { get; set; }
         /// <summary>Cooldown en segundos definido por datos (0 = sin cooldown).</summary>
         public int Cooldown { get; set; } // Compat: valor efectivo si se usa directamente
         /// <summary>Nuevo: cooldown base para escalados futuros (si Cooldown==0 se usará este).</summary>
@@ -75,6 +81,8 @@ namespace MiJuegoRPG.Motor
         {
             // Usar el servicio centralizado (el parámetro rng se mantiene por compatibilidad, no se usa)
             var randomSvc = MiJuegoRPG.Motor.Servicios.RandomService.Instancia;
+            if (string.IsNullOrWhiteSpace(tipoBioma))
+                return new List<NodoRecoleccion>();
             if (!Biomas.TryGetValue(tipoBioma, out var bioma))
                 return new List<NodoRecoleccion>();
             var nodos = new List<NodoRecoleccion>();

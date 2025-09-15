@@ -17,6 +17,17 @@ namespace MiJuegoRPG.Enemigos
         public int DefensaMagica { get; set; }
         public bool EstaVivo => Vida > 0;
         public int Ataque { get; set; }
+    // Etiqueta simple de tipo (p.ej., "lobo", "rata", "golem") para contadores/encuentros
+    public string? Tag { get; set; }
+    // Mitigaciones porcentuales adicionales (0..1). No sustituyen Defensa, se aplican después.
+    public double MitigacionFisicaPorcentaje { get; set; } = 0.0; // ej. 0.2 = 20%
+    public double MitigacionMagicaPorcentaje { get; set; } = 0.0;
+    // Inmunidades por palabra clave ("veneno", "sangrado", etc.)
+    public Dictionary<string, bool> Inmunidades { get; private set; } = new Dictionary<string, bool>(StringComparer.OrdinalIgnoreCase);
+    // Resistencias elementales específicas 0..0.9 (mitigación adicional por tipo)
+    public Dictionary<string, double> ResistenciasElementales { get; } = new Dictionary<string, double>(StringComparer.OrdinalIgnoreCase);
+    // Daño elemental plano adicional por tipo (informativo para futuro cálculo detallado)
+    public Dictionary<string, int> DanioElementalBase { get; } = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
 
         // Implementación explícita de los métodos de ICombatiente
         public virtual int AtacarFisico(ICombatiente objetivo)
@@ -35,14 +46,24 @@ namespace MiJuegoRPG.Enemigos
 
         public virtual void RecibirDanioFisico(int danioFisico)
         {
-            int danioReal = Math.Max(1, danioFisico - Defensa);
+            int danioTrasDef = Math.Max(1, danioFisico - Defensa);
+            if (MitigacionFisicaPorcentaje > 0)
+            {
+                danioTrasDef = (int)Math.Max(1, Math.Round(danioTrasDef * (1.0 - Math.Clamp(MitigacionFisicaPorcentaje, 0.0, 0.9)), MidpointRounding.AwayFromZero));
+            }
+            int danioReal = danioTrasDef;
             Vida -= danioReal;
             if (Vida < 0) Vida = 0;
         }
 
         public virtual void RecibirDanioMagico(int danioMagico)
         {
-            int danioReal = Math.Max(1, danioMagico - DefensaMagica);
+            int danioTrasDef = Math.Max(1, danioMagico - DefensaMagica);
+            if (MitigacionMagicaPorcentaje > 0)
+            {
+                danioTrasDef = (int)Math.Max(1, Math.Round(danioTrasDef * (1.0 - Math.Clamp(MitigacionMagicaPorcentaje, 0.0, 0.9)), MidpointRounding.AwayFromZero));
+            }
+            int danioReal = danioTrasDef;
             Vida -= danioReal;
             if (Vida < 0) Vida = 0;
         }
@@ -65,6 +86,15 @@ namespace MiJuegoRPG.Enemigos
             var random = MiJuegoRPG.Motor.Servicios.RandomService.Instancia;
             foreach (var obj in ObjetosDrop)
             {
+                // Si hay probabilidad específica configurada para este objeto, úsala
+                if (ProbabilidadesDrop != null && ProbabilidadesDrop.TryGetValue(obj.Nombre, out var chanceCfg))
+                {
+                    if (random.NextDouble() < Math.Clamp(chanceCfg, 0.0, 1.0))
+                        return obj;
+                    else
+                        continue;
+                }
+
                 double rate = BASE_DROP_RATE;
                 // Ajuste por rareza
                 switch (obj.Rareza)
@@ -92,6 +122,24 @@ namespace MiJuegoRPG.Enemigos
                 }
             }
             return null;
+        }
+
+        // Helpers para configuración data-driven
+        public void EstablecerInmunidad(string tipo, bool inmune)
+        {
+            if (string.IsNullOrWhiteSpace(tipo)) return;
+            Inmunidades[tipo] = inmune;
+        }
+        public void EstablecerMitigacionElemental(string tipo, double valor)
+        {
+            if (string.IsNullOrWhiteSpace(tipo)) return;
+            ResistenciasElementales[tipo] = Math.Clamp(valor, 0.0, 0.9);
+        }
+        public void AgregarDanioElementalBase(string tipo, int cantidad)
+        {
+            if (string.IsNullOrWhiteSpace(tipo)) return;
+            if (DanioElementalBase.ContainsKey(tipo)) DanioElementalBase[tipo] += Math.Max(0, cantidad);
+            else DanioElementalBase[tipo] = Math.Max(0, cantidad);
         }
     
         // Propiedades del enemigo. 'set' es privado para evitar cambios externos.
@@ -142,14 +190,24 @@ namespace MiJuegoRPG.Enemigos
         {
             if (!EstaVivo)
             {
-                Console.WriteLine($"El {Nombre} ha sido derrotado.");
+                var ui = MiJuegoRPG.Motor.Juego.ObtenerInstanciaActual()?.Ui;
+                ui?.WriteLine($"El {Nombre} ha sido derrotado.");
                 jugador.GanarExperiencia(ExperienciaRecompensa);
                 jugador.GanarOro(OroRecompensa);
+                try
+                {
+                    // Incrementar contadores de muertes: global y por bioma actual
+                    var juego = MiJuegoRPG.Motor.Juego.ObtenerInstanciaActual();
+                    var bioma = juego?.mapa?.UbicacionActual?.Region;
+                    var tipo = (Tag ?? Nombre).ToLowerInvariant();
+                    jugador.IncrementarKill(tipo, bioma);
+                }
+                catch { }
                 var drop = IntentarDrop();
                 if (drop != null)
                 {
-                    Console.WriteLine($"¡Has obtenido el objeto: {drop.Nombre} ({drop.Rareza})!");
-                    // Aquí podrías agregar el objeto al inventario del jugador
+                    ui?.WriteLine($"¡Has obtenido el objeto: {drop.Nombre} ({drop.Rareza})!");
+                    try { jugador.Inventario.AgregarObjeto(drop, 1, jugador); } catch { }
                 }
             }
         }

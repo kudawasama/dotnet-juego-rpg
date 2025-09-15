@@ -1,0 +1,31 @@
+[
+  {
+    "Bioma": "Bosque",
+    "Entradas": [
+      { "Tipo": "Nada", "Peso": 25 },
+      { "Tipo": "BotinComun", "Peso": 12, "Param": "cofre_pequeno" },
+      { "Tipo": "Materiales", "Peso": 18 },
+      { "Tipo": "NPC", "Peso": 5 },
+      { "Tipo": "CombateComunes", "Peso": 20, "Param": "rata|conejo" },
+      { "Tipo": "CombateBioma", "Peso": 15, "Param": "lobo" },
+  { "Tipo": "MiniJefe", "Peso": 4, "Param": "lider_manada:lobo", "MinKills": 13, "Chance": 0.1, "CooldownMinutos": 60 },
+      { "Tipo": "MazmorraRara", "Peso": 1 },
+      { "Tipo": "EventoRaro", "Peso": 0 }
+    ]
+  },
+  {
+    "Bioma": "Montaña",
+    "Entradas": [
+      { "Tipo": "Nada", "Peso": 20 },
+      { "Tipo": "BotinComun", "Peso": 8, "Param": "cofre_piedra" },
+      { "Tipo": "Materiales", "Peso": 22 },
+      { "Tipo": "NPC", "Peso": 3 },
+      { "Tipo": "CombateComunes", "Peso": 18, "Param": "rata_cueva|murcielago" },
+      { "Tipo": "CombateBioma", "Peso": 20, "Param": "lobo_montana|golem_pequeno" },
+  { "Tipo": "MiniJefe", "Peso": 3, "Param": "alfa_lobo:lobo_montana", "MinKills": 10, "Chance": 0.05, "CooldownMinutos": 60 },
+  { "Tipo": "MazmorraRara", "Peso": 2, "Chance": 0.02, "CooldownMinutos": 120 },
+      { "Tipo": "EventoRaro", "Peso": 1, "HoraMin": 5, "HoraMax": 7 },
+      { "Tipo": "EventoRaro", "Peso": 1, "HoraMin": 18, "HoraMax": 20 }
+    ]
+  }
+]

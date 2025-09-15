@@ -1,7 +1,11 @@
 using MiJuegoRPG.Objetos;
-        using System;
-        using System.Collections.Generic;
-        using MiJuegoRPG.Personaje;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using MiJuegoRPG.Personaje;
+using MiJuegoRPG.Interfaces;
+using MiJuegoRPG.Motor;
+using MiJuegoRPG.Motor.Servicios;
 
 
 
@@ -26,8 +30,9 @@ namespace MiJuegoRPG.Personaje
     }
 
 
-        public class Inventario : NewBaseType
+    public class Inventario : NewBaseType
         {
+    private IUserInterface ui => Juego.ObtenerInstanciaActual()?.Ui ?? new ConsoleUserInterface();
 
         /// <summary>
         /// Equipa un objeto (arma, armadura o accesorio) y muestra un aviso centralizado con comparación de estadísticas.
@@ -111,17 +116,17 @@ namespace MiJuegoRPG.Personaje
             if (existente != null)
             {
                 existente.Cantidad += cantidad;
-                Console.WriteLine($"Se apiló {cantidad}x {objeto.Nombre} (Total: {existente.Cantidad})");
+                ui.WriteLine($"Se apiló {cantidad}x {objeto.Nombre} (Total: {existente.Cantidad})");
             }
             else
             {
                 if (totalSlots >= CapacidadMaxima)
                 {
-                    Console.WriteLine("No se puede agregar más objetos. Inventario lleno.");
+                    ui.WriteLine("No se puede agregar más objetos. Inventario lleno.");
                     return;
                 }
                 NuevosObjetos.Add(new ObjetoConCantidad(objeto, cantidad));
-                Console.WriteLine($"{objeto.Nombre} ha sido agregado al inventario.");
+                ui.WriteLine($"{objeto.Nombre} ha sido agregado al inventario.");
             }
             // Avisos automáticos si se pasa el personaje
             if (personaje != null)
@@ -137,17 +142,17 @@ namespace MiJuegoRPG.Personaje
                 if (existente.Cantidad > cantidad)
                 {
                     existente.Cantidad -= cantidad;
-                    Console.WriteLine($"Se quitaron {cantidad}x {objeto.Nombre} (Quedan: {existente.Cantidad})");
+                    ui.WriteLine($"Se quitaron {cantidad}x {objeto.Nombre} (Quedan: {existente.Cantidad})");
                 }
                 else
                 {
                     NuevosObjetos.Remove(existente);
-                    Console.WriteLine($"Se eliminó {objeto.Nombre} del inventario.");
+                    ui.WriteLine($"Se eliminó {objeto.Nombre} del inventario.");
                 }
             }
             else
             {
-                Console.WriteLine($"No tienes {objeto.Nombre} en el inventario.");
+                ui.WriteLine($"No tienes {objeto.Nombre} en el inventario.");
             }
         }
 
@@ -161,16 +166,18 @@ namespace MiJuegoRPG.Personaje
             int totalObjetos = NuevosObjetos.Sum(o => o.Cantidad);
             // Peso total (por ahora 0, para implementar después)
             double pesoTotal = 0;
-            Console.WriteLine($"Inventario: {totalObjetos} objetos (Peso: {pesoTotal} / --)");
-            Console.WriteLine("----------------------------------------");
-            Console.WriteLine($"{ "Nombre",-20} { "Categoría",-12} { "Cantidad",-8}");
-            Console.WriteLine("----------------------------------------");
-            foreach (var objCant in NuevosObjetos)
+            UIStyle.Header(ui, $"Inventario");
+            UIStyle.Hint(ui, $"Resumen: {totalObjetos} objetos (Peso: {pesoTotal} / --)");
+            ui.WriteLine("----------------------------------------");
+            ui.WriteLine($"#  { "Nombre",-20} { "Categoría",-12} { "Cantidad",-8}");
+            ui.WriteLine("----------------------------------------");
+            for (int i = 0; i < NuevosObjetos.Count; i++)
             {
-                Console.WriteLine($"{objCant.Objeto.Nombre,-20} {objCant.Objeto.Categoria,-12} {objCant.Cantidad,-8}");
+                var objCant = NuevosObjetos[i];
+                ui.WriteLine($"{i + 1,2} {objCant.Objeto.Nombre,-20} {objCant.Objeto.Categoria,-12} {objCant.Cantidad,-8}");
             }
-            Console.WriteLine("----------------------------------------");
-            Console.WriteLine($"Capacidad: {NuevosObjetos.Count}/{CapacidadMaxima}");
+            ui.WriteLine("----------------------------------------");
+            ui.WriteLine($"Capacidad: {NuevosObjetos.Count}/{CapacidadMaxima}");
         }
 
         public int ContarMaterial(string nombreMaterial)

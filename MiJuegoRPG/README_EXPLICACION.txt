@@ -187,3 +187,19 @@ Este menú permite verificar y depurar fácilmente todas las funcionalidades pri
 ---
 
 Este sistema te permite expandir el juego fácilmente, agregar nuevas ubicaciones, profesiones, misiones y eventos sin modificar la estructura base.
+
+---
+
+## Uso por línea de comandos (CLI)
+
+Puedes iniciar el juego con opciones que controlan la verbosidad y utilidades de mantenimiento:
+
+- `--help` o `-h`: muestra la ayuda y termina.
+- `--log-off`: desactiva el logger al inicio.
+- `--log-level=<nivel>`: establece el nivel del logger. Valores: `debug`, `info`, `warn`, `error`, `off`.
+- `--reparar-sectores`: ejecuta el reparador de sectores al inicio (útil para datasets inconsistentes).
+
+Notas:
+- También puedes cambiar el logger en runtime desde el Menú Principal → `Opciones`.
+- Las preferencias del logger se guardan por partida y se aplican al cargar/crear personaje.
+- Si pasas `--log-off`, ese apagado tiene precedencia y se mantendrá al iniciar, aunque luego puedes reactivarlo desde `Opciones`.

@@ -120,6 +120,103 @@
 			"command": "dotnet test MiJuegoRPG.Tests\\MiJuegoRPG.Tests.csproj -nologo",
 			"isBackground": false,
 			"group": "test"
+		},
+		{
+			"label": "Kill MiJuegoRPG.exe (si corre)",
+			"type": "shell",
+			"command": "powershell -NoProfile -ExecutionPolicy Bypass -Command \"$p = Get-Process MiJuegoRPG -ErrorAction SilentlyContinue; if ($p) { $p | Stop-Process -Force; Write-Host 'MiJuegoRPG.exe detenido'; } else { Write-Host 'MiJuegoRPG.exe no estaba en ejecución'; }\"",
+			"group": "build"
+		},
+		{
+			"label": "Kill y Correr pruebas",
+			"type": "shell",
+			"command": "powershell -NoProfile -ExecutionPolicy Bypass -Command \"$p = Get-Process MiJuegoRPG -ErrorAction SilentlyContinue; if ($p) { $p | Stop-Process -Force; Write-Host 'MiJuegoRPG.exe detenido'; } else { Write-Host 'MiJuegoRPG.exe no estaba en ejecución'; }; dotnet test MiJuegoRPG.Tests\\MiJuegoRPG.Tests.csproj -nologo\"",
+			"group": "test"
+		},
+		{
+			"label": "build-dotnet",
+			"type": "shell",
+			"command": "dotnet build",
+			"group": "build"
+		},
+		{
+			"label": "Build .NET project",
+			"type": "shell",
+			"command": "dotnet build",
+			"group": "build"
+		},
+		{
+			"label": "Build .NET project",
+			"type": "shell",
+			"command": "dotnet build",
+			"group": "build"
+		},
+		{
+			"label": "Compilar y ejecutar pruebas",
+			"type": "shell",
+			"command": "dotnet test --nologo",
+			"group": "test"
+		},
+		{
+			"label": "build-dotnet",
+			"type": "shell",
+			"command": "dotnet build",
+			"group": "build"
+		},
+		{
+			"label": "build-dotnet",
+			"type": "shell",
+			"command": "dotnet build",
+			"group": "build"
+		},
+		{
+			"label": "build-dotnet",
+			"type": "shell",
+			"command": "dotnet build",
+			"group": "build"
+		},
+		{
+			"label": "build-dotnet",
+			"type": "shell",
+			"command": "dotnet build",
+			"group": "build"
+		},
+		{
+			"label": "Build .NET project",
+			"type": "shell",
+			"command": "dotnet build",
+			"group": "build"
+		},
+		{
+			"label": "Build .NET project",
+			"type": "shell",
+			"command": "dotnet build",
+			"group": "build"
+		},
+		{
+			"label": "Run reparador materiales (dry-run)",
+			"type": "shell",
+			"command": "dotnet run --project MiJuegoRPG\\MiJuegoRPG.csproj --no-build -- --reparar-materiales=report",
+			"group": "test"
+		},
+		{
+			"label": "Build .NET project",
+			"type": "shell",
+			"command": "dotnet build",
+			"group": "build"
+		},
+		{
+			"label": "build-dotnet",
+			"type": "shell",
+			"command": "dotnet build",
+			"group": "build"
+		},
+		{
+			"label": "Correr pruebas",
+			"type": "shell",
+			"command": "dotnet test MiJuegoRPG.Tests\\MiJuegoRPG.Tests.csproj -nologo",
+			"isBackground": false,
+			"group": "test"
 		}
 	]
 }

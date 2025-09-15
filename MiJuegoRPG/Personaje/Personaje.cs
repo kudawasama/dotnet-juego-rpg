@@ -240,6 +240,36 @@ namespace MiJuegoRPG.Personaje
             ContadoresActividad.TryGetValue(clave, out var v);
             ContadoresActividad[clave] = v + inc;
         }
+        // Contadores persistentes de muertes: claves "global:tipo" y "bioma:<bioma>:tipo"
+        public Dictionary<string,int> KillCounters { get; set; } = new();
+        public void IncrementarKill(string tipo, string? bioma = null)
+        {
+            if (string.IsNullOrWhiteSpace(tipo)) return;
+            tipo = tipo.Trim().ToLowerInvariant();
+            // Global
+            var keyG = $"global:{tipo}";
+            KillCounters.TryGetValue(keyG, out var g); KillCounters[keyG] = g + 1;
+            // Por bioma si aplica
+            if (!string.IsNullOrWhiteSpace(bioma))
+            {
+                var keyB = $"bioma:{bioma.Trim().ToLowerInvariant()}:{tipo}";
+                KillCounters.TryGetValue(keyB, out var b); KillCounters[keyB] = b + 1;
+            }
+        }
+        public int GetKills(string tipo, string? bioma = null)
+        {
+            if (string.IsNullOrWhiteSpace(tipo)) return 0;
+            tipo = tipo.Trim().ToLowerInvariant();
+            int total = 0;
+            var keyG = $"global:{tipo}";
+            if (KillCounters.TryGetValue(keyG, out var g)) total += g;
+            if (!string.IsNullOrWhiteSpace(bioma))
+            {
+                var keyB = $"bioma:{bioma.Trim().ToLowerInvariant()}:{tipo}";
+                if (KillCounters.TryGetValue(keyB, out var b)) total += b;
+            }
+            return total;
+        }
         public bool TieneClase(string nombre) => ClasesDesbloqueadas.Contains(nombre) || (Clase != null && Clase.Nombre == nombre);
         public bool DesbloquearClase(string nombre)
         {
@@ -300,6 +330,10 @@ namespace MiJuegoRPG.Personaje
     public int Reputacion { get; set; } = 0; // usada por ReputacionMinima genérica
     public Dictionary<string,int> ReputacionesFaccion { get; set; } = new();
 
+        // Preferencias por partida (QoL): verbosidad del logger
+        public bool PreferenciaLoggerEnabled { get; set; } = true;
+        public string PreferenciaLoggerLevel { get; set; } = "Info"; // "Error"|"Warn"|"Info"|"Debug"
+
         // Control de descansos por día
 
 
@@ -313,7 +347,7 @@ namespace MiJuegoRPG.Personaje
         {
             int danio = (int)(Atributos.Fuerza + Estadisticas.Ataque + ObtenerBonificadorAtributo("Fuerza") + ObtenerBonificadorEstadistica("Ataque"));
             objetivo.RecibirDanioFisico(danio);
-            Console.WriteLine($"{Nombre} ataca físicamente y causa {danio} de daño a {objetivo.Nombre}");
+            MiJuegoRPG.Motor.Servicios.Logger.Debug($"{Nombre} ataca físicamente y causa {danio} de daño a {objetivo.Nombre}");
             return danio;
         }
 
@@ -322,7 +356,7 @@ namespace MiJuegoRPG.Personaje
         {
             int danio = (int)(Atributos.Inteligencia + Estadisticas.PoderMagico + ObtenerBonificadorAtributo("Inteligencia") + ObtenerBonificadorEstadistica("Poder Mágico"));
             objetivo.RecibirDanioMagico(danio);
-            Console.WriteLine($"{Nombre} lanza un ataque mágico y causa {danio} de daño a {objetivo.Nombre}");
+            MiJuegoRPG.Motor.Servicios.Logger.Debug($"{Nombre} lanza un ataque mágico y causa {danio} de daño a {objetivo.Nombre}");
             return danio;
         }
 
@@ -333,7 +367,7 @@ namespace MiJuegoRPG.Personaje
             double danioReal = Math.Max(1, danio - defensaTotal);
             Vida -= (int)danioReal;
             if (Vida < 0) Vida = 0;
-            Console.WriteLine($"{Nombre} recibió {danioReal} de daño físico. Vida restante: {Vida}");
+            MiJuegoRPG.Motor.Servicios.Logger.Debug($"{Nombre} recibió {danioReal} de daño físico. Vida restante: {Vida}");
         }
 
         // Recibir daño mágico
@@ -343,7 +377,7 @@ namespace MiJuegoRPG.Personaje
             double danioReal = Math.Max(1, danio - defensaMagicaTotal);
             Vida -= (int)danioReal;
             if (Vida < 0) Vida = 0;
-            Console.WriteLine($"{Nombre} recibió {danioReal} de daño mágico. Vida restante: {Vida}");
+            MiJuegoRPG.Motor.Servicios.Logger.Debug($"{Nombre} recibió {danioReal} de daño mágico. Vida restante: {Vida}");
         }
 
         // Habilidades aprendidas y progreso
