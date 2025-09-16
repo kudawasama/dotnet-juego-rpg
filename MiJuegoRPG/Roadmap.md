@@ -39,6 +39,17 @@ Legend inicial: Solo la 1.x se empieza ahora para evitar cambios masivos de golp
 - [26. ACCESIBILIDAD Y QoL](#26-accesibilidad-y-qol)
 - [27. SUPERVIVENCIA Y SISTEMAS REALISTAS](#27-supervivencia-y-sistemas-realistas)
 
+## Próximos pasos (prioridad sugerida)
+
+- [5.8] Pipeline de daño (etapa A): integrar chequeo de acierto (Precision vs Evasion) en `DamageResolver` como paso opcional y mantener compatibilidad. Añadir `ResolverAtaqueMagico` simétrico al físico.
+- [9.8] Tests pipeline combate: cubrir hit/miss/crit básicos con `RandomService.SetSeed` y dummies deterministas (sin tocar balance actual).
+- [5.10]/[3.4] Integrar stats de combate: usar `Precision`, `CritChance`, `CritMult`, `Penetracion` de `Estadisticas` (defaults ya presentes) y parametrizar en JSON (`progression.json`) las curvas/caps.
+- [5.13] Mensajería unificada: canalizar todos los mensajes de combate vía `ResultadoAccion` para evitar duplicados.
+- [10.6] Validación de datos: extender `DataValidatorService` a esquemas de objetos/drops/armas con rangos y referencias cruzadas.
+- [7.1]/[15.1] Repos JSON: consolidar objetos/materiales/balances bajo `IRepository<T>` con caché e invalidación.
+- [5.2] Refactor a cola de acciones en `CombatePorTurnos` tras estabilizar el pipeline.
+ - [10.5] Documentación de arquitectura: sección ampliada con fórmulas de estadísticas, encuentros, energía, supervivencia y clases dinámicas (ver `Docs/Arquitectura_y_Funcionamiento.md`).
+
 ## 1. FUNDAMENTOS (Infra / Enumeraciones / Servicios base)
 
 [1.1] Hecho | Organización | Crear este archivo de tracking | Archivo creado y actualizado periódicamente
@@ -79,7 +90,7 @@ Legend inicial: Solo la 1.x se empieza ahora para evitar cambios masivos de golp
 
 [5.7] Hecho | Resistencias | Inmunidades/mitigaciones por enemigo | Se añadió a `Enemigo` soporte de `Inmunidades` (por clave, ej. "veneno") y `MitigacionFisicaPorcentaje`/`MitigacionMagicaPorcentaje` aplicadas tras la defensa. `AplicarVenenoAccion` ahora respeta la inmunidad de no-muertos (zombi/esqueleto). Resultado: peleas más duras y coherentes con fantasía de mundo hostil.
 
-[5.8] Parcial | Pipeline de daño | `DamageResolver` con pasos (`IDamageStep`): Hit/Evasión, Crítico, Defensa, Mitigación, Resistencias, Aplicación de daño, OnHit/OnKill | Diseñar contrato y ensamblar pasos en orden determinista; centralizar mensajería en un único resultado (`ResultadoAccion`). Tests básicos hit/miss/crit/resist.
+[5.8] Parcial | Pipeline de daño | `DamageResolver` con pasos (`IDamageStep`): Hit/Evasión, Crítico, Defensa, Mitigación, Resistencias, Aplicación de daño, OnHit/OnKill | Diseñar contrato y ensamblar pasos en orden determinista; centralizar mensajería en un único resultado (`ResultadoAccion`). Tests básicos hit/miss/crit/resist. Avance: `DamageResolver` mínimo mejorado y `AtaqueFisicoAccion` usan el resolver; ahora se registran metadatos de crítico y de evasión (`FueEvadido`), y se agrega mensaje de evasión, sin alterar el daño actual.
 [5.9] Pendiente | Iniciativa y orden | Turnos por Velocidad/Agilidad + ruido RNG, penalizados por Carga de equipo | Definir cálculo e integrar en `CombatePorTurnos`.
 [5.10] Pendiente | Precisión/Crítico/Penetración | Añadir `Precision`, `CritChance`, `CritMult`, `Penetracion` a `Estadisticas` y armas (data) | Integrar a Pipeline de daño; documentar caps y floors.
 [5.11] Pendiente | Stamina/Poise | Recurso `Stamina` para acciones físicas y `Poise` para aturdimientos | Costes por arma/peso; caída de Poise causa `Stun` 1 turno. Integración con acciones y estados.
@@ -125,7 +136,7 @@ Legend inicial: Solo la 1.x se empieza ahora para evitar cambios masivos de golp
 [10.2] Hecho | Random | Sustituir usos dispersos | RecoleccionService y BiomaRecoleccion usan RandomService; agregado SetSeed(int) para tests deterministas
 [10.3] Pendiente | Nombres | Uniformar nombres archivos (GeneradorObjetos vs GeneradorDeObjetos) | Revisión
 [10.4] Pendiente | Comentarios | Podar comentarios redundantes | Continuo
-[10.5] Pendiente | Documentación | README arquitectura modular | Final intermedio
+[10.5] Parcial | Documentación | README arquitectura modular | `Docs/Arquitectura_y_Funcionamiento.md` ampliado con fórmulas exactas (stats), detalles de Encuentros/Energía/Supervivencia y clases dinámicas. Falta integrar un README corto en raíz que enlace a este documento y a `progression_config.md`.
 [10.6] Parcial | Validación Data | Validador JSON referencial (IDs de mapa, facciones, misiones, objetos) + pruebas | Base creada: `DataValidatorService.ValidarReferenciasBasicas()` verifica IDs de sectores en `facciones_ubicacion.json` contra el mapa cargado; flag CLI `--validar-datos` ejecuta el validador al inicio y reporta errores/advertencias sin detener el juego. Ampliado: valida `misiones.json` (IDs, `SiguienteMisionId`, dependencias `Condiciones: "Completar X"`, `UbicacionNPC` si es ID de sector) y `npc.json` (IDs de sector en `Ubicacion` y existencia de `Misiones`). Implementado reporte opcional: `--validar-datos=report` (o `--validar-datos=<ruta>`) guarda salida en `PjDatos/validacion/`. Nuevo: `ValidarEnemigosBasico()` recorre `DatosJuego/enemigos` y comprueba duplicados por `Nombre/Id`, rangos de mitigación [0..0.9], y campos básicos; informa NoMuertos sin `veneno:true` explícito (se aplica por defecto en runtime). Siguiente: cubrir repos de objetos y esquemas por archivo.
 [10.9] Hecho | Validación Data | Detectar materiales vacíos/invalidos en `nodosRecoleccion` de sectores | `DataValidatorService` amplía validación recorriendo sectores y reportando `{}` o materiales con `Nombre` vacío o `Cantidad <= 0`. Ayuda a higiene de datos y evita comportamientos raros en recolección.
 [10.7] Parcial | Higiene Git | Decidir si versionar juego.db; si no, añadir a .gitignore y documentar | Se excluyeron mapas JPG pesados (Mapa*.jpg) mediante .gitignore para evitar límites de GitHub (>100MB). Pendiente decidir el estatus de DatosCompartidos/juego.db (ignorar o versionar con migraciones) y documentarlo.
@@ -193,6 +204,8 @@ Legend inicial: Solo la 1.x se empieza ahora para evitar cambios masivos de golp
 [15.10] Pendiente | Telemetría | Métricas de crafting/drops | Tasas de éxito, consumo de materiales, progresión de skill de artesanía para balance futuro
 
 ## 16. ESTADO POR ARCHIVO / MÓDULO (inventario actual)  
+
+Nota: Este punto es un inventario de estado por carpeta/archivo, pensado como apéndice operativo. Por eso su formato es distinto al del resto de secciones numeradas (1–15, 17–27), que siguen el esquema por ítems [ID] con estado.
 
 Agrupado por carpeta. Hecho = estable/usable; Parcial = base hecha pero faltan migraciones UI/tests/balance; Pendiente = por implementar/migrar.
 
@@ -355,7 +368,7 @@ ESTADO ACTUAL (snapshot):
 - Normalización de ubicaciones a IDs de sector aplicada en menús y tienda (compatibilidad con nombres durante migración de datos).
 - Rutas centralizadas: nuevo `PathProvider` define carpetas canónicas de DatosJuego/PjDatos; eliminado código ad-hoc de combinaciones de rutas en servicios clave.
 
-## 16. Data-driven Enemigos (nuevo)
+### Data-driven Enemigos (nuevo)
 
 - Hecho | Enemigos por archivo | Se agrega carpeta `DatosJuego/enemigos/` y loader que lee todos los `*.json` (lista u objeto) con fallback a `DatosJuego/enemigos.json`.
 - Hecho | Esquema extendido `PjDatos.EnemigoData` con: `Inmunidades {string:bool}`, `MitigacionFisicaPorcentaje`, `MitigacionMagicaPorcentaje`, `Tags[]`, `Id?`.
@@ -394,3 +407,15 @@ NOTAS RIESGO / DEPENDENCIAS:
 - Repositorios: migrar uno (Misiones) antes de aplicar a Enemigos/Objetos para validar patrón.
 
 — Fin snapshot actualizado —
+
+## Bitácora de la última sesión (2025-09-15)
+
+- Combate → Pipeline de daño (5.8):
+  - `DamageResolver` anotó ahora evasión: cuando el daño retornado es 0 (por chequeo de `IEvadible` en `AtacarFisico/AtacarMagico`), se marca `ResultadoAccion.FueEvadido = true` y se agrega mensaje “¡El objetivo evadió el ataque!”.
+  - Se mantiene comportamiento no intrusivo: el cálculo de daño sigue delegado al ejecutor; no se alteraron fórmulas ni balance actual.
+- DTO de resultado: `ResultadoAccion` conserva flags `FueCritico` y ahora refleja también la evasión.
+- Acciones: `AtaqueFisicoAccion` ya usa `DamageResolver` (sin cambiar mensajes existentes salvo añadir el de evasión cuando aplica).
+- Tests: corregido constructor de `Personaje` en pruebas (`new Personaje("Heroe")`) y añadido caso determinista de evasión (objetivo que siempre evade). Suite de pruebas ejecutada con 4/4 PASS.
+- Build: solución compilada en Debug sin errores.
+
+Próximo objetivo recomendado: completar la etapa A del pipeline (hit/miss centralizado con `Precision` vs `Evasion` en `DamageResolver` y añadir `ResolverAtaqueMagico`), y cubrirlo con 2–3 tests deterministas. Esto prepara el terreno para integrar `CritMult`/`Penetracion` de forma segura y acorde a la progresión lenta y desafiante del juego.

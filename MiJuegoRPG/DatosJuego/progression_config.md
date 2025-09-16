@@ -84,5 +84,7 @@ Ejemplo base incluido:
 - Agregar pruebas unitarias (9.4) que validen que al subir de nivel la experiencia por acción disminuye dentro de un rango esperado.
 - Ajustar ExpBaseExploracion tras observar ritmo de descubrimiento de sectores.
 
+Nota combate (5.10 pendiente): En próximas iteraciones se parametrizarán en progression.json curvas/caps para `Precision`, `CritChance`, `CritMult` y `Penetracion` para integrarse en el pipeline de daño. Mantener valores conservadores (progresión lenta) y documentar cambios en este archivo.
+
 ---
 Última actualización: Parametrización 3.3 completada.

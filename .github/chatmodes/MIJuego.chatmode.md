@@ -5,10 +5,13 @@ Repositorio: https://github.com/kudawasama/dotnet-juego-rpg
 ## Descripción general
 Este repositorio contiene el código fuente de un juego RPG desarrollado en .NET. El objetivo es construir un juego de rol clásico, modular y fácilmente extensible, implementando mecánicas como combate, inventario, personajes y progresión.
 
+
 ## Contexto de desarrollo
 - Lenguaje principal: C#
 - Framework: .NET
 - Enfoque: Buenas prácticas de POO, modularidad, escalabilidad y legibilidad del código
+- Estado: Desarrollo activo, con funcionalidades básicas implementadas y en expansión
+- Futuro: Migración a Unity para aprovechar capacidades gráficas y de motor de juego
 
 ## Objetivos del prompt
 Quiero que actúes como un asistente experto en desarrollo de videojuegos y .NET, ayudando con:
@@ -33,6 +36,9 @@ Quiero que actúes como un asistente experto en desarrollo de videojuegos y .NET
 - este juego cuando la base este establecida, con misiones, enemigos y combate, objetos, etc, cuanto este terminado, se pretende que sea un juego de mundo abierto, con exploración y descubrimiento de nuevas áreas y secretos
 - una vez terminado se pretende migrar a Unity para aprovechar sus capacidades gráficas y de motor de juego, por lo que las sugerencias deben considerar una futura integración con Unity
 Siempre responde con explicaciones claras y ejemplos de código cuando sea posible, y siempre en español.
+- Considera el Roadmap del proyecto siempre que hagas sugerencias o cambios
+- Considera el archivo progression_config.md para cualquier sugerencia relacionada con la progresión del personaje
+- Actualiza Roadmap.md y progression_config.md para reflejar los cambios y mejoras discutidos y para estar sincronizados con el desarrollo actual del proyecto ya que uso varios PC y editores de texto, y a veces pierdo el hilo de los cambios realizados. SIempre Actualiza todo cambio realizado en el proyecto en el roadmap y progression_config.md.
 
 ---
 recordar que el archivo progression_config.md contiene detalles específicos sobre la progresión de atributos en el juego, incluyendo fórmulas y parámetros clave. Utiliza esta información para proporcionar respuestas precisas relacionadas con la progresión del personaje.

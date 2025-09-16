@@ -44,6 +44,23 @@ namespace MiJuegoRPG.Tests
         }
     }
 
+    // Objetivo evasivo determinista para probar 'miss' sin RNG
+    class EvasivoDummy : ICombatiente, IEvadible
+    {
+        public string Nombre { get; set; } = "Evasivo";
+        public int Vida { get; set; } = 50;
+        public int VidaMaxima { get; set; } = 50;
+        public int Defensa { get; set; } = 0;
+        public int DefensaMagica { get; set; } = 0;
+        public bool EstaVivo => Vida > 0;
+
+        public bool IntentarEvadir(bool esAtaqueMagico) => true; // siempre evade
+        public int AtacarFisico(ICombatiente objetivo) { objetivo.RecibirDanioFisico(1); return 1; }
+        public int AtacarMagico(ICombatiente objetivo) { objetivo.RecibirDanioMagico(1); return 1; }
+        public void RecibirDanioFisico(int danioFisico) { Vida = System.Math.Max(0, Vida - danioFisico); }
+        public void RecibirDanioMagico(int danioMagico) { Vida = System.Math.Max(0, Vida - danioMagico); }
+    }
+
     public class AccionesCombateTests
     {
         [Fact]
@@ -76,6 +93,39 @@ namespace MiJuegoRPG.Tests
             Assert.Equal("Ataque Mágico", res.NombreAccion);
             Assert.True(res.EsMagico);
             Assert.Equal(38, objetivo.Vida); // 50 - 12
+        }
+
+        [Fact]
+        public void AtaqueFisicoAccion_NoCriticoConDummy_NoEvasion()
+        {
+            var atacante = new DummyFighter { Nombre = "A" };
+            var objetivo = new DummyFighter { Nombre = "B" };
+            var accion = new MiJuegoRPG.Motor.Acciones.AtaqueFisicoAccion();
+
+            var res = accion.Ejecutar(atacante, objetivo);
+
+            // DummyFighter no es Personaje, por lo tanto el resolver no evalúa crítico (pCrit=0)
+            Assert.False(res.FueCritico);
+            // No hay evasión modelada en DummyFighter, por lo que la bandera debe mantenerse falsa
+            Assert.False(res.FueEvadido);
+        }
+
+        [Fact]
+        public void AtaqueFisico_PersonajeContraEvasivo_NoHaceDano()
+        {
+            // Arrange: Personaje atacante y objetivo que siempre evade
+            var pj = new MiJuegoRPG.Personaje.Personaje("Heroe");
+            var objetivo = new EvasivoDummy();
+            int vidaAntes = objetivo.Vida;
+
+            // Act: usar la acción de ataque físico que llama al resolver (que delega en AtacarFisico del ejecutor)
+            var accion = new MiJuegoRPG.Motor.Acciones.AtaqueFisicoAccion();
+            var res = accion.Ejecutar(pj, objetivo);
+
+            // Assert: por evasión, no se aplica daño (vida igual) y el resolver marca evasión
+            Assert.Equal(vidaAntes, objetivo.Vida);
+            Assert.True(res.DanioReal >= 0);
+            Assert.True(res.FueEvadido);
         }
     }
 }
