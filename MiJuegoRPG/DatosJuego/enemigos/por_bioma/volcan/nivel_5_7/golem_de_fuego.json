@@ -13,7 +13,7 @@
   "ArmaNombre": "Puños Ígneos",
   "MitigacionFisicaPorcentaje": 0.25,
   "Tags": ["golem_de_fuego", "volcan", "elemental"],
-  "ResistenciasElementales": { "fuego": 0.80, "agua": -0.30 },
+  "ResistenciasElementales": { "fuego": 0.80, "agua": 0.0 },
   "DanioElementalBase": { "fuego": 10 },
   "EquipoInicial": { "Arma": "Puños Ígneos" },
   "EvasionFisica": 0.05,

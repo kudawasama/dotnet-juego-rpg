@@ -110,6 +110,38 @@ Legend inicial: Solo la 1.x se empieza ahora para evitar cambios masivos de golp
 [7.3] Pendiente | Cache | Carga diferida + invalidación | Tras 7.2
 [7.4] Pendiente | Esquema objetos | Incluir en JSON de armas/armaduras campos `Precision`, `CritChance`, `CritMult`, `Penetracion`, `DurabilidadBase` | Compatibilidad retro con campos faltantes; validación en 10.6
 
+### 7.x Organización de Enemigos por Bioma/Nivel/Categoría (nuevo)
+
+- Hecho | Bosque nivel_1_3 | Estructura por categorías creada: `normal/`, `elite/`, `jefe/`, `campo/`, `legendario/`, `unico/`, `mundial/`. Limpieza lógica del root: el loader ahora ignora JSONs ubicados directamente en la raíz de `nivel_*` bajo `enemigos/por_bioma` para evitar doble carga (mientras se completa la eliminación física).
+- Hecho | Bosque nivel_1_3 | Cuotas por categoría alcanzadas: 10 normales, 10 élite, 5 jefes, 3 de campo, 2 legendarios, 2 únicos, 1 mundial.
+- Hecho | Documentación | `DatosJuego/enemigos/README.md` ampliado con estructura sugerida y plantilla JSON.
+- Hecho | Validación | `DataValidatorService` reconstruido; ahora valida enemigos respetando la convención de ignorar JSON en la raíz de `nivel_*` y aplica rangos estrictos para `Mitigacion*` [0..0.9], `ResistenciasElementales` [0..0.9], `SpawnChance` [0..1] y `SpawnWeight>0`. Se agregó reporte opcional `--validar-datos=report`.
+- Pendiente | Replicar | Extender la misma organización a otros biomas (`montana/`, `pantano/`, etc.) y rangos de nivel (`nivel_4_6/`, ...). Checklist:
+
+  - Crear subcarpetas por categoría en cada `nivel_X_Y`.
+  - Migrar JSONs existentes a su carpeta por `Categoria`.
+  - Completar cuotas mínimas por categoría (mismos números que bosque) o marcar excepciones justificadas.
+  - Ejecutar `DataValidatorService.ValidarEnemigosBasico()` y revisar advertencias.
+  - Actualizar `Roadmap.md` con progreso y `enemigos/README.md` si surgen nuevas convenciones.
+
+Convenciones adicionales:
+
+- Nombres variantes: cuando un mismo arquetipo exista en categorías distintas, el `Nombre` debe incluir sufijo entre paréntesis, por ejemplo: `Cuervo de Tres Ojos (Élite)`, `Lobo Alfa (Jefe)`. Esto evita colisiones en validadores y facilita filtros por texto. Los `Tags` deben incluir `variante:elite|jefe|...`.
+- Estructura de carpetas: todos los enemigos bajo `por_bioma/<bioma>/<nivel_*>` deben residir en una subcarpeta de categoría. Los JSON en la raíz de `nivel_*` serán ignorados por el loader hasta su eliminación definitiva.
+
+Política vigente (elemental):
+
+- NO se permiten valores negativos en `ResistenciasElementales` (mitigación) — rango válido [0..0.9]. Valores negativos históricos fueron normalizados a `0.0`.
+- Las debilidades se modelan explícitamente con `VulnerabilidadesElementales { tipo: factor }`, aplicadas como multiplicador post-mitigación. Rango permitido y validado: `[1.0 .. 1.5]` (conservador para progresión lenta).
+- Soporte inicial implementado para el canal genérico `"magia"`. En futuras iteraciones se ampliará a elementos específicos (fuego/hielo/rayo/veneno/...) cuando el pipeline identifique el elemento del golpe.
+
+Bitácora (datos):
+
+- 2025-09-16: Bosque `nivel_1_3` reorganizado y completado por categorías; añadidos jefes/campo/legendarios/únicos/mundial; corregida ruta errónea residual. Se añadió filtro en loader para ignorar raíz de `nivel_*` y se adoptó convención de nombres para variantes (Élite).
+- 2025-09-16 (tarde): Reconstruido `DataValidatorService` (corrupción previa) y saneadas resistencias elementales negativas en JSONs (normalizadas a 0.0) para cumplir rango [0..0.9]. Se generó reporte con `--validar-datos=report` y quedaron 0 advertencias relacionadas a resistencias; pendientes ajustes menores si aparecen nuevas reglas.
+- 2025-09-16 (noche): Integradas `VulnerabilidadesElementales {tipo:1.0..1.5}` en `PjDatos.EnemigoData` y `Enemigos.Enemigo`; mapeo desde `GeneradorEnemigos` y aplicación en `RecibirDanioMagico` como multiplicador post-mitigación para el canal `magia`. `DataValidatorService.ValidarEnemigosBasico` ahora valida el rango de vulnerabilidades y reporta fuera de rango. Documentación actualizada en `progression_config.md`.
+- 2025-09-16 (noche): Tests — Se ajustó `MiJuegoRPG.Tests.csproj` para copiar de forma recursiva `MiJuegoRPG/DatosJuego/**` al directorio de salida. Con esto se resolvieron errores de copia (MSB3030) por la nueva estructura de enemigos por categoría en `nivel_*`. Suite completa volvió a verde (45/45 PASS).
+
 ## 8. UI / PRESENTACIÓN
 
 [8.1] Hecho | Abstracción | IUserInterface (WriteLine, ReadOption, Confirm) | Interfaz creada + adaptadores: ConsoleUserInterface y SilentUserInterface (para tests); InputService usa la UI para leer opciones/números y pausar. Añadido InputService.TestMode para evitar bloqueos en tests. Juego expone UiFactory para inyección. Logger central agregado y enlazado a la UI. Migradas salidas principales en Juego (menú, viaje, recolección, mazmorra, rutas) y GeneradorEnemigos. Menús migrados: MenuCiudad, MenuFueraCiudad, MenuRecoleccion, MenuFijo, MenuAdmin, MenuEntreCombate, MenusJuego y Program.cs. Pendiente: unificar colores/estilo.
@@ -119,7 +151,7 @@ Legend inicial: Solo la 1.x se empieza ahora para evitar cambios masivos de golp
 
 ## 9. TESTING
 
-[9.1] Hecho | Infra | Crear proyecto tests xUnit | Proyecto MiJuegoRPG.Tests creado (xUnit) y referenciado en la solución
+[9.1] Hecho | Infra | Crear proyecto tests xUnit | Proyecto MiJuegoRPG.Tests creado (xUnit) y referenciado en la solución. Config actualizado: copia recursiva de `MiJuegoRPG/DatosJuego/**` al output de pruebas para alinear con estructura por bioma/nivel/categoría de enemigos y otros datos.
 [9.2] Hecho | Test | Mapa.MoverseA casos | Tres casos cubiertos: inicialización (CiudadPrincipal), adyacencias y movimiento válido/ inválido + descubrimiento
 [9.3] Hecho | Test | GeneradorEnemigos nivel y drops | Tests deterministas con RandomService.SetSeed y filtro por nivel; E/S aislada a %TEMP% y opción DesactivarPersistenciaDrops para evitar escribir JSONs reales.
 [9.4] Hecho | Test | ProgressionService fórmula | Explorar (Percepción+Agilidad), Entrenamiento con subida y Recolección por tipo
@@ -209,54 +241,67 @@ Nota: Este punto es un inventario de estado por carpeta/archivo, pensado como ap
 
 Agrupado por carpeta. Hecho = estable/usable; Parcial = base hecha pero faltan migraciones UI/tests/balance; Pendiente = por implementar/migrar.
 
-- Interfaces (Hecho):  
+- Interfaces (Hecho):
+
   - Interfaces/IUserInterface.cs, IUsable.cs, IInventariable.cs, ICombatiente.cs, IBonificadorAtributo.cs
 
-- Servicios (mayoría Hecho):  
-  - Hecho: Motor/Servicios/{EventBus, RandomService, ProgressionService, PathProvider, Logger, ConsoleUserInterface, SilentUserInterface, ReputacionService, ReputacionPoliticas, ClaseDinamicaService}  
-  - Hecho: Motor/Servicios/RecoleccionService.cs, EnergiaService.cs  
+- Servicios (mayoría Hecho):
+
+  - Hecho: Motor/Servicios/{EventBus, RandomService, ProgressionService, PathProvider, Logger, ConsoleUserInterface, SilentUserInterface, ReputacionService, ReputacionPoliticas, ClaseDinamicaService}
+  - Hecho: Motor/Servicios/RecoleccionService.cs, EnergiaService.cs
   - Parcial: Motor/Servicios/GuardadoService.cs (flujos interactivos UI por migrar)
 
-- Motor core:  
-  - Hecho: Motor/{Juego, Mapa, MapaLoader, Ubicacion, MotorRutas}  
-  - Parcial: Motor/CreadorPersonaje.cs (UI ya adaptada en parte)  
+- Motor core:
+
+  - Hecho: Motor/{Juego, Mapa, MapaLoader, Ubicacion, MotorRutas}
+  - Parcial: Motor/CreadorPersonaje.cs (UI ya adaptada en parte)
   - Parcial: Motor/AvisosAventura.cs, GestorDesbloqueos.cs (conectar a UI/Logger)
 
-- Menús (Hecho salvo Combate/Inventario):  
-  - Hecho: Motor/Menus/{MenuCiudad, MenuFueraCiudad, MenuRecoleccion, MenuFijo, MenuAdmin}, MenusJuego.cs, MenuEntreCombate.cs  
+- Menús (Hecho salvo Combate/Inventario):
+
+  - Hecho: Motor/Menus/{MenuCiudad, MenuFueraCiudad, MenuRecoleccion, MenuFijo, MenuAdmin}, MenusJuego.cs, MenuEntreCombate.cs
   - Pendiente: Integración de estilo unificado en todos (8.3)
 
-- Combate (Parcial):  
-  - Parcial: Motor/CombatePorTurnos.cs (UI unificada + menús de Habilidad y uso de Pociones; selección de objetivo; mensajes centralizados)  
-  - Pendiente: Motor/MotorCombate.cs (sin cambios funcionales)  
+- Combate (Parcial):
+
+  - Parcial: Motor/CombatePorTurnos.cs (UI unificada + menús de Habilidad y uso de Pociones; selección de objetivo; mensajes centralizados)
+  - Pendiente: Motor/MotorCombate.cs (sin cambios funcionales)
   - Pendiente/Parcial: Habilidades/{AtaqueFisico, AtaqueMagico, Hechizo, Habilidad, GestorHabilidades, HabilidadLoader} (faltan arquitectura de acciones 5.1, estados/orden por Velocidad y UI)
 
-- Inventario y Personaje:  
-  - Dominio Hecho: Personaje/{Personaje, AtributosBase, ExpAtributo, Estadisticas, Clase, ClaseData, HabilidadProgreso, FuenteBonificador}  
+- Inventario y Personaje:
+
+  - Dominio Hecho: Personaje/{Personaje, AtributosBase, ExpAtributo, Estadisticas, Clase, ClaseData, HabilidadProgreso, FuenteBonificador}
   - UI/Flujos Hecho: Motor/MotorInventario.cs, Personaje/Inventario.cs migrados a `IUserInterface` + `UIStyle`; confirmación al usar pociones; mensajes consistentes
 
-- Enemigos (Hecho base):  
+- Enemigos (Hecho base):
+
   - Enemigos/{Enemigo, EnemigoEstandar, Goblin, GranGoblin} + PjDatos/EnemigoData.cs; GeneradorEnemigos.cs (tests verdes)
 
-- Objetos y materiales:  
-  - Modelos Hecho: Objetos/{Objeto, ObjetoJsonConverter, EnumsObjetos, Material, Arma, Armadura, Casco, Botas, Cinturon, Collar, Pantalon, Accesorio, Pocion}  
-  - Gestores Parcial: Objetos/{GestorArmas, GestorMateriales, GestorPociones} (migrar logs a Logger y UI para feedback)  
+- Objetos y materiales:
+
+  - Modelos Hecho: Objetos/{Objeto, ObjetoJsonConverter, EnumsObjetos, Material, Arma, Armadura, Casco, Botas, Cinturon, Collar, Pantalon, Accesorio, Pocion}
+  - Gestores Parcial: Objetos/{GestorArmas, GestorMateriales, GestorPociones} (migrar logs a Logger y UI para feedback)
   - Generador De Objetos Parcial: Motor/GeneradorDeObjetos.cs + Motor/TestGeneradorObjetos.cs
 
-- Datos Pj (mappers/modelos de data) Hecho:  
+- Datos Pj (mappers/modelos de data) Hecho:
+
   - PjDatos/{AccesorioData, ArmaData, ArmaduraData, BotasData, CinturonData, CollarData, PantalonData, Categoria, Familia, SectorData, Rareza, ClasesData, ClasesData.cs, personajeData.cs, GuardaPersonaje.cs, PersonajeSqliteService.cs}
 
-- Comercio (Hecho):  
+- Comercio (Hecho):
+
   - Comercio/{ShopService, PriceService} con reputación integrada y PathProvider
 
-- Crafteo (Pendiente):  
+- Crafteo (Pendiente):
+
   - Crafteo/CraftingService.cs (esqueleto; dependerá de 15.x)
 
-- Herramientas / Datos (Parcial):  
-  - Herramientas/{ValidadorSectores, ReparadorSectores} (útiles; integrar en QA/CI)  
+- Herramientas / Datos (Parcial):
+
+  - Herramientas/{ValidadorSectores, ReparadorSectores} (útiles; integrar en QA/CI)
   - DatosJuego/mapa/GeneradorSectores.cs (tool de generación; añadir tests/validación)
 
-- Program/Entrypoint (Hecho):  
+- Program/Entrypoint (Hecho):
+
   - Program.cs migrado a UI
 
 ## 17. HABILIDADES Y MAESTRÍAS
@@ -373,7 +418,7 @@ ESTADO ACTUAL (snapshot):
 - Hecho | Enemigos por archivo | Se agrega carpeta `DatosJuego/enemigos/` y loader que lee todos los `*.json` (lista u objeto) con fallback a `DatosJuego/enemigos.json`.
 - Hecho | Esquema extendido `PjDatos.EnemigoData` con: `Inmunidades {string:bool}`, `MitigacionFisicaPorcentaje`, `MitigacionMagicaPorcentaje`, `Tags[]`, `Id?`.
 - Hecho | Spawn | Campos `SpawnChance` (0..1) y `SpawnWeight` (>0) agregados a `EnemigoData` y usados en la selección de `GeneradorEnemigos` (pre-filtro por chance y sorteo ponderado por weight). Retrocompatibilidad con selección uniforme.
-- Hecho | Elemental | `ResistenciasElementales {tipo:0..0.9}` y `DanioElementalBase {tipo:int}` mapeados a `Enemigo` con helpers.
+- Hecho | Elemental | `ResistenciasElementales {tipo:0..0.9}`, `VulnerabilidadesElementales {tipo:1.0..1.5}` y `DanioElementalBase {tipo:int}` mapeados a `Enemigo` con helpers; vulnerabilidades aplicadas post-mitigación al canal `magia`.
 - Hecho | Equipo inicial | Soporte para `EquipoInicial.Arma` (por nombre) con warnings si no existe en catálogo.
 - Hecho | Drops por enemigo | `EnemigoData.Drops[]` con chance por ítem, cantidades (min/max) y `UniqueOnce` persistente. Tipos soportados: `material|arma|pocion`. Clamps anti-farming aplicados.
 - Hecho | Mapeo en `Motor/GeneradorEnemigos`: aplica inmunidades/mitigaciones/tags desde data; default por `Familia.NoMuerto` -> `veneno` inmune si no está definido.
@@ -388,17 +433,17 @@ MÉTRICAS / OBS (para futura instrumentación ligera):
 
 PRÓXIMOS PASOS SUGERIDOS (reordenados tras avances):
 
-1) (4.2) Balance de recolección: aplicar Rareza en tasas y cooldowns (raros con cooldown mayor), revisar rangos ProduccionMin/Max por bioma y ajustar con telemetría. Mantener progresión lenta y gating por herramientas/atributos.
-2) (2.3/8.3) Completar migración UI: CombatePorTurnos, Inventario/Personaje, Gestores (Armas/Pociones/Materiales), GuardadoService interactivo; introducir UIStyleService.
-3) (7.1) `IRepository<T>` base (LoadAll, SaveAll, GetById) + implementación JSON simple (sin cache) para Misiones como piloto.
-4) (26.2) Verbosidad desde UI: COMPLETADO. Documentación y `--help` implementados.
-5) (10.6) Validador JSON: verificar referenciales (IDs de mapa, facciones, misiones, objetos) + test de contrato por archivo. Extender a repos de objetos (armas/materiales/pociones).
-6) (12.5) Métricas reputación: contador de eventos de reputación y cambios por facción; export opcional a CSV/JSON.
-7) (Datos) Completar unificación a IDs de mapa en npc.json y facciones_ubicacion.json; mantener compatibilidad durante migración.
-8) (14.x) Preparación Unity: esqueleto de adaptadores (UI/Logger/Input) y script de conversión JSON→SO (diseño).
-9) (15.1–15.3) Iniciar base de objetos/drops: definir esquema JSON y repos; piloto con 1 enemigo y 1 sector; tests de contrato.
-10) (15.4) Esqueleto de crafteo: recetas mínimas + consumo de energía + fallo/éxito; UI básica integrada.
-11) (15.5–15.6) Dismantle y reparación: flujo y balance inicial; logs para telemetría (15.10).
+1. (4.2) Balance de recolección: aplicar Rareza en tasas y cooldowns (raros con cooldown mayor), revisar rangos ProduccionMin/Max por bioma y ajustar con telemetría. Mantener progresión lenta y gating por herramientas/atributos.
+2. (2.3/8.3) Completar migración UI: CombatePorTurnos, Inventario/Personaje, Gestores (Armas/Pociones/Materiales), GuardadoService interactivo; introducir UIStyleService.
+3. (7.1) `IRepository<T>` base (LoadAll, SaveAll, GetById) + implementación JSON simple (sin cache) para Misiones como piloto.
+4. (26.2) Verbosidad desde UI: COMPLETADO. Documentación y `--help` implementados.
+5. (10.6) Validador JSON: verificar referenciales (IDs de mapa, facciones, misiones, objetos) + test de contrato por archivo. Extender a repos de objetos (armas/materiales/pociones).
+6. (12.5) Métricas reputación: contador de eventos de reputación y cambios por facción; export opcional a CSV/JSON.
+7. (Datos) Completar unificación a IDs de mapa en npc.json y facciones_ubicacion.json; mantener compatibilidad durante migración.
+8. (14.x) Preparación Unity: esqueleto de adaptadores (UI/Logger/Input) y script de conversión JSON→SO (diseño).
+9. (15.1–15.3) Iniciar base de objetos/drops: definir esquema JSON y repos; piloto con 1 enemigo y 1 sector; tests de contrato.
+10. (15.4) Esqueleto de crafteo: recetas mínimas + consumo de energía + fallo/éxito; UI básica integrada.
+11. (15.5–15.6) Dismantle y reparación: flujo y balance inicial; logs para telemetría (15.10).
 
 NOTAS RIESGO / DEPENDENCIAS:
 
@@ -407,6 +452,27 @@ NOTAS RIESGO / DEPENDENCIAS:
 - Repositorios: migrar uno (Misiones) antes de aplicar a Enemigos/Objetos para validar patrón.
 
 — Fin snapshot actualizado —
+
+## Bitácora de la última sesión (2025-09-16)
+
+- Tests/Infra:
+  - Ajustado `MiJuegoRPG.Tests.csproj` para copiar recursivamente `MiJuegoRPG/DatosJuego/**` al output de pruebas. Resuelve errores MSB3030 por reorganización de enemigos (bioma/nivel/categoría). Suite de pruebas en verde: 45/45 PASS.
+  - Verificado build de solución post-cambio: ambos proyectos compilan correctamente.
+- Documentación/Quality:
+  - Normalizadas viñetas/indentación en `Roadmap.md` (correcciones markdownlint) y sincronizada la sección 9 con la nueva configuración de assets.
+- Datos/Enemigos/Elemental (estado):
+  - Loader recursivo de enemigos con convención de ignorar JSON en la raíz de `nivel_*` ya activo.
+  - `VulnerabilidadesElementales {1.0..1.5}` integrado y documentado; aplicado en daño mágico post-mitigación.
+
+Siguientes pasos inmediatos (propuestos):
+
+1. [7.x] Replicar estructura por categorías a otros biomas y rangos de nivel (`nivel_4_6`, `nivel_7_9`, ...); completar cuotas mínimas y correr validador de datos.
+2. [5.8]/[9.8] Pipeline de daño (Etapa A): centralizar hit/evasión en `DamageResolver` con `Precision` vs `Evasion` y añadir tests deterministas (xUnit) para hit/miss y mensajes.
+3. [5.10]/[3.4] Integrar `Precision`, `CritChance`, `CritMult`, `Penetracion` desde `Estadisticas` y parametrizar caps/curvas en `progression.json`.
+4. [7.1]/[15.1] Repos JSON: piloto con Misiones u Objetos para formalizar `IRepository<T>`; luego migrar drops/armas/materiales.
+5. [5.x] Extender vulnerabilidades por elemento específico (fuego/hielo/rayo/veneno) y actualizar validador + docs manteniendo límites conservadores.
+
+---
 
 ## Bitácora de la última sesión (2025-09-15)
 

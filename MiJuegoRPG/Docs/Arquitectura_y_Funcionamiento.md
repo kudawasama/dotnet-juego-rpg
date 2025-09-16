@@ -3,26 +3,28 @@
 > Objetivo: documentar en profundidad la estructura, el flujo y las reglas del juego para facilitar mantenimiento, onboarding y futura migración a Unity. Este documento sirve como guía viva y complementa `Roadmap.md` y `progression_config.md`.
 
 Tabla de contenidos
-- 1. Visión general del sistema
-- 2. Núcleo del dominio
-- 3. Progresión y atributos
-- 4. Combate (pipeline y estados)
-- 5. Recolección y mundo
-- 6. Objetos, inventario y comercio
-- 7. Misiones y encuentros
-- 8. Supervivencia (hambre/sed/fatiga/temperatura)
-- 9. UI y presentación
-- 10. Datos, validación y guardado
-- 11. Testing y determinismo
-- 12. Migración a Unity (consideraciones)
-- 13. Problemas conocidos y edge cases
-- 14. Ejemplos prácticos (recetas de uso)
+
+1. Visión general del sistema
+1. Núcleo del dominio
+1. Progresión y atributos
+1. Combate (pipeline y estados)
+1. Recolección y mundo
+1. Objetos, inventario y comercio
+1. Misiones y encuentros
+1. Supervivencia (hambre/sed/fatiga/temperatura)
+1. UI y presentación
+1. Datos, validación y guardado
+1. Testing y determinismo
+1. Migración a Unity (consideraciones)
+1. Problemas conocidos y edge cases
+1. Ejemplos prácticos (recetas de uso)
 
 ---
 
 ## 1. Visión general del sistema
 
 El proyecto está organizado por capas y módulos, con un enfoque data-driven. Las piezas principales son:
+
 - Dominio (lógica del juego): Personaje, Enemigos, Combate, Progresión, Recolección.
 - Servicios: RandomService, ProgressionService, ReputacionService, EnergiaService, GuardadoService, etc.
 - UI: IUserInterface y adaptadores (consola/silencioso), UIStyle para consistencia visual.
@@ -36,6 +38,7 @@ Jugador/Enemigo -> Acciones -> DamageResolver -> ResultadoAccion -> UI
        ProgressionService <--- Eventos ---- GuardadoService
 
 Metas clave:
+
 - Progresión lenta y desafiante (balance conservador).
 - Modularidad y futura migración a Unity.
 - Determinismo en pruebas (RandomService.SetSeed).
@@ -43,12 +46,14 @@ Metas clave:
 ## 2. Núcleo del dominio
 
 Entidades principales:
+
 - Personaje: atributos, estadísticas derivadas, inventario, reputaciones, clases dinámicas; implementa ICombatiente e IEvadible.
 - Enemigo: base de comportamiento similar a Personaje pero con mitigaciones, inmunidades y drops.
 - Acciones de combate: AtaqueFísico, AtaqueMágico, UsarPoción, AplicarEfectos; exponen `IAccionCombate.Ejecutar` y devuelven `ResultadoAccion`.
 - Efectos: `IEfecto` con ticks por turno y expiración (veneno implementado).
 
 Interfaces clave (contratos):
+
 - ICombatiente: AtacarFisico/Magico, RecibirDanioFisico/Magico, Vida/VidaMaxima/Defensas.
 - IEvadible: IntentarEvadir(bool esMagico).
 - IAccionCombate: Ejecutar, CooldownTurnos, costes.
@@ -88,12 +93,14 @@ Las siguientes relaciones provienen del constructor de `Estadisticas(AtributosBa
 - Penetración: Penetracion = clamp(0.002·Destreza, 0, 0.2)
 
 Notas:
+
 - El jugador tiene un cap de evasión efectiva en `IntentarEvadir` de 0.5 (antes de RNG), con penalización 0.8 para hechizos.
 - Estas estadísticas se verán afectadas por equipo vía `ObtenerBonificadorAtributo/Estadistica` y por estados de supervivencia (ver sección 8).
 
 ## 4. Combate (pipeline y estados)
 
 Estado actual:
+
 - `DamageResolver` centraliza metadatos: registra crítico (`FueCritico`) y evasión (`FueEvadido`) y construye mensajería de acción sin alterar aún las fórmulas.
 - Chequeos de evasión existen en `AtacarFisico/Magico` (combatientes) y al recibir daño en `Personaje`.
 - `CombatePorTurnos` orquesta turno, selección de acciones, aplicación de efectos y UI.
@@ -103,23 +110,29 @@ Plan de pipeline (orden propuesto):
 2) Crítico: chance y multiplicador, caps/floors conservadores.
 3) Defensa/Penetración: reducir defensa por penetración antes de mitigar.
 4) Mitigaciones del objetivo: físicas/mágicas por porcentaje.
-5) Resistencias especiales (elementales, inmunidades).
+5) Resistencias especiales (elementales, inmunidades) y debilidades (vulnerabilidades):
+     - ResistenciasElementales { tipo: 0..0.9 } se aplican como mitigación adicional post-defensa.
+     - VulnerabilidadesElementales { tipo: 1.0..1.5 } se aplican como multiplicador post-mitigación. Implementado inicialmente para el canal genérico "magia".
 6) Aplicación del daño y efectos OnHit/OnKill.
 7) Registro en `ResultadoAccion` y UI.
 
 Ecuación base (futura) para probabilidad de impacto:
+
 - p_hit = clamp(0.35 + Precision_att - k * Evasion_obj, 0.20, 0.95), k ∈ [1.0, 1.2]
 - Aplicar multiplicador de Supervivencia: p_hit *= FactorPrecision(hambre, sed, fatiga)
 
 Crítico (futuro, conservador):
+
 - Si RNG < CritChance: daño *= CritMult; cap CritChance <= 0.5; CritMult ∈ [1.25, 1.75].
 
 Edge cases relevantes:
+
 - Daño mínimo = 1 (si impacta y tras mitigaciones > 0), salvo inmunidad.
 - Evasión duplicada (atacante y objetivo): resolver una sola vez en el pipeline.
 - Overkill: clamp vida a 0; marcar `ObjetivoDerrotado`.
 
 Estado actual (del código):
+
 - `Personaje.AtacarFisico/Magico` realiza un chequeo de evasión en el objetivo (si implementa `IEvadible`), y retorna 0 si evade.
 - `Personaje.RecibirDanioFisico/Magico` también realiza un chequeo de evasión adicional; estamos migrando a una única decisión centralizada en el resolver.
 - `DamageResolver` anota `FueEvadido` si el daño resultó 0 y añade mensaje; anota `FueCritico` según `Estadisticas.Critico` (mientras se consolida el pipeline).
@@ -160,6 +173,7 @@ Fuente: `Motor/Servicios/EncuentrosService.cs` y `DatosJuego/eventos/encuentros.
 - Entradas con `Chance` se evalúan primero (RNG < Chance), desempate por `Prioridad` y luego `Peso`.
 - Fallback ponderado: selección por peso entre entradas sin `Chance` (luego de filtros).
 - Modificadores por atributos (método `CalcularModificador`):
+
      - Botín/Materiales: + hasta 50% con Percepción+Suerte.
      - NPC/Eventos/Mazmorras raras: + hasta 25% con Suerte.
      - Combates comunes/bioma: + hasta 30% con Agilidad+Destreza.
@@ -178,6 +192,7 @@ Fuente: `Motor/Servicios/EncuentrosService.cs` y `DatosJuego/eventos/encuentros.
 - Umbrales: etiquetas `OK/ADVERTENCIA/CRÍTICO` por H/S/F; temperatura con `Frio/Calor` (advertencia y crítico) y estados derivados (FRÍO, CALOR, HIPOTERMIA, GOLPE DE CALOR).
 - Reglas por bioma: `TempDia`, `TempNoche`, `SedMultiplier`, `HambreMultiplier`, `FatigaMultiplier`.
 - Penalizaciones por umbral (sección `Penalizaciones`):
+
      - Niveles `Advertencia` y `Critico` con campos como `Precision`, `Evasion`, `ManaRegen` (factores sumados a 1.0) y `ReduccionAtributos` (mapa atributo→porcentaje negativo).
 - Runtime (`SupervivenciaRuntimeService.ApplyTick`): incrementa H/S/F por minuto simulado con multiplicadores; ajusta `TempActual` hacia el objetivo por bioma; publica eventos ante cruces de umbral.
 - Integraciones actuales: `ActionRulesService` penaliza regeneración de maná; `Personaje.IntentarEvadir` aplica `FactorEvasion`. Listo `FactorPrecision` para el paso de Hit del pipeline.
@@ -214,6 +229,7 @@ Fuente: `Motor/Servicios/EncuentrosService.cs` y `DatosJuego/eventos/encuentros.
 ## 14. Ejemplos prácticos
 
 ### 14.1. Secuencia de ataque físico (estado actual)
+
 1) Usuario elige “Ataque Físico”.
 2) `AtaqueFisicoAccion` → `DamageResolver.ResolverAtaqueFisico`.
 3) `AtacarFisico` del ejecutor calcula daño y aplica evasión del objetivo; retorna daño (0 si evadido).
@@ -221,10 +237,12 @@ Fuente: `Motor/Servicios/EncuentrosService.cs` y `DatosJuego/eventos/encuentros.
 5) `CombatePorTurnos` muestra resultado y procesa efectos.
 
 ### 14.2. Fórmula propuesta de impacto (futura)
+
 - p_hit = clamp(0.35 + Precision_att - 1.0 * Evasion_obj, 0.20, 0.95)
 - hit si RNG < p_hit; si miss: `DanioReal=0`, `FueEvadido=true`, mensaje “falló”.
 
 ### 14.3. Escenario de progresión lenta
+
 - Un jugador con baja Precision contra un lobo ágil: espera más fallos; la mejor estrategia es entrenar Agilidad/Percepción o equipar bonus de Precision antes de adentrarse en zonas peligrosas.
 
 ---

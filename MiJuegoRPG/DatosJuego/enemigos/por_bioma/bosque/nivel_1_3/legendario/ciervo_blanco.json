@@ -1,0 +1,27 @@
+{
+  "Nombre": "Ciervo Blanco",
+  "VidaBase": 130,
+  "AtaqueBase": 20,
+  "DefensaBase": 10,
+  "DefensaMagicaBase": 12,
+  "Nivel": 3,
+  "ExperienciaRecompensa": 80,
+  "OroRecompensa": 40,
+  "Familia": "Bestia",
+  "Rareza": "Legendario",
+  "Categoria": "Legendario",
+  "ArmaNombre": "Astas Benditas",
+  "MitigacionFisicaPorcentaje": 0.15,
+  "MitigacionMagicaPorcentaje": 0.20,
+  "Tags": ["legendario", "bosque", "sagrado"],
+  "ResistenciasElementales": { "luz": 0.30, "sombra": 0.0 },
+  "DanioElementalBase": { "luz": 8 },
+  "EquipoInicial": { "Arma": "Astas Benditas" },
+  "EvasionFisica": 0.24,
+  "EvasionMagica": 0.20,
+  "SpawnWeight": 1,
+  "Drops": [
+    { "Tipo": "Material", "Nombre": "Astas del Alba", "Rareza": "Épico", "Chance": 0.10, "CantidadMin": 1, "CantidadMax": 1 },
+    { "Tipo": "Pocion", "Nombre": "Elixir de la Luz", "Rareza": "Raro", "Chance": 0.12, "CantidadMin": 1, "CantidadMax": 1 }
+  ]
+}

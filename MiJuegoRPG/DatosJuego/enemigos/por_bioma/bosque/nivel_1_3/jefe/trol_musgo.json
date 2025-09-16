@@ -1,0 +1,27 @@
+{
+  "Nombre": "Trol de Musgo",
+  "VidaBase": 220,
+  "AtaqueBase": 22,
+  "DefensaBase": 14,
+  "DefensaMagicaBase": 6,
+  "Nivel": 3,
+  "ExperienciaRecompensa": 70,
+  "OroRecompensa": 30,
+  "Familia": "Bestia",
+  "Rareza": "Raro",
+  "Categoria": "Jefe",
+  "ArmaNombre": "Mazo de Raíces",
+  "MitigacionFisicaPorcentaje": 0.22,
+  "MitigacionMagicaPorcentaje": 0.05,
+  "Tags": ["jefe", "bosque", "gigante"],
+  "ResistenciasElementales": { "tierra": 0.20, "hielo": 0.05, "fuego": 0.0 },
+  "DanioElementalBase": { "tierra": 5 },
+  "EquipoInicial": { "Arma": "Mazo de Raíces" },
+  "EvasionFisica": 0.06,
+  "EvasionMagica": 0.04,
+  "SpawnWeight": 1,
+  "Drops": [
+    { "Tipo": "Material", "Nombre": "Musgo Vigoroso", "Rareza": "Raro", "Chance": 0.22, "CantidadMin": 1, "CantidadMax": 2 },
+    { "Tipo": "Arma", "Nombre": "Mazo de Raíces", "Rareza": "Raro", "Chance": 0.08, "CantidadMin": 1, "CantidadMax": 1 }
+  ]
+}

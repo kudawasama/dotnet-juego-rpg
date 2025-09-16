@@ -13,7 +13,7 @@
   "ArmaNombre": "Báculo de Hueso",
   "MitigacionFisicaPorcentaje": 0.18,
   "Tags": ["liche", "ruinas", "jefe", "no_muerto"],
-  "ResistenciasElementales": { "magia_oscura": 0.60, "fuego": -0.20 },
+  "ResistenciasElementales": { "magia_oscura": 0.60, "fuego": 0.0 },
   "DanioElementalBase": { "magia_oscura": 18 },
   "EquipoInicial": { "Arma": "Báculo de Hueso" },
   "EvasionFisica": 0.14,

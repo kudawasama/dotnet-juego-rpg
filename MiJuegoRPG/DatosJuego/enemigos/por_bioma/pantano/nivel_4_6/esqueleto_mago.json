@@ -13,7 +13,7 @@
   "ArmaNombre": "Báculo de Hueso",
   "MitigacionFisicaPorcentaje": 0.13,
   "Tags": ["esqueleto_mago", "pantano", "no_muerto", "mago"],
-  "ResistenciasElementales": { "hielo": 0.10, "fuego": -0.15 },
+  "ResistenciasElementales": { "hielo": 0.10, "fuego": 0.0 },
   "DanioElementalBase": { "magia_oscura": 5 },
   "EquipoInicial": { "Arma": "Báculo de Hueso" },
   "EvasionFisica": 0.10,

@@ -13,7 +13,7 @@
   "ArmaNombre": "Puños de Lodo",
   "MitigacionFisicaPorcentaje": 0.15,
   "Tags": ["hombre_lodo", "pantano", "elemental"],
-  "ResistenciasElementales": { "agua": 0.30, "fuego": -0.20 },
+  "ResistenciasElementales": { "agua": 0.30, "fuego": 0.0 },
   "DanioElementalBase": { "lodo": 4 },
   "EquipoInicial": { "Arma": "Puños de Lodo" },
   "EvasionFisica": 0.08,

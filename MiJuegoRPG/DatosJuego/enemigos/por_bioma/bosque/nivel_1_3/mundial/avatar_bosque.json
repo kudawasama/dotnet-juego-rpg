@@ -1,0 +1,27 @@
+{
+  "Nombre": "Avatar del Bosque",
+  "VidaBase": 350,
+  "AtaqueBase": 32,
+  "DefensaBase": 22,
+  "DefensaMagicaBase": 24,
+  "Nivel": 3,
+  "ExperienciaRecompensa": 150,
+  "OroRecompensa": 80,
+  "Familia": "Elemental",
+  "Rareza": "Mítico",
+  "Categoria": "Mundial",
+  "ArmaNombre": "Tormenta de Semillas",
+  "MitigacionFisicaPorcentaje": 0.30,
+  "MitigacionMagicaPorcentaje": 0.30,
+  "Tags": ["mundial", "bosque", "elemental"],
+  "ResistenciasElementales": { "tierra": 0.40, "fuego": 0.0, "rayo": 0.10 },
+  "DanioElementalBase": { "tierra": 10, "magia": 6 },
+  "EquipoInicial": { "Arma": "Tormenta de Semillas" },
+  "EvasionFisica": 0.12,
+  "EvasionMagica": 0.16,
+  "SpawnWeight": 1,
+  "Drops": [
+    { "Tipo": "Material", "Nombre": "Núcleo del Bosque", "Rareza": "Legendario", "Chance": 0.10, "CantidadMin": 1, "CantidadMax": 1 },
+    { "Tipo": "Material", "Nombre": "Semilla Primigenia", "Rareza": "Épico", "Chance": 0.20, "CantidadMin": 1, "CantidadMax": 1 }
+  ]
+}

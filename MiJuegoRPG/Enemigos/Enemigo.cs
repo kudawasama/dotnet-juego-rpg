@@ -27,6 +27,8 @@ namespace MiJuegoRPG.Enemigos
     public Dictionary<string, bool> Inmunidades { get; private set; } = new Dictionary<string, bool>(StringComparer.OrdinalIgnoreCase);
     // Resistencias elementales específicas 0..0.9 (mitigación adicional por tipo)
     public Dictionary<string, double> ResistenciasElementales { get; } = new Dictionary<string, double>(StringComparer.OrdinalIgnoreCase);
+    // Vulnerabilidades elementales (factor >= 1.0). Si falta tipo, se asume 1.0 (sin extra)
+    public Dictionary<string, double> VulnerabilidadesElementales { get; } = new Dictionary<string, double>(StringComparer.OrdinalIgnoreCase);
     // Daño elemental plano adicional por tipo (informativo para futuro cálculo detallado)
     public Dictionary<string, int> DanioElementalBase { get; } = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
 
@@ -88,7 +90,24 @@ namespace MiJuegoRPG.Enemigos
             {
                 danioTrasDef = (int)Math.Max(1, Math.Round(danioTrasDef * (1.0 - Math.Clamp(MitigacionMagicaPorcentaje, 0.0, 0.9)), MidpointRounding.AwayFromZero));
             }
+            // Mitigación elemental genérica por canal "magia" (si se configuró)
+            if (ResistenciasElementales.TryGetValue("magia", out var resMag))
+            {
+                resMag = Math.Clamp(resMag, 0.0, 0.9);
+                danioTrasDef = (int)Math.Max(1, Math.Round(danioTrasDef * (1.0 - resMag), MidpointRounding.AwayFromZero));
+            }
+            // Aplicación elemental simple: si el ejecutor/arma aporta un tipo de daño elemental principal
+            // aún no clasificamos el "tipo" del ataque mágico en acciones. Por ahora, usamos un canal genérico
+            // y sólo aplicamos vulnerabilidades si existe una entrada explícita para "magia".
+            // Nota: el daño elemental base que el enemigo inflige no afecta el recibido aquí.
             int danioReal = danioTrasDef;
+            // Factor de vulnerabilidad genérica a "magia"
+            if (VulnerabilidadesElementales.TryGetValue("magia", out var factorMagia))
+            {
+                // Clamp conservador a [1.0 .. 1.5] según progresión lenta
+                factorMagia = Math.Clamp(factorMagia, 1.0, 1.5);
+                danioReal = (int)Math.Max(1, Math.Round(danioReal * factorMagia, MidpointRounding.AwayFromZero));
+            }
             Vida -= danioReal;
             if (Vida < 0) Vida = 0;
         }
@@ -171,6 +190,12 @@ namespace MiJuegoRPG.Enemigos
         {
             if (string.IsNullOrWhiteSpace(tipo)) return;
             ResistenciasElementales[tipo] = Math.Clamp(valor, 0.0, 0.9);
+        }
+        public void EstablecerVulnerabilidadElemental(string tipo, double factor)
+        {
+            if (string.IsNullOrWhiteSpace(tipo)) return;
+            // Factor >= 1.0, con cap 1.5 por ahora para no romper balance
+            VulnerabilidadesElementales[tipo] = Math.Clamp(factor, 1.0, 1.5);
         }
         public void AgregarDanioElementalBase(string tipo, int cantidad)
         {

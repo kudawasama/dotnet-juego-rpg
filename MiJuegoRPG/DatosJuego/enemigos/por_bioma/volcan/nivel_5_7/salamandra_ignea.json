@@ -13,7 +13,7 @@
   "ArmaNombre": "Cola Ígnea",
   "MitigacionFisicaPorcentaje": 0.14,
   "Tags": ["salamandra", "volcan", "bestia"],
-  "ResistenciasElementales": { "fuego": 0.60, "agua": -0.25 },
+  "ResistenciasElementales": { "fuego": 0.60, "agua": 0.0 },
   "DanioElementalBase": { "fuego": 7 },
   "EquipoInicial": { "Arma": "Cola Ígnea" },
   "EvasionFisica": 0.16,

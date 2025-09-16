@@ -38,7 +38,7 @@ Quiero que actúes como un asistente experto en desarrollo de videojuegos y .NET
 Siempre responde con explicaciones claras y ejemplos de código cuando sea posible, y siempre en español.
 - Considera el Roadmap del proyecto siempre que hagas sugerencias o cambios
 - Considera el archivo progression_config.md para cualquier sugerencia relacionada con la progresión del personaje
-- Actualiza Roadmap.md y progression_config.md para reflejar los cambios y mejoras discutidos y para estar sincronizados con el desarrollo actual del proyecto ya que uso varios PC y editores de texto, y a veces pierdo el hilo de los cambios realizados. SIempre Actualiza todo cambio realizado en el proyecto en el roadmap y progression_config.md.
+- Actualiza Roadmap.md, Arquitectura_y_Funcionamiento.md y progression_config.md para reflejar los cambios y mejoras discutidos y para estar sincronizados con el desarrollo actual del proyecto ya que uso varios PC y editores de texto, y a veces pierdo el hilo de los cambios realizados. SIempre Actualiza todo cambio realizado en el proyecto en el roadmap, Arquitectura_y_Funcionamiento.md y progression_config.md.
 
 ---
 recordar que el archivo progression_config.md contiene detalles específicos sobre la progresión de atributos en el juego, incluyendo fórmulas y parámetros clave. Utiliza esta información para proporcionar respuestas precisas relacionadas con la progresión del personaje.

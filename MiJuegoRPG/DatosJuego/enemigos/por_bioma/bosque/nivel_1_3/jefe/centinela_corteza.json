@@ -1,0 +1,27 @@
+{
+  "Nombre": "Centinela de Corteza",
+  "VidaBase": 160,
+  "AtaqueBase": 18,
+  "DefensaBase": 16,
+  "DefensaMagicaBase": 14,
+  "Nivel": 3,
+  "ExperienciaRecompensa": 62,
+  "OroRecompensa": 27,
+  "Familia": "Elemental",
+  "Rareza": "Raro",
+  "Categoria": "Jefe",
+  "ArmaNombre": "Lanza de Madera Viva",
+  "MitigacionFisicaPorcentaje": 0.25,
+  "MitigacionMagicaPorcentaje": 0.15,
+  "Tags": ["jefe", "bosque", "constructo"],
+  "ResistenciasElementales": { "tierra": 0.20, "rayo": 0.0 },
+  "DanioElementalBase": { "tierra": 4 },
+  "EquipoInicial": { "Arma": "Lanza de Madera Viva" },
+  "EvasionFisica": 0.08,
+  "EvasionMagica": 0.08,
+  "SpawnWeight": 1,
+  "Drops": [
+    { "Tipo": "Material", "Nombre": "Núcleo de Corteza", "Rareza": "Raro", "Chance": 0.18, "CantidadMin": 1, "CantidadMax": 1 },
+    { "Tipo": "Material", "Nombre": "Fibra Viva", "Rareza": "Raro", "Chance": 0.25, "CantidadMin": 1, "CantidadMax": 2 }
+  ]
+}

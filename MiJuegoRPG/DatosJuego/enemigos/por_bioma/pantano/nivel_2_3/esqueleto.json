@@ -13,7 +13,7 @@
   "ArmaNombre": "Hueso Afilado",
   "MitigacionFisicaPorcentaje": 0.10,
   "Tags": ["esqueleto", "pantano", "no_muerto"],
-  "ResistenciasElementales": { "hielo": 0.05, "fuego": -0.10 },
+  "ResistenciasElementales": { "hielo": 0.05, "fuego": 0.0 },
   "DanioElementalBase": { "putrefaccion": 2 },
   "EquipoInicial": { "Arma": "Hueso Afilado" },
   "EvasionFisica": 0.08,

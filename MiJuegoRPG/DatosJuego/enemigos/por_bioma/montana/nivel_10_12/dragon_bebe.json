@@ -13,7 +13,7 @@
   "ArmaNombre": "Aliento de Fuego",
   "MitigacionFisicaPorcentaje": 0.30,
   "Tags": ["dragon_bebe", "montana", "jefe", "dragon"],
-  "ResistenciasElementales": { "fuego": 0.90, "hielo": -0.20 },
+  "ResistenciasElementales": { "fuego": 0.90, "hielo": 0.0 },
   "DanioElementalBase": { "fuego": 20 },
   "EquipoInicial": { "Arma": "Aliento de Fuego" },
   "EvasionFisica": 0.12,

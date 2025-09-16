@@ -13,7 +13,7 @@
   "ArmaNombre": "Colmillos Ígneos",
   "MitigacionFisicaPorcentaje": 0.10,
   "Tags": ["serpiente", "desierto", "fuego"],
-  "ResistenciasElementales": { "fuego": 0.60, "hielo": -0.20 },
+  "ResistenciasElementales": { "fuego": 0.60, "hielo": 0.0 },
   "DanioElementalBase": { "fuego": 6 },
   "EquipoInicial": { "Arma": "Colmillos Ígneos" },
   "EvasionFisica": 0.22,

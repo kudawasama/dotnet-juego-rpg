@@ -1,0 +1,26 @@
+{
+  "Nombre": "Horda de Goblins",
+  "VidaBase": 110,
+  "AtaqueBase": 16,
+  "DefensaBase": 7,
+  "DefensaMagicaBase": 6,
+  "Nivel": 2,
+  "ExperienciaRecompensa": 24,
+  "OroRecompensa": 12,
+  "Familia": "Humanoide",
+  "Rareza": "Raro",
+  "Categoria": "Campo",
+  "ArmaNombre": "Chatarra Afilada",
+  "MitigacionFisicaPorcentaje": 0.08,
+  "MitigacionMagicaPorcentaje": 0.06,
+  "Tags": ["campo", "grupo", "goblin"],
+  "ResistenciasElementales": { "fuego": 0.0 },
+  "DanioElementalBase": { "sangrado": 3 },
+  "EquipoInicial": { "Arma": "Chatarra Afilada" },
+  "EvasionFisica": 0.12,
+  "EvasionMagica": 0.08,
+  "SpawnWeight": 2,
+  "Drops": [
+    { "Tipo": "Material", "Nombre": "Trozos de Chatarra", "Rareza": "Normal", "Chance": 0.35, "CantidadMin": 1, "CantidadMax": 3 }
+  ]
+}

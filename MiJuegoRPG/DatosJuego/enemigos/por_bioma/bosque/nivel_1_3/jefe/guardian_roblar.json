@@ -1,0 +1,27 @@
+{
+  "Nombre": "Guardián del Robledal",
+  "VidaBase": 180,
+  "AtaqueBase": 24,
+  "DefensaBase": 12,
+  "DefensaMagicaBase": 10,
+  "Nivel": 3,
+  "ExperienciaRecompensa": 65,
+  "OroRecompensa": 28,
+  "Familia": "Elemental",
+  "Rareza": "Raro",
+  "Categoria": "Jefe",
+  "ArmaNombre": "Puños de Corteza",
+  "MitigacionFisicaPorcentaje": 0.20,
+  "MitigacionMagicaPorcentaje": 0.10,
+  "Tags": ["jefe", "bosque", "elemental", "arbol"],
+  "ResistenciasElementales": { "tierra": 0.25, "fuego": 0.0 },
+  "DanioElementalBase": { "tierra": 6 },
+  "EquipoInicial": { "Arma": "Puños de Corteza" },
+  "EvasionFisica": 0.08,
+  "EvasionMagica": 0.06,
+  "SpawnWeight": 1,
+  "Drops": [
+    { "Tipo": "Material", "Nombre": "Corazón de Roble", "Rareza": "Épico", "Chance": 0.12, "CantidadMin": 1, "CantidadMax": 1 },
+    { "Tipo": "Material", "Nombre": "Corteza Antigua", "Rareza": "Raro", "Chance": 0.22, "CantidadMin": 1, "CantidadMax": 2 }
+  ]
+}

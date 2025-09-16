@@ -1,0 +1,27 @@
+{
+  "Nombre": "Zorro de Nueve Colas (Joven)",
+  "VidaBase": 120,
+  "AtaqueBase": 24,
+  "DefensaBase": 10,
+  "DefensaMagicaBase": 14,
+  "Nivel": 3,
+  "ExperienciaRecompensa": 75,
+  "OroRecompensa": 35,
+  "Familia": "Bestia",
+  "Rareza": "Épico",
+  "Categoria": "Unico",
+  "ArmaNombre": "Llamas Ilusorias",
+  "MitigacionFisicaPorcentaje": 0.12,
+  "MitigacionMagicaPorcentaje": 0.18,
+  "Tags": ["unico", "bosque", "bestia"],
+  "ResistenciasElementales": { "fuego": 0.20, "sombra": 0.10 },
+  "DanioElementalBase": { "fuego": 7, "magia": 3 },
+  "EquipoInicial": { "Arma": "Llamas Ilusorias" },
+  "EvasionFisica": 0.26,
+  "EvasionMagica": 0.22,
+  "SpawnWeight": 1,
+  "Drops": [
+    { "Tipo": "Material", "Nombre": "Cola Ígnea", "Rareza": "Épico", "Chance": 0.08, "CantidadMin": 1, "CantidadMax": 1 },
+    { "Tipo": "Material", "Nombre": "Pelo Carmesí", "Rareza": "Raro", "Chance": 0.20, "CantidadMin": 1, "CantidadMax": 2 }
+  ]
+}

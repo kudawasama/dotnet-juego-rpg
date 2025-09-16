@@ -13,7 +13,7 @@
   "ArmaNombre": "Raíces Fantasmales",
   "MitigacionFisicaPorcentaje": 0.12,
   "Tags": ["espiritu", "bosque", "elite"],
-  "ResistenciasElementales": { "magia": 0.30, "fuego": -0.20 },
+  "ResistenciasElementales": { "magia": 0.30, "fuego": 0.0 },
   "DanioElementalBase": { "magia": 7 },
   "EquipoInicial": { "Arma": "Raíces Fantasmales" },
   "EvasionFisica": 0.18,

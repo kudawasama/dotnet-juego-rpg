@@ -1,0 +1,27 @@
+{
+  "Nombre": "Araña Reina de Hiedra",
+  "VidaBase": 140,
+  "AtaqueBase": 28,
+  "DefensaBase": 8,
+  "DefensaMagicaBase": 12,
+  "Nivel": 3,
+  "ExperienciaRecompensa": 60,
+  "OroRecompensa": 26,
+  "Familia": "Bestia",
+  "Rareza": "Raro",
+  "Categoria": "Jefe",
+  "ArmaNombre": "Quelíceros Venenosos",
+  "MitigacionFisicaPorcentaje": 0.15,
+  "MitigacionMagicaPorcentaje": 0.12,
+  "Tags": ["jefe", "bosque", "aracnido"],
+  "ResistenciasElementales": { "veneno": 0.30, "fuego": 0.0 },
+  "DanioElementalBase": { "veneno": 8 },
+  "EquipoInicial": { "Arma": "Quelíceros Venenosos" },
+  "EvasionFisica": 0.18,
+  "EvasionMagica": 0.10,
+  "SpawnWeight": 1,
+  "Drops": [
+    { "Tipo": "Material", "Nombre": "Seda Real", "Rareza": "Raro", "Chance": 0.25, "CantidadMin": 1, "CantidadMax": 2 },
+    { "Tipo": "Material", "Nombre": "Glándula de Veneno", "Rareza": "Raro", "Chance": 0.20, "CantidadMin": 1, "CantidadMax": 1 }
+  ]
+}

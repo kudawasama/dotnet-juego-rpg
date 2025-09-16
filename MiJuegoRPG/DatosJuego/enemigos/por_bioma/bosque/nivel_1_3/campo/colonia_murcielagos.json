@@ -1,0 +1,26 @@
+{
+  "Nombre": "Colonia de Murciélagos",
+  "VidaBase": 80,
+  "AtaqueBase": 14,
+  "DefensaBase": 5,
+  "DefensaMagicaBase": 6,
+  "Nivel": 2,
+  "ExperienciaRecompensa": 20,
+  "OroRecompensa": 9,
+  "Familia": "Bestia",
+  "Rareza": "Raro",
+  "Categoria": "Campo",
+  "ArmaNombre": "Mordiscos y Chillidos",
+  "MitigacionFisicaPorcentaje": 0.06,
+  "MitigacionMagicaPorcentaje": 0.06,
+  "Tags": ["campo", "grupo", "murcielago"],
+  "ResistenciasElementales": { "sombra": 0.10, "luz": 0.0 },
+  "DanioElementalBase": { "sombra": 3 },
+  "EquipoInicial": { "Arma": "Mordiscos y Chillidos" },
+  "EvasionFisica": 0.22,
+  "EvasionMagica": 0.18,
+  "SpawnWeight": 2,
+  "Drops": [
+    { "Tipo": "Material", "Nombre": "Membrana de Ala", "Rareza": "Normal", "Chance": 0.30, "CantidadMin": 1, "CantidadMax": 2 }
+  ]
+}

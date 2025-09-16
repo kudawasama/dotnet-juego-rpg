@@ -1,0 +1,74 @@
+[Validador] Fecha: 2025-09-16T12:29:18.0904638-03:00
+[Validador] Resultado: Errores=7, Advertencias=0
+
+[Validador] Sectores disponibles: 3025
+[Enemigos][INFO] Ignorado por convención (raíz nivel_*) 'C:\Users\jose.cespedes\Documents\GitHub\dotnet-juego-rpg\MiJuegoRPG\DatosJuego\enemigos\por_bioma\bosque\nivel_1_3\abeja_bosque.json'
+[Enemigos][INFO] Ignorado por convención (raíz nivel_*) 'C:\Users\jose.cespedes\Documents\GitHub\dotnet-juego-rpg\MiJuegoRPG\DatosJuego\enemigos\por_bioma\bosque\nivel_1_3\ardilla_feroz.json'
+[Enemigos][INFO] Ignorado por convención (raíz nivel_*) 'C:\Users\jose.cespedes\Documents\GitHub\dotnet-juego-rpg\MiJuegoRPG\DatosJuego\enemigos\por_bioma\bosque\nivel_1_3\avispa_gigante.json'
+[Enemigos][INFO] Ignorado por convención (raíz nivel_*) 'C:\Users\jose.cespedes\Documents\GitHub\dotnet-juego-rpg\MiJuegoRPG\DatosJuego\enemigos\por_bioma\bosque\nivel_1_3\avispa_reina.json'
+[Enemigos][INFO] Ignorado por convención (raíz nivel_*) 'C:\Users\jose.cespedes\Documents\GitHub\dotnet-juego-rpg\MiJuegoRPG\DatosJuego\enemigos\por_bioma\bosque\nivel_1_3\ciervo_juvenil.json'
+[Enemigos][INFO] Ignorado por convención (raíz nivel_*) 'C:\Users\jose.cespedes\Documents\GitHub\dotnet-juego-rpg\MiJuegoRPG\DatosJuego\enemigos\por_bioma\bosque\nivel_1_3\conejo_bosque.json'
+[Enemigos][INFO] Ignorado por convención (raíz nivel_*) 'C:\Users\jose.cespedes\Documents\GitHub\dotnet-juego-rpg\MiJuegoRPG\DatosJuego\enemigos\por_bioma\bosque\nivel_1_3\cuervo_tres_ojos.json'
+[Enemigos][INFO] Ignorado por convención (raíz nivel_*) 'C:\Users\jose.cespedes\Documents\GitHub\dotnet-juego-rpg\MiJuegoRPG\DatosJuego\enemigos\por_bioma\bosque\nivel_1_3\erizo_espinas.json'
+[Enemigos][INFO] Ignorado por convención (raíz nivel_*) 'C:\Users\jose.cespedes\Documents\GitHub\dotnet-juego-rpg\MiJuegoRPG\DatosJuego\enemigos\por_bioma\bosque\nivel_1_3\espiritu_bosque.json'
+[Enemigos][INFO] Ignorado por convención (raíz nivel_*) 'C:\Users\jose.cespedes\Documents\GitHub\dotnet-juego-rpg\MiJuegoRPG\DatosJuego\enemigos\por_bioma\bosque\nivel_1_3\goblin.json'
+[Enemigos][INFO] Ignorado por convención (raíz nivel_*) 'C:\Users\jose.cespedes\Documents\GitHub\dotnet-juego-rpg\MiJuegoRPG\DatosJuego\enemigos\por_bioma\bosque\nivel_1_3\hongo_gigante.json'
+[Enemigos][INFO] Ignorado por convención (raíz nivel_*) 'C:\Users\jose.cespedes\Documents\GitHub\dotnet-juego-rpg\MiJuegoRPG\DatosJuego\enemigos\por_bioma\bosque\nivel_1_3\jabali_colmillo_negro.json'
+[Enemigos][INFO] Ignorado por convención (raíz nivel_*) 'C:\Users\jose.cespedes\Documents\GitHub\dotnet-juego-rpg\MiJuegoRPG\DatosJuego\enemigos\por_bioma\bosque\nivel_1_3\jabali_salvaje.json'
+[Enemigos][INFO] Ignorado por convención (raíz nivel_*) 'C:\Users\jose.cespedes\Documents\GitHub\dotnet-juego-rpg\MiJuegoRPG\DatosJuego\enemigos\por_bioma\bosque\nivel_1_3\lagarto_hojas.json'
+[Enemigos][INFO] Ignorado por convención (raíz nivel_*) 'C:\Users\jose.cespedes\Documents\GitHub\dotnet-juego-rpg\MiJuegoRPG\DatosJuego\enemigos\por_bioma\bosque\nivel_1_3\lechuza_bosque.json'
+[Enemigos][INFO] Ignorado por convención (raíz nivel_*) 'C:\Users\jose.cespedes\Documents\GitHub\dotnet-juego-rpg\MiJuegoRPG\DatosJuego\enemigos\por_bioma\bosque\nivel_1_3\lobo_alfa.json'
+[Enemigos][INFO] Ignorado por convención (raíz nivel_*) 'C:\Users\jose.cespedes\Documents\GitHub\dotnet-juego-rpg\MiJuegoRPG\DatosJuego\enemigos\por_bioma\bosque\nivel_1_3\lobo_bosque.json'
+[Enemigos][INFO] Ignorado por convención (raíz nivel_*) 'C:\Users\jose.cespedes\Documents\GitHub\dotnet-juego-rpg\MiJuegoRPG\DatosJuego\enemigos\por_bioma\bosque\nivel_1_3\murcielago.json'
+[Enemigos][INFO] Ignorado por convención (raíz nivel_*) 'C:\Users\jose.cespedes\Documents\GitHub\dotnet-juego-rpg\MiJuegoRPG\DatosJuego\enemigos\por_bioma\bosque\nivel_1_3\oso_pardo_joven.json'
+[Enemigos][INFO] Ignorado por convención (raíz nivel_*) 'C:\Users\jose.cespedes\Documents\GitHub\dotnet-juego-rpg\MiJuegoRPG\DatosJuego\enemigos\por_bioma\bosque\nivel_1_3\planta_carnivora.json'
+[Enemigos][INFO] Ignorado por convención (raíz nivel_*) 'C:\Users\jose.cespedes\Documents\GitHub\dotnet-juego-rpg\MiJuegoRPG\DatosJuego\enemigos\por_bioma\bosque\nivel_1_3\rata.json'
+[Enemigos][INFO] Ignorado por convención (raíz nivel_*) 'C:\Users\jose.cespedes\Documents\GitHub\dotnet-juego-rpg\MiJuegoRPG\DatosJuego\enemigos\por_bioma\bosque\nivel_1_3\rata_gigante.json'
+[Enemigos][INFO] Ignorado por convención (raíz nivel_*) 'C:\Users\jose.cespedes\Documents\GitHub\dotnet-juego-rpg\MiJuegoRPG\DatosJuego\enemigos\por_bioma\bosque\nivel_1_3\raton_campo.json'
+[Enemigos][INFO] Ignorado por convención (raíz nivel_*) 'C:\Users\jose.cespedes\Documents\GitHub\dotnet-juego-rpg\MiJuegoRPG\DatosJuego\enemigos\por_bioma\bosque\nivel_1_3\salamandra_verde.json'
+[Enemigos][INFO] Ignorado por convención (raíz nivel_*) 'C:\Users\jose.cespedes\Documents\GitHub\dotnet-juego-rpg\MiJuegoRPG\DatosJuego\enemigos\por_bioma\bosque\nivel_1_3\serpiente_bosque.json'
+[Enemigos][INFO] Ignorado por convención (raíz nivel_*) 'C:\Users\jose.cespedes\Documents\GitHub\dotnet-juego-rpg\MiJuegoRPG\DatosJuego\enemigos\por_bioma\bosque\nivel_1_3\slime.json'
+[Enemigos][INFO] Ignorado por convención (raíz nivel_*) 'C:\Users\jose.cespedes\Documents\GitHub\dotnet-juego-rpg\MiJuegoRPG\DatosJuego\enemigos\por_bioma\bosque\nivel_1_3\topo_ciego.json'
+[Enemigos][INFO] Ignorado por convención (raíz nivel_*) 'C:\Users\jose.cespedes\Documents\GitHub\dotnet-juego-rpg\MiJuegoRPG\DatosJuego\enemigos\por_bioma\bosque\nivel_1_3\zombi.json'
+[Enemigos][INFO] Ignorado por convención (raíz nivel_*) 'C:\Users\jose.cespedes\Documents\GitHub\dotnet-juego-rpg\MiJuegoRPG\DatosJuego\enemigos\por_bioma\bosque\nivel_1_3\zorro_rapido.json'
+[Enemigos][INFO] Ignorado por convención (raíz nivel_*) 'C:\Users\jose.cespedes\Documents\GitHub\dotnet-juego-rpg\MiJuegoRPG\DatosJuego\enemigos\por_bioma\bosque\nivel_1_3\zorro_sombrio.json'
+[Enemigos][INFO] Ignorado por convención (raíz nivel_*) 'C:\Users\jose.cespedes\Documents\GitHub\dotnet-juego-rpg\MiJuegoRPG\DatosJuego\enemigos\por_bioma\bosque\nivel_4_6\bandido.json'
+[Enemigos][INFO] Ignorado por convención (raíz nivel_*) 'C:\Users\jose.cespedes\Documents\GitHub\dotnet-juego-rpg\MiJuegoRPG\DatosJuego\enemigos\por_bioma\bosque\nivel_4_6\gran_goblin.json'
+[Enemigos][INFO] Ignorado por convención (raíz nivel_*) 'C:\Users\jose.cespedes\Documents\GitHub\dotnet-juego-rpg\MiJuegoRPG\DatosJuego\enemigos\por_bioma\bosque\nivel_4_6\lobo.json'
+[Enemigos][INFO] Ignorado por convención (raíz nivel_*) 'C:\Users\jose.cespedes\Documents\GitHub\dotnet-juego-rpg\MiJuegoRPG\DatosJuego\enemigos\por_bioma\bosque\nivel_4_6\ogro_bosque.json'
+[Enemigos][INFO] Ignorado por convención (raíz nivel_*) 'C:\Users\jose.cespedes\Documents\GitHub\dotnet-juego-rpg\MiJuegoRPG\DatosJuego\enemigos\por_bioma\costa\nivel_1_3\cangrejo_gigante.json'
+[Enemigos][INFO] Ignorado por convención (raíz nivel_*) 'C:\Users\jose.cespedes\Documents\GitHub\dotnet-juego-rpg\MiJuegoRPG\DatosJuego\enemigos\por_bioma\costa\nivel_1_3\medusa_agua_dulce.json'
+[Enemigos][INFO] Ignorado por convención (raíz nivel_*) 'C:\Users\jose.cespedes\Documents\GitHub\dotnet-juego-rpg\MiJuegoRPG\DatosJuego\enemigos\por_bioma\costa\nivel_4_5\sirena_hostil.json'
+[Enemigos][INFO] Ignorado por convención (raíz nivel_*) 'C:\Users\jose.cespedes\Documents\GitHub\dotnet-juego-rpg\MiJuegoRPG\DatosJuego\enemigos\por_bioma\costa\nivel_4_5\tortuga_blindada.json'
+[Enemigos][INFO] Ignorado por convención (raíz nivel_*) 'C:\Users\jose.cespedes\Documents\GitHub\dotnet-juego-rpg\MiJuegoRPG\DatosJuego\enemigos\por_bioma\cueva\nivel_2_4\arana_caverna.json'
+[Enemigos][INFO] Ignorado por convención (raíz nivel_*) 'C:\Users\jose.cespedes\Documents\GitHub\dotnet-juego-rpg\MiJuegoRPG\DatosJuego\enemigos\por_bioma\cueva\nivel_2_4\rata_profundidades.json'
+[Enemigos][INFO] Ignorado por convención (raíz nivel_*) 'C:\Users\jose.cespedes\Documents\GitHub\dotnet-juego-rpg\MiJuegoRPG\DatosJuego\enemigos\por_bioma\cueva\nivel_5_6\murcielago_gigante.json'
+[Enemigos][INFO] Ignorado por convención (raíz nivel_*) 'C:\Users\jose.cespedes\Documents\GitHub\dotnet-juego-rpg\MiJuegoRPG\DatosJuego\enemigos\por_bioma\cueva\nivel_5_6\troll_cueva.json'
+[Enemigos][INFO] Ignorado por convención (raíz nivel_*) 'C:\Users\jose.cespedes\Documents\GitHub\dotnet-juego-rpg\MiJuegoRPG\DatosJuego\enemigos\por_bioma\desierto\nivel_4_6\escorpion_arena.json'
+[Enemigos][INFO] Ignorado por convención (raíz nivel_*) 'C:\Users\jose.cespedes\Documents\GitHub\dotnet-juego-rpg\MiJuegoRPG\DatosJuego\enemigos\por_bioma\desierto\nivel_4_6\serpiente_fuego.json'
+[Enemigos][INFO] Ignorado por convención (raíz nivel_*) 'C:\Users\jose.cespedes\Documents\GitHub\dotnet-juego-rpg\MiJuegoRPG\DatosJuego\enemigos\por_bioma\desierto\nivel_7_8\gusano_colosal.json'
+[Enemigos][INFO] Ignorado por convención (raíz nivel_*) 'C:\Users\jose.cespedes\Documents\GitHub\dotnet-juego-rpg\MiJuegoRPG\DatosJuego\enemigos\por_bioma\desierto\nivel_7_8\momia_errante.json'
+[Enemigos][INFO] Ignorado por convención (raíz nivel_*) 'C:\Users\jose.cespedes\Documents\GitHub\dotnet-juego-rpg\MiJuegoRPG\DatosJuego\enemigos\por_bioma\montana\nivel_10_12\dragon_bebe.json'
+[Enemigos][INFO] Ignorado por convención (raíz nivel_*) 'C:\Users\jose.cespedes\Documents\GitHub\dotnet-juego-rpg\MiJuegoRPG\DatosJuego\enemigos\por_bioma\montana\nivel_10_12\quimera.json'
+[Enemigos][INFO] Ignorado por convención (raíz nivel_*) 'C:\Users\jose.cespedes\Documents\GitHub\dotnet-juego-rpg\MiJuegoRPG\DatosJuego\enemigos\por_bioma\pantano\nivel_2_3\esqueleto.json'
+[Enemigos][INFO] Ignorado por convención (raíz nivel_*) 'C:\Users\jose.cespedes\Documents\GitHub\dotnet-juego-rpg\MiJuegoRPG\DatosJuego\enemigos\por_bioma\pantano\nivel_2_3\sapo_venenoso.json'
+[Enemigos][INFO] Ignorado por convención (raíz nivel_*) 'C:\Users\jose.cespedes\Documents\GitHub\dotnet-juego-rpg\MiJuegoRPG\DatosJuego\enemigos\por_bioma\pantano\nivel_2_3\zombi.json'
+[Enemigos][INFO] Ignorado por convención (raíz nivel_*) 'C:\Users\jose.cespedes\Documents\GitHub\dotnet-juego-rpg\MiJuegoRPG\DatosJuego\enemigos\por_bioma\pantano\nivel_2_3\zombi_basico.json'
+[Enemigos][INFO] Ignorado por convención (raíz nivel_*) 'C:\Users\jose.cespedes\Documents\GitHub\dotnet-juego-rpg\MiJuegoRPG\DatosJuego\enemigos\por_bioma\pantano\nivel_4_6\esqueleto_mago.json'
+[Enemigos][INFO] Ignorado por convención (raíz nivel_*) 'C:\Users\jose.cespedes\Documents\GitHub\dotnet-juego-rpg\MiJuegoRPG\DatosJuego\enemigos\por_bioma\pantano\nivel_4_6\hombre_lodo.json'
+[Enemigos][INFO] Ignorado por convención (raíz nivel_*) 'C:\Users\jose.cespedes\Documents\GitHub\dotnet-juego-rpg\MiJuegoRPG\DatosJuego\enemigos\por_bioma\ruinas\nivel_6_8\espectro_antiguo.json'
+[Enemigos][INFO] Ignorado por convención (raíz nivel_*) 'C:\Users\jose.cespedes\Documents\GitHub\dotnet-juego-rpg\MiJuegoRPG\DatosJuego\enemigos\por_bioma\ruinas\nivel_6_8\guardian_piedra.json'
+[Enemigos][INFO] Ignorado por convención (raíz nivel_*) 'C:\Users\jose.cespedes\Documents\GitHub\dotnet-juego-rpg\MiJuegoRPG\DatosJuego\enemigos\por_bioma\ruinas\nivel_9_10\gargola_viviente.json'
+[Enemigos][INFO] Ignorado por convención (raíz nivel_*) 'C:\Users\jose.cespedes\Documents\GitHub\dotnet-juego-rpg\MiJuegoRPG\DatosJuego\enemigos\por_bioma\ruinas\nivel_9_10\liche_menor.json'
+[Enemigos][INFO] Ignorado por convención (raíz nivel_*) 'C:\Users\jose.cespedes\Documents\GitHub\dotnet-juego-rpg\MiJuegoRPG\DatosJuego\enemigos\por_bioma\volcan\nivel_5_7\golem_de_fuego.json'
+[Enemigos][INFO] Ignorado por convención (raíz nivel_*) 'C:\Users\jose.cespedes\Documents\GitHub\dotnet-juego-rpg\MiJuegoRPG\DatosJuego\enemigos\por_bioma\volcan\nivel_5_7\salamandra_ignea.json'
+[Enemigos][ERR] Resistencia elemental 'luz' fuera de [0..0.9] en 'Colonia de Murciélagos' (-0,1) (C:\Users\jose.cespedes\Documents\GitHub\dotnet-juego-rpg\MiJuegoRPG\DatosJuego\enemigos\por_bioma\bosque\nivel_1_3\campo\colonia_murcielagos.json)
+[Enemigos][ERR] Resistencia elemental 'fuego' fuera de [0..0.9] en 'Horda de Goblins' (-0,05) (C:\Users\jose.cespedes\Documents\GitHub\dotnet-juego-rpg\MiJuegoRPG\DatosJuego\enemigos\por_bioma\bosque\nivel_1_3\campo\horda_goblins.json)
+[Enemigos][ERR] Resistencia elemental 'fuego' fuera de [0..0.9] en 'Espíritu del Bosque' (-0,2) (C:\Users\jose.cespedes\Documents\GitHub\dotnet-juego-rpg\MiJuegoRPG\DatosJuego\enemigos\por_bioma\bosque\nivel_1_3\elite\espiritu_bosque.json)
+[Enemigos][ERR] Resistencia elemental 'fuego' fuera de [0..0.9] en 'Araña Reina de Hiedra' (-0,15) (C:\Users\jose.cespedes\Documents\GitHub\dotnet-juego-rpg\MiJuegoRPG\DatosJuego\enemigos\por_bioma\bosque\nivel_1_3\jefe\arana_reina_hiedra.json)
+[Enemigos][ERR] Resistencia elemental 'fuego' fuera de [0..0.9] en 'Guardián del Robledal' (-0,2) (C:\Users\jose.cespedes\Documents\GitHub\dotnet-juego-rpg\MiJuegoRPG\DatosJuego\enemigos\por_bioma\bosque\nivel_1_3\jefe\guardian_roblar.json)
+[Enemigos][ERR] Resistencia elemental 'sombra' fuera de [0..0.9] en 'Ciervo Blanco' (-0,15) (C:\Users\jose.cespedes\Documents\GitHub\dotnet-juego-rpg\MiJuegoRPG\DatosJuego\enemigos\por_bioma\bosque\nivel_1_3\legendario\ciervo_blanco.json)
+[Enemigos][ERR] Resistencia elemental 'fuego' fuera de [0..0.9] en 'Ent Antiguo' (-0,2) (C:\Users\jose.cespedes\Documents\GitHub\dotnet-juego-rpg\MiJuegoRPG\DatosJuego\enemigos\por_bioma\bosque\nivel_1_3\legendario\ent_antiguo.json)
+[Enemigos][INFO] NoMuerto 'Zombi (Bosque)' sin 'veneno: true' explícito. Se aplicará por defecto en runtime.
+[Enemigos][INFO] NoMuerto 'Cazador Fantasma' sin 'veneno: true' explícito. Se aplicará por defecto en runtime.
+[Enemigos] Archivos procesados: 104. Catálogo: 44 únicos por Nombre.

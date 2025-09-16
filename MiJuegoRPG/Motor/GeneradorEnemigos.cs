@@ -61,6 +61,13 @@ namespace MiJuegoRPG.Motor
                     {
                         try
                         {
+                            // Convención: ignorar JSONs ubicados directamente en la raíz de 'nivel_*' bajo 'enemigos/por_bioma'
+                            // para evitar duplicados respecto a subcarpetas por categoría (normal/elite/jefe/campo/legendario/unico/mundial)
+                            if (DebeIgnorarseArchivoEnemigoPorConvencion(file))
+                            {
+                                Logger.Debug($"[GeneradorEnemigos] Ignorando '{file}' por convención de carpetas (raíz de nivel_*)");
+                                continue;
+                            }
                             var json = File.ReadAllText(file);
                             if (string.IsNullOrWhiteSpace(json)) continue;
                             algunArchivo = true;
@@ -124,6 +131,31 @@ namespace MiJuegoRPG.Motor
                 return;
             }
             CargarEnemigos(rutaArchivo);
+        }
+        
+        // Ignora archivos ubicados directamente en la carpeta 'nivel_*' dentro de 'enemigos/por_bioma/<bioma>/'
+        // Acepta únicamente archivos dentro de subcarpetas por categoría.
+        private static bool DebeIgnorarseArchivoEnemigoPorConvencion(string filePath)
+        {
+            try
+            {
+                var lower = filePath.ToLowerInvariant();
+                // Solo aplica a rutas bajo 'enemigos/por_bioma'
+                if (!lower.Contains(Path.Combine("enemigos", "por_bioma").ToLowerInvariant()))
+                    return false;
+
+                var fileDir = Path.GetDirectoryName(filePath);
+                if (string.IsNullOrEmpty(fileDir)) return false;
+                var dirInfo = new DirectoryInfo(fileDir);
+                // Si el directorio inmediato es 'nivel_*', entonces el archivo está en la raíz del nivel
+                if (dirInfo.Name.StartsWith("nivel_", StringComparison.OrdinalIgnoreCase))
+                {
+                    // Permitimos solo si además está en una subcarpeta de categoría; como está justo en 'nivel_*', lo ignoramos
+                    return true;
+                }
+                return false;
+            }
+            catch { return false; }
         }
         
         // Método para generar un enemigo aleatorio basado en el JSON.
@@ -297,6 +329,15 @@ namespace MiJuegoRPG.Motor
                 foreach (var kv in enemigoData.ResistenciasElementales)
                 {
                     enemigo.EstablecerMitigacionElemental(kv.Key, kv.Value);
+                }
+            }
+
+            // Vulnerabilidades elementales (multiplicador post-mitigación)
+            if (enemigoData.VulnerabilidadesElementales != null)
+            {
+                foreach (var kv in enemigoData.VulnerabilidadesElementales)
+                {
+                    enemigo.EstablecerVulnerabilidadElemental(kv.Key, kv.Value);
                 }
             }
 

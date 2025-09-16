@@ -13,7 +13,7 @@
   "ArmaNombre": "Toque Espectral",
   "MitigacionFisicaPorcentaje": 0.10,
   "Tags": ["espectro", "ruinas", "no_muerto"],
-  "ResistenciasElementales": { "magia_oscura": 0.40, "fuego": -0.10 },
+  "ResistenciasElementales": { "magia_oscura": 0.40, "fuego": 0.0 },
   "DanioElementalBase": { "magia_oscura": 10 },
   "EquipoInicial": { "Arma": "Toque Espectral" },
   "EvasionFisica": 0.18,
