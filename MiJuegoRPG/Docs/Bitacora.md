@@ -1,5 +1,19 @@
 # Bitácora de desarrollo
 
+## 2025-09-17 — Expansión documental detallada
+
+- `progression_config.md`: se añadieron fórmulas en KaTeX, ejemplos numéricos paso a paso, orden de aplicación (clamps) y contrato JSON sugerido con defaults. Se incluyeron pruebas recomendadas y guías de tuning.
+- `Arquitectura_y_Funcionamiento.md`: se profundizó en contratos (interfaces/DTOs), pipeline de combate con orden exacto y límites, referencias a `Flujo.txt`, y apéndice de firmas públicas. Objetivo: facilitar onboarding y migración a Unity.
+- Roadmap: anotación del hito documental y recordatorio de política de “fuente única”.
+ - Índice: `Docs/README.md` actualizado con enlaces profundos a secciones clave de `Flujo.txt` (menús) y `Arquitectura_y_Funcionamiento.md` (pipeline/contratos) para navegación rápida.
+
+
+### Navegación y anclas
+
+- Se añadieron encabezados H1 en `Flujo.txt` para permitir enlaces directos por sección (menús y flujo del juego).
+- `Arquitectura_y_Funcionamiento.md` ahora enlaza a cada sección específica de `Flujo.txt` (Inicio, Menú Principal, Ciudad, Fuera de Ciudad, Misiones/NPC, Rutas, Combate, Entre Combates, Menú Fijo).
+
+
 Este documento registra cambios cronológicos por sesión. El `Roadmap.md` mantiene el plan por áreas y los próximos pasos.
 
 ## 2025-09-17
@@ -10,6 +24,7 @@ Este documento registra cambios cronológicos por sesión. El `Roadmap.md` manti
   - Añadida sección de referencia de CLI/herramientas en `Docs/README.md` (validadores, reparadores, QA de mapa, logger).
   - Creada `Docs/Guia_Ejemplos.md` con ejemplos para principiantes y enlazada desde el índice.
   - Actualizado `Flujo.txt` para reflejar el flujo real implementado (inicio, menús de ciudad/fuera de ciudad, rutas, misiones/NPC, combate, menú fijo y entre combates), incluyendo notas de reputación/supervivencia/logger.
+  - Conexión de documentación: README raíz con enlaces clicables a Docs/ y `Flujo.txt`. En `Docs/README.md` añadida sección “Estudia el juego (fuente única)” y política de no duplicación.
 - En progreso
   - Sincronización de documentación y enlaces cruzados (Docs/README, Arquitectura).
 - Decisiones

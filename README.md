@@ -2,12 +2,13 @@
 
 Centro de documentación y enlaces rápidos del proyecto. Para la guía completa visita:
 
-- Documentación principal: `MiJuegoRPG/Docs/README.md`
-- Roadmap: `MiJuegoRPG/Docs/Roadmap.md`
-- Bitácora de cambios: `MiJuegoRPG/Docs/Bitacora.md`
-- Arquitectura y funcionamiento: `MiJuegoRPG/Docs/Arquitectura_y_Funcionamiento.md`
-- Configuración de progresión: `MiJuegoRPG/Docs/progression_config.md`
-- Guía de ejemplos (principiantes): `MiJuegoRPG/Docs/Guia_Ejemplos.md`
+- Documentación principal: [MiJuegoRPG/Docs/README.md](MiJuegoRPG/Docs/README.md)
+- Roadmap: [MiJuegoRPG/Docs/Roadmap.md](MiJuegoRPG/Docs/Roadmap.md)
+- Bitácora de cambios: [MiJuegoRPG/Docs/Bitacora.md](MiJuegoRPG/Docs/Bitacora.md)
+- Arquitectura y funcionamiento: [MiJuegoRPG/Docs/Arquitectura_y_Funcionamiento.md](MiJuegoRPG/Docs/Arquitectura_y_Funcionamiento.md)
+- Configuración de progresión: [MiJuegoRPG/Docs/progression_config.md](MiJuegoRPG/Docs/progression_config.md)
+- Guía de ejemplos (principiantes): [MiJuegoRPG/Docs/Guia_Ejemplos.md](MiJuegoRPG/Docs/Guia_Ejemplos.md)
+- Movimiento (cómo moverse): ver Menú de Rutas en [Flujo.txt](Flujo.txt)
 
 Cómo compilar y probar (PowerShell):
 

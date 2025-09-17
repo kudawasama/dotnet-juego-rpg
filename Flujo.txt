@@ -1,4 +1,4 @@
-INICIO DEL JUEGO (Program.cs)
+# INICIO DEL JUEGO (Program.cs)
 └─ Pantalla inicial:
    ├─ 1. Crear personaje nuevo
    ├─ 2. Cargar personaje guardado
@@ -7,7 +7,7 @@ INICIO DEL JUEGO (Program.cs)
       - Flags CLI disponibles: --help, --log-off, --log-level=..., --validar-datos[=report|ruta], --generar-conexiones, --validar-sectores, --normalizar-conexiones, --asignar-biomas[=ol,oc], --hidratar-nodos[=max], --reparar-materiales=..., --precision-hit.
       - Al crear personaje: se asigna ubicación inicial a la ciudad principal detectada (ej. Bairan) y se inicializan estadísticas/recursos.
 
-MENÚ PRINCIPAL DEL JUEGO (Juego.Iniciar)
+# MENÚ PRINCIPAL DEL JUEGO (Juego.Iniciar)
 └─ "=== Menú Principal ==="
    ├─ 1. Estado del personaje (muestra estado detallado)
    ├─ 2. Ir a ubicación actual (abre menú según tipo: Ciudad/Ruta)
@@ -16,7 +16,7 @@ MENÚ PRINCIPAL DEL JUEGO (Juego.Iniciar)
    ├─ 5. Menú administrador (herramientas de QA)
    └─ 0. Salir del juego
 
-MENÚ DE CIUDAD (MenuCiudad)
+# MENÚ DE CIUDAD (MenuCiudad)
 └─ "Menú de Ciudad" (muestra ubicación, reloj del mundo y supervivencia compacta)
    ├─ 1. Tienda (comprar/vender; reputación afecta precios/atención)
    ├─ 2. Escuela de Entrenamiento
@@ -26,7 +26,7 @@ MENÚ DE CIUDAD (MenuCiudad)
    ├─ 9. Menú fijo (ver personaje/inventario/equipo/guardar/opciones)
    └─ 0. Volver al menú principal
 
-MENÚ FUERA DE CIUDAD (MenuFueraCiudad)
+# MENÚ FUERA DE CIUDAD (MenuFueraCiudad)
 └─ "Fuera de Ciudad" (muestra ubicación, reloj y supervivencia)
    ├─ 1. Explorar (usa EncuentrosService; puede resultar en botín/materiales/NPC/combate/mazmorra/evento)
    ├─ 2. Recolectar (menú híbrido por bioma o nodos del sector)
@@ -35,19 +35,19 @@ MENÚ FUERA DE CIUDAD (MenuFueraCiudad)
    ├─ 9. Menú fijo
    └─ 0. Volver al menú principal
 
-MENÚ DE MISIONES Y NPC (MenusJuego.MostrarMenuMisionesNPC)
+# MENÚ DE MISIONES Y NPC (MenusJuego.MostrarMenuMisionesNPC)
 └─ "Menú de Misiones y NPC"
    ├─ 1. Ver misiones activas (detalle con ubicación/NPC, requisitos y recompensas)
    ├─ 2. Ver NPCs de la ciudad actual (aceptar/entregar misiones; gating por reputación)
    └─ 3. Volver
 
-MENÚ DE RUTAS (Juego.MostrarMenuRutas)
+# MENÚ DE RUTAS (Juego.MostrarMenuRutas)
 └─ Lista sectores conectados a la ubicación actual
    ├─ Selección mueve la ubicación y muestra descripción del destino
    ├─ Aplica micro-EXP de exploración y desbloqueos si procede
    └─ 0. Volver
 
-MENÚ DE COMBATE (base actual)
+# MENÚ DE COMBATE (base actual)
 └─ "=== Combate ==="
    ├─ 1. Atacar
    ├─ 2. Usar habilidad (lista habilidades del jugador)
@@ -55,7 +55,7 @@ MENÚ DE COMBATE (base actual)
    ├─ 4. Huir
    └─ 5. Menú principal (fijo)
 
-MENÚ ENTRE COMBATES (MenuEntreCombate)
+# MENÚ ENTRE COMBATES (MenuEntreCombate)
 └─ Opciones:
    ├─ 1. Guardar personaje
    ├─ 2. Cargar personaje
@@ -63,7 +63,7 @@ MENÚ ENTRE COMBATES (MenuEntreCombate)
    ├─ 4. Menú principal fijo
    └─ 5. Salir del juego
 
-MENÚ FIJO (accesible desde ciudad/fuera/combate)
+# MENÚ FIJO (accesible desde ciudad/fuera/combate)
 └─ "Menú Principal" (fijo)
    ├─ 1. Ver personaje (estado detallado)
    ├─ 2. Inventario
@@ -73,13 +73,13 @@ MENÚ FIJO (accesible desde ciudad/fuera/combate)
    ├─ 6. Salir del juego
    └─ 7. Volver
 
-NOTAS RELEVANTES
+# NOTAS RELEVANTES
 - Reputación: afecta atención de tienda y acceso a misiones/NPC (etiquetas por banda y color en UI).
 - Supervivencia: indicador compacto visible; penalizaciones activas parcialmente (evasión/regen de maná).
 - Recolección: nodos por bioma o personalizados; energía y rareza influyen en producción.
 - Encuentros: data-driven por bioma con gating por kills y ventanas horarias; cooldown de eventos raros.
 - Logger/CLI: configurable por flags y en runtime (Menú fijo → Opciones); preferencias persisten por personaje.
 
-FIN DEL JUEGO
+# FIN DEL JUEGO
 └─ Cuando el jugador selecciona "Salir del juego" en algún menú o termina la sesión.
    

@@ -1,101 +1,287 @@
-# Documentación de progression.json
+# Documentación detallada de progression.json
 
-Este archivo define parámetros de balance para la progresión de atributos por actividad.
+Este documento define, con precisión operativa, los parámetros de balance para la progresión de atributos por actividad y la regeneración de maná, incluyendo fórmulas en orden de aplicación, valores recomendados, ejemplos numéricos paso a paso, y notas de integración con los servicios del juego.
 
-## Parámetros Principales
+Referencias cruzadas:
 
-- ExpBaseRecoleccion: Base de experiencia fraccional aplicada a atributos al realizar acciones de recolección. Valor típico: 0.005 – 0.02.
-- ExpBaseEntrenamiento: Base para el cálculo de experiencia por minuto virtual de entrenamiento. Típico: 0.005 – 0.02.
-- ExpBaseExploracion: Micro experiencia otorgada al explorar un sector. Valores muy pequeños (0.001 – 0.005) recomendados.
+- Arquitectura y pipeline: `./Arquitectura_y_Funcionamiento.md`
+- Pruebas relacionadas: [`MiJuegoRPG.Tests/ProgressionServiceTests.cs`](../../MiJuegoRPG.Tests/ProgressionServiceTests.cs)
+- Servicio: [`ProgressionService`](../Motor/Servicios/ProgressionService.cs)
 
-### Regeneración de Maná (en combate)
+---
 
-- ManaRegenCombateBase: Regeneración base por turno (en puntos) antes de aplicar factores. Recomendado bajo (0.1 – 0.5) para mantener la progresión lenta.
-- ManaRegenCombateFactor: Factor multiplicador por `Estadisticas.RegeneracionMana` del personaje. Valores típicos: 0.01 – 0.05.
-- ManaRegenCombateMaxPorTurno: Tope duro de maná que puede recuperarse por turno (en puntos). Recomendado 1–2 para evitar spam de habilidades.
+## 1. Parámetros principales (visión y rangos)
 
-### Regeneración de Maná (fuera de combate)
+Todos los valores aquí descritos residen en `DatosJuego/progression.json` y son consumidos por `ProgressionService` y servicios asociados (p. ej., `EnergiaService`, pipeline de combate para regeneración de maná). Los rangos propuestos son conservadores para mantener una progresión lenta.
 
-- ManaRegenFueraBase: Regeneración base por tick de descanso (puntos). Más alta que en combate pero conservadora (0.5 – 2.0).
-- ManaRegenFueraFactor: Factor multiplicador por `Estadisticas.RegeneracionMana` en descanso. Usar valores bajos (0.02 – 0.08).
-- ManaRegenFueraMaxPorTick: Tope por tick de descanso. Recomendar 2–5 para mantener ritmo lento.
+- `ExpBaseRecoleccion`: base de experiencia fraccional por acción de recolección.
+   - Rango recomendado: 0.005 – 0.02
+   - Impacto: subida más rápida de atributos contextuales al recolectar.
 
-## Escalados por Nivel
+- `ExpBaseEntrenamiento`: base por minuto virtual de entrenamiento.
+   - Rango recomendado: 0.005 – 0.02
+   - Impacto: es la vía controlada y lenta de subir atributos de forma dirigida.
 
-Estos factores reducen la ganancia conforme el personaje sube de nivel global.
+- `ExpBaseExploracion`: micro-experiencia por explorar un sector.
+   - Rango recomendado: 0.001 – 0.005 (muy bajo para evitar “farmear” exploración)
 
-- EscaladoNivelRecoleccion: Potencia usada como Math.Pow(valor, Nivel-1). Aumentar reduce la ganancia a niveles
-altos. Rango sugerido: 1.03 – 1.10.
-- EscaladoNivelEntrenamiento: Igual que el anterior pero para entrenamiento. Rango sugerido: 1.03 – 1.10.
-- EscaladoNivelExploracion: Similar para exploración. Más bajo para no penalizar demasiado. Rango sugerido: 1.01 – 1.06.
+### 1.1 Regeneración de Maná (en combate)
 
-## FactorMinExp
+- `ManaRegenCombateBase`: puntos por turno antes de factores.
+   - Recomendado: 0.1 – 0.5
+- `ManaRegenCombateFactor`: multiplicador por `Estadisticas.RegeneracionMana`.
+   - Recomendado: 0.01 – 0.05
+- `ManaRegenCombateMaxPorTurno`: techo duro por turno (puntos).
+   - Recomendado: 1 – 2
 
-- factorMinExp: Piso mínimo de experiencia fraccional para evitar que llegue a cero en atributos muy altos o niveles elevados. Rango sugerido: 0.00005 – 0.0002.
+### 1.2 Regeneración de Maná (fuera de combate)
 
-## Indices (por atributo)
+- `ManaRegenFueraBase`: base por tick de descanso (puntos).
+   - Recomendado: 0.5 – 2.0
+- `ManaRegenFueraFactor`: multiplicador por `Estadisticas.RegeneracionMana`.
+   - Recomendado: 0.02 – 0.08
+- `ManaRegenFueraMaxPorTick`: techo por tick de descanso (puntos).
+   - Recomendado: 2 – 5
 
-Cada atributo tiene un índice que aumenta su coste relativo de progresión en entrenamiento (divisor). Valores altos = progreso más lento. Ajustar según importancia del atributo.
+### 1.3 Escalados por Nivel (reducción con el nivel global)
 
-Ejemplo base incluido:
+Aplican como potencias $\text{valor}^{(Nivel-1)}$ y reducen la ganancia a niveles altos.
+
+- `EscaladoNivelRecoleccion`: 1.03 – 1.10
+- `EscaladoNivelEntrenamiento`: 1.03 – 1.10
+- `EscaladoNivelExploracion`: 1.01 – 1.06
+
+### 1.4 Piso mínimo de experiencia
+
+- `factorMinExp`: piso para evitar converger a 0 con atributos altos o niveles elevados.
+   - Recomendado: 0.00005 – 0.0002
+
+### 1.5 Índices por atributo (entrenamiento)
+
+Índices mayores implican progreso más lento en entrenamiento (divisor adicional). Ajustar según importancia del atributo.
+
+Ejemplo base:
 
 ```json
-
-"Indices": {
-  "Fuerza": 3.0,
-  "Inteligencia": 8.0,
-  "Destreza": 3.5,
-  "Suerte": 12.0,
-  "Defensa": 5.5,
-  "Vitalidad": 9.0,
-  "Agilidad": 4.5,
-  "Resistencia": 3.5,
-  "Percepcion": 4.0
+{
+   "Indices": {
+      "Fuerza": 3.0,
+      "Inteligencia": 8.0,
+      "Destreza": 3.5,
+      "Suerte": 12.0,
+      "Defensa": 5.5,
+      "Vitalidad": 9.0,
+      "Agilidad": 4.5,
+      "Resistencia": 3.5,
+      "Percepcion": 4.0
+   }
 }
 ```
 
-## Fórmulas Resumidas
+---
 
-1. Recolección (por acción, por atributo afectado):
-   exp = ExpBaseRecoleccion / ( (EscaladoNivelRecoleccion^(Nivel-1)) * (1 + ValorActual/10) )
-   Luego se multiplica por minutos (actualmente 1) y se aplica un mínimo factorMinExp.
+## 2. Fórmulas exactas y orden de aplicación
 
-2. Entrenamiento (por minuto):
-   expMinuto = ExpBaseEntrenamiento / (EscaladoNivelEntrenamiento^(Nivel-1) × IndiceAtributo × (1 + ValorActual × 0.05))
-   Si expMinuto < 0.0001 se aplica ese mínimo interno.
+Reglas generales:
 
-3. Exploración:
-   basePercepcion = ExpBaseExploracion / (EscaladoNivelExploracion^(Nivel-1)) con mínimo interno 0.00005.
-   Bonus primera visita: +50% de basePercepcion a Agilidad.
+- Salvo mención explícita, todos los clamps usan `Math.Clamp` con límites cerrados.
+- El orden de operaciones importa y se detalla por actividad.
+- Redondeo: la experiencia es fraccional y no se redondea; se acumula hasta cruzar el umbral de subida del atributo.
 
-4. Regeneración de Maná (por turno en combate):
-   regen = clamp( ManaRegenCombateBase + (RegeneracionMana * ManaRegenCombateFactor), 0, ManaRegenCombateMaxPorTurno )
-   Donde `RegeneracionMana` proviene de `Estadisticas` del personaje.
+### 2.1 Recolección (por acción, por atributo afectado)
 
-## Ajuste Inicial Recomendado
+Fórmula base:
 
-1. Jugar 10–15 acciones de cada tipo (recolección / entrenamiento / exploración) y observar tiempos de subida de un atributo bajo (1–3) a ~5.
-2. Si sube demasiado rápido (< 2 minutos equivalentes) aumentar ligeramente Escalado correspondiente (ej. 1.05 → 1.07) o bajar ExpBase.
-3. Si es demasiado lento (> 10 minutos) hacer lo inverso.
-4. No tocar varios parámetros a la vez sin registrar cambios.
+$\displaystyle \text{exp} = \max\Big(\text{factorMinExp}, \; \frac{\text{ExpBaseRecoleccion}}{(\text{EscaladoNivelRecoleccion})^{(Nivel-1)}} \cdot \frac{1}{1 + \frac{ValorActual}{10}}\Big)$
 
-## Próximos Pasos Relacionados
+Orden:
 
-- Agregar pruebas unitarias (9.4) que validen que al subir de nivel la experiencia por acción disminuye dentro de un rango esperado.
-- Ajustar ExpBaseExploracion tras observar ritmo de descubrimiento de sectores.
+1) Reducir por nivel global: $\text{baseNivel} = \frac{\text{ExpBaseRecoleccion}}{(\text{EscaladoNivelRecoleccion})^{(Nivel-1)}}$
 
-### Nota sobre Resistencias/Vulnerabilidades Elementales
+2) Penalizar por valor actual del atributo: $\text{baseAttr} = \frac{\text{baseNivel}}{1 + ValorActual/10}$
 
-- `ResistenciasElementales { tipo: 0..0.9 }`: mitigación adicional post-defensa. No se permiten valores negativos (rechazados por el validador).
-- `VulnerabilidadesElementales { tipo: factor }`: multiplicador de daño aplicado post-mitigación. Rango permitido: [1.0 .. 1.5] (conservador para progresión lenta). Si falta el tipo, se asume 1.0.
-      - Implementado inicialmente para el canal genérico `"magia"` en daño mágico. En futuras iteraciones se expandirá a más tipos (fuego, hielo, rayo, veneno, etc.) cuando el pipeline identifique el elemento del golpe.
+3) Aplicar piso: $\text{exp} = \max(\text{baseAttr}, \text{factorMinExp})$
 
-Nota combate (5.10 pendiente): En próximas iteraciones se parametrizarán en progression.json curvas/caps para `Precision`, `CritChance`, `CritMult` y `Penetracion` para integrarse en el pipeline de daño. Mantener valores conservadores (progresión lenta) y documentar cambios en este archivo.
+Notas:
+
+- El multiplicador por minutos está fijado en 1 actualmente.
+
+### 2.2 Entrenamiento (por minuto simulado)
+
+$\displaystyle \text{expMinuto} = \max\Big(0.0001,\; \frac{\text{ExpBaseEntrenamiento}}{(\text{EscaladoNivelEntrenamiento})^{(Nivel-1)}\; \cdot \; \text{IndiceAtributo} \cdot (1 + 0.05\cdot ValorActual)}\Big)$
+
+Orden:
+
+1) Reducir por nivel global.
+
+2) Dividir por `IndiceAtributo`.
+
+3) Penalizar linealmente por `ValorActual` con pendiente 0.05.
+
+4) Aplicar mínimo interno 0.0001.
+
+### 2.3 Exploración (por sector descubierto)
+
+$\displaystyle \text{basePercepcion} = \max\Big(0.00005,\; \frac{\text{ExpBaseExploracion}}{(\text{EscaladoNivelExploracion})^{(Nivel-1)}}\Big)$
+
+Si es primera visita al sector: bonus a Agilidad = $0.5\,\times\,\text{basePercepcion}$.
+
+### 2.4 Regeneración de Maná (turno de combate)
+
+$\displaystyle \text{regen} = \mathrm{clamp}\Big(\text{ManaRegenCombateBase} + (\text{RegeneracionMana} \cdot \text{ManaRegenCombateFactor}),\; 0,\; \text{ManaRegenCombateMaxPorTurno}\Big)$
+
+Fuera de combate (tick de descanso): fórmula análoga con parámetros `Fuera`.
 
 ---
-Última actualización: Parametrización 3.3 completada.
+
+## 3. Ejemplos numéricos paso a paso
+
+Supuestos comunes: `Nivel=5`, `factorMinExp=0.0001`.
+
+### 3.1 Recolección (subir Fuerza)
+
+- Parámetros: `ExpBaseRecoleccion=0.01`, `EscaladoNivelRecoleccion=1.06`.
+- Valor actual del atributo: `Fuerza=8`.
+
+1) Reducción por nivel: $0.01 / 1.06^{4} \approx 0.01 / 1.2625 \approx 0.00792$
+
+2) Penalización por atributo: $0.00792 / (1 + 8/10) = 0.00792 / 1.8 \approx 0.00440$
+
+3) Piso: $\max(0.00440, 0.0001) = 0.00440$
+
+Resultado: +0.00440 EXP a Fuerza.
+
+### 3.2 Entrenamiento (subir Inteligencia)
+
+- Parámetros: `ExpBaseEntrenamiento=0.012`, `EscaladoNivelEntrenamiento=1.07`, `Indice[Inteligencia]=8.0`.
+- Valor actual: `Inteligencia=12`.
+
+1) Reducción por nivel: $0.012 / 1.07^{4} \approx 0.012 / 1.3108 \approx 0.00916$
+
+2) Dividir por índice: $0.00916 / 8 = 0.001145$
+
+3) Penalización por valor: $0.001145 / (1 + 0.05\cdot 12) = 0.001145 / 1.6 \approx 0.000716$
+
+4) Mínimo interno: $\max(0.000716, 0.0001) = 0.000716$
+
+Resultado: +0.000716 EXP por minuto a Inteligencia.
+
+### 3.3 Exploración (Percepción y Agilidad)
+
+- Parámetros: `ExpBaseExploracion=0.002`, `EscaladoNivelExploracion=1.03`.
+
+1) Base: $0.002 / 1.03^{4} \approx 0.002 / 1.1255 \approx 0.00178$
+
+2) Piso: $\max(0.00178, 0.00005) = 0.00178$
+
+3) Primera visita: Agilidad recibe bonus adicional de $0.5\times 0.00178 = 0.00089$.
+
+Resultado: +0.00178 a Percepción; +0.00089 a Agilidad (si primera visita).
+
+### 3.4 Regeneración de maná (combate)
+
+- Parámetros: `ManaRegenCombateBase=0.2`, `ManaRegenCombateFactor=0.03`, `Max=1.5`.
+- `Estadisticas.RegeneracionMana = 0.01 \cdot Inteligencia = 0.12` (para `Inteligencia=12`).
+
+1) Suma: $0.2 + (0.12 \cdot 0.03) = 0.2 + 0.0036 = 0.2036$
+
+2) Clamp: $\mathrm{clamp}(0.2036, 0, 1.5) = 0.2036$
+
+---
+
+## 4. Contrato de datos (JSON) y defaults sugeridos
+
+Estructura mínima en `DatosJuego/progression.json`:
+
+```json
+{
+   "ExpBaseRecoleccion": 0.01,
+   "ExpBaseEntrenamiento": 0.01,
+   "ExpBaseExploracion": 0.002,
+
+   "EscaladoNivelRecoleccion": 1.06,
+   "EscaladoNivelEntrenamiento": 1.06,
+   "EscaladoNivelExploracion": 1.03,
+
+   "factorMinExp": 0.0001,
+
+   "ManaRegenCombateBase": 0.2,
+   "ManaRegenCombateFactor": 0.03,
+   "ManaRegenCombateMaxPorTurno": 1.5,
+
+   "ManaRegenFueraBase": 1.0,
+   "ManaRegenFueraFactor": 0.05,
+   "ManaRegenFueraMaxPorTick": 3.0,
+
+   "Indices": { }
+}
+```
+
+Reglas de validación:
+
+- No permitir negativos en bases ni factores.
+- `EscaladoNivel* > 1.0`.
+- `ManaRegen*Max >= ManaRegen*Base`.
+- `Indices`: claves deben ser atributos válidos; valores `> 0`.
+
+---
+
+## 5. Integraciones con servicios y orden de lectura
+
+- `ProgressionService`: aplica las fórmulas de 2.x para otorgar EXP a atributos tras acciones de recolección, entrenamiento y exploración.
+- `EnergiaService`: usa `Indices` y bonificadores de clases (ver `Arquitectura_y_Funcionamiento.md` §5.1 y §15) para coste y progresión relacionada.
+- `CombatePorTurnos`/`ActionRulesService`: consultan los parámetros de regeneración de maná (combate/fuera) combinados con penalizaciones de Supervivencia.
+
+---
+
+## 6. Pruebas unitarias recomendadas (9.4)
+
+- Recolección: al aumentar `Nivel` de 1 a 10, la EXP por acción disminuye en ≥ 20% (tolerancia por configuración).
+- Entrenamiento: al duplicar `ValorActual` del atributo, la EXP por minuto se reduce aproximadamente a la mitad cuando el término `1 + 0.05·Valor` domina.
+- Exploración: primera visita otorga +50% a Agilidad respecto a Percepción base.
+- Regeneración: nunca supera los `MaxPorTurno/PorTick` y responde linealmente al cambiar `RegeneracionMana`.
+
+Para determinismo: usar `RandomService.SetSeed` cuando se combine con acciones aleatorias (no aplica directamente a estas fórmulas, pero sí a pipelines que las rodean).
+
+---
+
+## 7. Invariantes de balance y guías de tuning
+
+- Mantener `ExpBase*` bajos para evitar saltos de poder; priorizar ajustar `EscaladoNivel*` para controlar progresión mid/late.
+- Preferir aumentar ligeramente `Indices` de atributos dominantes antes que bajar drásticamente `ExpBaseEntrenamiento`.
+- Revisar tiempos “1→5” y “5→10” por atributo tras cambios; documentar variaciones en la Bitácora.
+
+Procedimiento:
+
+1) Cambiar un único parámetro.
+
+2) Correr 10–15 acciones representativas y medir.
+
+3) Registrar en `Docs/Bitacora.md` con fecha y motivación.
+
+---
+
+## 8. Elementales: resistencias y vulnerabilidades
+
+- `ResistenciasElementales { tipo: 0..0.9 }`: mitigación adicional post-defensa. Negativos no permitidos.
+- `VulnerabilidadesElementales { tipo: [1.0..1.5] }`: multiplicador post-mitigación. Si falta un tipo, se asume `1.0`.
+- Estado actual: canal genérico `"magia"` para daño mágico. Futuro: fuego/hielo/rayo/veneno cuando el golpe incluya etiqueta elemental.
+
+Nota pipeline: aplicar en el paso 5 del orden descrito en `Arquitectura_y_Funcionamiento.md` §4 (tras defensa/penetración y mitigaciones físicas/mágicas).
+
+---
+
+## 9. Roadmap vinculado
+
+- 5.10: parametrizar curvas y caps para `Precision`, `CritChance`, `CritMult`, `Penetracion` aquí y consumir en el pipeline de combate.
+- 9.4: ampliar suite de pruebas de progresión (ver §6).
+
+---
+
+Última actualización: 2025-09-17 — Parametrización 3.4 (detallado, ejemplos y contratos).
 
 ## Changelog de balance (datos relacionados)
 
 - 2025-09-16: Se añadieron y organizaron enemigos del bioma `bosque` (`nivel_1_3`) por categorías (normal/elite/jefe/campo/legendario/unico/mundial). Las recompensas de EXP y Oro de estos enemigos se mantuvieron conservadoras para respetar la progresión lenta del proyecto. No se modifican parámetros de `progression.json` en esta iteración.
-- 2025-09-16: Convención de variantes adoptada: cuando un arquetipo existe en múltiples categorías, el campo `Nombre` lleva sufijo `("Élite", "Jefe", etc.)` y se añade `Tags` con `variante:*`. Además, el loader ignora archivos JSON ubicados directamente en la raíz de `nivel_*` bajo `enemigos/por_bioma` (solo se consideran los de subcarpetas de categoría). Medida temporal para evitar doble carga mientras se completa la limpieza física de archivos.
+
+- 2025-09-16: Convención de variantes adoptada: cuando un arquetipo existe en múltiples categorías, el campo `Nombre` lleva sufijo `(Élite, Jefe, etc.)` y se añade `Tags` con `variante:*`. Además, el loader ignora archivos JSON ubicados directamente en la raíz de `nivel_*` bajo `enemigos/por_bioma` (solo se consideran los de subcarpetas de categoría). Medida temporal para evitar doble carga mientras se completa la limpieza física de archivos.

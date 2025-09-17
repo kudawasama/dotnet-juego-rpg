@@ -177,7 +177,7 @@ Bitácora movida: Las entradas cronológicas de esta sección fueron movidas a `
 [10.2] Hecho | Random | Sustituir usos dispersos | RecoleccionService y BiomaRecoleccion usan RandomService; agregado SetSeed(int) para tests deterministas
 [10.3] Pendiente | Nombres | Uniformar nombres archivos (GeneradorObjetos vs GeneradorDeObjetos) | Revisión
 [10.4] Pendiente | Comentarios | Podar comentarios redundantes | Continuo
-[10.5] Parcial | Documentación | README arquitectura modular | `Docs/Arquitectura_y_Funcionamiento.md` ampliado con fórmulas exactas (stats), detalles de Encuentros/Energía/Supervivencia y clases dinámicas. Falta integrar un README corto en raíz que enlace a este documento y a `progression_config.md`.
+[10.5] Hecho | Documentación | README arquitectura modular | `Docs/Arquitectura_y_Funcionamiento.md` ampliado con fórmulas exactas (stats), detalles de Encuentros/Energía/Supervivencia y clases dinámicas. README corto en raíz creado (`/README.md`) con enlaces a Docs, Roadmap, Bitácora, Arquitectura, Progresión, Guía de Ejemplos y Flujo.
 [10.6] Parcial | Validación Data | Validador JSON referencial (IDs de mapa, facciones, misiones, objetos) + pruebas | Base creada: `DataValidatorService.ValidarReferenciasBasicas()` verifica IDs de sectores en `facciones_ubicacion.json` contra el mapa cargado; flag CLI `--validar-datos` ejecuta el validador al inicio y reporta errores/advertencias sin detener el juego. Ampliado: valida `misiones.json` (IDs, `SiguienteMisionId`, dependencias `Condiciones: "Completar X"`, `UbicacionNPC` si es ID de sector) y `npc.json` (IDs de sector en `Ubicacion` y existencia de `Misiones`). Implementado reporte opcional: `--validar-datos=report` (o `--validar-datos=<ruta>`) guarda salida en `PjDatos/validacion/`. Nuevo: `ValidarEnemigosBasico()` recorre `DatosJuego/enemigos` y comprueba duplicados por `Nombre/Id`, rangos de mitigación [0..0.9], y campos básicos; informa NoMuertos sin `veneno:true` explícito (se aplica por defecto en runtime). Siguiente: cubrir repos de objetos y esquemas por archivo.
 [10.9] Hecho | Validación Data | Detectar materiales vacíos/invalidos en `nodosRecoleccion` de sectores | `DataValidatorService` amplía validación recorriendo sectores y reportando `{}` o materiales con `Nombre` vacío o `Cantidad <= 0`. Ayuda a higiene de datos y evita comportamientos raros en recolección.
 [10.7] Parcial | Higiene Git | Decidir si versionar juego.db; si no, añadir a .gitignore y documentar | Se excluyeron mapas JPG pesados (Mapa*.jpg) mediante .gitignore para evitar límites de GitHub (>100MB). Pendiente decidir el estatus de DatosCompartidos/juego.db (ignorar o versionar con migraciones) y documentarlo.
@@ -463,3 +463,10 @@ NOTAS RIESGO / DEPENDENCIAS:
 — Fin snapshot actualizado —
 
 Bitácora movida: La bitácora de sesiones fue reubicada en `Docs/Bitacora.md`.
+
+## 2025-09-17 — Documentación detallada
+
+- Se reforzó `progression_config.md` con fórmulas en KaTeX, ejemplos numéricos paso a paso, orden de clamps y contrato JSON sugerido.
+- Se amplió `Arquitectura_y_Funcionamiento.md` con contratos (interfaces/DTOs), pipeline de combate por etapas, referencias cruzadas a `Flujo.txt`, y apéndice de firmas.
+- Mantener política de “fuente única” y enlaces cruzados desde `Docs/README.md`.
+- `Docs/README.md` ahora incluye enlaces profundos directos a secciones específicas de `Flujo.txt` (menús) y de `Arquitectura_y_Funcionamiento.md` (pipeline/contratos), para navegación de un clic.

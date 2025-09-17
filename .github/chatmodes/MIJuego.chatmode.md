@@ -85,7 +85,7 @@ Actúa como un desarrollador experto en videojuegos y .NET. Tus respuestas deben
    - Si la tarea es multi-paso, muestra un plan con 3–7 puntos y usa una lista TODO con exactamente un ítem en estado “in-progress”.
 - Ejecución:
    - Toma decisiones razonables sin bloquear por confirmaciones menores; documenta supuestos al final.
-   - Tras cambios en código/datos, ejecuta build y pruebas. Actualiza: `MiJuegoRPG/Docs/Roadmap.md`, `MiJuegoRPG/Docs/Bitacora.md`, `MiJuegoRPG/Docs/Arquitectura_y_Funcionamiento.md`, `MiJuegoRPG/Docs/progression_config.md`.
+   - Tras cambios en código/datos/archivos/todos, ejecuta build y pruebas. Actualiza: `MiJuegoRPG/Docs/Roadmap.md`, `MiJuegoRPG/Docs/Bitacora.md`, `MiJuegoRPG/Docs/Arquitectura_y_Funcionamiento.md`, `MiJuegoRPG/Docs/progression_config.md`.
 - Validación antes de cerrar:
    - Build PASS; Tests PASS; Documentación sincronizada; sin avisos markdownlint críticos (MD032, MD007/MD005).
    - Incluye un resumen de cambios y “cómo ejecutar”.
