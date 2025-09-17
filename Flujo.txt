@@ -1,63 +1,85 @@
-INICIO DEL JUEGO
-└─ Muestra pantalla de inicio con título y opciones:
-   ├─ 1. Nuevo Juego
-   │   └─ Solicita nombre y clase del personaje
-   │   └─ Crea personaje y pasa al Menú Principal
-   ├─ 2. Cargar Juego
-   │   └─ Si hay partidas guardadas, permite seleccionar y cargar
-   │   └─ Si no hay, pregunta si crear un nuevo personaje
-   ├─ 3. Créditos
-   │   └─ Muestra información de los creadores y vuelve al inicio
-   └─ 4. Salir
-       └─ Confirma salida (¿Seguro? s/n)
+INICIO DEL JUEGO (Program.cs)
+└─ Pantalla inicial:
+   ├─ 1. Crear personaje nuevo
+   ├─ 2. Cargar personaje guardado
+   └─ 0. Salir
+      Notas:
+      - Flags CLI disponibles: --help, --log-off, --log-level=..., --validar-datos[=report|ruta], --generar-conexiones, --validar-sectores, --normalizar-conexiones, --asignar-biomas[=ol,oc], --hidratar-nodos[=max], --reparar-materiales=..., --precision-hit.
+      - Al crear personaje: se asigna ubicación inicial a la ciudad principal detectada (ej. Bairan) y se inicializan estadísticas/recursos.
 
-MENÚ PRINCIPAL (CIUDAD INICIAL)
-└─ Muestra: "¿Qué deseas hacer?"
-   ├─ 1. Aventura (Explorar el sector)
-   │   └─ Explora el entorno, posibles eventos:
-   │       ├─ Combate (abre Menú de Combate)
-   │       ├─ Encuentro de objeto (opciones: Recoger, Dejar)
-   │       ├─ Evento especial (diálogo, decisión, etc.)
-   │       └─ Nada relevante (opciones: Volver, Explorar de nuevo)
-   ├─ 2. Entrenar
-   │   └─ Selecciona tipo de entrenamiento (fuerza, magia, destreza, etc.)
-   │   └─ Muestra resultado y mejora atributos
-   ├─ 3. Tienda
-   │   └─ Comprar, vender, ver detalles de objetos
-   │   └─ Volver al menú principal
-   ├─ 4. Inventario
-   │   └─ Usar, equipar, eliminar, ver detalles de objetos
-   │   └─ Volver al menú principal
-   ├─ 5. Guardar/Cargar
-   │   └─ Guardar partida actual, cargar otra partida, volver
-   ├─ 6. Misiones y NPCs
-   │   └─ Ver misiones activas, hablar con NPCs, aceptar/completar misiones
-   ├─ 7. Viajar
-   │   └─ Seleccionar destino, ver requisitos, viajar o volver
-   └─ 8. Salir del juego
-       └─ Confirma salida y termina el programa
+MENÚ PRINCIPAL DEL JUEGO (Juego.Iniciar)
+└─ "=== Menú Principal ==="
+   ├─ 1. Estado del personaje (muestra estado detallado)
+   ├─ 2. Ir a ubicación actual (abre menú según tipo: Ciudad/Ruta)
+   ├─ 3. Inventario (gestión de inventario)
+   ├─ 4. Guardar personaje
+   ├─ 5. Menú administrador (herramientas de QA)
+   └─ 0. Salir del juego
 
-MENÚ DE COMBATE
-└─ Opciones durante combate:
+MENÚ DE CIUDAD (MenuCiudad)
+└─ "Menú de Ciudad" (muestra ubicación, reloj del mundo y supervivencia compacta)
+   ├─ 1. Tienda (comprar/vender; reputación afecta precios/atención)
+   ├─ 2. Escuela de Entrenamiento
+   ├─ 3. Explorar sector (abre Menú Misiones/NPC)
+   ├─ 4. Descansar en posada (recupera vida/energía con decreciente eficiencia; regenera maná fuera de combate)
+   ├─ 5. Viajar (abre Menú de Rutas)
+   ├─ 9. Menú fijo (ver personaje/inventario/equipo/guardar/opciones)
+   └─ 0. Volver al menú principal
+
+MENÚ FUERA DE CIUDAD (MenuFueraCiudad)
+└─ "Fuera de Ciudad" (muestra ubicación, reloj y supervivencia)
+   ├─ 1. Explorar (usa EncuentrosService; puede resultar en botín/materiales/NPC/combate/mazmorra/evento)
+   ├─ 2. Recolectar (menú híbrido por bioma o nodos del sector)
+   ├─ 3. Combatir (combate directo contra enemigo aleatorio por nivel/bioma)
+   ├─ 5. Viajar (abre Menú de Rutas)
+   ├─ 9. Menú fijo
+   └─ 0. Volver al menú principal
+
+MENÚ DE MISIONES Y NPC (MenusJuego.MostrarMenuMisionesNPC)
+└─ "Menú de Misiones y NPC"
+   ├─ 1. Ver misiones activas (detalle con ubicación/NPC, requisitos y recompensas)
+   ├─ 2. Ver NPCs de la ciudad actual (aceptar/entregar misiones; gating por reputación)
+   └─ 3. Volver
+
+MENÚ DE RUTAS (Juego.MostrarMenuRutas)
+└─ Lista sectores conectados a la ubicación actual
+   ├─ Selección mueve la ubicación y muestra descripción del destino
+   ├─ Aplica micro-EXP de exploración y desbloqueos si procede
+   └─ 0. Volver
+
+MENÚ DE COMBATE (base actual)
+└─ "=== Combate ==="
    ├─ 1. Atacar
-   ├─ 2. Usar objeto
-   ├─ 3. Huir
-   └─ 4. Ver estado
+   ├─ 2. Usar habilidad (lista habilidades del jugador)
+   ├─ 3. Usar objeto (placeholder base en este menú; uso real integrado en combate por turnos)
+   ├─ 4. Huir
+   └─ 5. Menú principal (fijo)
 
-MENÚ ENTRE COMBATES
+MENÚ ENTRE COMBATES (MenuEntreCombate)
 └─ Opciones:
-   ├─ 1. Guardar partida
-   ├─ 2. Cargar partida
+   ├─ 1. Guardar personaje
+   ├─ 2. Cargar personaje
    ├─ 3. Continuar combatiendo
-   └─ 4. Salir del juego
+   ├─ 4. Menú principal fijo
+   └─ 5. Salir del juego
 
-SUBMENÚS ADICIONALES
-- Entrenamiento: lista todos los atributos base disponibles para mejorar.
-- Tienda: lista objetos, permite comprar/vender, ver detalles.
-- Inventario: lista objetos, permite usar, equipar, eliminar, ver detalles.
-- Misiones: muestra misiones activas, completadas, y permite interactuar con NPCs.
-- Guardado/Carga: permite gestionar partidas guardadas.
+MENÚ FIJO (accesible desde ciudad/fuera/combate)
+└─ "Menú Principal" (fijo)
+   ├─ 1. Ver personaje (estado detallado)
+   ├─ 2. Inventario
+   ├─ 3. Equipo equipado
+   ├─ 4. Guardar partida
+   ├─ 5. Opciones (activar/desactivar logger, cambiar nivel)
+   ├─ 6. Salir del juego
+   └─ 7. Volver
+
+NOTAS RELEVANTES
+- Reputación: afecta atención de tienda y acceso a misiones/NPC (etiquetas por banda y color en UI).
+- Supervivencia: indicador compacto visible; penalizaciones activas parcialmente (evasión/regen de maná).
+- Recolección: nodos por bioma o personalizados; energía y rareza influyen en producción.
+- Encuentros: data-driven por bioma con gating por kills y ventanas horarias; cooldown de eventos raros.
+- Logger/CLI: configurable por flags y en runtime (Menú fijo → Opciones); preferencias persisten por personaje.
 
 FIN DEL JUEGO
-└─ Cuando el jugador selecciona "Salir del juego" o termina la partida.
+└─ Cuando el jugador selecciona "Salir del juego" en algún menú o termina la sesión.
    
