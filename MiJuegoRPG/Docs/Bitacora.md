@@ -1,5 +1,11 @@
 # Bitácora de desarrollo
 
+## 2025-09-17 — Remaquetado de Roadmap (Combate/Testing)
+
+- Se reestructuraron las secciones `5. COMBATE` (ítems [5.8], [5.10], [5.13]) y `9. TESTING` (ítem [9.8]) en `Docs/Roadmap.md` para mejorar legibilidad y trazabilidad.
+- Nuevo formato por ítem: sub-bloques "Estado", "Descripción", "Decisiones/Conclusiones" y "Próxima acción". Objetivo: lectura rápida en GitHub y status claro por bloque.
+- No hay cambios en runtime ni en firmas de código; es puramente documental. Se cuidó la compatibilidad con `markdownlint` (MD032/MD007) y se mantuvieron enlaces/identificadores originales.
+
 ## 2025-09-17 — Penetración en pipeline de combate (flag `--penetracion`)
 
 - Se implementó la etapa de Penetración en el pipeline de daño de forma no intrusiva y opcional (desactivada por defecto). Al habilitar el flag CLI `--penetracion`, la defensa efectiva del objetivo se reduce en proporción a la `Estadisticas.Penetracion` del atacante ANTES de aplicar mitigaciones/resistencias.
