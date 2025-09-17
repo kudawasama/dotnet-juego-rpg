@@ -1,6 +1,18 @@
 <!-- markdownlint-disable MD003 -->
-PLAN DE REFACTORIZACIÓN Y PROGRESO (log incremental)
-=================================================
+PLAN DE REFACTORIZACIÓN Y PROGRESO
+==================================
+
+## Estado actual (resumen)
+
+- Progreso estimado: 31/221 Hecho, 13/221 Parcial, 177/221 Pendiente (~14%).
+- Sistemas base listos: ProgressionService, RandomService, PathProvider, GuardadoService y EventBus integrados.
+- UI desacoplada: `IUserInterface` implementada con `ConsoleUserInterface` y `SilentUserInterface`; menús principales migrados.
+- Combate: pipeline en progreso (`DamageResolver` con evasión/crit metadata), acciones básicas físicas/mágicas y uso de pociones integrados.
+- Mundo y recolección: biomas con nodos hidratados por data; energía y rarezas operativas; encuentros data-driven con gating por kills/hora y cooldowns.
+- Enemigos data-driven: estructura por bioma/nivel/categoría implementada para Bosque `nivel_1_3` con cuotas cumplidas; validador de datos activo.
+- Documentación: `Docs/Bitacora.md` separada del Roadmap; arquitectura ampliada; tareas y estándares definidos en chatmode.
+
+Más detalle en el snapshot extenso al final de este archivo: ver sección "ESTADO ACTUAL (snapshot)".
 
 Estado de avance (resumen): 31/221 Hecho · 13/221 Parcial · 177/221 Pendiente
 ███████░░░░░░░░░░ 14% completado (estimado por ítems del roadmap)
@@ -39,6 +51,8 @@ Legend inicial: Solo la 1.x se empieza ahora para evitar cambios masivos de golp
 - [26. ACCESIBILIDAD Y QoL](#26-accesibilidad-y-qol)
 - [27. SUPERVIVENCIA Y SISTEMAS REALISTAS](#27-supervivencia-y-sistemas-realistas)
 
+> Nota: La bitácora cronológica se movió a `Docs/Bitacora.md` para mantener este documento enfocado en plan y estado.
+
 ## Próximos pasos (prioridad sugerida)
 
 - [5.8] Pipeline de daño (etapa A): integrar chequeo de acierto (Precision vs Evasion) en `DamageResolver` como paso opcional y mantener compatibilidad. Añadir `ResolverAtaqueMagico` simétrico al físico.
@@ -48,7 +62,7 @@ Legend inicial: Solo la 1.x se empieza ahora para evitar cambios masivos de golp
 - [10.6] Validación de datos: extender `DataValidatorService` a esquemas de objetos/drops/armas con rangos y referencias cruzadas.
 - [7.1]/[15.1] Repos JSON: consolidar objetos/materiales/balances bajo `IRepository<T>` con caché e invalidación.
 - [5.2] Refactor a cola de acciones en `CombatePorTurnos` tras estabilizar el pipeline.
- - [10.5] Documentación de arquitectura: sección ampliada con fórmulas de estadísticas, encuentros, energía, supervivencia y clases dinámicas (ver `Docs/Arquitectura_y_Funcionamiento.md`).
+- [10.5] Documentación de arquitectura: sección ampliada con fórmulas de estadísticas, encuentros, energía, supervivencia y clases dinámicas (ver `Docs/Arquitectura_y_Funcionamiento.md`).
 
 ## 1. FUNDAMENTOS (Infra / Enumeraciones / Servicios base)
 
@@ -135,12 +149,7 @@ Política vigente (elemental):
 - Las debilidades se modelan explícitamente con `VulnerabilidadesElementales { tipo: factor }`, aplicadas como multiplicador post-mitigación. Rango permitido y validado: `[1.0 .. 1.5]` (conservador para progresión lenta).
 - Soporte inicial implementado para el canal genérico `"magia"`. En futuras iteraciones se ampliará a elementos específicos (fuego/hielo/rayo/veneno/...) cuando el pipeline identifique el elemento del golpe.
 
-Bitácora (datos):
-
-- 2025-09-16: Bosque `nivel_1_3` reorganizado y completado por categorías; añadidos jefes/campo/legendarios/únicos/mundial; corregida ruta errónea residual. Se añadió filtro en loader para ignorar raíz de `nivel_*` y se adoptó convención de nombres para variantes (Élite).
-- 2025-09-16 (tarde): Reconstruido `DataValidatorService` (corrupción previa) y saneadas resistencias elementales negativas en JSONs (normalizadas a 0.0) para cumplir rango [0..0.9]. Se generó reporte con `--validar-datos=report` y quedaron 0 advertencias relacionadas a resistencias; pendientes ajustes menores si aparecen nuevas reglas.
-- 2025-09-16 (noche): Integradas `VulnerabilidadesElementales {tipo:1.0..1.5}` en `PjDatos.EnemigoData` y `Enemigos.Enemigo`; mapeo desde `GeneradorEnemigos` y aplicación en `RecibirDanioMagico` como multiplicador post-mitigación para el canal `magia`. `DataValidatorService.ValidarEnemigosBasico` ahora valida el rango de vulnerabilidades y reporta fuera de rango. Documentación actualizada en `progression_config.md`.
-- 2025-09-16 (noche): Tests — Se ajustó `MiJuegoRPG.Tests.csproj` para copiar de forma recursiva `MiJuegoRPG/DatosJuego/**` al directorio de salida. Con esto se resolvieron errores de copia (MSB3030) por la nueva estructura de enemigos por categoría en `nivel_*`. Suite completa volvió a verde (45/45 PASS).
+Bitácora movida: Las entradas cronológicas de esta sección fueron movidas a `Docs/Bitacora.md`.
 
 ## 8. UI / PRESENTACIÓN
 
@@ -453,35 +462,4 @@ NOTAS RIESGO / DEPENDENCIAS:
 
 — Fin snapshot actualizado —
 
-## Bitácora de la última sesión (2025-09-16)
-
-- Tests/Infra:
-  - Ajustado `MiJuegoRPG.Tests.csproj` para copiar recursivamente `MiJuegoRPG/DatosJuego/**` al output de pruebas. Resuelve errores MSB3030 por reorganización de enemigos (bioma/nivel/categoría). Suite de pruebas en verde: 45/45 PASS.
-  - Verificado build de solución post-cambio: ambos proyectos compilan correctamente.
-- Documentación/Quality:
-  - Normalizadas viñetas/indentación en `Roadmap.md` (correcciones markdownlint) y sincronizada la sección 9 con la nueva configuración de assets.
-- Datos/Enemigos/Elemental (estado):
-  - Loader recursivo de enemigos con convención de ignorar JSON en la raíz de `nivel_*` ya activo.
-  - `VulnerabilidadesElementales {1.0..1.5}` integrado y documentado; aplicado en daño mágico post-mitigación.
-
-Siguientes pasos inmediatos (propuestos):
-
-1. [7.x] Replicar estructura por categorías a otros biomas y rangos de nivel (`nivel_4_6`, `nivel_7_9`, ...); completar cuotas mínimas y correr validador de datos.
-2. [5.8]/[9.8] Pipeline de daño (Etapa A): centralizar hit/evasión en `DamageResolver` con `Precision` vs `Evasion` y añadir tests deterministas (xUnit) para hit/miss y mensajes.
-3. [5.10]/[3.4] Integrar `Precision`, `CritChance`, `CritMult`, `Penetracion` desde `Estadisticas` y parametrizar caps/curvas en `progression.json`.
-4. [7.1]/[15.1] Repos JSON: piloto con Misiones u Objetos para formalizar `IRepository<T>`; luego migrar drops/armas/materiales.
-5. [5.x] Extender vulnerabilidades por elemento específico (fuego/hielo/rayo/veneno) y actualizar validador + docs manteniendo límites conservadores.
-
----
-
-## Bitácora de la última sesión (2025-09-15)
-
-- Combate → Pipeline de daño (5.8):
-  - `DamageResolver` anotó ahora evasión: cuando el daño retornado es 0 (por chequeo de `IEvadible` en `AtacarFisico/AtacarMagico`), se marca `ResultadoAccion.FueEvadido = true` y se agrega mensaje “¡El objetivo evadió el ataque!”.
-  - Se mantiene comportamiento no intrusivo: el cálculo de daño sigue delegado al ejecutor; no se alteraron fórmulas ni balance actual.
-- DTO de resultado: `ResultadoAccion` conserva flags `FueCritico` y ahora refleja también la evasión.
-- Acciones: `AtaqueFisicoAccion` ya usa `DamageResolver` (sin cambiar mensajes existentes salvo añadir el de evasión cuando aplica).
-- Tests: corregido constructor de `Personaje` en pruebas (`new Personaje("Heroe")`) y añadido caso determinista de evasión (objetivo que siempre evade). Suite de pruebas ejecutada con 4/4 PASS.
-- Build: solución compilada en Debug sin errores.
-
-Próximo objetivo recomendado: completar la etapa A del pipeline (hit/miss centralizado con `Precision` vs `Evasion` en `DamageResolver` y añadir `ResolverAtaqueMagico`), y cubrirlo con 2–3 tests deterministas. Esto prepara el terreno para integrar `CritMult`/`Penetracion` de forma segura y acorde a la progresión lenta y desafiante del juego.
+Bitácora movida: La bitácora de sesiones fue reubicada en `Docs/Bitacora.md`.

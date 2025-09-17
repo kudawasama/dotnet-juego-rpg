@@ -88,7 +88,7 @@ Ejemplo base incluido:
 
 - `ResistenciasElementales { tipo: 0..0.9 }`: mitigación adicional post-defensa. No se permiten valores negativos (rechazados por el validador).
 - `VulnerabilidadesElementales { tipo: factor }`: multiplicador de daño aplicado post-mitigación. Rango permitido: [1.0 .. 1.5] (conservador para progresión lenta). Si falta el tipo, se asume 1.0.
-   - Implementado inicialmente para el canal genérico `"magia"` en daño mágico. En futuras iteraciones se expandirá a más tipos (fuego, hielo, rayo, veneno, etc.) cuando el pipeline identifique el elemento del golpe.
+      - Implementado inicialmente para el canal genérico `"magia"` en daño mágico. En futuras iteraciones se expandirá a más tipos (fuego, hielo, rayo, veneno, etc.) cuando el pipeline identifique el elemento del golpe.
 
 Nota combate (5.10 pendiente): En próximas iteraciones se parametrizarán en progression.json curvas/caps para `Precision`, `CritChance`, `CritMult` y `Penetracion` para integrarse en el pipeline de daño. Mantener valores conservadores (progresión lenta) y documentar cambios en este archivo.
 

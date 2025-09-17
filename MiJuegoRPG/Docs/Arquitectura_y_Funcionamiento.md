@@ -2,6 +2,12 @@
 
 > Objetivo: documentar en profundidad la estructura, el flujo y las reglas del juego para facilitar mantenimiento, onboarding y futura migración a Unity. Este documento sirve como guía viva y complementa `Roadmap.md` y `progression_config.md`.
 
+Documentos relacionados
+
+- Roadmap (plan y estado): `./Roadmap.md`
+- Bitácora (historial): `./Bitacora.md`
+- Config de progresión: `./progression_config.md`
+
 Tabla de contenidos
 
 1. Visión general del sistema
@@ -63,10 +69,12 @@ Interfaces clave (contratos):
 Configurable vía `progression_config.md`/JSON. Atributos base (Fuerza, Inteligencia, etc.) y estadísticas derivadas (Ataque, PoderMagico, DefensaMagica, Precision, CritChance, CritMult, Penetracion).
 
 Fórmula general de experiencia por atributo (ejemplo orientativo):
+
 - Exp otorgada = Base + Factor * contexto (recolección/entrenamiento/exploración), afectada por caps y factor mínimo.
 - Subida de nivel por atributo: costo creciente no lineal, ver `progression_config.md`.
 
 Ejemplo (pseudo):
+
 - EXP(Fuerza) += max(minExp, f(recolección))
 - Nivel(Fuerza) up si EXP >= costo(nivelActual)
 
@@ -106,6 +114,7 @@ Estado actual:
 - `CombatePorTurnos` orquesta turno, selección de acciones, aplicación de efectos y UI.
 
 Plan de pipeline (orden propuesto):
+
 1) Hit/Evasión: Precision atacante vs Evasion objetivo (penalizable por Supervivencia).
 2) Crítico: chance y multiplicador, caps/floors conservadores.
 3) Defensa/Penetración: reducir defensa por penetración antes de mitigar.
@@ -174,10 +183,10 @@ Fuente: `Motor/Servicios/EncuentrosService.cs` y `DatosJuego/eventos/encuentros.
 - Fallback ponderado: selección por peso entre entradas sin `Chance` (luego de filtros).
 - Modificadores por atributos (método `CalcularModificador`):
 
-     - Botín/Materiales: + hasta 50% con Percepción+Suerte.
-     - NPC/Eventos/Mazmorras raras: + hasta 25% con Suerte.
-     - Combates comunes/bioma: + hasta 30% con Agilidad+Destreza.
-     - MiniJefe: requiere `MinKills`; bonus adicional por kills extra y Suerte (máx +50%).
+- Botín/Materiales: + hasta 50% con Percepción+Suerte.
+- NPC/Eventos/Mazmorras raras: + hasta 25% con Suerte.
+- Combates comunes/bioma: + hasta 30% con Agilidad+Destreza.
+- MiniJefe: requiere `MinKills`; bonus adicional por kills extra y Suerte (máx +50%).
 - Cooldowns: pueden consultarse y limpiarse; el servicio expone un estado con minutos restantes por clave.
 
 ## 8. Supervivencia
@@ -193,7 +202,7 @@ Fuente: `Motor/Servicios/EncuentrosService.cs` y `DatosJuego/eventos/encuentros.
 - Reglas por bioma: `TempDia`, `TempNoche`, `SedMultiplier`, `HambreMultiplier`, `FatigaMultiplier`.
 - Penalizaciones por umbral (sección `Penalizaciones`):
 
-     - Niveles `Advertencia` y `Critico` con campos como `Precision`, `Evasion`, `ManaRegen` (factores sumados a 1.0) y `ReduccionAtributos` (mapa atributo→porcentaje negativo).
+- Niveles `Advertencia` y `Critico` con campos como `Precision`, `Evasion`, `ManaRegen` (factores sumados a 1.0) y `ReduccionAtributos` (mapa atributo→porcentaje negativo).
 - Runtime (`SupervivenciaRuntimeService.ApplyTick`): incrementa H/S/F por minuto simulado con multiplicadores; ajusta `TempActual` hacia el objetivo por bioma; publica eventos ante cruces de umbral.
 - Integraciones actuales: `ActionRulesService` penaliza regeneración de maná; `Personaje.IntentarEvadir` aplica `FactorEvasion`. Listo `FactorPrecision` para el paso de Hit del pipeline.
 
