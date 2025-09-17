@@ -8,15 +8,15 @@ Documentos relacionados
 - Bitácora (historial): `./Bitacora.md`
 - Config de progresión: `./progression_config.md`
 - Flujo de juego (menús): [`../../Flujo.txt`](../../Flujo.txt)
-     - Inicio: [`INICIO DEL JUEGO`](../../Flujo.txt#inicio-del-juego-programcs)
-     - Menú Principal: [`MENÚ PRINCIPAL DEL JUEGO`](../../Flujo.txt#menu-principal-del-juego-juegoiniciar)
-     - Ciudad: [`MENÚ DE CIUDAD`](../../Flujo.txt#menu-de-ciudad-menuciudad)
-     - Fuera de ciudad: [`MENÚ FUERA DE CIUDAD`](../../Flujo.txt#menu-fuera-de-ciudad-menufueraciudad)
-     - Misiones/NPC: [`MENÚ DE MISIONES Y NPC`](../../Flujo.txt#menu-de-misiones-y-npc-menusjuegomostrarmenumisionesnpc)
-     - Rutas: [`MENÚ DE RUTAS`](../../Flujo.txt#menu-de-rutas-juegomostrarmenurutas)
-     - Combate: [`MENÚ DE COMBATE`](../../Flujo.txt#menu-de-combate-base-actual)
-     - Entre combates: [`MENÚ ENTRE COMBATES`](../../Flujo.txt#menu-entre-combates-menuentrecombate)
-     - Menú fijo: [`MENÚ FIJO`](../../Flujo.txt#menu-fijo-accesible-desde-ciudadfueracombate)
+  - Inicio: [`INICIO DEL JUEGO`](../../Flujo.txt#inicio-del-juego-programcs)
+  - Menú Principal: [`MENÚ PRINCIPAL DEL JUEGO`](../../Flujo.txt#menu-principal-del-juego-juegoiniciar)
+  - Ciudad: [`MENÚ DE CIUDAD`](../../Flujo.txt#menu-de-ciudad-menuciudad)
+  - Fuera de ciudad: [`MENÚ FUERA DE CIUDAD`](../../Flujo.txt#menu-fuera-de-ciudad-menufueraciudad)
+  - Misiones/NPC: [`MENÚ DE MISIONES Y NPC`](../../Flujo.txt#menu-de-misiones-y-npc-menusjuegomostrarmenumisionesnpc)
+  - Rutas: [`MENÚ DE RUTAS`](../../Flujo.txt#menu-de-rutas-juegomostrarmenurutas)
+  - Combate: [`MENÚ DE COMBATE`](../../Flujo.txt#menu-de-combate-base-actual)
+  - Entre combates: [`MENÚ ENTRE COMBATES`](../../Flujo.txt#menu-entre-combates-menuentrecombate)
+  - Menú fijo: [`MENÚ FIJO`](../../Flujo.txt#menu-fijo-accesible-desde-ciudadfueracombate)
 
 Tabla de contenidos
 
@@ -73,12 +73,12 @@ Entidades y responsabilidades:
 Interfaces clave (contratos ejecutivos):
 
 - [`ICombatiente`](../Interfaces/ICombatiente.cs):
-     - Métodos: `AtacarFisico(ICombatiente objetivo)`, `AtacarMagico(ICombatiente objetivo)`, `RecibirDanioFisico(int d)`, `RecibirDanioMagico(int d)`.
-     - Props: `int Vida`, `int VidaMaxima`, `int Mana`, `int ManaMaximo`, `double DefensaFisica`, `double DefensaMagica`.
+  - Métodos: `AtacarFisico(ICombatiente objetivo)`, `AtacarMagico(ICombatiente objetivo)`, `RecibirDanioFisico(int d)`, `RecibirDanioMagico(int d)`.
+  - Props: `int Vida`, `int VidaMaxima`, `int Mana`, `int ManaMaximo`, `double DefensaFisica`, `double DefensaMagica`.
 - [`IEvadible`](../Interfaces/IEvadible.cs):
-     - `bool IntentarEvadir(bool esMagico)` — devuelve true si evita; aplica penalización de hechizos.
+  - `bool IntentarEvadir(bool esMagico)` — devuelve true si evita; aplica penalización de hechizos.
 - [`IAccionCombate`](../Interfaces/IAccionCombate.cs):
-     - `ResultadoAccion Ejecutar(CombateContext ctx)`; metadatos `CooldownTurnos`, `CostoMana`.
+  - `ResultadoAccion Ejecutar(CombateContext ctx)`; metadatos `CooldownTurnos`, `CostoMana`.
 
 DTOs relevantes:
 
@@ -111,23 +111,51 @@ Notas: cap de evasión efectiva en `IntentarEvadir` = 0.5 (previo a RNG), penali
 
 ## 4. Combate (pipeline y estados)
 
-Estado actual:
+Estado actual (MVP implementado):
 
-- [`DamageResolver`](../Motor/Servicios/DamageResolver.cs) registra `FueCritico`/`FueEvadido` y compone mensajes.
-- Evasión se chequea en `Atacar*` y en `RecibirDanio*` (en transición a resolver único).
-- [`CombatePorTurnos`](../Motor/CombatePorTurnos.cs) orquesta turnos, acciones, efectos y UI.
+- Precisión opcional: `DamageResolver` realiza un chequeo de acierto previo en ataques físicos cuando se lanza el juego con el flag `--precision-hit`. Si el atacante es `Personaje`, usa `Estadisticas.Precision` y, de fallar, retorna `FueEvadido=true` y `DanioReal=0` sin invocar `AtacarFisico`. Ver [`DamageResolver`](../Motor/Servicios/DamageResolver.cs), [`Program.cs`](../Program.cs) y [`Estadisticas`](../Personaje/Estadisticas.cs).
+- Cálculo de daño real: `DanioReal` se computa como delta de vida del objetivo (VidaAntes − VidaDespués), garantizando coherencia post-defensa/mitigación. Mensajes de combate usan `DanioReal` para evitar desalineación con la UI.
+- Crítico determinista en pruebas: si `CritChance >= 1.0` en `Personaje`, `FueCritico=true` forzado para escenarios de test; en juego normal se usa la probabilidad conservadora y solo aplica si `DanioReal > 0`. Ver [`ResultadoAccion`](../Interfaces/ResultadoAccion.cs).
+
+- Penetración opcional: si se lanza con `--penetracion`, el `DamageResolver` propagará la `Penetracion` del atacante (si es `Personaje`) a través de un contexto ambiental [`CombatAmbientContext`](../Motor/Servicios/CombatAmbientContext.cs). Los receptores (`Enemigo`/`Personaje`) reducen su defensa efectiva antes de mitigar: `defensaEfectiva = round(defensa * (1 - pen))`. Orden respetado: Físico → Defensa/Penetración → Mitigación; Mágico → Defensa/Penetración → Mitigación → Resistencia(`magia`) → Vulnerabilidad. El flag está desactivado por defecto para no alterar el balance legacy.
+
+Unificación de acciones:
+
+- El `Ataque Mágico` también pasa por `DamageResolver` (sin paso de precisión), manteniendo el cálculo de daño actual pero unificando metadatos (`DanioReal`, `FueEvadido`, `FueCritico`) y mensajería.
+
 
 Orden de pipeline propuesto (futuro inmediato):
 
 1) Hit/Evasión: $p_{hit} = clamp(0.35 + Precision_{att} - k·Evasion_{obj},\ 0.20,\ 0.95)$, con $k \in [1.0, 1.2]$.
       - Aplicar factor de Supervivencia: $p_{hit} *= FactorPrecision$.
 2) Crítico: si RNG < `CritChance`, multiplicar por `CritMult`; caps: `CritChance ≤ 0.5`, `CritMult ∈ [1.25, 1.75]`.
-3) Defensa/Penetración: reducir defensa por `Penetracion` y mitigar.
+3) Defensa/Penetración: reducir defensa por `Penetracion` y mitigar. Implementación actual detrás de `--penetracion` usando `CombatAmbientContext`.
 4) Mitigaciones del objetivo: físicas/mágicas.
 5) Elementales: resistencias (0..0.9) y vulnerabilidades (1.0..1.5) por canal (`magia` hoy).
 6) Aplicar daño y efectos OnHit/OnKill.
 7) Registrar en `ResultadoAccion` y presentar en UI.
 
+Nota práctica (MVP actual):
+
+- `DamageResolver` incorpora un chequeo de precisión opcional previo al ataque físico (ver flag CLI). Si falla, corta la ejecución con `FueEvadido=true` y `DanioReal=0`.
+- Crítico: si `CritChance >= 1.0` en `Personaje`, el crítico se considera forzado (útil para pruebas deterministas); en runtime normal se aplica probabilidad y multiplicador con clamps conservadores.
+- Mensajería: los mensajes se generan en base a `DanioReal` y flags (`FueEvadido`, `FueCritico`) para mantener coherencia; `CombatePorTurnos` imprime a través de la UI.
+
+Ejemplo práctico (flag de precisión activado):
+
+1) Ejecutar con `--precision-hit`.
+2) `AtaqueFisico` → `DamageResolver.ResolverAtaqueFisico` → chequeo de $p_{hit}$.
+3) Si RNG ≥ $p_{hit}$: `FueEvadido=true`, `DanioReal=0`; si RNG < $p_{hit}$: procede el cálculo de daño, evalúa crítico y aplica sobre el objetivo.
+4) `ResultadoAccion` se devuelve a `CombatePorTurnos` y la UI muestra el mensaje.
+
+Fórmula de impacto (propuesta, usada por el MVP con $k=1.0$): $p_{hit} = clamp(0.35 + Precision - 1.0\cdot Evasion,\ 0.20,\ 0.95)$
+
+Ejemplo práctico (flag de penetración activado):
+
+1) Ejecutar con `--penetracion`.
+2) `AtaqueFisico`/`AtaqueMagico` → `DamageResolver` envuelve la llamada de ataque con `CombatAmbientContext.WithPenetracion(pen)` donde `pen = clamp(Estadisticas.Penetracion, 0, 0.9)`.
+3) En el receptor, se calcula `defensaEfectiva = round(defensa * (1 - pen))` y luego se aplican mitigaciones (y resistencias/vulnerabilidades si es mágico).
+4) `ResultadoAccion.DanioReal` refleja el delta de vida post-mitigación y los mensajes lo usan para coherencia.
 Edge cases y decisiones:
 
 - Daño mínimo = 1 si impacta y tras mitigaciones queda > 0 (salvo inmunidades explícitas).
@@ -169,10 +197,10 @@ Fuente: [`Motor/Servicios/EncuentrosService.cs`](../Motor/Servicios/EncuentrosSe
 - Entradas con `Chance`: primero RNG < Chance; desempate por `Prioridad` y luego `Peso`.
 - Fallback ponderado: selección por `Peso` entre entradas sin `Chance` post-filtros.
 - Mods por atributos (`CalcularModificador`):
-     - Botín/Materiales: + hasta 50% con Percepción+Suerte.
-     - NPC/Eventos/Mazmorras raras: + hasta 25% con Suerte.
-     - Combates comunes/bioma: + hasta 30% con Agilidad+Destreza.
-     - MiniJefe: requiere `MinKills`; bonus por kills extra y Suerte (máx +50%).
+  - Botín/Materiales: + hasta 50% con Percepción+Suerte.
+  - NPC/Eventos/Mazmorras raras: + hasta 25% con Suerte.
+  - Combates comunes/bioma: + hasta 30% con Agilidad+Destreza.
+  - MiniJefe: requiere `MinKills`; bonus por kills extra y Suerte (máx +50%).
 - Cooldowns consultables/limpiables; expone estado con minutos restantes.
 
 ## 8. Supervivencia

@@ -55,9 +55,9 @@ Legend inicial: Solo la 1.x se empieza ahora para evitar cambios masivos de golp
 
 ## Próximos pasos (prioridad sugerida)
 
-- [5.8] Pipeline de daño (etapa A): integrar chequeo de acierto (Precision vs Evasion) en `DamageResolver` como paso opcional y mantener compatibilidad. Añadir `ResolverAtaqueMagico` simétrico al físico.
-- [9.8] Tests pipeline combate: cubrir hit/miss/crit básicos con `RandomService.SetSeed` y dummies deterministas (sin tocar balance actual).
-- [5.10]/[3.4] Integrar stats de combate: usar `Precision`, `CritChance`, `CritMult`, `Penetracion` de `Estadisticas` (defaults ya presentes) y parametrizar en JSON (`progression.json`) las curvas/caps.
+- [5.8] Pipeline de daño (etapa A): chequeo de acierto (Precision vs Evasion) ya integrado de forma opcional en `DamageResolver`. El `Ataque Mágico` ahora también fluye por el resolver (sin paso de precisión) unificando metadatos y mensajería. NUEVO: penetración integrada (reducción de defensa efectiva antes de mitigaciones) detrás del flag `--penetracion`.
+- [9.8] Tests pipeline combate: cobertura base creada (hit/miss/crit) con `RandomService.SetSeed` y dummies deterministas; verificación del orden en daño mágico (Defensa→Mitigación→Resistencia→Vulnerabilidad) y físico (Defensa→Mitigación). NUEVO: pruebas de penetración física y mágica (defensa reducida antes de mitigaciones/resistencias) y gating por toggle.
+- [5.10]/[3.4] Integrar stats de combate: usar `Precision`, `CritChance`, `CritMult`, `Penetracion` de `Estadisticas` (defaults ya presentes) y parametrizar en JSON (`progression.json`) las curvas/caps. Añadir caps sugeridos en `Docs/progression_config.md`.
 - [5.13] Mensajería unificada: canalizar todos los mensajes de combate vía `ResultadoAccion` para evitar duplicados.
 - [10.6] Validación de datos: extender `DataValidatorService` a esquemas de objetos/drops/armas con rangos y referencias cruzadas.
 - [7.1]/[15.1] Repos JSON: consolidar objetos/materiales/balances bajo `IRepository<T>` con caché e invalidación.
@@ -104,9 +104,9 @@ Legend inicial: Solo la 1.x se empieza ahora para evitar cambios masivos de golp
 
 [5.7] Hecho | Resistencias | Inmunidades/mitigaciones por enemigo | Se añadió a `Enemigo` soporte de `Inmunidades` (por clave, ej. "veneno") y `MitigacionFisicaPorcentaje`/`MitigacionMagicaPorcentaje` aplicadas tras la defensa. `AplicarVenenoAccion` ahora respeta la inmunidad de no-muertos (zombi/esqueleto). Resultado: peleas más duras y coherentes con fantasía de mundo hostil.
 
-[5.8] Parcial | Pipeline de daño | `DamageResolver` con pasos (`IDamageStep`): Hit/Evasión, Crítico, Defensa, Mitigación, Resistencias, Aplicación de daño, OnHit/OnKill | Diseñar contrato y ensamblar pasos en orden determinista; centralizar mensajería en un único resultado (`ResultadoAccion`). Tests básicos hit/miss/crit/resist. Avance: `DamageResolver` mínimo mejorado y `AtaqueFisicoAccion` usan el resolver; ahora se registran metadatos de crítico y de evasión (`FueEvadido`), y se agrega mensaje de evasión, sin alterar el daño actual.
+[5.8] Parcial | Pipeline de daño | `DamageResolver` con pasos (`IDamageStep`): Hit/Evasión, Crítico, Defensa, Penetración, Mitigación, Resistencias, Aplicación de daño, OnHit/OnKill | Diseñar contrato y ensamblar pasos en orden determinista; centralizar mensajería en un único resultado (`ResultadoAccion`). Avance: `DamageResolver` mínimo mejorado y `AtaqueFisicoAccion` usan el resolver; se registran metadatos de crítico/evasión, se añade chequeo de precisión opcional y se integra PENETRACIÓN (flag `--penetracion`) propagando el valor mediante `CombatAmbientContext` para reducir defensa efectiva antes de mitigaciones.
 [5.9] Pendiente | Iniciativa y orden | Turnos por Velocidad/Agilidad + ruido RNG, penalizados por Carga de equipo | Definir cálculo e integrar en `CombatePorTurnos`.
-[5.10] Pendiente | Precisión/Crítico/Penetración | Añadir `Precision`, `CritChance`, `CritMult`, `Penetracion` a `Estadisticas` y armas (data) | Integrar a Pipeline de daño; documentar caps y floors.
+[5.10] Parcial | Precisión/Crítico/Penetración | `Precision`, `CritChance`, `CritMult`, `Penetracion` en `Estadisticas` base y uso en pipeline a través de flags `--precision-hit` y `--penetracion` | Integrar caps/curvas desde `progression.json` y documentar en `Docs/progression_config.md`. Extender a data de armas (7.4).
 [5.11] Pendiente | Stamina/Poise | Recurso `Stamina` para acciones físicas y `Poise` para aturdimientos | Costes por arma/peso; caída de Poise causa `Stun` 1 turno. Integración con acciones y estados.
 [5.12] Pendiente | Estados avanzados | Sangrado/Aturdimiento/Buffs data-driven | Extender `IEfecto`, resistencias y stacking; aplicar en pipeline y UI.
 [5.13] Pendiente | Mensajería unificada | Centralizar mensajes de combate | Evitar duplicados/"0 de daño" confuso; una sola capa imprime en base a `ResultadoAccion`.
@@ -167,7 +167,7 @@ Bitácora movida: Las entradas cronológicas de esta sección fueron movidas a `
 [9.5] Hecho | Test | Recolección energía y requisitos | Cooldown por nodo: aplicar y limpiar al entrar sector (persistencia multisector)
 [9.6] Hecho | Test | EncuentrosService: MinKills y ventanas horarias (incluye cruce de medianoche) | Pruebas unitarias que ejercitan gating por kills y por HoraMin/HoraMax con control de hora en `Juego` y `RandomService.SetSeed` para determinismo
 [9.7] Hecho | Test | EncuentrosService: Chance/Prioridad y Cooldown | Pruebas unitarias verifican activación por `Chance` (1.0 y 0.0), desempate por `Prioridad` y bloqueo temporal por `CooldownMinutos` con proveedor de fecha/hora inyectado, incluyendo expiración de cooldown.
-[9.8] Pendiente | Test | Pipeline de combate | Cobertura de Hit/Evadir/Crítico/Defensa/Mitigación/Resistencias y orden de pasos en `DamageResolver`.
+[9.8] Parcial | Test | Pipeline de combate | Cobertura: Hit/Miss/Crítico con `RandomService.SetSeed` y dummies deterministas; verificación del orden en daño mágico (Defensa→Mitigación→Resistencia→Vulnerabilidad) y físico (Defensa→Mitigación). NUEVO: pruebas de penetración (físico y mágico) aplicando reducción de defensa antes de mitigaciones/resistencias y gating por `--penetracion`. Pendiente: caps/curvas desde `progression.json` y mensajes 100% centralizados.
 [9.9] Pendiente | Test | Estados avanzados | Aplicación/decadencia/stacking de Sangrado/Aturdimiento/Buffs y resistencias.
 [9.10] Pendiente | Test | Supervivencia | Tick de hambre/sed/fatiga/temperatura; penalizaciones por umbral y multiplicadores por contexto/bioma.
 

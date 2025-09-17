@@ -93,6 +93,24 @@ namespace MiJuegoRPG.Tests
             Assert.Equal("Ataque Mágico", res.NombreAccion);
             Assert.True(res.EsMagico);
             Assert.Equal(38, objetivo.Vida); // 50 - 12
+            Assert.Contains("Ataque Mágico", res.Mensajes[0]);
+            Assert.Contains("12", res.Mensajes[0]);
+        }
+
+        [Fact]
+        public void AtaqueMagicoAccion_UsaResolver_CalculaDanioRealPorDeltaDeVida()
+        {
+            var atacante = new DummyFighter { Nombre = "Mage" };
+            var objetivo = new DummyFighter { Nombre = "Mob" };
+            var accion = new MiJuegoRPG.Motor.Acciones.AtaqueMagicoAccion();
+
+            int vidaAntes = objetivo.Vida;
+            var res = accion.Ejecutar(atacante, objetivo);
+            int esperado = vidaAntes - objetivo.Vida;
+
+            Assert.Equal(esperado, res.DanioReal);
+            Assert.False(res.FueEvadido);
+            Assert.False(res.FueCritico); // DummyFighter no activa crítico del resolver
         }
 
         [Fact]
@@ -126,6 +144,55 @@ namespace MiJuegoRPG.Tests
             Assert.Equal(vidaAntes, objetivo.Vida);
             Assert.True(res.DanioReal >= 0);
             Assert.True(res.FueEvadido);
+        }
+
+        [Fact]
+        public void AtaqueFisico_PrecisionToggle_AlFallarNoHayDano()
+        {
+            // Activar chequeo de precisión global
+            GameplayToggles.PrecisionCheckEnabled = true;
+            try
+            {
+                // Personaje con precisión 0 garantiza fallo
+                var pj = new MiJuegoRPG.Personaje.Personaje("Heroe");
+                pj.Estadisticas.Precision = 0.0; // forzar fallo
+                var objetivo = new DummyFighter { Nombre = "Target" };
+                int vidaAntes = objetivo.Vida;
+
+                // Semilla determinista (por si otros RNGs aparecen en el futuro)
+                MiJuegoRPG.Motor.Servicios.RandomService.Instancia.SetSeed(123);
+
+                var accion = new MiJuegoRPG.Motor.Acciones.AtaqueFisicoAccion();
+                var res = accion.Ejecutar(pj, objetivo);
+
+                Assert.Equal(vidaAntes, objetivo.Vida);
+                Assert.True(res.FueEvadido); // se marca como evadido/fallo
+                Assert.Equal(0, res.DanioReal);
+            }
+            finally
+            {
+                // Desactivar para no impactar otras pruebas
+                GameplayToggles.PrecisionCheckEnabled = false;
+            }
+        }
+
+        [Fact]
+        public void AtaqueFisico_CriticoForzado_SeMarcaCritico()
+        {
+            // Arrange
+            var pj = new MiJuegoRPG.Personaje.Personaje("CritHero");
+            // Forzar crítico: CritChance >= 1.0 hará pCrit=1.0 en resolver
+            pj.Estadisticas.CritChance = 1.0;
+            var objetivo = new DummyFighter { Nombre = "Dummy" };
+
+            // Semilla determinista
+            MiJuegoRPG.Motor.Servicios.RandomService.Instancia.SetSeed(1);
+
+            var accion = new MiJuegoRPG.Motor.Acciones.AtaqueFisicoAccion();
+            var res = accion.Ejecutar(pj, objetivo);
+
+            Assert.True(res.FueCritico);
+            Assert.True(res.DanioReal >= 1); // daño lo calcula AtacarFisico actual
         }
     }
 }

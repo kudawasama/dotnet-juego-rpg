@@ -10,6 +10,8 @@ using MiJuegoRPG.Motor.Servicios;
 public static class GameplayToggles
 {
     public static bool PrecisionCheckEnabled = false;
+    // Toggle para activar la penetración en el pipeline (no intrusivo por defecto)
+    public static bool PenetracionEnabled = false;
 }
 
 class Program
@@ -42,7 +44,8 @@ class Program
                         Console.WriteLine("  --hidratar-nodos[=max]     Escribe nodos de recolección en sectores vacíos a partir del bioma. Ej: --hidratar-nodos=5\n");
                         Console.WriteLine("  --reparar-materiales=report[;ruta]  Escanea nodos y reporta materiales inválidos (Nombre vacío/Cantidad<=0). No modifica archivos.\n");
                         Console.WriteLine("  --reparar-materiales=write[;ruta]   Aplica reparación eliminando materiales inválidos. Genera reporte.\n");
-                        Console.WriteLine("  --precision-hit             Activa el chequeo de precisión (probabilidad de acierto) en ataques físicos y mágicos.");
+                        Console.WriteLine("  --precision-hit             Activa el chequeo de precisión (probabilidad de acierto) en ataques físicos.");
+                        Console.WriteLine("  --penetracion               Activa la penetración (reduce defensa efectiva) en ataques físicos y mágicos.");
                         Console.WriteLine("Notas:");
                         Console.WriteLine("- Puedes cambiar el logger en runtime desde Menú Principal → Opciones.");
                         Console.WriteLine("- Las preferencias de logger se guardan por partida; los flags CLI tienen precedencia al inicio.");
@@ -54,6 +57,10 @@ class Program
                     if (string.Equals(a, "--precision-hit", StringComparison.OrdinalIgnoreCase))
                     {
                         GameplayToggles.PrecisionCheckEnabled = true;
+                    }
+                    if (string.Equals(a, "--penetracion", StringComparison.OrdinalIgnoreCase))
+                    {
+                        GameplayToggles.PenetracionEnabled = true;
                     }
                     if (string.Equals(a, "--log-off", StringComparison.OrdinalIgnoreCase))
                     {

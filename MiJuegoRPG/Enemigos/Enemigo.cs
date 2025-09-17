@@ -73,7 +73,16 @@ namespace MiJuegoRPG.Enemigos
 
         public virtual void RecibirDanioFisico(int danioFisico)
         {
-            int danioTrasDef = Math.Max(1, danioFisico - Defensa);
+            // Defensa efectiva con penetración (si el contexto indica un atacante con penetración y el toggle está activo)
+            int defensaBase = Defensa;
+            double pen = 0.0;
+            if (GameplayToggles.PenetracionEnabled)
+            {
+                pen = MiJuegoRPG.Motor.Servicios.CombatAmbientContext.GetPenetracion();
+            }
+            int defensaEfectiva = (int)Math.Round(defensaBase * (1.0 - pen), MidpointRounding.AwayFromZero);
+            if (defensaEfectiva < 0) defensaEfectiva = 0;
+            int danioTrasDef = Math.Max(1, danioFisico - defensaEfectiva);
             if (MitigacionFisicaPorcentaje > 0)
             {
                 danioTrasDef = (int)Math.Max(1, Math.Round(danioTrasDef * (1.0 - Math.Clamp(MitigacionFisicaPorcentaje, 0.0, 0.9)), MidpointRounding.AwayFromZero));
@@ -85,7 +94,15 @@ namespace MiJuegoRPG.Enemigos
 
         public virtual void RecibirDanioMagico(int danioMagico)
         {
-            int danioTrasDef = Math.Max(1, danioMagico - DefensaMagica);
+            int defMagBase = DefensaMagica;
+            double pen = 0.0;
+            if (GameplayToggles.PenetracionEnabled)
+            {
+                pen = MiJuegoRPG.Motor.Servicios.CombatAmbientContext.GetPenetracion();
+            }
+            int defMagEfectiva = (int)Math.Round(defMagBase * (1.0 - pen), MidpointRounding.AwayFromZero);
+            if (defMagEfectiva < 0) defMagEfectiva = 0;
+            int danioTrasDef = Math.Max(1, danioMagico - defMagEfectiva);
             if (MitigacionMagicaPorcentaje > 0)
             {
                 danioTrasDef = (int)Math.Max(1, Math.Round(danioTrasDef * (1.0 - Math.Clamp(MitigacionMagicaPorcentaje, 0.0, 0.9)), MidpointRounding.AwayFromZero));

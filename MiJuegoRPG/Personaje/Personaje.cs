@@ -405,6 +405,12 @@ namespace MiJuegoRPG.Personaje
                 return;
             }
             double defensaTotal = Defensa + ObtenerBonificadorAtributo("Defensa") + ObtenerBonificadorEstadistica("Defensa Física");
+            // Aplicar penetración si está activa: reduce la defensa efectiva antes de mitigar
+            if (GameplayToggles.PenetracionEnabled)
+            {
+                double pen = MiJuegoRPG.Motor.Servicios.CombatAmbientContext.GetPenetracion();
+                defensaTotal = System.Math.Max(0.0, defensaTotal * (1.0 - pen));
+            }
             double danioReal = Math.Max(1, danio - defensaTotal);
             Vida -= (int)danioReal;
             if (Vida < 0) Vida = 0;
@@ -421,6 +427,11 @@ namespace MiJuegoRPG.Personaje
                 return;
             }
             double defensaMagicaTotal = DefensaMagica + ObtenerBonificadorAtributo("Resistencia") + ObtenerBonificadorEstadistica("Defensa Mágica");
+            if (GameplayToggles.PenetracionEnabled)
+            {
+                double pen = MiJuegoRPG.Motor.Servicios.CombatAmbientContext.GetPenetracion();
+                defensaMagicaTotal = System.Math.Max(0.0, defensaMagicaTotal * (1.0 - pen));
+            }
             double danioReal = Math.Max(1, danio - defensaMagicaTotal);
             Vida -= (int)danioReal;
             if (Vida < 0) Vida = 0;

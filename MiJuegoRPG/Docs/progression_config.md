@@ -278,7 +278,38 @@ Nota pipeline: aplicar en el paso 5 del orden descrito en `Arquitectura_y_Funcio
 
 ---
 
-Última actualización: 2025-09-17 — Parametrización 3.4 (detallado, ejemplos y contratos).
+## 10. Caps y curvas recomendadas (combate)
+
+Los siguientes límites son conservadores para mantener una progresión lenta y exigente. Deben reflejarse en el cálculo de `Estadisticas` y (cuando aplique) en el pipeline de combate. Donde corresponda, se documenta el flag CLI que habilita la etapa.
+
+- `Precision` (usa `--precision-hit` en físico):
+   - Rango efectivo recomendado: $[0.00 .. 0.95]$.
+   - Fórmula de impacto propuesta: $p_{hit} = clamp(0.35 + Precision - k\cdot Evasion,\ 0.20,\ 0.95)$ con $k \in [1.0, 1.2]$.
+
+- `CritChance` y `CritMult`:
+   - `CritChance` recomendado: $[0.00 .. 0.50]$.
+   - `CritMult` recomendado: $[1.25 .. 1.75]$.
+   - Política de test: si `CritChance >= 1.0` se fuerza crítico para pruebas deterministas (solo si hay daño real > 0).
+
+- `Penetracion` (usa `--penetracion`):
+   - Rango efectivo recomendado: $[0.00 .. 0.25]$ para jugador early/mid; clamps defensivos del runtime a $[0.00 .. 0.90]$ por seguridad.
+   - Aplicación en pipeline: `defensaEfectiva = round(defensa * (1 - Penetracion))` ANTES de mitigaciones/resistencias.
+
+Sugerencia de mapeo desde atributos (ejemplo base, a ajustar en `Estadisticas`):
+
+- `Precision = clamp(0.01·Destreza + 0.005·Percepcion, 0, 0.95)`
+- `CritChance = clamp(0.01·(Destreza + Suerte), 0, 0.5)`
+- `CritMult = clamp(1.5 + 0.001·Sabiduría, 1.25, 1.75)`
+- `Penetracion = clamp(0.002·Destreza, 0, 0.25)`
+
+Notas de integración:
+
+- Los flags de juego (`--precision-hit`, `--penetracion`) controlan la activación de etapas sin alterar balance por defecto.
+- Para Unity, mantener estos caps en un `ScriptableObject` espejo para ajustes en editor.
+
+---
+
+Última actualización: 2025-09-17 — Parametrización 3.4 + Caps de combate (5.10).
 
 ## Changelog de balance (datos relacionados)
 

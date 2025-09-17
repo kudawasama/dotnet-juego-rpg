@@ -1,11 +1,46 @@
 # Bitácora de desarrollo
 
+## 2025-09-17 — Penetración en pipeline de combate (flag `--penetracion`)
+
+- Se implementó la etapa de Penetración en el pipeline de daño de forma no intrusiva y opcional (desactivada por defecto). Al habilitar el flag CLI `--penetracion`, la defensa efectiva del objetivo se reduce en proporción a la `Estadisticas.Penetracion` del atacante ANTES de aplicar mitigaciones/resistencias.
+- Técnica utilizada: contexto ambiental `CombatAmbientContext` que transporta la penetración del atacante durante la ejecución del ataque sin modificar firmas públicas. `DamageResolver` establece el valor de forma temporal alrededor de `AtacarFisico/AtacarMagico` cuando el ejecutor es `Personaje`.
+- Receptores actualizados: `Enemigo.RecibirDanioFisico/Magico` y `Personaje.RecibirDanioFisico/Magico` leen la penetración del contexto y calculan `defensaEfectiva = round(defensaBase * (1 - pen))` antes de `Mitigacion*`. El daño mágico mantiene el orden: Defensa→Mitigación→Resistencia(`magia`)→Vulnerabilidad.
+- CLI y toggles: se añadió `GameplayToggles.PenetracionEnabled` en `Program.cs` y el flag `--penetracion` con ayuda en `--help`. El flag `--precision-hit` se mantuvo y se aclaró que aplica al ataque físico.
+- Pruebas unitarias: `PenetracionPipelineTests` con escenarios deterministas y expectativas numéricas:
+  - Físico con pen: defensa 30, pen 20%, mitigación 10% sobre daño 100 → `DanioReal = 68`.
+  - Mágico con pen: defensa mágica 20, resistencia `magia` 30%, vulnerabilidad 1.2, pen 25% → `DanioReal = 71`.
+  - Toggle OFF: mismo caso físico inicial pero con `--penetracion` desactivado → `DanioReal = 63`.
+- Resultado: build y suite de pruebas en verde (total 52). Documentación sincronizada en `Docs/Roadmap.md` ([5.8], [5.10], [9.8]). Pendiente: caps/curvas de `Penetracion`/`CritChance`/`CritMult`/`Precision` en `Docs/progression_config.md`.
+
+## 2025-09-17 — Tests: orden Defensa→Mitigación→Resistencias/Vulnerabilidades
+
+- Se añadieron pruebas `DamagePipelineOrderTests` que validan, de forma determinista, el orden de aplicación en el pipeline de daño no intrusivo:
+  - Mágico: Defensa → Mitigación → Resistencia (canal "magia") → Vulnerabilidad.
+  - Físico: Defensa → Mitigación.
+  - Escenarios adicionales: mágico sin vulnerabilidad (solo defensa/mitigación/resistencia) y mágico solo con vulnerabilidad.
+- Metodología: atacante plano que aplica 100 de daño; `EnemigoEstandar` configurado con valores controlados; se verifica `DanioReal` por delta de vida vía `DamageResolver` y se comparan resultados esperados (redondeos con `MidpointRounding.AwayFromZero`).
+- Roadmap actualizado ([9.8]) para reflejar el avance de cobertura; próximos pasos: penetración, caps desde `progression.json` y centralización total de mensajería.
+
+## 2025-09-17 — Ataque Mágico unificado vía DamageResolver
+
+- `AtaqueMagicoAccion` ahora invoca `DamageResolver.ResolverAtaqueMagico`, manteniendo el cálculo de daño actual pero unificando metadatos y mensajería: `DanioReal` por delta de vida, `FueEvadido` cuando no aplica daño y `FueCritico` bajo la misma política que el físico (crítico forzado si `CritChance>=1.0` en pruebas).
+- Documentación sincronizada: `Docs/Arquitectura_y_Funcionamiento.md` refleja que el mágico también fluye por el resolver; `Docs/Roadmap.md` actualizado en [5.8]/[9.8].
+- Calidad: se corrigieron avisos de `markdownlint` (MD007) en listas anidadas de `Arquitectura_y_Funcionamiento.md`.
+
+## 2025-09-17 — Combate: precisión opcional y pruebas
+
+- Se introdujo chequeo de precisión opcional en `DamageResolver` previo al ataque físico, controlado por el flag CLI `--precision-hit` (variable `GameplayToggles.PrecisionCheckEnabled`).
+- Mensajería y metadatos: cuando falla por precisión se marca `FueEvadido=true` y se emite un mensaje de fallo; cuando `CritChance>=1.0` en `Personaje`, el crítico se fuerza para pruebas deterministas.
+- Se ajustó el cálculo de `DanioReal` en `ResultadoAccion` tomando la diferencia de vida del objetivo antes/después del ataque para reflejar mitigaciones.
+- Pruebas añadidas (`AccionesCombateTests`): `AtaqueFisico_PrecisionToggle_AlFallarNoHayDano` y `AtaqueFisico_CriticoForzado_SeMarcaCritico`. Todas las pruebas existentes se mantienen verdes (47/47).
+- Balance por defecto sin cambios: el flag está desactivado por defecto.
+
 ## 2025-09-17 — Expansión documental detallada
 
 - `progression_config.md`: se añadieron fórmulas en KaTeX, ejemplos numéricos paso a paso, orden de aplicación (clamps) y contrato JSON sugerido con defaults. Se incluyeron pruebas recomendadas y guías de tuning.
-- `Arquitectura_y_Funcionamiento.md`: se profundizó en contratos (interfaces/DTOs), pipeline de combate con orden exacto y límites, referencias a `Flujo.txt`, y apéndice de firmas públicas. Objetivo: facilitar onboarding y migración a Unity.
+- `Arquitectura_y_Funcionamiento.md`: se profundizó en contratos (interfaces/DTOs), pipeline de combate con orden exacto y límites, referencias a `Flujo.txt`, y apéndice de firmas públicas. Además, se documentó el estado actual (MVP) del pipeline de combate: precisión opcional activable por `--precision-hit`, cálculo de `DanioReal` por delta de vida y forzado de crítico (`CritChance>=1.0`) para pruebas. Objetivo: facilitar onboarding y migración a Unity.
 - Roadmap: anotación del hito documental y recordatorio de política de “fuente única”.
- - Índice: `Docs/README.md` actualizado con enlaces profundos a secciones clave de `Flujo.txt` (menús) y `Arquitectura_y_Funcionamiento.md` (pipeline/contratos) para navegación rápida.
+- Índice: `Docs/README.md` actualizado con enlaces profundos a secciones clave de `Flujo.txt` (menús) y `Arquitectura_y_Funcionamiento.md` (pipeline/contratos) para navegación rápida.
 
 
 ### Navegación y anclas

@@ -1,4 +1,5 @@
 using MiJuegoRPG.Interfaces;
+using MiJuegoRPG.Motor.Servicios;
 
 namespace MiJuegoRPG.Motor.Acciones
 {
@@ -10,18 +11,8 @@ namespace MiJuegoRPG.Motor.Acciones
 
         public ResultadoAccion Ejecutar(ICombatiente ejecutor, ICombatiente objetivo)
         {
-            int danio = ejecutor.AtacarMagico(objetivo);
-            var res = new ResultadoAccion
-            {
-                NombreAccion = Nombre,
-                Ejecutor = ejecutor,
-                Objetivo = objetivo,
-                DanioBase = danio,
-                DanioReal = danio,
-                EsMagico = true,
-                ObjetivoDerrotado = !objetivo.EstaVivo,
-            };
-            res.Mensajes.Add($"{ejecutor.Nombre} lanza {Nombre} sobre {objetivo.Nombre} y causa {danio} de daño mágico.");
+            var resolver = new DamageResolver();
+            var res = resolver.ResolverAtaqueMagico(ejecutor, objetivo);
             return res;
         }
     }
