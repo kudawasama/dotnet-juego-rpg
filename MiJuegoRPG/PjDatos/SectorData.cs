@@ -9,7 +9,8 @@ namespace MiJuegoRPG.PjDatos
     [JsonPropertyName("nombre")] public string Nombre { get; set; } = string.Empty;
     // "bioma" en los JSON → se mapea a Region para mantener compatibilidad con código existente
     [JsonPropertyName("bioma")] public string Region { get; set; } = string.Empty;
-        public string Tipo { get; set; } = "Ciudad";
+    // Por defecto los sectores son rutas/campo; evitar que falte 'tipo' en JSON y se trate como ciudad
+    public string Tipo { get; set; } = "Ruta";
         public string Descripcion { get; set; } = string.Empty;
         public int NivelMinimo { get; set; }
         public int NivelMaximo { get; set; }

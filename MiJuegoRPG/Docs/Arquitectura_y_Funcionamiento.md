@@ -103,11 +103,30 @@ Atributos base (del código): `Fuerza`, `Destreza`, `Vitalidad`, `Agilidad`, `Su
 - RegeneracionMana = `0.01·Inteligencia`
 - Evasion = `0.01·(Agilidad + Suerte)`
 - Critico (chance) = `0.01·(Destreza + Suerte)`
-- Precision = `clamp(0.01·Destreza + 0.005·Percepcion, 0, 0.95)`
-- CritMult = `clamp(1.5 + 0.001·Sabiduría, -, 2.0)`
-- Penetracion = `clamp(0.002·Destreza, 0, 0.2)`
+- Precision = `ClampPrecision(0.01·Destreza + 0.005·Percepcion)`
+- CritMult = `ClampCritMult(1.5 + 0.001·Sabiduría)`
+- Penetracion = `ClampPenetracion(0.002·Destreza)`
 
-Notas: cap de evasión efectiva en `IntentarEvadir` = 0.5 (previo a RNG), penalización 0.8 para hechizos. Equipo y supervivencia modifican estas cifras.
+Notas: los clamps se aplican de forma centralizada a través de `CombatBalanceConfig` cargando caps desde `DatosJuego/progression.json` (sección opcional `StatsCaps`). Si el archivo no define `StatsCaps`, se usan defaults conservadores. Cap de evasión efectiva en `IntentarEvadir` = 0.5 (previo a RNG), penalización 0.8 para hechizos. Equipo y supervivencia modifican estas cifras.
+
+### 3.2 Caps de combate (data‑driven)
+
+Fuente de verdad: `DatosJuego/progression.json` → sección opcional `StatsCaps` (ver `Docs/progression_config.md`).
+
+- Servicio: `Motor/Servicios/CombatBalanceConfig.cs` proporciona `ClampPrecision`, `ClampCritChance`, `ClampCritMult` y `ClampPenetracion`.
+- Defaults actuales (si faltan en JSON):
+  - `PrecisionMax = 0.95`
+  - `CritChanceMax = 0.50`
+  - `CritMultMin = 1.25`, `CritMultMax = 1.75`
+  - `PenetracionMax = 0.25`
+
+Ejemplo (KaTeX):
+
+$\text{Precision} = \min(0.95,\ 0.01\cdot Destreza + 0.005\cdot Percepcion)$
+
+$\text{CritMult} = \operatorname{clamp}(1.5 + 0.001\cdot Sabidur\'ia,\ 1.25,\ 1.75)$
+
+$\text{Penetraci\'on} = \min(0.25,\ 0.002\cdot Destreza)$
 
 ## 4. Combate (pipeline y estados)
 
@@ -122,7 +141,6 @@ Estado actual (MVP implementado):
 Unificación de acciones:
 
 - El `Ataque Mágico` también pasa por `DamageResolver` (sin paso de precisión), manteniendo el cálculo de daño actual pero unificando metadatos (`DanioReal`, `FueEvadido`, `FueCritico`) y mensajería.
-
 
 Orden de pipeline propuesto (futuro inmediato):
 
@@ -222,6 +240,24 @@ Fuente: [`Motor/Servicios/EncuentrosService.cs`](../Motor/Servicios/EncuentrosSe
 
 - `IUserInterface`: desacopla vista; implementaciones de consola y silenciosa (tests).
 - `UIStyle`: estilo de encabezados y etiquetas de reputación/supervivencia.
+
+### 9.1 Estado del personaje (layout actual)
+
+- Implementación: `Motor/EstadoPersonajePrinter.cs` usa `UIStyle` para renderizar un layout profesional y compacto, con opción de modo detallado.
+- Secciones:
+  - Resumen superior: `Nombre — Clase • Nivel • Título` y tiempo de mundo.
+  - Barras: Vida/Maná/Energía con porcentaje y segmentos; barra de XP con “faltante” al siguiente nivel.
+  - Atributos: compactos en línea, mostrando bonos agregados por equipo/clases (por ejemplo: `FUE 10 (+2)`).
+  - Estadísticas clave: Defensa/Precisión/Crítico/Penetración/Velocidad.
+  - Supervivencia: indicador compacto (Hambre/Sed/Fatiga/Temperatura) con etiquetas por umbral (OK/ADVERTENCIA/CRÍTICO).
+  - Modo detallado (opcional): sección "Equipo" con slots (Arma, Casco, Armadura, Pantalón, Zapatos, Collar, Cinturón, Accesorio 1/2). Para cada pieza muestra nombre y stats clave (Rareza/Perfección; y en armas, Daño Físico/Mágico). Se activa llamando `EstadoPersonajePrinter.MostrarEstadoPersonaje(pj, true)` o desde el `Menú Fijo` (opción "Estado (detallado)").
+- Decisión de diseño: por defecto, la vista compacta evita listados largos de equipo para priorizar legibilidad. El detalle de equipo está disponible bajo demanda a través del modo detallado o el Inventario.
+
+### 9.2 Gating de menús por sector (Ciudad vs Fuera de Ciudad)
+
+- Lógica en `Motor/Juego.cs` (`MostrarMenuPorUbicacion`): el menú de ciudad se muestra solo si `SectorData.Tipo == "Ciudad"` y además `EsCentroCiudad` o `CiudadPrincipal` son verdaderos. Para cualquier otra parte de una ciudad (`ParteCiudad`), se usa el menú de “Fuera de Ciudad”.
+- Justificación: evita mostrar opciones de ciudad completa en entradas/periferias; alinea UX con exploración por zonas.
+- Soporte de datos: `PjDatos/SectorData.cs` define `Tipo` con valor por defecto `"Ruta"`, previniendo clasificaciones incorrectas cuando el JSON omite el campo.
 
 ## 10. Datos, validación y guardado
 

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using MiJuegoRPG.Dominio;
+using MiJuegoRPG.Personaje;
 
 namespace MiJuegoRPG.Motor.Servicios
 {
@@ -373,9 +374,9 @@ namespace MiJuegoRPG.Motor.Servicios
             // Validar requisito herramienta
             if (!string.IsNullOrEmpty(nodo.Requiere))
             {
-                bool tieneHerramienta = juego.jugador != null &&
-                    juego.jugador.Inventario != null &&
-                    juego.jugador.Inventario.NuevosObjetos.Any(o => o.Objeto.Nombre.Contains(nodo.Requiere));
+                // Soporta partidas antiguas donde NuevosObjetos podría ser null
+                var lista = juego.jugador?.Inventario?.NuevosObjetos;
+                bool tieneHerramienta = TieneHerramientaRequerida(lista, nodo.Requiere);
                 if (!tieneHerramienta)
                 {
                     juego.Ui.WriteLine($"Necesitas un {nodo.Requiere} para realizar esta acción.");
@@ -470,6 +471,39 @@ namespace MiJuegoRPG.Motor.Servicios
                 }
             }
             InputService.Pausa();
+        }
+
+        /// <summary>
+        /// Verifica si el inventario del jugador contiene una herramienta que satisface el requisito del nodo.
+        /// - Coincidencia exacta case-insensitive prioritaria.
+        /// - Fallback: contiene (case-insensitive) para tolerar variantes como "Pico de Hierro" vs "Pico".
+        /// - Null-safe para partidas antiguas sin lista de objetos inicializada.
+        /// </summary>
+        private static bool TieneHerramientaRequerida(List<ObjetoConCantidad>? lista, string requiere)
+        {
+            if (string.IsNullOrWhiteSpace(requiere) || lista == null || lista.Count == 0)
+                return false;
+
+            string ReqNorm(string s) => s.Trim();
+
+            string req = ReqNorm(requiere);
+
+            foreach (var entry in lista)
+            {
+                var nombre = entry?.Objeto?.Nombre;
+                if (string.IsNullOrWhiteSpace(nombre))
+                    continue;
+                var nom = ReqNorm(nombre);
+
+                // 1) Coincidencia exacta (ignorando mayúsculas/minúsculas)
+                if (string.Equals(nom, req, StringComparison.OrdinalIgnoreCase))
+                    return true;
+
+                // 2) Fallback: nombre contiene el requisito (p. ej., "Pico de Hierro" satisface "Pico")
+                if (nom.IndexOf(req, StringComparison.OrdinalIgnoreCase) >= 0)
+                    return true;
+            }
+            return false;
         }
 
         private static string FormatearRarezaTag(string rareza)

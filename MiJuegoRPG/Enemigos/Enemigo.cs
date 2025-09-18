@@ -49,8 +49,8 @@ namespace MiJuegoRPG.Enemigos
             // Chequeo de evasión del objetivo
             if (objetivo is IEvadible evasivo && evasivo.IntentarEvadir(false))
             {
-                var ui = MiJuegoRPG.Motor.Juego.ObtenerInstanciaActual()?.Ui;
-                ui?.WriteLine($"¡{objetivo.Nombre} evadió el ataque físico de {Nombre}!");
+                // Mensajería de combate centralizada vía DamageResolver (evitar duplicados aquí)
+                MiJuegoRPG.Motor.Servicios.Logger.Debug($"[{Nombre}] ataque físico evadido por {objetivo.Nombre}");
                 return 0;
             }
             int danio = Ataque;
@@ -62,8 +62,8 @@ namespace MiJuegoRPG.Enemigos
         {
             if (objetivo is IEvadible evasivo && evasivo.IntentarEvadir(true))
             {
-                var ui = MiJuegoRPG.Motor.Juego.ObtenerInstanciaActual()?.Ui;
-                ui?.WriteLine($"¡{objetivo.Nombre} evadió el hechizo de {Nombre}!");
+                // Mensajería de combate centralizada vía DamageResolver (evitar duplicados aquí)
+                MiJuegoRPG.Motor.Servicios.Logger.Debug($"[{Nombre}] ataque mágico evadido por {objetivo.Nombre}");
                 return 0;
             }
             int danio = Ataque; // Puedes ajustar la lógica si tienes un atributo de ataque mágico

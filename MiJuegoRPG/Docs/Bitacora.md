@@ -1,5 +1,31 @@
 # Bitácora de desarrollo
 
+## 2025-09-18 — Estado del personaje: modo detallado y acceso por menú
+
+- Se añadió un modo "detallado" al `EstadoPersonajePrinter` (`MostrarEstadoPersonaje(pj, bool detallado=false)`). Cuando está activo, se imprime una nueva sección "Equipo" listando slots: Arma, Casco, Armadura, Pantalón, Zapatos, Collar, Cinturón, Accesorio 1 y 2, con nombre del ítem y stats clave (Rareza/Perfección; para armas, Daño Físico/Mágico). La vista compacta se mantiene como predeterminada.
+- `Juego.MostrarEstadoPersonaje` ahora expone un overload que acepta el flag `detallado` y el `Menú Fijo` incluye una opción separada para abrir el estado en modo detallado.
+- Validación: build y suite en verde (58/58) tras los cambios, ver salida de tareas de build/test.
+
+## 2025-09-18 — Gating de menú de ciudad, rediseño Estado y fix CS0234
+
+- Corrección build: se resolvió el error intermitente `CS0234` en `RecoleccionService.cs` (referencia a `MiJuegoRPG.Personaje.NuevoObjeto` inexistente). La validación de herramienta ahora usa el tipo correcto `ObjetoConCantidad` y se agregó `using MiJuegoRPG.Personaje;` para simplificar la firma. Build limpio tras `dotnet clean` y suite verde.
+- Gating de menú de ciudad: `Juego.MostrarMenuPorUbicacion` solo muestra el menú de ciudad si el sector es `Tipo:"Ciudad"` y además `EsCentroCiudad` o `CiudadPrincipal` son verdaderos. En otras partes de la ciudad se utiliza el menú de “Fuera de Ciudad”. Soporte de datos: `PjDatos/SectorData.cs` ahora tiene `Tipo` por defecto `"Ruta"` para evitar clasificaciones falsas cuando el JSON no especifica el tipo.
+- Estado del personaje (UI): `EstadoPersonajePrinter` fue remaquetado con `UIStyle` para un aspecto profesional y compacto: encabezado/resumen, barras de Vida/Maná/Energía y XP, atributos con bonos agregados, y sección de supervivencia con etiquetas por umbral. En línea con la futura migración a Unity.
+- Validación: `dotnet test --nologo` en verde (58/58). Se actualizó `Docs/Roadmap.md` con estos avances y se registró este cambio aquí para trazabilidad.
+
+## 2025-09-17 — Fix NRE en Recolección (herramienta requerida)
+
+- Se corrigió un `NullReferenceException` al ejecutar recolección en nodos con `Requiere` (p. ej., "Pico de Hierro") cuando partidas antiguas tenían `Inventario.NuevosObjetos == null`.
+- Cambio: en `Motor/Servicios/RecoleccionService.cs` (`EjecutarAccion`), la validación de herramienta ahora usa null-safety (`?.`) y búsqueda case-insensitive sobre la lista local segura. Si falta la herramienta, se informa por UI y no rompe.
+- Validación: build correcto y suite en verde (58/58).
+
+## 2025-09-17 — Mensajería de combate unificada vía DamageResolver
+
+- Se eliminaron impresiones directas a UI en `Personaje.AtacarFisico/AtacarMagico` y `Personaje.RecibirDanio*`, así como en `Enemigo.AtacarFisico/AtacarMagico`. En su lugar, la mensajería de combate se centraliza en `DamageResolver`, que compone `ResultadoAccion.Mensajes`.
+- `CombatePorTurnos`: el turno de los enemigos ahora usa `DamageResolver.ResolverAtaqueFisico(enemigo, jugador)` y muestra únicamente los mensajes de `ResultadoAccion`, evitando duplicados e inconsistencias (por ejemplo, “0 de daño”).
+- Logs de depuración se mantienen mediante `Logger.Debug(...)` en puntos clave (evadidos y aplicación de daño) sin afectar la UI del jugador.
+- Resultado: suite en verde (58/58). Documentación pendiente de reflejar el estado de [5.13] en el Roadmap.
+
 ## 2025-09-17 — Remaquetado de Roadmap (Combate/Testing)
 
 - Se reestructuraron las secciones `5. COMBATE` (ítems [5.8], [5.10], [5.13]) y `9. TESTING` (ítem [9.8]) en `Docs/Roadmap.md` para mejorar legibilidad y trazabilidad.
@@ -17,6 +43,24 @@
   - Mágico con pen: defensa mágica 20, resistencia `magia` 30%, vulnerabilidad 1.2, pen 25% → `DanioReal = 71`.
   - Toggle OFF: mismo caso físico inicial pero con `--penetracion` desactivado → `DanioReal = 63`.
 - Resultado: build y suite de pruebas en verde (total 52). Documentación sincronizada en `Docs/Roadmap.md` ([5.8], [5.10], [9.8]). Pendiente: caps/curvas de `Penetracion`/`CritChance`/`CritMult`/`Precision` en `Docs/progression_config.md`.
+
+## 2025-09-17 — Caps de combate centralizados y tests Crit+Pen
+
+- Se creó `Motor/Servicios/CombatBalanceConfig.cs` para cargar caps opcionales (`StatsCaps`) desde `DatosJuego/progression.json` con defaults conservadores (`PrecisionMax=0.95`, `CritChanceMax=0.50`, `CritMult∈[1.25,1.75]`, `PenetracionMax=0.25`).
+- `Personaje/Estadisticas` ahora aplica clamps centralizados a `Precision`, `CritChance`, `CritMult` y `Penetracion` usando el servicio anterior (sin cambiar fórmulas base).
+- Se añadieron pruebas `EstadisticasCapsTests` verificando que valores extremos respetan los caps por defecto.
+- Roadmap actualizado ([9.8]) para reflejar casos de interacción Crítico + Penetración (físico y mágico) que validan orden, `DanioReal` y flag `FueCritico`.
+- `Docs/progression_config.md` incluye ahora la sección `StatsCaps` en el contrato JSON y reglas de validación.
+
+## 2025-09-17 — Fix pruebas: alias de tipo `Personaje`
+
+- Se corrigió un error de compilación intermitente en `MiJuegoRPG.Tests/CritPenetracionInteractionTests.cs` (CS0118: `Personaje` espacio de nombres usado como tipo) introduciendo un alias explícito: `using PersonajeModel = MiJuegoRPG.Personaje.Personaje;` y reemplazando instancias de `new Personaje(...)` por `new PersonajeModel(...)`.
+- Resultado: la suite vuelve a verde estable (55/55) en ejecuciones repetidas.
+
+## 2025-09-17 — Docs: Arquitectura y caps centralizados
+
+- `Docs/Arquitectura_y_Funcionamiento.md`: sección 3 actualizada para reflejar que `Precision`, `CritMult` y `Penetracion` se clampean vía `CombatBalanceConfig` (fuente `DatosJuego/progression.json` → `StatsCaps`).
+- Añadida subsección 3.2 con fórmula en KaTeX, defaults y enlace a `Docs/progression_config.md`.
 
 ## 2025-09-17 — Tests: orden Defensa→Mitigación→Resistencias/Vulnerabilidades
 
@@ -48,12 +92,10 @@
 - Roadmap: anotación del hito documental y recordatorio de política de “fuente única”.
 - Índice: `Docs/README.md` actualizado con enlaces profundos a secciones clave de `Flujo.txt` (menús) y `Arquitectura_y_Funcionamiento.md` (pipeline/contratos) para navegación rápida.
 
-
 ### Navegación y anclas
 
 - Se añadieron encabezados H1 en `Flujo.txt` para permitir enlaces directos por sección (menús y flujo del juego).
 - `Arquitectura_y_Funcionamiento.md` ahora enlaza a cada sección específica de `Flujo.txt` (Inicio, Menú Principal, Ciudad, Fuera de Ciudad, Misiones/NPC, Rutas, Combate, Entre Combates, Menú Fijo).
-
 
 Este documento registra cambios cronológicos por sesión. El `Roadmap.md` mantiene el plan por áreas y los próximos pasos.
 

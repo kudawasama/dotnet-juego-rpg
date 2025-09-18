@@ -369,8 +369,8 @@ namespace MiJuegoRPG.Personaje
             // Si el objetivo puede evadir, chequear antes de aplicar daño
             if (objetivo is IEvadible evasivo && evasivo.IntentarEvadir(false))
             {
-                var ui0 = MiJuegoRPG.Motor.Juego.ObtenerInstanciaActual()?.Ui;
-                ui0?.WriteLine($"¡{objetivo.Nombre} evadió el ataque físico de {Nombre}!");
+                // Mensajería de combate centralizada vía DamageResolver (evitar duplicados aquí)
+                MiJuegoRPG.Motor.Servicios.Logger.Debug($"[{Nombre}] ataque físico evadido por {objetivo.Nombre}");
                 return 0;
             }
             int danio = (int)(Atributos.Fuerza + Estadisticas.Ataque + ObtenerBonificadorAtributo("Fuerza") + ObtenerBonificadorEstadistica("Ataque"));
@@ -384,8 +384,8 @@ namespace MiJuegoRPG.Personaje
         {
             if (objetivo is IEvadible evasivo && evasivo.IntentarEvadir(true))
             {
-                var ui0 = MiJuegoRPG.Motor.Juego.ObtenerInstanciaActual()?.Ui;
-                ui0?.WriteLine($"¡{objetivo.Nombre} evadió el hechizo de {Nombre}!");
+                // Mensajería de combate centralizada vía DamageResolver (evitar duplicados aquí)
+                MiJuegoRPG.Motor.Servicios.Logger.Debug($"[{Nombre}] ataque mágico evadido por {objetivo.Nombre}");
                 return 0;
             }
             int danio = (int)(Atributos.Inteligencia + Estadisticas.PoderMagico + ObtenerBonificadorAtributo("Inteligencia") + ObtenerBonificadorEstadistica("Poder Mágico"));
@@ -400,8 +400,8 @@ namespace MiJuegoRPG.Personaje
             // Oportunidad de evadir ataques físicos entrantes
             if (IntentarEvadir(false))
             {
-                var ui = MiJuegoRPG.Motor.Juego.ObtenerInstanciaActual()?.Ui;
-                ui?.WriteLine($"¡{Nombre} evadió un ataque físico!");
+                // Mensajería de combate centralizada vía DamageResolver y acciones
+                MiJuegoRPG.Motor.Servicios.Logger.Debug($"[{Nombre}] evadió un ataque físico entrante");
                 return;
             }
             double defensaTotal = Defensa + ObtenerBonificadorAtributo("Defensa") + ObtenerBonificadorEstadistica("Defensa Física");
@@ -422,8 +422,8 @@ namespace MiJuegoRPG.Personaje
         {
             if (IntentarEvadir(true))
             {
-                var ui = MiJuegoRPG.Motor.Juego.ObtenerInstanciaActual()?.Ui;
-                ui?.WriteLine($"¡{Nombre} evadió un hechizo!");
+                // Mensajería de combate centralizada vía DamageResolver y acciones
+                MiJuegoRPG.Motor.Servicios.Logger.Debug($"[{Nombre}] evadió un ataque mágico entrante");
                 return;
             }
             double defensaMagicaTotal = DefensaMagica + ObtenerBonificadorAtributo("Resistencia") + ObtenerBonificadorEstadistica("Defensa Mágica");

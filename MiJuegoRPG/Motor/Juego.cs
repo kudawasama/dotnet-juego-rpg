@@ -468,7 +468,11 @@ namespace MiJuegoRPG.Motor
         {
             if (mapa.UbicacionActual != null && !string.IsNullOrWhiteSpace(mapa.UbicacionActual.Tipo))
             {
-                if (mapa.UbicacionActual.Tipo.Equals("Ciudad", StringComparison.OrdinalIgnoreCase))
+                var s = mapa.UbicacionActual;
+                bool esCiudad = s.Tipo.Equals("Ciudad", StringComparison.OrdinalIgnoreCase);
+                // Solo mostrar menú de ciudad si es el centro de ciudad o está marcada como ciudad principal
+                bool esCentro = s.EsCentroCiudad || s.CiudadPrincipal;
+                if (esCiudad && esCentro)
                 {
                     MostrarMenuCiudad(ref salir);
                 }
@@ -512,6 +516,11 @@ namespace MiJuegoRPG.Motor
     public void MostrarEstadoPersonaje(MiJuegoRPG.Personaje.Personaje pj)
     {
         EstadoPersonajePrinter.MostrarEstadoPersonaje(pj);
+    }
+    // Overload: permite solicitar modo detallado
+    public void MostrarEstadoPersonaje(MiJuegoRPG.Personaje.Personaje pj, bool detallado)
+    {
+        EstadoPersonajePrinter.MostrarEstadoPersonaje(pj, detallado);
     }
         public void MostrarMenuViajar()
         {

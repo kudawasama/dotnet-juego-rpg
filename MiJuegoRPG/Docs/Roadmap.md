@@ -56,7 +56,7 @@ Legend inicial: Solo la 1.x se empieza ahora para evitar cambios masivos de golp
 ## Próximos pasos (prioridad sugerida)
 
 - [5.8] Pipeline de daño (etapa A): chequeo de acierto (Precision vs Evasion) ya integrado de forma opcional en `DamageResolver`. El `Ataque Mágico` ahora también fluye por el resolver (sin paso de precisión) unificando metadatos y mensajería. NUEVO: penetración integrada (reducción de defensa efectiva antes de mitigaciones) detrás del flag `--penetracion`.
-- [9.8] Tests pipeline combate: cobertura base creada (hit/miss/crit) con `RandomService.SetSeed` y dummies deterministas; verificación del orden en daño mágico (Defensa→Mitigación→Resistencia→Vulnerabilidad) y físico (Defensa→Mitigación). NUEVO: pruebas de penetración física y mágica (defensa reducida antes de mitigaciones/resistencias) y gating por toggle.
+- [9.8] Tests pipeline combate: cobertura base creada (hit/miss/crit) con `RandomService.SetSeed` y dummies deterministas; verificación del orden en daño mágico (Defensa→Mitigación→Resistencia→Vulnerabilidad) y físico (Defensa→Mitigación). NUEVO: pruebas de penetración física y mágica (defensa reducida antes de mitigaciones/resistencias) y gating por toggle. Añadidos casos de interacción Crítico + Penetración (físico y mágico) validando `DanioReal` y `FueCritico`.
 - [5.10]/[3.4] Integrar stats de combate: usar `Precision`, `CritChance`, `CritMult`, `Penetracion` de `Estadisticas` (defaults ya presentes) y parametrizar en JSON (`progression.json`) las curvas/caps. Añadir caps sugeridos en `Docs/progression_config.md`.
 - [5.13] Mensajería unificada: canalizar todos los mensajes de combate vía `ResultadoAccion` para evitar duplicados.
 - [10.6] Validación de datos: extender `DataValidatorService` a esquemas de objetos/drops/armas con rangos y referencias cruzadas.
@@ -92,6 +92,7 @@ Legend inicial: Solo la 1.x se empieza ahora para evitar cambios masivos de golp
 [4.2] Hecho | Data | Añadir tiempos de respawn y rarezas a nodos | Base lista: Rareza y ProduccionMin/Max en biomas, CooldownBase soportado, hidratación de nodos por nombre desde bioma (tolerante a acentos), etiqueta de producción [Prod X–Y] en UI y telemetría ligera en recolección. Contrato JSON de Materiales normalizado: se reemplazaron tuplas por DTO `MaterialCantidad { Nombre, Cantidad }` para evitar lecturas "0x" y nombres vacíos. Pendiente de balance fino por bioma/rareza (ver 15.7).
 [4.3] Hecho | Energía | Integrar coste dinámico según herramienta y bioma | energia.json + cálculo en EnergiaService (modificadores por tipo/herramienta/bioma/atributos/clase)
 [4.4] Hecho | UX | Menú híbrido con filtros + búsqueda + cooldown + fallo | Implementado en RecoleccionService
+[4.5] Hecho | Robustez | Null-safety y validación de herramienta requerida | Se corrigió un NRE en nodos con `Requiere` cuando `Inventario.NuevosObjetos == null` (partidas antiguas). La comprobación de herramienta ahora es segura y robusta: coincidencia exacta case-insensitive y fallback por coincidencia parcial ("Pico de Hierro" satisface "Pico").
 
 ## 5. COMBATE
 
@@ -144,19 +145,25 @@ Próxima acción:
 - Extender estos campos a data de armas (7.4) y añadir validación.
 [5.11] Pendiente | Stamina/Poise | Recurso `Stamina` para acciones físicas y `Poise` para aturdimientos | Costes por arma/peso; caída de Poise causa `Stun` 1 turno. Integración con acciones y estados.
 [5.12] Pendiente | Estados avanzados | Sangrado/Aturdimiento/Buffs data-driven | Extender `IEfecto`, resistencias y stacking; aplicar en pipeline y UI.
-[5.13] Pendiente | Mensajería unificada | Centralizar mensajes de combate |
+[5.13] Parcial | Mensajería unificada | Centralizar mensajes de combate |
 
 Estado:
 
-- Pendiente (mensajería ya parcialmente centralizada por `DamageResolver`).
+- Parcial (mensajería centralizada en `DamageResolver`; enemigos en `CombatePorTurnos` ya usan resolver; quedan limpiezas menores en rutas legacy de habilidades).
+
+Descripción:
+
+- Unificar la salida de mensajes de combate para que provenga exclusivamente de `ResultadoAccion.Mensajes` compuesto por `DamageResolver`.
 
 Decisiones/Conclusiones:
 
-- Mantener una única capa de impresión basada en `ResultadoAccion` para evitar duplicados y mensajes confusos (p. ej., "0 de daño").
+- Se eliminaron `Console/UI.WriteLine` directos en `Personaje` y `Enemigo` durante ataques/evadir/recibir daño para evitar duplicados.
+- `CombatePorTurnos`: el turno de enemigos ahora invoca `DamageResolver.ResolverAtaqueFisico(enemigo, jugador)` y muestra solo `res.Mensajes`.
+- Logger sigue registrando eventos en nivel Debug para soporte de QA sin afectar al jugador.
 
 Próxima acción:
 
-- Canalizar todos los mensajes de Acciones y de `CombatePorTurnos` a través del resultado unificado.
+- Revisar y limpiar rutas legacy en `Habilidades/*` que imprimen a consola directamente (sustituir por acciones/resolver) y añadir asserts de texto en pruebas relevantes.
 
 ## 6. MISIONES Y REQUISITOS
 
@@ -202,7 +209,13 @@ Bitácora movida: Las entradas cronológicas de esta sección fueron movidas a `
 
 [8.1] Hecho | Abstracción | IUserInterface (WriteLine, ReadOption, Confirm) | Interfaz creada + adaptadores: ConsoleUserInterface y SilentUserInterface (para tests); InputService usa la UI para leer opciones/números y pausar. Añadido InputService.TestMode para evitar bloqueos en tests. Juego expone UiFactory para inyección. Logger central agregado y enlazado a la UI. Migradas salidas principales en Juego (menú, viaje, recolección, mazmorra, rutas) y GeneradorEnemigos. Menús migrados: MenuCiudad, MenuFueraCiudad, MenuRecoleccion, MenuFijo, MenuAdmin, MenuEntreCombate, MenusJuego y Program.cs. Pendiente: unificar colores/estilo.
 [8.2] Pendiente | Menús | Refactor menús a comandos (Command Pattern) | Tras 8.1
-[8.3] Parcial | Estilo | Colores y layout unificados | Etiquetas de reputación colorizadas en ciudad/tienda/NPC/misiones; Recolección (híbrida), Energía, Estado del Personaje y Misiones ya usan la UI unificada. Añadido utilitario `UIStyle` (encabezados y subtítulos) y aplicado en `MenusJuego.MostrarMenuPrincipalFijo`, `Inventario`, `MenuCiudad`, `MenuFueraCiudad`, `MenuFijo`, `MenuRecoleccion` y menú inicial (`Program.cs`). Avance: `CombatePorTurnos` migrado a `IUserInterface` y `UIStyle` (encabezados/subtítulos, hints y estado), con submenús para Habilidades y uso de Pociones. Avance 2: `Inventario` y `MotorInventario` migrados a `IUserInterface` + `UIStyle` (listado numerado, encabezados, pausas por UI). Avance 3: Recompensas de enemigos (drops/oro/exp) muestran feedback por UI y añaden drops al inventario del jugador. Avance 4: El estado de combate ahora muestra Maná del jugador y Efectos activos por combatiente con turnos restantes. Próximo: gestores de objetos.
+[8.3] Parcial | Estilo | Colores y layout unificados | Etiquetas de reputación colorizadas en ciudad/tienda/NPC/misiones; Recolección (híbrida), Energía, Estado del Personaje y Misiones ya usan la UI unificada. Añadido utilitario `UIStyle` (encabezados y subtítulos) y aplicado en `MenusJuego.MostrarMenuPrincipalFijo`, `Inventario`, `MenuCiudad`, `MenuFueraCiudad`, `MenuFijo`, `MenuRecoleccion` y menú inicial (`Program.cs`). Avance: `CombatePorTurnos` migrado a `IUserInterface` y `UIStyle` (encabezados/subtítulos, hints y estado), con submenús para Habilidades y uso de Pociones. Avance 2: `Inventario` y `MotorInventario` migrados a `IUserInterface` + `UIStyle` (listado numerado, encabezados, pausas por UI). Avance 3: Recompensas de enemigos (drops/oro/exp) muestran feedback por UI y añaden drops al inventario del jugador. Avance 4: El estado de combate ahora muestra Maná del jugador y Efectos activos por combatiente con turnos restantes. NUEVO: `EstadoPersonajePrinter` fue rediseñado con un layout profesional (resumen superior, barras de Vida/Maná/Energía y XP, atributos compactos con bonos, sección de supervivencia con etiquetas) usando `UIStyle`. NUEVO-2: se añadió modo "detallado" opcional (toggle) que incluye sección "Equipo" (slots: Arma, Casco, Armadura, Pantalón, Zapatos, Collar, Cinturón, Accesorio 1/2) con nombre del ítem y stats clave (Rareza/Perfección y, en armas, Daño Físico/Mágico). Acceso rápido desde el `Menú Fijo`: opción separada "Estado (detallado)" junto a la vista compacta.
+
+### 8.x Correcciones de gating de menús por sector (nuevo)
+
+- Hecho | Menú de ciudad solo en centro: `Juego.MostrarMenuPorUbicacion` ahora muestra el menú de ciudad únicamente cuando `SectorData.Tipo == "Ciudad"` y además `EsCentroCiudad == true` o `CiudadPrincipal == true`. Cualquier otra parte de ciudad (`ParteCiudad`) utiliza el menú de “Fuera de Ciudad”. Evita mostrar el menú de ciudad al estar en entradas/periferias.
+- Hecho | Default seguro de tipo: `PjDatos/SectorData.cs` cambia el valor por defecto de `Tipo` a `"Ruta"` (antes `"Ciudad"`). Así, si el JSON omite el campo, no se clasifica erróneamente como ciudad.
+- Pendiente | Prueba de integración: añadir un test que cargue Bairan (`8_23.json`) y verifique que al moverse a un sector marcado como parte de ciudad sin `EsCentroCiudad`, el menú que aparece es el de “Fuera de Ciudad”.
 [8.4] Pendiente | Theming | Servicio de estilo (UIStyleService) con paleta y helpers (títulos, listas, etiquetas) | Facilita unificación visual y futura migración a UI de Unity. Base ligera `UIStyle` creada; falta paleta configurable y aplicación global.
 
 ## 9. TESTING
@@ -223,7 +236,8 @@ Estado:
 Descripción:
 
 - Cobertura: Hit/Miss/Crítico con `RandomService.SetSeed` y dummies deterministas; verificación del orden en daño mágico (Defensa→Mitigación→Resistencia→Vulnerabilidad) y físico (Defensa→Mitigación).
-- NUEVO: pruebas de penetración (físico y mágico) aplicando reducción de defensa antes de mitigaciones/resistencias y gating por `--penetracion`.
+- Pruebas de penetración (físico y mágico) aplicando reducción de defensa antes de mitigaciones/resistencias y gating por `--penetracion`.
+- NUEVO: casos de interacción Crítico + Penetración (físico y mágico) validando `DanioReal` y `FueCritico`. Caps centralizados cubiertos con `EstadisticasCapsTests`.
 
 Decisiones/Conclusiones:
 
@@ -231,7 +245,10 @@ Decisiones/Conclusiones:
 
 Próxima acción:
 
-- Añadir casos de interacción Crítico + Penetración y clamps de caps provenientes de `progression.json`.
+- Formalizar `IDamageStep` y ensamblado de pasos en `DamageResolver`.
+- Unificar mensajería al 100% vía `ResultadoAccion` (5.13) y ampliar asserts de texto en pruebas.
+- Integrar `Supervivencia.FactorPrecision` en el cálculo de $p_{hit}$ cuando `--precision-hit` esté activo; añadir pruebas.
+- Añadir pruebas que lean `StatsCaps` custom desde `progression.json` para validar clamps data-driven.
 [9.9] Pendiente | Test | Estados avanzados | Aplicación/decadencia/stacking de Sangrado/Aturdimiento/Buffs y resistencias.
 [9.10] Pendiente | Test | Supervivencia | Tick de hambre/sed/fatiga/temperatura; penalizaciones por umbral y multiplicadores por contexto/bioma.
 

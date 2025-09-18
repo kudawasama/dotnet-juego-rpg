@@ -62,14 +62,17 @@ namespace MiJuegoRPG.Personaje
             Ataque = atributosBase.Fuerza * 0.01 + atributosBase.Destreza * 0.01; // Daño físico infligido basado en Fuerza y Destreza
             // Nuevos (defaults conservadores, alineados a progresión lenta):
             // Precisión: depende principalmente de Destreza y Percepción
-            Precision = System.Math.Clamp(atributosBase.Destreza * 0.01 + atributosBase.Percepcion * 0.005, 0.0, 0.95);
+            // Caps de combate desde configuración (centralizados en CombatBalanceConfig)
+            MiJuegoRPG.Motor.Servicios.CombatBalanceConfig.EnsureLoaded();
+            Precision = MiJuegoRPG.Motor.Servicios.CombatBalanceConfig.ClampPrecision(
+                atributosBase.Destreza * 0.01 + atributosBase.Percepcion * 0.005);
             // CritChance: mantener compatibilidad usando el mismo cálculo que 'Critico'
-            CritChance = Critico;
+            CritChance = MiJuegoRPG.Motor.Servicios.CombatBalanceConfig.ClampCritChance(Critico);
             // CritMult: base 1.5x con ajuste suave por Sabiduría (ciencia táctica)
-            CritMult = 1.5 + (atributosBase.Sabiduría * 0.001);
-            if (CritMult > 2.0) CritMult = 2.0; // techo inicial
+            CritMult = MiJuegoRPG.Motor.Servicios.CombatBalanceConfig.ClampCritMult(1.5 + (atributosBase.Sabiduría * 0.001));
             // Penetración: muy baja por defecto (requiere equipo/habilidades para crecer)
-            Penetracion = System.Math.Clamp(atributosBase.Destreza * 0.002, 0.0, 0.2);
+            Penetracion = MiJuegoRPG.Motor.Servicios.CombatBalanceConfig.ClampPenetracion(
+                atributosBase.Destreza * 0.002);
             Regeneracion = atributosBase.Vitalidad * 0.01; // Regeneración de salud y recursos basada en Vitalidad
             Resistencia = atributosBase.Vitalidad * 0.01 + atributosBase.Sabiduría * 0.01; // Resistencia a efectos negativos basada en Vitalidad y Sabiduría
             Salud = atributosBase.Vitalidad * 10; // Salud máxima basada en Vitalidad

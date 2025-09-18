@@ -15,33 +15,33 @@ Referencias cruzadas:
 Todos los valores aquí descritos residen en `DatosJuego/progression.json` y son consumidos por `ProgressionService` y servicios asociados (p. ej., `EnergiaService`, pipeline de combate para regeneración de maná). Los rangos propuestos son conservadores para mantener una progresión lenta.
 
 - `ExpBaseRecoleccion`: base de experiencia fraccional por acción de recolección.
-   - Rango recomendado: 0.005 – 0.02
-   - Impacto: subida más rápida de atributos contextuales al recolectar.
+- Rango recomendado: 0.005 – 0.02
+- Impacto: subida más rápida de atributos contextuales al recolectar.
 
 - `ExpBaseEntrenamiento`: base por minuto virtual de entrenamiento.
-   - Rango recomendado: 0.005 – 0.02
-   - Impacto: es la vía controlada y lenta de subir atributos de forma dirigida.
+- Rango recomendado: 0.005 – 0.02
+- Impacto: es la vía controlada y lenta de subir atributos de forma dirigida.
 
 - `ExpBaseExploracion`: micro-experiencia por explorar un sector.
-   - Rango recomendado: 0.001 – 0.005 (muy bajo para evitar “farmear” exploración)
+- Rango recomendado: 0.001 – 0.005 (muy bajo para evitar “farmear” exploración)
 
 ### 1.1 Regeneración de Maná (en combate)
 
 - `ManaRegenCombateBase`: puntos por turno antes de factores.
-   - Recomendado: 0.1 – 0.5
+- Recomendado: 0.1 – 0.5
 - `ManaRegenCombateFactor`: multiplicador por `Estadisticas.RegeneracionMana`.
-   - Recomendado: 0.01 – 0.05
+- Recomendado: 0.01 – 0.05
 - `ManaRegenCombateMaxPorTurno`: techo duro por turno (puntos).
-   - Recomendado: 1 – 2
+- Recomendado: 1 – 2
 
 ### 1.2 Regeneración de Maná (fuera de combate)
 
 - `ManaRegenFueraBase`: base por tick de descanso (puntos).
-   - Recomendado: 0.5 – 2.0
+- Recomendado: 0.5 – 2.0
 - `ManaRegenFueraFactor`: multiplicador por `Estadisticas.RegeneracionMana`.
-   - Recomendado: 0.02 – 0.08
+- Recomendado: 0.02 – 0.08
 - `ManaRegenFueraMaxPorTick`: techo por tick de descanso (puntos).
-   - Recomendado: 2 – 5
+- Recomendado: 2 – 5
 
 ### 1.3 Escalados por Nivel (reducción con el nivel global)
 
@@ -54,7 +54,7 @@ Aplican como potencias $\text{valor}^{(Nivel-1)}$ y reducen la ganancia a nivele
 ### 1.4 Piso mínimo de experiencia
 
 - `factorMinExp`: piso para evitar converger a 0 con atributos altos o niveles elevados.
-   - Recomendado: 0.00005 – 0.0002
+- Recomendado: 0.00005 – 0.0002
 
 ### 1.5 Índices por atributo (entrenamiento)
 
@@ -213,7 +213,14 @@ Estructura mínima en `DatosJuego/progression.json`:
    "ManaRegenFueraFactor": 0.05,
    "ManaRegenFueraMaxPorTick": 3.0,
 
-   "Indices": { }
+    "Indices": { },
+    "StatsCaps": {
+       "PrecisionMax": 0.95,
+       "CritChanceMax": 0.50,
+       "CritMultMin": 1.25,
+       "CritMultMax": 1.75,
+       "PenetracionMax": 0.25
+    }
 }
 ```
 
@@ -223,6 +230,7 @@ Reglas de validación:
 - `EscaladoNivel* > 1.0`.
 - `ManaRegen*Max >= ManaRegen*Base`.
 - `Indices`: claves deben ser atributos válidos; valores `> 0`.
+- `StatsCaps` (opcional): si no está presente, se usan defaults conservadores indicados arriba. Valores fuera de rango se clampean a `[0..1]` donde aplique.
 
 ---
 
@@ -283,17 +291,17 @@ Nota pipeline: aplicar en el paso 5 del orden descrito en `Arquitectura_y_Funcio
 Los siguientes límites son conservadores para mantener una progresión lenta y exigente. Deben reflejarse en el cálculo de `Estadisticas` y (cuando aplique) en el pipeline de combate. Donde corresponda, se documenta el flag CLI que habilita la etapa.
 
 - `Precision` (usa `--precision-hit` en físico):
-   - Rango efectivo recomendado: $[0.00 .. 0.95]$.
-   - Fórmula de impacto propuesta: $p_{hit} = clamp(0.35 + Precision - k\cdot Evasion,\ 0.20,\ 0.95)$ con $k \in [1.0, 1.2]$.
+- Rango efectivo recomendado: $[0.00 .. 0.95]$.
+- Fórmula de impacto propuesta: $p_{hit} = clamp(0.35 + Precision - k\cdot Evasion,\ 0.20,\ 0.95)$ con $k \in [1.0, 1.2]$.
 
 - `CritChance` y `CritMult`:
-   - `CritChance` recomendado: $[0.00 .. 0.50]$.
-   - `CritMult` recomendado: $[1.25 .. 1.75]$.
-   - Política de test: si `CritChance >= 1.0` se fuerza crítico para pruebas deterministas (solo si hay daño real > 0).
+- `CritChance` recomendado: $[0.00 .. 0.50]$.
+- `CritMult` recomendado: $[1.25 .. 1.75]$.
+- Política de test: si `CritChance >= 1.0` se fuerza crítico para pruebas deterministas (solo si hay daño real > 0).
 
 - `Penetracion` (usa `--penetracion`):
-   - Rango efectivo recomendado: $[0.00 .. 0.25]$ para jugador early/mid; clamps defensivos del runtime a $[0.00 .. 0.90]$ por seguridad.
-   - Aplicación en pipeline: `defensaEfectiva = round(defensa * (1 - Penetracion))` ANTES de mitigaciones/resistencias.
+- Rango efectivo recomendado: $[0.00 .. 0.25]$ para jugador early/mid; clamps defensivos del runtime a $[0.00 .. 0.90]$ por seguridad.
+- Aplicación en pipeline: `defensaEfectiva = round(defensa * (1 - Penetracion))` ANTES de mitigaciones/resistencias.
 
 Sugerencia de mapeo desde atributos (ejemplo base, a ajustar en `Estadisticas`):
 
