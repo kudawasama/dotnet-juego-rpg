@@ -1,0 +1,25 @@
+{
+  "Nombre": "Zorro Rápido (Bosque)",
+  "VidaBase": 21,
+  "AtaqueBase": 8,
+  "DefensaBase": 2,
+  "DefensaMagicaBase": 1,
+  "Nivel": 1,
+  "ExperienciaRecompensa": 5,
+  "OroRecompensa": 2,
+  "Familia": "Bestia",
+  "Rareza": "Comun",
+  "Categoria": "Normal",
+  "ArmaNombre": "Mordisco",
+  "MitigacionFisicaPorcentaje": 0.03,
+  "Tags": ["zorro", "bosque", "bestia"],
+  "ResistenciasElementales": { "hielo": 0.07 },
+  "DanioElementalBase": { "sangrado": 1 },
+  "EquipoInicial": { "Arma": "Mordisco" },
+  "EvasionFisica": 0.23,
+  "EvasionMagica": 0.04,
+  "SpawnWeight": 7,
+  "Drops": [
+    { "Tipo": "Material", "Nombre": "Cola de Zorro", "Rareza": "Normal", "Chance": 0.15, "CantidadMin": 1, "CantidadMax": 1 }
+  ]
+}

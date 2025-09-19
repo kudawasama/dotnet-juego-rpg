@@ -1,0 +1,27 @@
+{
+  "Nombre": "Cazador Fantasma",
+  "VidaBase": 100,
+  "AtaqueBase": 26,
+  "DefensaBase": 8,
+  "DefensaMagicaBase": 16,
+  "Nivel": 3,
+  "ExperienciaRecompensa": 72,
+  "OroRecompensa": 34,
+  "Familia": "NoMuerto",
+  "Rareza": "Épico",
+  "Categoria": "Unico",
+  "ArmaNombre": "Arco Espectral",
+  "MitigacionFisicaPorcentaje": 0.10,
+  "MitigacionMagicaPorcentaje": 0.20,
+  "Tags": ["unico", "bosque", "no_muerto"],
+  "ResistenciasElementales": { "sombra": 0.30, "luz": 0.0 },
+  "DanioElementalBase": { "sombra": 8 },
+  "EquipoInicial": { "Arma": "Arco Espectral" },
+  "EvasionFisica": 0.24,
+  "EvasionMagica": 0.24,
+  "SpawnWeight": 1,
+  "Drops": [
+    { "Tipo": "Arma", "Nombre": "Arco Espectral", "Rareza": "Épico", "Chance": 0.06, "CantidadMin": 1, "CantidadMax": 1 },
+    { "Tipo": "Material", "Nombre": "Tela de Sombras", "Rareza": "Raro", "Chance": 0.20, "CantidadMin": 1, "CantidadMax": 2 }
+  ]
+}

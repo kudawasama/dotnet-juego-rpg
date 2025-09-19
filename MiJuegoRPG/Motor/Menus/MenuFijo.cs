@@ -17,9 +17,10 @@ namespace MiJuegoRPG.Motor.Menus
             while (true)
             {
                 UIStyle.Header(juego.Ui, "Menú Fijo");
-                juego.Ui.WriteLine("1. Estado del personaje");
-                juego.Ui.WriteLine("2. Guardar personaje");
-                juego.Ui.WriteLine("3. Volver al menú principal");
+                juego.Ui.WriteLine("1. Estado del personaje (compacto)");
+                juego.Ui.WriteLine("2. Estado del personaje (detallado)");
+                juego.Ui.WriteLine("3. Guardar personaje");
+                juego.Ui.WriteLine("4. Volver al menú principal");
                 juego.Ui.WriteLine("0. Salir del juego");
                 string opcion = InputService.LeerOpcion();
                 switch (opcion)
@@ -30,11 +31,16 @@ namespace MiJuegoRPG.Motor.Menus
                         InputService.Pausa();
                         break;
                     case "2":
+                        if (juego.jugador != null) juego.MostrarEstadoPersonaje(juego.jugador, true);
+                        else juego.Ui.WriteLine("No hay personaje cargado.");
+                        InputService.Pausa();
+                        break;
+                    case "3":
                         juego.GuardarPersonaje();
                         juego.Ui.WriteLine("¡Personaje guardado exitosamente!");
                         InputService.Pausa();
                         break;
-                    case "3":
+                    case "4":
                         salir = true;
                         return;
                     case "0":

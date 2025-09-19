@@ -13,6 +13,12 @@ namespace MiJuegoRPG.Personaje
         public double Mana { get; set; } // Mana máxima
         public double Energia { get; set; } // Energía máxima
         public double Carga { get; set; } // Capacidad de carga
+
+        // Nuevos campos de cálculo de combate (base para pipeline de daño)
+        public double Precision { get; set; } // Precisión para calcular acierto (0..1)
+        public double CritChance { get; set; } // Probabilidad de crítico (alias moderno de Critico)
+        public double CritMult { get; set; } // Multiplicador de crítico (>=1.0)
+        public double Penetracion { get; set; } // Porcentaje de penetración de defensa (0..1)
         public double Daño { get; set; } // Daño físico infligido
         public double DefensaFisica { get; set; } // Reducción de daño físico recibido
         public double PoderOfensivoFisico { get; set; } // Potencia de habilidades físicas ofensivas
@@ -44,16 +50,29 @@ namespace MiJuegoRPG.Personaje
         public double PoderDeManipulacion { get; set; } // Potencia de habilidades de manipulación
 
 
-        public Estadisticas() { }
+    public Estadisticas() { }
 
 
 
-        public Estadisticas(AtributosBase atributosBase)
+    public Estadisticas(AtributosBase atributosBase)
         {
             Critico = atributosBase.Destreza * 0.01 + atributosBase.Suerte * 0.01; // Probabilidad de golpe crítico basada en Destreza y Suerte
             Evasion = atributosBase.Agilidad * 0.01 + atributosBase.Suerte * 0.01; // Probabilidad de evadir un ataque basada en Agilidad y Suerte
             Velocidad = atributosBase.Agilidad * 0.01; // Velocidad de movimiento y ataque basada en Agilidad
             Ataque = atributosBase.Fuerza * 0.01 + atributosBase.Destreza * 0.01; // Daño físico infligido basado en Fuerza y Destreza
+            // Nuevos (defaults conservadores, alineados a progresión lenta):
+            // Precisión: depende principalmente de Destreza y Percepción
+            // Caps de combate desde configuración (centralizados en CombatBalanceConfig)
+            MiJuegoRPG.Motor.Servicios.CombatBalanceConfig.EnsureLoaded();
+            Precision = MiJuegoRPG.Motor.Servicios.CombatBalanceConfig.ClampPrecision(
+                atributosBase.Destreza * 0.01 + atributosBase.Percepcion * 0.005);
+            // CritChance: mantener compatibilidad usando el mismo cálculo que 'Critico'
+            CritChance = MiJuegoRPG.Motor.Servicios.CombatBalanceConfig.ClampCritChance(Critico);
+            // CritMult: base 1.5x con ajuste suave por Sabiduría (ciencia táctica)
+            CritMult = MiJuegoRPG.Motor.Servicios.CombatBalanceConfig.ClampCritMult(1.5 + (atributosBase.Sabiduría * 0.001));
+            // Penetración: muy baja por defecto (requiere equipo/habilidades para crecer)
+            Penetracion = MiJuegoRPG.Motor.Servicios.CombatBalanceConfig.ClampPenetracion(
+                atributosBase.Destreza * 0.002);
             Regeneracion = atributosBase.Vitalidad * 0.01; // Regeneración de salud y recursos basada en Vitalidad
             Resistencia = atributosBase.Vitalidad * 0.01 + atributosBase.Sabiduría * 0.01; // Resistencia a efectos negativos basada en Vitalidad y Sabiduría
             Salud = atributosBase.Vitalidad * 10; // Salud máxima basada en Vitalidad

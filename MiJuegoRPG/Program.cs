@@ -6,6 +6,14 @@ using System.Text.Json;
 using MiJuegoRPG.Herramientas;
 using MiJuegoRPG.Motor.Servicios;
 
+// Bandera global para activar el chequeo de precisión (hit chance)
+public static class GameplayToggles
+{
+    public static bool PrecisionCheckEnabled = false;
+    // Toggle para activar la penetración en el pipeline (no intrusivo por defecto)
+    public static bool PenetracionEnabled = false;
+}
+
 class Program
 {
     static void Main(string[] args)
@@ -36,6 +44,8 @@ class Program
                         Console.WriteLine("  --hidratar-nodos[=max]     Escribe nodos de recolección en sectores vacíos a partir del bioma. Ej: --hidratar-nodos=5\n");
                         Console.WriteLine("  --reparar-materiales=report[;ruta]  Escanea nodos y reporta materiales inválidos (Nombre vacío/Cantidad<=0). No modifica archivos.\n");
                         Console.WriteLine("  --reparar-materiales=write[;ruta]   Aplica reparación eliminando materiales inválidos. Genera reporte.\n");
+                        Console.WriteLine("  --precision-hit             Activa el chequeo de precisión (probabilidad de acierto) en ataques físicos.");
+                        Console.WriteLine("  --penetracion               Activa la penetración (reduce defensa efectiva) en ataques físicos y mágicos.");
                         Console.WriteLine("Notas:");
                         Console.WriteLine("- Puedes cambiar el logger en runtime desde Menú Principal → Opciones.");
                         Console.WriteLine("- Las preferencias de logger se guardan por partida; los flags CLI tienen precedencia al inicio.");
@@ -44,6 +54,14 @@ class Program
                 }
                 foreach (var a in args)
                 {
+                    if (string.Equals(a, "--precision-hit", StringComparison.OrdinalIgnoreCase))
+                    {
+                        GameplayToggles.PrecisionCheckEnabled = true;
+                    }
+                    if (string.Equals(a, "--penetracion", StringComparison.OrdinalIgnoreCase))
+                    {
+                        GameplayToggles.PenetracionEnabled = true;
+                    }
                     if (string.Equals(a, "--log-off", StringComparison.OrdinalIgnoreCase))
                     {
                         MiJuegoRPG.Motor.Servicios.Logger.Enabled = false;
@@ -216,6 +234,11 @@ class Program
         catch { /* best-effort: flags no críticos */ }
         // Si se solicitó salir tras ejecutar herramientas, terminar aquí
         if (salirTrasHerramientas) return;
+        // Mostrar estado de la bandera de precisión si está activa
+        if (GameplayToggles.PrecisionCheckEnabled)
+        {
+            Console.WriteLine("[INFO] Chequeo de precisión ACTIVADO (--precision-hit)");
+        }
         // Genera todos los archivos de regiones del mapa automáticamente al inicio
         //GeneradorSectores.CrearMapaCompleto(@"C:\Users\ASUS\OneDrive\Documentos\GitHub\dotnet-juego-rpg\MiJuegoRPG\DatosJuego\mapa\SectoresMapa");
 

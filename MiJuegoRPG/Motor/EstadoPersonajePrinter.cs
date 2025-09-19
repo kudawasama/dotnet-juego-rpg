@@ -1,33 +1,49 @@
 using System;
 using System.Collections.Generic;
 using MiJuegoRPG.Personaje;
+using MiJuegoRPG.Motor.Servicios;
 
 namespace MiJuegoRPG.Motor
 {
     public static class EstadoPersonajePrinter
     {
-        public static void MostrarEstadoPersonaje(Personaje.Personaje pj)
+        public static void MostrarEstadoPersonaje(Personaje.Personaje pj, bool detallado = false)
         {
-            var ui = Juego.ObtenerInstanciaActual()?.Ui;
-            var write = new Action<string>(s => { if (ui != null) ui.WriteLine(s); else Console.WriteLine(s); });
-            write("\n=== ESTADO DEL PERSONAJE ===");
-            write($"Nombre: {pj.Nombre}");
-            write($"Clase: {(pj.Clase != null ? pj.Clase.Nombre : "Sin clase")}");
-            write($"Título: {pj.Titulo}");
-            write($"Nivel: {pj.Nivel}");
-            write($"Vida: {pj.Vida}/{pj.VidaMaxima}");
-            write($"Maná: {pj.ManaActual}/{pj.ManaMaxima}");
-            write($"Energía: {pj.EnergiaActual}/{pj.EnergiaMaxima}");
-            write($"Oro: {pj.Oro}");
+            var juego = Juego.ObtenerInstanciaActual();
+            var ui = juego?.Ui;
+            void W(string s) { if (ui != null) ui.WriteLine(s); else Console.WriteLine(s); }
+
+            // Encabezado profesional
+            UIStyle.Header(ui!, "Estado del Personaje");
+            UIStyle.Hint(ui!, juego?.FormatoRelojMundo ?? "");
+            // Resumen compacto
+            var clase = pj.Clase?.Nombre ?? "Sin clase";
+            UIStyle.SubHeader(ui!, $"{pj.Nombre} — {clase} • Nivel {pj.Nivel} • {pj.Titulo}");
+
+            // Helper barra 20 segmentos
+            string Bar(int actual, int max)
+            {
+                max = Math.Max(1, max);
+                double ratio = Math.Clamp(actual / (double)max, 0.0, 1.0);
+                int llenos = (int)System.Math.Round(ratio * 20);
+                return new string('#', llenos).PadRight(20, '-');
+            }
+
+            // Recursos principales
+            W($"Vida   [{Bar(pj.Vida, pj.VidaMaxima)}] {pj.Vida}/{pj.VidaMaxima}");
+            W($"Maná   [{Bar(pj.ManaActual, pj.ManaMaxima)}] {pj.ManaActual}/{pj.ManaMaxima}");
+            W($"Energía[{Bar(pj.EnergiaActual, pj.EnergiaMaxima)}] {pj.EnergiaActual}/{pj.EnergiaMaxima}");
+
+            // Experiencia
             int expActual = pj.Experiencia;
             int expSiguiente = pj.ExperienciaSiguienteNivel;
-            int expFaltante = expSiguiente - expActual;
-            double porcentaje = expSiguiente > 0 ? (double)expActual / expSiguiente * 100.0 : 0.0;
-            write($"Experiencia: {expActual} / {expSiguiente} (Faltan {expFaltante})");
-            write($"Progreso al siguiente nivel: {porcentaje:F2}%");
-            write($"Descansos realizados hoy: {pj.DescansosHoy}");
-            write("\n--- Atributos Base ---");
-            write("===================================");
+            int expFaltante = System.Math.Max(0, expSiguiente - expActual);
+            double pct = expSiguiente > 0 ? (double)expActual / expSiguiente : 0.0;
+            W($"XP     [{new string('#', (int)System.Math.Round(pct * 20)).PadRight(20, '-')}] {expActual}/{expSiguiente} (faltan {expFaltante})");
+            W($"Oro: {pj.Oro} • Descansos hoy: {pj.DescansosHoy}");
+
+            // Atributos clave (compacto) con progreso
+            UIStyle.SubHeader(ui!, "Atributos");
             var ab = pj.AtributosBase;
             var atributos = new Dictionary<string, (string abrev, double valor, double exp, double req)>
             {
@@ -46,94 +62,121 @@ namespace MiJuegoRPG.Motor
                 {"Carisma", ("Car", ab.Carisma, 0, 1)},
                 {"Voluntad", ("Vol", ab.Voluntad, 0, 1)}
             };
-            foreach (var atributo in atributos)
+            foreach (var kv in atributos)
             {
-                string abrev = atributo.Value.abrev;
-                double valor = atributo.Value.valor;
-                double exp = atributo.Value.exp;
-                double req = atributo.Value.req;
-                double bonificador = pj.ObtenerBonificadorAtributo(atributo.Key);
-                double total = valor + bonificador;
-                double prog = req > 0 ? exp / req * 100.0 : 0.0;
-                double faltante = req - exp;
-                string textoProg = req > 1 ? $" ({prog:F2}% de {req}, faltan {faltante:F2})" : "";
-                write($"{abrev}: {total} (Base: {valor}, Bonif: {bonificador}){textoProg}");
+                var nombre = kv.Key; var (abrev, valor, exp, req) = kv.Value;
+                double bonif = pj.ObtenerBonificadorAtributo(nombre);
+                double total = valor + bonif;
+                string p = req > 1 ? $" ({(exp/req*100.0):F1}% XP)" : string.Empty;
+                W($"{abrev}: {total:F2} (Base {valor:F2}{(bonif!=0? $", +{bonif:F2}": "")}){p}");
             }
-            write("\n--- Estadísticas Físicas ---");
+
+            // Estadísticas clave (resumidas)
+            UIStyle.SubHeader(ui!, "Estadísticas");
             var est = pj.Estadisticas;
-            var estadisticasFisicas = new Dictionary<string, double> {
-                {"Ataque", est.Ataque}, {"Defensa Física", est.DefensaFisica}, {"Daño", est.Daño}, {"Crítico", est.Critico},
-                {"Evasión", est.Evasion}, {"Velocidad", est.Velocidad}, {"Regeneración", est.Regeneracion}, {"Salud", est.Salud},
-                {"Energía", est.Energia}, {"Carga", est.Carga}, {"Poder Ofensivo Físico", est.PoderOfensivoFisico}, {"Poder Defensivo Físico", est.PoderDefensivoFisico}
-            };
-            foreach (var stat in estadisticasFisicas)
+            void Stat(string nombre, double baseVal)
             {
-                double bonificador = pj.ObtenerBonificadorEstadistica(stat.Key);
-                double total = stat.Value + bonificador;
-                write($"{stat.Key}: {stat.Value:F2} ({total:F2})");
-                if (bonificador > 0)
+                double bon = pj.ObtenerBonificadorEstadistica(nombre);
+                double tot = baseVal + bon;
+                W($"{nombre}: {tot:F2}{(bon!=0? $" (Base {baseVal:F2}, +{bon:F2})" : "")}");
+            }
+            Stat("Ataque", est.Ataque);
+            Stat("Defensa Física", est.DefensaFisica);
+            Stat("Poder Mágico", est.PoderMagico);
+            Stat("Defensa Mágica", est.DefensaMagica);
+            Stat("Crítico", est.Critico);
+            Stat("Evasión", est.Evasion);
+            Stat("Velocidad", est.Velocidad);
+            Stat("Regeneración", est.Regeneracion);
+            Stat("Regeneración Mana", est.RegeneracionMana);
+            Stat("Resistencia Elemental", est.ResistenciaElemental);
+            Stat("Resistencia Mágica", est.ResistenciaMagica);
+
+            // Supervivencia (compacto en sección)
+            try
+            {
+                var sup = juego?.supervivenciaService;
+                if (sup != null)
                 {
-                    var fuentes = pj.ObtenerFuentesBonificadorEstadistica(stat.Key);
-                    write($"  Bonificador por equipo:");
-                    foreach (var fuente in fuentes)
+                    UIStyle.SubHeader(ui!, "Supervivencia");
+                    var (wH, wS, wF) = sup.ObtenerUmbralesAdvertencia();
+                    var (cH, cS, cF) = sup.ObtenerUmbralesCriticos();
+                    string BarFrac(double v)
                     {
-                        write($"    {fuente.Nombre}: +{fuente.Valor}");
+                        int llenos = (int)Math.Round(Math.Clamp(v,0.0,1.0) * 10);
+                        llenos = Math.Max(0, Math.Min(10, llenos));
+                        return new string('#', llenos).PadRight(10, '-');
                     }
+                    double Pct(double v) => Math.Clamp(v, 0.0, 1.0) * 100.0;
+                    var etH = sup.EtiquetaDesdeUmbrales(pj.Hambre, wH, cH);
+                    var etS = sup.EtiquetaDesdeUmbrales(pj.Sed, wS, cS);
+                    var etF = sup.EtiquetaDesdeUmbrales(pj.Fatiga, wF, cF);
+                    W($"Hambre: {Pct(pj.Hambre):F0}% [{BarFrac(pj.Hambre)}] ({etH})");
+                    W($"Sed:    {Pct(pj.Sed):F0}% [{BarFrac(pj.Sed)}] ({etS})");
+                    W($"Fatiga: {Pct(pj.Fatiga):F0}% [{BarFrac(pj.Fatiga)}] ({etF})");
+                    double t = pj.TempActual;
+                    string estadoTemp = sup.EstadoTemperatura(t);
+                    W($"Temperatura: {t:F1} °C ({estadoTemp})");
                 }
+            }
+            catch { /* Evitar romper UI si falta config */ }
+
+            // Si se solicita modo detallado, mostrar equipo equipado con formato compacto-profesional
+            if (detallado)
+            {
+                try
+                {
+                    UIStyle.SubHeader(ui!, "Equipo");
+                    var eq = pj.Inventario.Equipo;
+                    void Slot(string nombre, MiJuegoRPG.Objetos.Objeto? obj)
+                    {
+                        if (obj == null) { W($"{nombre}: —"); return; }
+                        // Línea principal: Nombre del objeto
+                        W($"{nombre}: {obj.Nombre}");
+                        // Detalles según tipo conocido (si aplica)
+                        switch (obj)
+                        {
+                            case MiJuegoRPG.Objetos.Arma arma:
+                                W($"  Daño Físico: {arma.DañoFisico} • Daño Mágico: {arma.DañoMagico}");
+                                W($"  Rareza: {arma.Rareza} • Perfección: {arma.Perfeccion}");
+                                break;
+                            case MiJuegoRPG.Objetos.Casco casco:
+                                W($"  Rareza: {casco.Rareza} • Perfección: {casco.Perfeccion}");
+                                break;
+                            case MiJuegoRPG.Objetos.Armadura arm:
+                                W($"  Rareza: {arm.Rareza} • Perfección: {arm.Perfeccion}");
+                                break;
+                            case MiJuegoRPG.Objetos.Pantalon pan:
+                                W($"  Rareza: {pan.Rareza} • Perfección: {pan.Perfeccion}");
+                                break;
+                            case MiJuegoRPG.Objetos.Botas bot:
+                                W($"  Rareza: {bot.Rareza} • Perfección: {bot.Perfeccion}");
+                                break;
+                            case MiJuegoRPG.Objetos.Collar col:
+                                W($"  Rareza: {col.Rareza} • Perfección: {col.Perfeccion}");
+                                break;
+                            case MiJuegoRPG.Objetos.Cinturon cin:
+                                W($"  Rareza: {cin.Rareza} • Perfección: {cin.Perfeccion}");
+                                break;
+                            case MiJuegoRPG.Objetos.Accesorio acc:
+                                W($"  Rareza: {acc.Rareza} • Perfección: {acc.Perfeccion}");
+                                break;
+                        }
+                    }
+                    Slot("Arma", eq.Arma);
+                    Slot("Casco", eq.Casco);
+                    Slot("Armadura", eq.Armadura);
+                    Slot("Pantalón", eq.Pantalon);
+                    Slot("Zapatos", eq.Zapatos);
+                    Slot("Collar", eq.Collar);
+                    Slot("Cinturón", eq.Cinturon);
+                    Slot("Accesorio 1", eq.Accesorio1);
+                    Slot("Accesorio 2", eq.Accesorio2);
+                }
+                catch { /* tolerante: si falta algún tipo, omitir detalles */ }
             }
 
-            write("\n--- Estadísticas Mágicas ---");
-            var estadisticasMagicas = new Dictionary<string, double> {
-                {"Poder Mágico", est.PoderMagico}, {"Defensa Mágica", est.DefensaMagica}, {"Regeneración Mana", est.RegeneracionMana},
-                {"Mana", est.Mana}, {"Poder Ofensivo Mágico", est.PoderOfensivoMagico}, {"Poder Defensivo Mágico", est.PoderDefensivoMagico},
-                {"Afinidad Elemental", est.AfinidadElemental}, {"Poder Elemental", est.PoderElemental}, {"Resistencia Elemental", est.ResistenciaElemental},
-                {"Resistencia Mágica", est.ResistenciaMagica}
-            };
-            foreach (var stat in estadisticasMagicas)
-            {
-                double bonificador = pj.ObtenerBonificadorEstadistica(stat.Key);
-                double total = stat.Value + bonificador;
-                write($"{stat.Key}: {stat.Value:F2} ({total:F2})");
-                if (bonificador > 0)
-                {
-                    var fuentes = pj.ObtenerFuentesBonificadorEstadistica(stat.Key);
-                    write($"  Bonificador por equipo:");
-                    foreach (var fuente in fuentes)
-                    {
-                        write($"    {fuente.Nombre}: +{fuente.Valor}");
-                    }
-                }
-            }
-
-            write("\n--- Estadísticas Espirituales y Especiales ---");
-            var estadisticasEspeciales = new Dictionary<string, double> {
-                {"Poder Espiritual", est.PoderEspiritual}, {"Poder Curativo", est.PoderCurativo}, {"Poder de Soporte", est.PoderDeSoporte},
-                {"Poder de Control", est.PoderDeControl}, {"Poder de Invocación", est.PoderDeInvocacion}, {"Poder de Transmutación", est.PoderDeTransmutacion},
-                {"Poder de Alteración", est.PoderDeAlteracion}, {"Poder de Ilusión", est.PoderDeIlusion}, {"Poder de Conjuración", est.PoderDeConjuracion},
-                {"Poder de Destrucción", est.PoderDeDestruccion}, {"Poder de Restauración", est.PoderDeRestauracion}, {"Poder de Transporte", est.PoderDeTransporte},
-                {"Poder de Manipulación", est.PoderDeManipulacion}
-            };
-            foreach (var stat in estadisticasEspeciales)
-            {
-                double bonificador = pj.ObtenerBonificadorEstadistica(stat.Key);
-                double total = stat.Value + bonificador;
-                write($"{stat.Key}: {stat.Value:F2} ({total:F2})");
-                if (bonificador > 0)
-                {
-                    var fuentes = pj.ObtenerFuentesBonificadorEstadistica(stat.Key);
-                    write($"  Bonificador por equipo:");
-                    foreach (var fuente in fuentes)
-                    {
-                        write($"    {fuente.Nombre}: +{fuente.Valor}");
-                    }
-                }
-            }
-            if (!InputService.TestMode)
-            {
-                var ui2 = Juego.ObtenerInstanciaActual()?.Ui;
-                if (ui2 != null) ui2.Pause("\nPresiona cualquier tecla para continuar...");
-                else { Console.WriteLine("\nPresiona cualquier tecla para continuar..."); Console.ReadKey(); }
-            }
+            if (!InputService.TestMode) ui?.Pause("\nPresiona cualquier tecla para continuar...");
         }
     }
 }

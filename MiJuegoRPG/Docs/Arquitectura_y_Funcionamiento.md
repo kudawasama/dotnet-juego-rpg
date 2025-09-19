@@ -1,0 +1,345 @@
+# MiJuegoRPG — Arquitectura y Funcionamiento (Estudio Detallado)
+
+Objetivo: documentar con nivel de ingeniería la estructura, el flujo y las reglas del juego para facilitar mantenimiento, onboarding y futura migración a Unity. Este documento sirve como guía viva y complementa `Roadmap.md` y `progression_config.md`.
+
+Documentos relacionados
+
+- Roadmap (plan y estado): `./Roadmap.md`
+- Bitácora (historial): `./Bitacora.md`
+- Config de progresión: `./progression_config.md`
+- Flujo de juego (menús): [`../../Flujo.txt`](../../Flujo.txt)
+  - Inicio: [`INICIO DEL JUEGO`](../../Flujo.txt#inicio-del-juego-programcs)
+  - Menú Principal: [`MENÚ PRINCIPAL DEL JUEGO`](../../Flujo.txt#menu-principal-del-juego-juegoiniciar)
+  - Ciudad: [`MENÚ DE CIUDAD`](../../Flujo.txt#menu-de-ciudad-menuciudad)
+  - Fuera de ciudad: [`MENÚ FUERA DE CIUDAD`](../../Flujo.txt#menu-fuera-de-ciudad-menufueraciudad)
+  - Misiones/NPC: [`MENÚ DE MISIONES Y NPC`](../../Flujo.txt#menu-de-misiones-y-npc-menusjuegomostrarmenumisionesnpc)
+  - Rutas: [`MENÚ DE RUTAS`](../../Flujo.txt#menu-de-rutas-juegomostrarmenurutas)
+  - Combate: [`MENÚ DE COMBATE`](../../Flujo.txt#menu-de-combate-base-actual)
+  - Entre combates: [`MENÚ ENTRE COMBATES`](../../Flujo.txt#menu-entre-combates-menuentrecombate)
+  - Menú fijo: [`MENÚ FIJO`](../../Flujo.txt#menu-fijo-accesible-desde-ciudadfueracombate)
+
+Tabla de contenidos
+
+1. Visión general del sistema
+1. Núcleo del dominio
+1. Progresión y atributos
+1. Combate (pipeline y estados)
+1. Recolección y mundo
+1. Objetos, inventario y comercio
+1. Misiones y encuentros
+1. Supervivencia (hambre/sed/fatiga/temperatura)
+1. UI y presentación
+1. Datos, validación y guardado
+1. Testing y determinismo
+1. Migración a Unity (consideraciones)
+1. Problemas conocidos y edge cases
+1. Ejemplos prácticos (recetas de uso)
+1. Apéndice de contratos (interfaces y DTOs)
+
+---
+
+## 1. Visión general del sistema
+
+Organización por capas con enfoque data-driven. Piezas principales (enlaces a implementación real):
+
+- Dominio (lógica del juego): Personaje, Enemigos, Combate, Progresión, Recolección.
+- Servicios: [`RandomService`](../Motor/Servicios/RandomService.cs), [`ProgressionService`](../Motor/Servicios/ProgressionService.cs), `ReputacionService` (en preparación), [`EnergiaService`](../Motor/EnergiaService.cs), `GuardadoService` (módulo actual), [`SupervivenciaService`](../Motor/Servicios/SupervivenciaService.cs).
+- UI: [`IUserInterface`](../Interfaces/IUserInterface.cs) y adaptadores (consola/silencioso, p. ej. [`ConsoleUserInterface`](../Motor/Servicios/ConsoleUserInterface.cs)); `UIStyle` para consistencia visual.
+- Datos: JSONs en `MiJuegoRPG/DatosJuego/` y modelos persistidos en `PjDatos/`.
+- Herramientas/QA: validadores, generadores y reparadores.
+
+Diagrama conceptual (texto):
+
+Jugador/Enemigo → Acciones → [`DamageResolver`](../Motor/Servicios/DamageResolver.cs) → [`ResultadoAccion`](../Interfaces/ResultadoAccion.cs) → UI
+                          ↑                                       |
+                          |                                       ↓
+               ProgressionService ← Eventos ← GuardadoService
+
+Metas clave:
+
+- Progresión lenta y desafiante (balance conservador).
+- Modularidad y futura migración a Unity.
+- Determinismo en pruebas (`RandomService.SetSeed`).
+
+## 2. Núcleo del dominio
+
+Entidades y responsabilidades:
+
+- `Personaje`: atributos, estadísticas derivadas, inventario, reputaciones, clases dinámicas; implementa `ICombatiente` e `IEvadible`. Ver [`Estadisticas`](../Personaje/Estadisticas.cs) y [`Atributo`](../Dominio/Atributo.cs).
+- `Enemigo`: comportamiento similar a `Personaje` con mitigaciones, inmunidades, `Drops`. Ver [`Enemigo`](../Enemigos/Enemigo.cs).
+- Acciones de combate: `AtaqueFisico`, `AtaqueMagico`, `UsarPocion`, `AplicarEfectos`; exponen `IAccionCombate.Ejecutar` y devuelven `ResultadoAccion`.
+- Efectos: `IEfecto` con ticks por turno y expiración (p. ej., veneno).
+
+Interfaces clave (contratos ejecutivos):
+
+- [`ICombatiente`](../Interfaces/ICombatiente.cs):
+  - Métodos: `AtacarFisico(ICombatiente objetivo)`, `AtacarMagico(ICombatiente objetivo)`, `RecibirDanioFisico(int d)`, `RecibirDanioMagico(int d)`.
+  - Props: `int Vida`, `int VidaMaxima`, `int Mana`, `int ManaMaximo`, `double DefensaFisica`, `double DefensaMagica`.
+- [`IEvadible`](../Interfaces/IEvadible.cs):
+  - `bool IntentarEvadir(bool esMagico)` — devuelve true si evita; aplica penalización de hechizos.
+- [`IAccionCombate`](../Interfaces/IAccionCombate.cs):
+  - `ResultadoAccion Ejecutar(CombateContext ctx)`; metadatos `CooldownTurnos`, `CostoMana`.
+
+DTOs relevantes:
+
+- [`ResultadoAccion`](../Interfaces/ResultadoAccion.cs): `{ string Mensaje, int DanioReal, bool FueCritico, bool FueEvadido, bool ObjetivoDerrotado, ... }`
+- `Estadisticas`: derivadas de `AtributosBase`; ver §3.2 y [`Estadisticas`](../Personaje/Estadisticas.cs).
+
+## 3. Progresión y atributos
+
+Controlado vía `progression_config.md`/`progression.json`.
+
+Atributos base (del código): `Fuerza`, `Destreza`, `Vitalidad`, `Agilidad`, `Suerte`, `Defensa`, `Resistencia`, `Sabiduría`, `Inteligencia`, `Fe`, `Percepcion`, `Persuasion`, `Liderazgo`, `Carisma`, `Voluntad`, `Oscuridad`.
+
+### 3.1 Estadísticas derivadas (fórmulas actuales)
+
+- Salud = `10·Vitalidad`
+- Maná = suma ponderada de múltiples atributos (Int, Sab, Fe, Vol, Car, Lid, Vit, Fue, Des, Agi, Suer, Def, Res, Perc, Pers)
+- Energía = `10·Agilidad`
+- Ataque = `0.01·(Fuerza + Destreza)`
+- DefensaFisica = `0.01·(Defensa + Vitalidad)`
+- PoderMagico = `0.01·(Inteligencia + Sabiduría)`
+- DefensaMagica = `0.01·(Resistencia + Sabiduría)`
+- RegeneracionMana = `0.01·Inteligencia`
+- Evasion = `0.01·(Agilidad + Suerte)`
+- Critico (chance) = `0.01·(Destreza + Suerte)`
+- Precision = `ClampPrecision(0.01·Destreza + 0.005·Percepcion)`
+- CritMult = `ClampCritMult(1.5 + 0.001·Sabiduría)`
+- Penetracion = `ClampPenetracion(0.002·Destreza)`
+
+Notas: los clamps se aplican de forma centralizada a través de `CombatBalanceConfig` cargando caps desde `DatosJuego/progression.json` (sección opcional `StatsCaps`). Si el archivo no define `StatsCaps`, se usan defaults conservadores. Cap de evasión efectiva en `IntentarEvadir` = 0.5 (previo a RNG), penalización 0.8 para hechizos. Equipo y supervivencia modifican estas cifras.
+
+### 3.2 Caps de combate (data‑driven)
+
+Fuente de verdad: `DatosJuego/progression.json` → sección opcional `StatsCaps` (ver `Docs/progression_config.md`).
+
+- Servicio: `Motor/Servicios/CombatBalanceConfig.cs` proporciona `ClampPrecision`, `ClampCritChance`, `ClampCritMult` y `ClampPenetracion`.
+- Defaults actuales (si faltan en JSON):
+  - `PrecisionMax = 0.95`
+  - `CritChanceMax = 0.50`
+  - `CritMultMin = 1.25`, `CritMultMax = 1.75`
+  - `PenetracionMax = 0.25`
+
+Ejemplo (KaTeX):
+
+$\text{Precision} = \min(0.95,\ 0.01\cdot Destreza + 0.005\cdot Percepcion)$
+
+$\text{CritMult} = \operatorname{clamp}(1.5 + 0.001\cdot Sabidur\'ia,\ 1.25,\ 1.75)$
+
+$\text{Penetraci\'on} = \min(0.25,\ 0.002\cdot Destreza)$
+
+## 4. Combate (pipeline y estados)
+
+Estado actual (MVP implementado):
+
+- Precisión opcional: `DamageResolver` realiza un chequeo de acierto previo en ataques físicos cuando se lanza el juego con el flag `--precision-hit`. Si el atacante es `Personaje`, usa `Estadisticas.Precision` y, de fallar, retorna `FueEvadido=true` y `DanioReal=0` sin invocar `AtacarFisico`. Ver [`DamageResolver`](../Motor/Servicios/DamageResolver.cs), [`Program.cs`](../Program.cs) y [`Estadisticas`](../Personaje/Estadisticas.cs).
+- Cálculo de daño real: `DanioReal` se computa como delta de vida del objetivo (VidaAntes − VidaDespués), garantizando coherencia post-defensa/mitigación. Mensajes de combate usan `DanioReal` para evitar desalineación con la UI.
+- Crítico determinista en pruebas: si `CritChance >= 1.0` en `Personaje`, `FueCritico=true` forzado para escenarios de test; en juego normal se usa la probabilidad conservadora y solo aplica si `DanioReal > 0`. Ver [`ResultadoAccion`](../Interfaces/ResultadoAccion.cs).
+
+- Penetración opcional: si se lanza con `--penetracion`, el `DamageResolver` propagará la `Penetracion` del atacante (si es `Personaje`) a través de un contexto ambiental [`CombatAmbientContext`](../Motor/Servicios/CombatAmbientContext.cs). Los receptores (`Enemigo`/`Personaje`) reducen su defensa efectiva antes de mitigar: `defensaEfectiva = round(defensa * (1 - pen))`. Orden respetado: Físico → Defensa/Penetración → Mitigación; Mágico → Defensa/Penetración → Mitigación → Resistencia(`magia`) → Vulnerabilidad. El flag está desactivado por defecto para no alterar el balance legacy.
+
+Unificación de acciones:
+
+- El `Ataque Mágico` también pasa por `DamageResolver` (sin paso de precisión), manteniendo el cálculo de daño actual pero unificando metadatos (`DanioReal`, `FueEvadido`, `FueCritico`) y mensajería.
+
+Orden de pipeline propuesto (futuro inmediato):
+
+1) Hit/Evasión: $p_{hit} = clamp(0.35 + Precision_{att} - k·Evasion_{obj},\ 0.20,\ 0.95)$, con $k \in [1.0, 1.2]$.
+      - Aplicar factor de Supervivencia: $p_{hit} *= FactorPrecision$.
+2) Crítico: si RNG < `CritChance`, multiplicar por `CritMult`; caps: `CritChance ≤ 0.5`, `CritMult ∈ [1.25, 1.75]`.
+3) Defensa/Penetración: reducir defensa por `Penetracion` y mitigar. Implementación actual detrás de `--penetracion` usando `CombatAmbientContext`.
+4) Mitigaciones del objetivo: físicas/mágicas.
+5) Elementales: resistencias (0..0.9) y vulnerabilidades (1.0..1.5) por canal (`magia` hoy).
+6) Aplicar daño y efectos OnHit/OnKill.
+7) Registrar en `ResultadoAccion` y presentar en UI.
+
+Nota práctica (MVP actual):
+
+- `DamageResolver` incorpora un chequeo de precisión opcional previo al ataque físico (ver flag CLI). Si falla, corta la ejecución con `FueEvadido=true` y `DanioReal=0`.
+- Crítico: si `CritChance >= 1.0` en `Personaje`, el crítico se considera forzado (útil para pruebas deterministas); en runtime normal se aplica probabilidad y multiplicador con clamps conservadores.
+- Mensajería: los mensajes se generan en base a `DanioReal` y flags (`FueEvadido`, `FueCritico`) para mantener coherencia; `CombatePorTurnos` imprime a través de la UI.
+
+Ejemplo práctico (flag de precisión activado):
+
+1) Ejecutar con `--precision-hit`.
+2) `AtaqueFisico` → `DamageResolver.ResolverAtaqueFisico` → chequeo de $p_{hit}$.
+3) Si RNG ≥ $p_{hit}$: `FueEvadido=true`, `DanioReal=0`; si RNG < $p_{hit}$: procede el cálculo de daño, evalúa crítico y aplica sobre el objetivo.
+4) `ResultadoAccion` se devuelve a `CombatePorTurnos` y la UI muestra el mensaje.
+
+Fórmula de impacto (propuesta, usada por el MVP con $k=1.0$): $p_{hit} = clamp(0.35 + Precision - 1.0\cdot Evasion,\ 0.20,\ 0.95)$
+
+Ejemplo práctico (flag de penetración activado):
+
+1) Ejecutar con `--penetracion`.
+2) `AtaqueFisico`/`AtaqueMagico` → `DamageResolver` envuelve la llamada de ataque con `CombatAmbientContext.WithPenetracion(pen)` donde `pen = clamp(Estadisticas.Penetracion, 0, 0.9)`.
+3) En el receptor, se calcula `defensaEfectiva = round(defensa * (1 - pen))` y luego se aplican mitigaciones (y resistencias/vulnerabilidades si es mágico).
+4) `ResultadoAccion.DanioReal` refleja el delta de vida post-mitigación y los mensajes lo usan para coherencia.
+Edge cases y decisiones:
+
+- Daño mínimo = 1 si impacta y tras mitigaciones queda > 0 (salvo inmunidades explícitas).
+- Evasión duplicada: consolidar en un solo chequeo en el resolver (evitar doble miss).
+- Overkill: clamp vida a 0; marcar `ObjetivoDerrotado`.
+
+## 5. Recolección y mundo
+
+- Biomas con nodos (rareza, producción min/max, cooldowns).
+- Encuentros aleatorios (Chance/Prioridad/Cooldown) persistidos.
+- Exploración alimenta progresión y rutas.
+
+### 5.1 Coste de Energía (EnergiaService)
+
+Archivo de configuración: [`DatosJuego/energia.json`](../DatosJuego/energia.json):
+
+- Costo = `Base_tipo · (1 + ModHerramienta + ModBioma + ModAtributo + ModClase)`
+- Reducción por atributo relevante si supera `UmbralAtributo` (25 por defecto) hasta `FactorReduccionAtributo` (0.4) con tope 5× umbral.
+- `ModClase`: suma bonificadores de clases (`Energia.ModClase`, `Energia.ModAccion.<Tipo>`).
+- Clamps: `CostoMinimo`/`CostoMaximo` (3/25).
+- Energía: máx 100; +1 cada 10 min; posada recupera % decreciente por descanso en el día.
+
+## 6. Objetos, inventario y comercio
+
+- Tipos: armas, armaduras, pociones, materiales; gestores en migración a repos JSON.
+- Inventario: `IInventariable`/`IUsable`; consumo en combate vía `IAccionCombate`.
+- Tienda: precios afectan reputación; reglas por facción.
+
+## 7. Misiones y encuentros
+
+- Misiones: requisitos/recompensas (plan a `IRequisito`/`IRecompensa`).
+- `EncuentrosService`: gating por kills, hora, chance, prioridad, cooldown persistente.
+
+### 7.1 Encuentros (detalles exactos)
+
+Fuente: [`Motor/Servicios/EncuentrosService.cs`](../Motor/Servicios/EncuentrosService.cs) + [`DatosJuego/eventos/encuentros.json`](../DatosJuego/eventos/encuentros.json).
+
+- Filtros: `MinNivel`, `MinKills`, ventana `HoraMin/HoraMax` (gestiona medianoche), `CooldownMinutos` con clave `bioma|tipo|param`.
+- Entradas con `Chance`: primero RNG < Chance; desempate por `Prioridad` y luego `Peso`.
+- Fallback ponderado: selección por `Peso` entre entradas sin `Chance` post-filtros.
+- Mods por atributos (`CalcularModificador`):
+  - Botín/Materiales: + hasta 50% con Percepción+Suerte.
+  - NPC/Eventos/Mazmorras raras: + hasta 25% con Suerte.
+  - Combates comunes/bioma: + hasta 30% con Agilidad+Destreza.
+  - MiniJefe: requiere `MinKills`; bonus por kills extra y Suerte (máx +50%).
+- Cooldowns consultables/limpiables; expone estado con minutos restantes.
+
+## 8. Supervivencia
+
+- Config: [`DatosJuego/config/supervivencia.json`](../DatosJuego/config/supervivencia.json); servicio [`SupervivenciaService`](../Motor/Servicios/SupervivenciaService.cs) y runtime asociado.
+- Penalizaciones actuales: `FactorEvasion` (jugador) y `FactorRegen` (maná); `FactorPrecision` listo para el paso 1 del pipeline de combate.
+
+### 8.1 Config y runtime
+
+- Tasas: `HambrePorHora`, `SedPorHora`, `FatigaPorHora`, `TempRecuperacionPorHora`.
+- Multiplicadores por contexto: `Explorar`, `Viajar`, `Entrenar`, `Combate`, `Descanso`.
+- Umbrales: `OK/ADVERTENCIA/CRÍTICO` para H/S/F; temperatura con `Frio/Calor` (advertencia/crítico) y estados (FRÍO, CALOR, HIPOTERMIA, GOLPE DE CALOR).
+- Reglas por bioma: `TempDia`, `TempNoche`, `SedMultiplier`, `HambreMultiplier`, `FatigaMultiplier`.
+- Penalizaciones por umbral: factores `Precision`, `Evasion`, `ManaRegen` y `ReduccionAtributos` (mapa atributo→% negativo).
+- Runtime: por minuto, incrementa H/S/F con multiplicadores; ajusta `TempActual`; emite eventos al cruzar umbrales.
+- Integraciones: `ActionRulesService` reduce regen de maná; `Personaje.IntentarEvadir` aplica `FactorEvasion`.
+
+## 9. UI y presentación
+
+- `IUserInterface`: desacopla vista; implementaciones de consola y silenciosa (tests).
+- `UIStyle`: estilo de encabezados y etiquetas de reputación/supervivencia.
+
+### 9.1 Estado del personaje (layout actual)
+
+- Implementación: `Motor/EstadoPersonajePrinter.cs` usa `UIStyle` para renderizar un layout profesional y compacto, con opción de modo detallado.
+- Secciones:
+  - Resumen superior: `Nombre — Clase • Nivel • Título` y tiempo de mundo.
+  - Barras: Vida/Maná/Energía con porcentaje y segmentos; barra de XP con “faltante” al siguiente nivel.
+  - Atributos: compactos en línea, mostrando bonos agregados por equipo/clases (por ejemplo: `FUE 10 (+2)`).
+  - Estadísticas clave: Defensa/Precisión/Crítico/Penetración/Velocidad.
+  - Supervivencia: indicador compacto (Hambre/Sed/Fatiga/Temperatura) con etiquetas por umbral (OK/ADVERTENCIA/CRÍTICO).
+  - Modo detallado (opcional): sección "Equipo" con slots (Arma, Casco, Armadura, Pantalón, Zapatos, Collar, Cinturón, Accesorio 1/2). Para cada pieza muestra nombre y stats clave (Rareza/Perfección; y en armas, Daño Físico/Mágico). Se activa llamando `EstadoPersonajePrinter.MostrarEstadoPersonaje(pj, true)` o desde el `Menú Fijo` (opción "Estado (detallado)").
+- Decisión de diseño: por defecto, la vista compacta evita listados largos de equipo para priorizar legibilidad. El detalle de equipo está disponible bajo demanda a través del modo detallado o el Inventario.
+
+### 9.2 Gating de menús por sector (Ciudad vs Fuera de Ciudad)
+
+- Lógica en `Motor/Juego.cs` (`MostrarMenuPorUbicacion`): el menú de ciudad se muestra solo si `SectorData.Tipo == "Ciudad"` y además `EsCentroCiudad` o `CiudadPrincipal` son verdaderos. Para cualquier otra parte de una ciudad (`ParteCiudad`), se usa el menú de “Fuera de Ciudad”.
+- Justificación: evita mostrar opciones de ciudad completa en entradas/periferias; alinea UX con exploración por zonas.
+- Soporte de datos: `PjDatos/SectorData.cs` define `Tipo` con valor por defecto `"Ruta"`, previniendo clasificaciones incorrectas cuando el JSON omite el campo.
+
+## 10. Datos, validación y guardado
+
+- `PathProvider` centraliza rutas.
+- `DataValidatorService`: valida mapa, misiones, NPCs, enemigos; objetos pendiente.
+- `GuardadoService`: persiste drops únicos y cooldowns de encuentros; sustituye I/O ad-hoc.
+
+## 11. Testing y determinismo
+
+- xUnit; `RandomService.SetSeed` para reproducibilidad.
+- `SilentUserInterface` para evitar bloqueos por input.
+- Proveedores inyectables (hora, paths) para desacoplar entorno.
+
+## 12. Migración a Unity
+
+- Mantener dominio puro (independiente de consola/UI).
+- Adaptadores de UI/Logger/Input en capa presentación.
+- Convertir JSON a ScriptableObjects; usar adapters para `IUserInterface`.
+
+## 13. Problemas conocidos y edge cases
+
+- Doble evasión: consolidar en resolver.
+- Contratos JSON: inconsistencias históricas en objetos; mitigado por validadores y herramientas.
+- Balance conservador: evitar “power spikes”; progresión intencionalmente lenta.
+
+## 14. Ejemplos prácticos
+
+### 14.1 Secuencia de ataque físico (actual)
+
+1) Usuario elige “Ataque Físico”.
+2) `AtaqueFisico` → `DamageResolver.ResolverAtaqueFisico`.
+3) `AtacarFisico` calcula daño y chequea evasión del objetivo; 0 si evade.
+4) `DamageResolver` marca `FueEvadido` si daño==0, evalúa posible `FueCritico`, compone mensajes.
+5) `CombatePorTurnos` muestra y procesa efectos.
+
+### 14.2 Fórmula de impacto (futura)
+
+$p_{hit} = clamp(0.35 + Precision - 1.0·Evasion,\ 0.20,\ 0.95)$; hit si RNG < $p_{hit}$; si miss: `DanioReal=0`, `FueEvadido=true`.
+
+### 14.3 Progresión lenta: ejemplo
+
+Jugador con baja `Precision` vs lobo ágil: esperar más fallos; estrategia: entrenar Agilidad/Percepción o equipar bonus de Precision antes de adentrarse.
+
+## 15. Apéndice de contratos (interfaces y DTOs)
+
+Resumen de firmas públicas previstas (se omiten namespaces para brevedad):
+
+```csharp
+public interface ICombatiente {
+          int Vida { get; }
+          int VidaMaxima { get; }
+          int Mana { get; }
+          int ManaMaximo { get; }
+          double DefensaFisica { get; }
+          double DefensaMagica { get; }
+          int AtacarFisico(ICombatiente objetivo);
+          int AtacarMagico(ICombatiente objetivo);
+          void RecibirDanioFisico(int danio);
+          void RecibirDanioMagico(int danio);
+}
+
+public interface IEvadible {
+          bool IntentarEvadir(bool esMagico);
+}
+
+public interface IAccionCombate {
+          ResultadoAccion Ejecutar(CombateContext ctx);
+          int CooldownTurnos { get; }
+          int CostoMana { get; }
+}
+
+public sealed class ResultadoAccion {
+          public string Mensaje { get; set; }
+          public int DanioReal { get; set; }
+          public bool FueCritico { get; set; }
+          public bool FueEvadido { get; set; }
+          public bool ObjetivoDerrotado { get; set; }
+}
+```
+
+Nota: las firmas exactas pueden variar en el código; este apéndice busca fijar la intención y el contrato lógico que guía las pruebas y la migración a Unity.
+
+---
+
+Anexo vivo: cualquier cambio en código o balance debe anotarse aquí y en `Roadmap.md` (Bitácora + sección relevante) para mantener sincronización entre equipos/PCs.

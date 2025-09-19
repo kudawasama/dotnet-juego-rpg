@@ -1,0 +1,26 @@
+{
+  "Nombre": "Troll de Cueva",
+  "VidaBase": 110,
+  "AtaqueBase": 20,
+  "DefensaBase": 9,
+  "DefensaMagicaBase": 6,
+  "Nivel": 6,
+  "ExperienciaRecompensa": 20,
+  "OroRecompensa": 12,
+  "Familia": "Humanoide",
+  "Rareza": "Raro",
+  "Categoria": "Elite",
+  "ArmaNombre": "Garrote de Piedra",
+  "MitigacionFisicaPorcentaje": 0.16,
+  "Tags": ["troll", "cueva", "humanoide"],
+  "ResistenciasElementales": { "veneno": 0.10 },
+  "DanioElementalBase": { "aplastamiento": 4 },
+  "EquipoInicial": { "Arma": "Garrote de Piedra" },
+  "EvasionFisica": 0.08,
+  "EvasionMagica": 0.05,
+  "SpawnWeight": 2,
+  "Drops": [
+    { "Tipo": "Material", "Nombre": "Diente de Troll", "Rareza": "Raro", "Chance": 0.10, "CantidadMin": 1, "CantidadMax": 1 },
+    { "Tipo": "Pocion", "Nombre": "Poción de Regeneración", "Chance": 0.03 }
+  ]
+}

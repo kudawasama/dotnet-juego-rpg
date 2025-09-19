@@ -1,0 +1,26 @@
+{
+  "Nombre": "Salamandra Ígnea",
+  "VidaBase": 60,
+  "AtaqueBase": 18,
+  "DefensaBase": 8,
+  "DefensaMagicaBase": 10,
+  "Nivel": 6,
+  "ExperienciaRecompensa": 25,
+  "OroRecompensa": 12,
+  "Familia": "Bestia",
+  "Rareza": "Raro",
+  "Categoria": "Normal",
+  "ArmaNombre": "Cola Ígnea",
+  "MitigacionFisicaPorcentaje": 0.14,
+  "Tags": ["salamandra", "volcan", "bestia"],
+  "ResistenciasElementales": { "fuego": 0.60, "agua": 0.0 },
+  "DanioElementalBase": { "fuego": 7 },
+  "EquipoInicial": { "Arma": "Cola Ígnea" },
+  "EvasionFisica": 0.16,
+  "EvasionMagica": 0.14,
+  "SpawnWeight": 2,
+  "Drops": [
+    { "Tipo": "Material", "Nombre": "Escama Ígnea", "Rareza": "Raro", "Chance": 0.13, "CantidadMin": 1, "CantidadMax": 2 },
+    { "Tipo": "Pocion", "Nombre": "Poción de Fuego", "Chance": 0.04 }
+  ]
+}

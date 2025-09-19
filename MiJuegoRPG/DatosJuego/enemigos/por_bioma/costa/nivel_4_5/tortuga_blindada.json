@@ -1,0 +1,26 @@
+{
+  "Nombre": "Tortuga Blindada",
+  "VidaBase": 60,
+  "AtaqueBase": 10,
+  "DefensaBase": 18,
+  "DefensaMagicaBase": 8,
+  "Nivel": 5,
+  "ExperienciaRecompensa": 15,
+  "OroRecompensa": 7,
+  "Familia": "Bestia",
+  "Rareza": "Raro",
+  "Categoria": "Normal",
+  "ArmaNombre": "Caparazón",
+  "MitigacionFisicaPorcentaje": 0.28,
+  "Tags": ["tortuga", "costa", "bestia"],
+  "ResistenciasElementales": { "agua": 0.60 },
+  "DanioElementalBase": { "aplastamiento": 4 },
+  "EquipoInicial": { "Arma": "Caparazón" },
+  "EvasionFisica": 0.04,
+  "EvasionMagica": 0.10,
+  "SpawnWeight": 3,
+  "Drops": [
+    { "Tipo": "Material", "Nombre": "Caparazón de Tortuga", "Rareza": "Raro", "Chance": 0.15, "CantidadMin": 1, "CantidadMax": 1 },
+    { "Tipo": "Pocion", "Nombre": "Poción de Defensa", "Chance": 0.03 }
+  ]
+}

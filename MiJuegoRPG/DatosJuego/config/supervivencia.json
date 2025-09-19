@@ -1,0 +1,50 @@
+{
+  "Tasas": {
+    "HambrePorHora": 0.025,
+    "SedPorHora": 0.04,
+    "FatigaPorHora": 0.03,
+    "TempRecuperacionPorHora": 1.0
+  },
+  "MultiplicadoresPorContexto": {
+    "Explorar": { "Hambre": 1.2, "Sed": 1.3, "Fatiga": 1.1 },
+    "Viajar":   { "Hambre": 1.4, "Sed": 1.6, "Fatiga": 1.3 },
+    "Recoleccion": { "Hambre": 1.6, "Sed": 1.7, "Fatiga": 1.8 },
+    "Entrenar": { "Hambre": 1.8, "Sed": 2.0, "Fatiga": 2.2 },
+    "Combate":  { "Hambre": 1.5, "Sed": 1.8, "Fatiga": 2.5 },
+    "Descansar":{ "Hambre": 0.6, "Sed": 0.6, "Fatiga": 0.2 }
+  },
+  "Umbrales": {
+    "Advertencia": { "Hambre": 0.4, "Sed": 0.4, "Fatiga": 0.4, "Frio": 5.0, "Calor": 35.0 },
+    "Critico":     { "Hambre": 0.75, "Sed": 0.75, "Fatiga": 0.8, "Frio": 0.0, "Calor": 40.0 }
+  },
+  "Penalizaciones": {
+    "Advertencia": {
+      "ReduccionAtributos": { "Fuerza": 0.05, "Agilidad": 0.05, "Inteligencia": 0.03, "Percepcion": 0.03, "Suerte": 0.0, "Oscuridad": 0.0 },
+      "Precision": -0.05,
+      "Evasion": -0.05,
+      "MitigacionEnergia": 0.1
+    },
+    "Critico": {
+      "ReduccionAtributos": { "Fuerza": 0.12, "Agilidad": 0.12, "Inteligencia": 0.08, "Percepcion": 0.08, "Suerte": 0.0, "Oscuridad": 0.0 },
+      "Precision": -0.12,
+      "Evasion": -0.1,
+      "MitigacionEnergia": 0.25
+    }
+  },
+  "ReglasPorBioma": {
+    "Desierto": { "TempDia": 38, "TempNoche": 12, "SedMultiplier": 1.5, "HambreMultiplier": 1.1, "FatigaMultiplier": 1.2 },
+    "Bosque":   { "TempDia": 22, "TempNoche": 10, "SedMultiplier": 1.0, "HambreMultiplier": 1.0, "FatigaMultiplier": 1.0 },
+    "Montaña":  { "TempDia": 12, "TempNoche": -2, "SedMultiplier": 1.1, "HambreMultiplier": 1.2, "FatigaMultiplier": 1.2 },
+    "Cueva":    { "TempDia": 8,  "TempNoche": 8,  "SedMultiplier": 0.9, "HambreMultiplier": 1.0, "FatigaMultiplier": 1.1 }
+  },
+  "BonosRefugio": {
+    "Hoguera": { "TempPlus": 10, "FatigaRecuperacion": 0.5 },
+    "RefugioBasico": { "TempPlus": 5, "FatigaRecuperacion": 0.25 }
+  },
+  "Consumo": {
+    "Comida": { "HambreReduce": 0.35 },
+    "Agua":   { "SedReduce": 0.5 },
+    "Descanso": { "FatigaReduce": 0.6 },
+    "Medico": { "SangradoReduce": true, "InfeccionReduce": true }
+  }
+}

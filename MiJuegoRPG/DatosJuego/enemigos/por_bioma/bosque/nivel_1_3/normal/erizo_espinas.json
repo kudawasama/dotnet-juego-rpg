@@ -1,0 +1,25 @@
+{
+  "Nombre": "Erizo de Espinas",
+  "VidaBase": 19,
+  "AtaqueBase": 7,
+  "DefensaBase": 3,
+  "DefensaMagicaBase": 1,
+  "Nivel": 1,
+  "ExperienciaRecompensa": 4,
+  "OroRecompensa": 1,
+  "Familia": "Bestia",
+  "Rareza": "Comun",
+  "Categoria": "Normal",
+  "ArmaNombre": "Pinchos",
+  "MitigacionFisicaPorcentaje": 0.04,
+  "Tags": ["erizo", "bosque", "bestia"],
+  "ResistenciasElementales": { "tierra": 0.10 },
+  "DanioElementalBase": { "tierra": 1 },
+  "EquipoInicial": { "Arma": "Pinchos" },
+  "EvasionFisica": 0.13,
+  "EvasionMagica": 0.03,
+  "SpawnWeight": 5,
+  "Drops": [
+    { "Tipo": "Material", "Nombre": "Espina de Erizo", "Rareza": "Normal", "Chance": 0.16, "CantidadMin": 1, "CantidadMax": 2 }
+  ]
+}

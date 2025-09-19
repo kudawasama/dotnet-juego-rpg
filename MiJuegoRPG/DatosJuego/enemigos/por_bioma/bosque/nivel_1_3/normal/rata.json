@@ -1,0 +1,25 @@
+{
+  "Nombre": "Rata",
+  "VidaBase": 13,
+  "AtaqueBase": 4,
+  "DefensaBase": 1,
+  "DefensaMagicaBase": 0,
+  "Nivel": 1,
+  "ExperienciaRecompensa": 2,
+  "OroRecompensa": 1,
+  "Familia": "Bestia",
+  "Rareza": "Comun",
+  "Categoria": "Normal",
+  "ArmaNombre": "Mordisco",
+  "MitigacionFisicaPorcentaje": 0.01,
+  "Tags": ["rata", "bosque", "bestia"],
+  "ResistenciasElementales": { "veneno": 0.05 },
+  "DanioElementalBase": { "veneno": 1 },
+  "EquipoInicial": { "Arma": "Mordisco" },
+  "EvasionFisica": 0.18,
+  "EvasionMagica": 0.02,
+  "SpawnWeight": 8,
+  "Drops": [
+    { "Tipo": "Material", "Nombre": "Cola de Rata", "Rareza": "Normal", "Chance": 0.14, "CantidadMin": 1, "CantidadMax": 1 }
+  ]
+}

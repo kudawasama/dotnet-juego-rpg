@@ -1,0 +1,26 @@
+{
+  "Nombre": "Rata Gigante",
+  "VidaBase": 45,
+  "AtaqueBase": 9,
+  "DefensaBase": 4,
+  "DefensaMagicaBase": 4,
+  "Nivel": 2,
+  "ExperienciaRecompensa": 5,
+  "OroRecompensa": 4,
+  "Familia": "Bestia",
+  "Rareza": "Comun",
+  "Categoria": "Normal",
+  "ArmaNombre": "Mordisco",
+  "MitigacionFisicaPorcentaje": 0.05,
+  "Tags": ["rata_gigante", "bosque", "bestia"],
+  "ResistenciasElementales": { "veneno": 0.12 },
+  "DanioElementalBase": { "enfermedad": 2 },
+  "EquipoInicial": { "Arma": "Mordisco" },
+  "EvasionFisica": 0.15,
+  "EvasionMagica": 0.08,
+  "SpawnWeight": 8,
+  "Drops": [
+    { "Tipo": "Material", "Nombre": "Colmillo de Rata Gigante", "Rareza": "Normal", "Chance": 0.14, "CantidadMin": 1, "CantidadMax": 2 },
+    { "Tipo": "Pocion", "Nombre": "Poción Pequeña", "Chance": 0.01 }
+  ]
+}

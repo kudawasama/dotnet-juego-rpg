@@ -1,0 +1,25 @@
+{
+  "Nombre": "Cuervo de Tres Ojos",
+  "VidaBase": 22,
+  "AtaqueBase": 9,
+  "DefensaBase": 2,
+  "DefensaMagicaBase": 2,
+  "Nivel": 2,
+  "ExperienciaRecompensa": 7,
+  "OroRecompensa": 2,
+  "Familia": "Bestia",
+  "Rareza": "Comun",
+  "Categoria": "Normal",
+  "ArmaNombre": "Picotazo",
+  "MitigacionFisicaPorcentaje": 0.04,
+  "Tags": ["cuervo", "bosque", "ave"],
+  "ResistenciasElementales": { "sombra": 0.10 },
+  "DanioElementalBase": { "sombra": 2 },
+  "EquipoInicial": { "Arma": "Picotazo" },
+  "EvasionFisica": 0.19,
+  "EvasionMagica": 0.06,
+  "SpawnWeight": 6,
+  "Drops": [
+    { "Tipo": "Material", "Nombre": "Pluma Negra", "Rareza": "Normal", "Chance": 0.14, "CantidadMin": 1, "CantidadMax": 2 }
+  ]
+}

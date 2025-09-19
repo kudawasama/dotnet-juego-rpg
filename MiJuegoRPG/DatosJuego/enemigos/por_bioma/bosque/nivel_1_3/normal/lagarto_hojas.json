@@ -1,0 +1,26 @@
+{
+  "Nombre": "Lagarto de Hojas",
+  "VidaBase": 21,
+  "AtaqueBase": 6,
+  "DefensaBase": 3,
+  "DefensaMagicaBase": 2,
+  "Nivel": 2,
+  "ExperienciaRecompensa": 5,
+  "OroRecompensa": 2,
+  "Familia": "Bestia",
+  "Rareza": "Comun",
+  "Categoria": "Normal",
+  "ArmaNombre": "Cola Cortante",
+  "MitigacionFisicaPorcentaje": 0.04,
+  "Tags": ["lagarto", "bosque", "bestia"],
+  "ResistenciasElementales": { "hielo": 0.06 },
+  "DanioElementalBase": { "sangrado": 1 },
+  "EquipoInicial": { "Arma": "Cola Cortante" },
+  "EvasionFisica": 0.16,
+  "EvasionMagica": 0.08,
+  "SpawnWeight": 10,
+  "Drops": [
+    { "Tipo": "Material", "Nombre": "Escama de Lagarto", "Rareza": "Normal", "Chance": 0.15, "CantidadMin": 1, "CantidadMax": 2 },
+    { "Tipo": "Material", "Nombre": "Cola de Lagarto", "Rareza": "Normal", "Chance": 0.10, "CantidadMin": 1, "CantidadMax": 1 }
+  ]
+}

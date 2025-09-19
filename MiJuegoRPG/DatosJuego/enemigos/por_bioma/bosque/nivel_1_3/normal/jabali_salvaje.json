@@ -1,0 +1,26 @@
+{
+  "Nombre": "Jabalí Salvaje",
+  "VidaBase": 38,
+  "AtaqueBase": 11,
+  "DefensaBase": 4,
+  "DefensaMagicaBase": 2,
+  "Nivel": 3,
+  "ExperienciaRecompensa": 10,
+  "OroRecompensa": 4,
+  "Familia": "Bestia",
+  "Rareza": "Comun",
+  "Categoria": "Normal",
+  "ArmaNombre": "Colmillos",
+  "MitigacionFisicaPorcentaje": 0.09,
+  "Tags": ["jabali", "bosque", "bestia"],
+  "ResistenciasElementales": { "hielo": 0.05 },
+  "DanioElementalBase": { "sangrado": 2 },
+  "EquipoInicial": { "Arma": "Colmillos" },
+  "EvasionFisica": 0.10,
+  "EvasionMagica": 0.03,
+  "SpawnWeight": 7,
+  "Drops": [
+    { "Tipo": "Material", "Nombre": "Piel de Jabalí", "Rareza": "Normal", "Chance": 0.15, "CantidadMin": 1, "CantidadMax": 2 },
+    { "Tipo": "Material", "Nombre": "Carne de Jabalí", "Rareza": "Normal", "Chance": 0.10, "CantidadMin": 1, "CantidadMax": 2 }
+  ]
+}

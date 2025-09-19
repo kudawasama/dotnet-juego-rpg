@@ -1,0 +1,27 @@
+{
+  "Nombre": "Espíritu Ancestral del Robledal",
+  "VidaBase": 150,
+  "AtaqueBase": 26,
+  "DefensaBase": 10,
+  "DefensaMagicaBase": 18,
+  "Nivel": 3,
+  "ExperienciaRecompensa": 68,
+  "OroRecompensa": 29,
+  "Familia": "Elemental",
+  "Rareza": "Épico",
+  "Categoria": "Jefe",
+  "ArmaNombre": "Raíces Etéreas",
+  "MitigacionFisicaPorcentaje": 0.12,
+  "MitigacionMagicaPorcentaje": 0.22,
+  "Tags": ["jefe", "bosque", "espiritu"],
+  "ResistenciasElementales": { "magia": 0.30, "fuego": 0.0 },
+  "DanioElementalBase": { "magia": 7 },
+  "EquipoInicial": { "Arma": "Raíces Etéreas" },
+  "EvasionFisica": 0.14,
+  "EvasionMagica": 0.22,
+  "SpawnWeight": 1,
+  "Drops": [
+    { "Tipo": "Material", "Nombre": "Esencia del Robledal", "Rareza": "Épico", "Chance": 0.12, "CantidadMin": 1, "CantidadMax": 1 },
+    { "Tipo": "Pocion", "Nombre": "Elixir del Bosque", "Rareza": "Raro", "Chance": 0.10, "CantidadMin": 1, "CantidadMax": 1 }
+  ]
+}

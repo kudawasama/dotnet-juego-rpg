@@ -306,6 +306,8 @@ namespace MiJuegoRPG.Motor
     public MiJuegoRPG.Motor.Servicios.EncuentrosService? encuentrosService { get; private set; }
     public MiJuegoRPG.Motor.Servicios.ClaseDinamicaService claseService { get; private set; }
     public MiJuegoRPG.Motor.Servicios.ReputacionService reputacionService { get; private set; }
+    public MiJuegoRPG.Motor.Servicios.SupervivenciaService supervivenciaService { get; private set; }
+    public MiJuegoRPG.Motor.Servicios.SupervivenciaRuntimeService supervivenciaRuntimeService { get; private set; }
         public MiJuegoRPG.Personaje.Personaje? jugador;
         public MenusJuego menuPrincipal;
         public EstadoMundo estadoMundo;
@@ -337,6 +339,13 @@ namespace MiJuegoRPG.Motor
             if (!encuentrosService.CargarDesdeJsonPorDefecto()) encuentrosService.RegistrarTablasPorDefecto();
             claseService = new MiJuegoRPG.Motor.Servicios.ClaseDinamicaService(this);
             reputacionService = new MiJuegoRPG.Motor.Servicios.ReputacionService(this);
+            // Supervivencia: cargar configuración y preparar runtime (feature flag desactivada por defecto)
+            supervivenciaService = new MiJuegoRPG.Motor.Servicios.SupervivenciaService();
+            try { supervivenciaService.CargarConfig(); } catch { }
+            supervivenciaRuntimeService = new MiJuegoRPG.Motor.Servicios.SupervivenciaRuntimeService(supervivenciaService)
+            {
+                FeatureEnabled = false
+            };
             Instancia = this;
             string carpetaMapas = MiJuegoRPG.Motor.Servicios.PathProvider.MapasDir();
             mapa = MapaLoader.CargarMapaCompleto(carpetaMapas);
@@ -439,6 +448,15 @@ namespace MiJuegoRPG.Motor
                 var extra = string.IsNullOrWhiteSpace(e.Mensaje) ? string.Empty : $" | {e.Mensaje}";
                 MiJuegoRPG.Motor.Servicios.Logger.Info($"[EVENTO] Reputación facción '{e.Faccion}' {dir} de {e.ValorAnterior} a {e.ValorNuevo} (banda {e.BandaId}){extra}");
             });
+            // Supervivencia: aviso al cruzar umbrales (27.9)
+            bus.Suscribir<MiJuegoRPG.Motor.Servicios.EventoSupervivenciaUmbralCruzado>(e => {
+                var txt = $"[{e.Tipo}] {e.EstadoAnterior} → {e.EstadoNuevo} ({e.Valor:P0})";
+                if (e.EstadoNuevo == "CRÍTICO")
+                    MiJuegoRPG.Motor.Servicios.Logger.Warn(txt);
+                else
+                    MiJuegoRPG.Motor.Servicios.Logger.Info(txt);
+                try { Ui?.WriteLine($"[Supervivencia] {txt}"); } catch { }
+            });
         }
         // Sincroniza y muestra el menú correcto según la ubicación actual
         public void MostrarMenuPorUbicacion()
@@ -450,7 +468,11 @@ namespace MiJuegoRPG.Motor
         {
             if (mapa.UbicacionActual != null && !string.IsNullOrWhiteSpace(mapa.UbicacionActual.Tipo))
             {
-                if (mapa.UbicacionActual.Tipo.Equals("Ciudad", StringComparison.OrdinalIgnoreCase))
+                var s = mapa.UbicacionActual;
+                bool esCiudad = s.Tipo.Equals("Ciudad", StringComparison.OrdinalIgnoreCase);
+                // Solo mostrar menú de ciudad si es el centro de ciudad o está marcada como ciudad principal
+                bool esCentro = s.EsCentroCiudad || s.CiudadPrincipal;
+                if (esCiudad && esCentro)
                 {
                     MostrarMenuCiudad(ref salir);
                 }
@@ -494,6 +516,11 @@ namespace MiJuegoRPG.Motor
     public void MostrarEstadoPersonaje(MiJuegoRPG.Personaje.Personaje pj)
     {
         EstadoPersonajePrinter.MostrarEstadoPersonaje(pj);
+    }
+    // Overload: permite solicitar modo detallado
+    public void MostrarEstadoPersonaje(MiJuegoRPG.Personaje.Personaje pj, bool detallado)
+    {
+        EstadoPersonajePrinter.MostrarEstadoPersonaje(pj, detallado);
     }
         public void MostrarMenuViajar()
         {
@@ -717,6 +744,8 @@ namespace MiJuegoRPG.Motor
                 if (!encuentrosService.CargarDesdeJsonPorDefecto()) encuentrosService.RegistrarTablasPorDefecto();
             }
             var bioma = mapa.UbicacionActual?.Region ?? "";
+            // Aplicar tick de supervivencia al explorar (si la bandera está activada)
+            try { if (jugador != null) supervivenciaRuntimeService.ApplyTick(jugador, "Explorar", bioma, 60); } catch { }
             var nivel = jugador?.Nivel ?? 1;
             int GetKills(string clave)
             {

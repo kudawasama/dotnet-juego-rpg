@@ -1,8 +1,8 @@
 [
-  { "Nombre": "Perseguido", "Min": -9999, "Max": -151, "Color": "DarkRed" },
-  { "Nombre": "Hostil",     "Min": -150,  "Max": -51,  "Color": "Red" },
-  { "Nombre": "Tenso",      "Min": -50,   "Max": -1,   "Color": "DarkYellow" },
-  { "Nombre": "Neutral",    "Min": 0,     "Max": 49,   "Color": "Gray" },
-  { "Nombre": "Amistoso",   "Min": 50,    "Max": 99,   "Color": "Green" },
-  { "Nombre": "Aliado",     "Min": 100,   "Max": 9999, "Color": "Cyan" }
+  { "Nombre": "Perseguido", "Min": -9999, "Max": -1000, "Color": "DarkRed" },
+  { "Nombre": "Hostil",     "Min": -999,  "Max": -100,  "Color": "Red" },
+  { "Nombre": "Tenso",      "Min": -99,   "Max": -1,   "Color": "DarkYellow" },
+  { "Nombre": "Neutral",    "Min": 0,     "Max": 499,   "Color": "Gray" },
+  { "Nombre": "Amistoso",   "Min": 500,   "Max": 999,  "Color": "Green" },
+  { "Nombre": "Aliado",     "Min": 2000,  "Max": 9999, "Color": "Cyan" }
 ]

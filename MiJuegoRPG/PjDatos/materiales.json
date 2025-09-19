@@ -8,5 +8,35 @@
     "Nombre": "Gelatina",
     "Rareza": "Rota",
     "Categoria": "Material"
+  },
+  {
+    "Nombre": "Ala de Murci\u00E9lago",
+    "Rareza": "Normal",
+    "Categoria": "Material"
+  },
+  {
+    "Nombre": "Cola de Rat\u00F3n",
+    "Rareza": "Normal",
+    "Categoria": "Material"
+  },
+  {
+    "Nombre": "Queso Salvaje",
+    "Rareza": "Normal",
+    "Categoria": "Material"
+  },
+  {
+    "Nombre": "Ala de Murci\u00E9lago",
+    "Rareza": "Normal",
+    "Categoria": "Material"
+  },
+  {
+    "Nombre": "Garra de Oso",
+    "Rareza": "Normal",
+    "Categoria": "Material"
+  },
+  {
+    "Nombre": "Piel de Oso",
+    "Rareza": "Normal",
+    "Categoria": "Material"
   }
 ]

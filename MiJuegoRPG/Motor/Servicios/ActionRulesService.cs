@@ -129,6 +129,18 @@ namespace MiJuegoRPG.Motor.Servicios
             // Si ya está a tope, no acumular
             if (pj.ManaActual >= pj.ManaMaxima) return 0;
             double regen = _manaRegenBase + (pj.Estadisticas.RegeneracionMana * _manaRegenFactor);
+            // Penalización por supervivencia (si existe servicio y config). Se aplica solo a jugador.
+            try
+            {
+                var sup = MiJuegoRPG.Motor.Juego.ObtenerInstanciaActual()?.supervivenciaService;
+                if (sup != null)
+                {
+                    var (etH, etS, etF) = sup.EtiquetasHSF(pj.Hambre, pj.Sed, pj.Fatiga);
+                    double f = sup.FactorRegen(etH, etS, etF);
+                    regen *= f;
+                }
+            }
+            catch { }
             if (regen < 0) regen = 0;
             if (regen > _manaRegenMaxPorTurno) regen = _manaRegenMaxPorTurno;
             _manaRegenAcumulada.TryGetValue(actor, out var acum);
@@ -152,6 +164,17 @@ namespace MiJuegoRPG.Motor.Servicios
             if (actor is not MiJuegoRPG.Personaje.Personaje pj) return 0;
             if (pj.ManaActual >= pj.ManaMaxima) return 0;
             double regen = _manaRegenFueraBase + (pj.Estadisticas.RegeneracionMana * _manaRegenFueraFactor);
+            try
+            {
+                var sup = MiJuegoRPG.Motor.Juego.ObtenerInstanciaActual()?.supervivenciaService;
+                if (sup != null)
+                {
+                    var (etH, etS, etF) = sup.EtiquetasHSF(pj.Hambre, pj.Sed, pj.Fatiga);
+                    double f = sup.FactorRegen(etH, etS, etF);
+                    regen *= f;
+                }
+            }
+            catch { }
             if (regen < 0) regen = 0;
             if (regen > _manaRegenFueraMaxPorTick) regen = _manaRegenFueraMaxPorTick;
             int ganar = (int)Math.Round(regen);

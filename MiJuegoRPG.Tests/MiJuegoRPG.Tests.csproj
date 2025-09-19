@@ -19,4 +19,12 @@
     <ProjectReference Include="..\MiJuegoRPG\MiJuegoRPG.csproj" />
   </ItemGroup>
 
+  <!-- Copiar assets de datos del juego al output de tests (estructura recursiva) -->
+  <ItemGroup>
+    <Content Include="..\MiJuegoRPG\DatosJuego\**\*.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>DatosJuego\%(RecursiveDir)%(Filename)%(Extension)</Link>
+    </Content>
+  </ItemGroup>
+
 </Project>

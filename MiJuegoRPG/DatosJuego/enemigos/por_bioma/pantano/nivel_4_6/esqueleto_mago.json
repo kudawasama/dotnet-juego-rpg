@@ -1,0 +1,26 @@
+{
+  "Nombre": "Esqueleto Mago",
+  "VidaBase": 80,
+  "AtaqueBase": 28,
+  "DefensaBase": 8,
+  "DefensaMagicaBase": 8,
+  "Nivel": 7,
+  "ExperienciaRecompensa": 35,
+  "OroRecompensa": 20,
+  "Familia": "NoMuerto",
+  "Rareza": "Raro",
+  "Categoria": "Elite",
+  "ArmaNombre": "Báculo de Hueso",
+  "MitigacionFisicaPorcentaje": 0.13,
+  "Tags": ["esqueleto_mago", "pantano", "no_muerto", "mago"],
+  "ResistenciasElementales": { "hielo": 0.10, "fuego": 0.0 },
+  "DanioElementalBase": { "magia_oscura": 5 },
+  "EquipoInicial": { "Arma": "Báculo de Hueso" },
+  "EvasionFisica": 0.10,
+  "EvasionMagica": 0.18,
+  "SpawnWeight": 3,
+  "Drops": [
+    { "Tipo": "Material", "Nombre": "Túnica Rota", "Rareza": "Raro", "Chance": 0.08, "CantidadMin": 1, "CantidadMax": 1 },
+    { "Tipo": "Pocion", "Nombre": "Poción de Maná", "Chance": 0.04 }
+  ]
+}

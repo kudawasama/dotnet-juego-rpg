@@ -1,0 +1,26 @@
+{
+  "Nombre": "Cangrejo Gigante",
+  "VidaBase": 28,
+  "AtaqueBase": 7,
+  "DefensaBase": 6,
+  "DefensaMagicaBase": 2,
+  "Nivel": 2,
+  "ExperienciaRecompensa": 6,
+  "OroRecompensa": 2,
+  "Familia": "Bestia",
+  "Rareza": "Comun",
+  "Categoria": "Normal",
+  "ArmaNombre": "Pinzas",
+  "MitigacionFisicaPorcentaje": 0.12,
+  "Tags": ["cangrejo", "costa", "bestia"],
+  "ResistenciasElementales": { "agua": 0.30 },
+  "DanioElementalBase": { "aplastamiento": 2 },
+  "EquipoInicial": { "Arma": "Pinzas" },
+  "EvasionFisica": 0.08,
+  "EvasionMagica": 0.04,
+  "SpawnWeight": 10,
+  "Drops": [
+    { "Tipo": "Material", "Nombre": "Pinza de Cangrejo", "Rareza": "Normal", "Chance": 0.15, "CantidadMin": 1, "CantidadMax": 2 },
+    { "Tipo": "Material", "Nombre": "Carne de Cangrejo", "Rareza": "Normal", "Chance": 0.10, "CantidadMin": 1, "CantidadMax": 2 }
+  ]
+}

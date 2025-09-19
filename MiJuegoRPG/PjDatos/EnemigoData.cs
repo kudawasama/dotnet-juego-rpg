@@ -42,6 +42,10 @@ namespace MiJuegoRPG.PjDatos
     // NUEVO: Resistencias elementales (0..0.9) por tipo ("fuego","hielo","rayo","veneno","sangrado", etc.)
     public Dictionary<string, double>? ResistenciasElementales { get; set; }
 
+    // NUEVO: Vulnerabilidades elementales (factor >= 1.0). Se aplica post-mitigación
+    // Por política de progresión lenta, se recomienda 1.00..1.50 (el validador lo exigirá)
+    public Dictionary<string, double>? VulnerabilidadesElementales { get; set; }
+
     // NUEVO: Daño elemental base adicional (aplicado en ataque mágico/según arma)
     public Dictionary<string, int>? DanioElementalBase { get; set; }
 
@@ -50,6 +54,10 @@ namespace MiJuegoRPG.PjDatos
 
     // NUEVO: Reglas de botín data-driven
     public List<DropRuleData>? Drops { get; set; }
+
+    // NUEVO: Evasión (0..0.95). Si no se especifica, se asume 0.
+    public double? EvasionFisica { get; set; }
+    public double? EvasionMagica { get; set; }
     }
 
     public class EquipoInicialData

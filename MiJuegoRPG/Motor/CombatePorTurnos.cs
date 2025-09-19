@@ -253,8 +253,10 @@ namespace MiJuegoRPG.Motor
                     foreach (var enemigo in enemigos.Where(e => e.EstaVivo))
                     {
                         UIStyle.SubHeader(ui, $"Turno de {enemigo.Nombre}");
-                        int danioEnemigo = enemigo.AtacarFisico(jugador);
-                        ui.WriteLine($"{enemigo.Nombre} ataca a {jugador.Nombre} y le hace {danioEnemigo} de daño.");
+                        var resolver = new DamageResolver();
+                        var res = resolver.ResolverAtaqueFisico(enemigo, jugador);
+                        foreach (var m in res.Mensajes) ui.WriteLine(m);
+                        RegistrarEfectos(res);
                     }
                 }
 

@@ -1,0 +1,26 @@
+{
+  "Nombre": "Rata de las Profundidades",
+  "VidaBase": 32,
+  "AtaqueBase": 8,
+  "DefensaBase": 3,
+  "DefensaMagicaBase": 2,
+  "Nivel": 2,
+  "ExperienciaRecompensa": 7,
+  "OroRecompensa": 2,
+  "Familia": "Bestia",
+  "Rareza": "Comun",
+  "Categoria": "Normal",
+  "ArmaNombre": "Mordisco Infecto",
+  "MitigacionFisicaPorcentaje": 0.04,
+  "Tags": ["rata", "cueva", "bestia"],
+  "ResistenciasElementales": { "veneno": 0.20 },
+  "DanioElementalBase": { "enfermedad": 2 },
+  "EquipoInicial": { "Arma": "Mordisco Infecto" },
+  "EvasionFisica": 0.15,
+  "EvasionMagica": 0.08,
+  "SpawnWeight": 10,
+  "Drops": [
+    { "Tipo": "Material", "Nombre": "Cola de Rata de Cueva", "Rareza": "Normal", "Chance": 0.16, "CantidadMin": 1, "CantidadMax": 2 },
+    { "Tipo": "Pocion", "Nombre": "Poción Pequeña", "Chance": 0.01 }
+  ]
+}

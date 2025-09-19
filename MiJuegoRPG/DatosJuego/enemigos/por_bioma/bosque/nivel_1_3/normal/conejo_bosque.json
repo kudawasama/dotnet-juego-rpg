@@ -1,0 +1,25 @@
+{
+  "Nombre": "Conejo del Bosque",
+  "VidaBase": 15,
+  "AtaqueBase": 5,
+  "DefensaBase": 1,
+  "DefensaMagicaBase": 1,
+  "Nivel": 1,
+  "ExperienciaRecompensa": 3,
+  "OroRecompensa": 1,
+  "Familia": "Bestia",
+  "Rareza": "Comun",
+  "Categoria": "Normal",
+  "ArmaNombre": "Mordisco",
+  "MitigacionFisicaPorcentaje": 0.01,
+  "Tags": ["conejo", "bosque", "bestia"],
+  "ResistenciasElementales": { "hielo": 0.03 },
+  "DanioElementalBase": { "sangrado": 1 },
+  "EquipoInicial": { "Arma": "Mordisco" },
+  "EvasionFisica": 0.22,
+  "EvasionMagica": 0.02,
+  "SpawnWeight": 8,
+  "Drops": [
+    { "Tipo": "Material", "Nombre": "Piel de Conejo", "Rareza": "Normal", "Chance": 0.18, "CantidadMin": 1, "CantidadMax": 2 }
+  ]
+}

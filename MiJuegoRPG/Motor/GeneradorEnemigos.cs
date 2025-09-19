@@ -61,6 +61,13 @@ namespace MiJuegoRPG.Motor
                     {
                         try
                         {
+                            // Convención: ignorar JSONs ubicados directamente en la raíz de 'nivel_*' bajo 'enemigos/por_bioma'
+                            // para evitar duplicados respecto a subcarpetas por categoría (normal/elite/jefe/campo/legendario/unico/mundial)
+                            if (DebeIgnorarseArchivoEnemigoPorConvencion(file))
+                            {
+                                Logger.Debug($"[GeneradorEnemigos] Ignorando '{file}' por convención de carpetas (raíz de nivel_*)");
+                                continue;
+                            }
                             var json = File.ReadAllText(file);
                             if (string.IsNullOrWhiteSpace(json)) continue;
                             algunArchivo = true;
@@ -124,6 +131,31 @@ namespace MiJuegoRPG.Motor
                 return;
             }
             CargarEnemigos(rutaArchivo);
+        }
+        
+        // Ignora archivos ubicados directamente en la carpeta 'nivel_*' dentro de 'enemigos/por_bioma/<bioma>/'
+        // Acepta únicamente archivos dentro de subcarpetas por categoría.
+        private static bool DebeIgnorarseArchivoEnemigoPorConvencion(string filePath)
+        {
+            try
+            {
+                var lower = filePath.ToLowerInvariant();
+                // Solo aplica a rutas bajo 'enemigos/por_bioma'
+                if (!lower.Contains(Path.Combine("enemigos", "por_bioma").ToLowerInvariant()))
+                    return false;
+
+                var fileDir = Path.GetDirectoryName(filePath);
+                if (string.IsNullOrEmpty(fileDir)) return false;
+                var dirInfo = new DirectoryInfo(fileDir);
+                // Si el directorio inmediato es 'nivel_*', entonces el archivo está en la raíz del nivel
+                if (dirInfo.Name.StartsWith("nivel_", StringComparison.OrdinalIgnoreCase))
+                {
+                    // Permitimos solo si además está en una subcarpeta de categoría; como está justo en 'nivel_*', lo ignoramos
+                    return true;
+                }
+                return false;
+            }
+            catch { return false; }
         }
         
         // Método para generar un enemigo aleatorio basado en el JSON.
@@ -237,6 +269,7 @@ namespace MiJuegoRPG.Motor
                 enemigoData.ExperienciaRecompensa,
                 enemigoData.OroRecompensa
             );
+            enemigo.IdData = string.IsNullOrWhiteSpace(enemigoData.Id) ? enemigoData.Nombre : enemigoData.Id!;
             if (arma != null)
             {
                 enemigo.ArmaEquipada = arma;
@@ -280,12 +313,31 @@ namespace MiJuegoRPG.Motor
                 enemigo.MitigacionMagicaPorcentaje = Math.Clamp(enemigoData.MitigacionMagicaPorcentaje.Value, 0.0, 0.9);
             }
 
+            // Evasión por data (clamp defensivo)
+            if (enemigoData.EvasionFisica.HasValue)
+            {
+                enemigo.EvasionFisica = Math.Clamp(enemigoData.EvasionFisica.Value, 0.0, 0.95); // mientras mas alto, menos probabilidad de ser golpeado
+            }
+            if (enemigoData.EvasionMagica.HasValue)
+            {
+                enemigo.EvasionMagica = Math.Clamp(enemigoData.EvasionMagica.Value, 0.0, 0.95); // mientras mas alto, menos probabilidad de ser golpeado
+            }
+
             // Resistencias elementales (mitigación adicional por tipo)
             if (enemigoData.ResistenciasElementales != null)
             {
                 foreach (var kv in enemigoData.ResistenciasElementales)
                 {
                     enemigo.EstablecerMitigacionElemental(kv.Key, kv.Value);
+                }
+            }
+
+            // Vulnerabilidades elementales (multiplicador post-mitigación)
+            if (enemigoData.VulnerabilidadesElementales != null)
+            {
+                foreach (var kv in enemigoData.VulnerabilidadesElementales)
+                {
+                    enemigo.EstablecerVulnerabilidadElemental(kv.Key, kv.Value);
                 }
             }
 
@@ -319,7 +371,7 @@ namespace MiJuegoRPG.Motor
                 }
             }
 
-            // Drops configurados por JSON (por ahora: chance individual por objeto; cantidades/UniqueOnce pendientes)
+            // Drops configurados por JSON (chance individual por objeto + cantidades y UniqueOnce)
             if (enemigoData.Drops != null && enemigoData.Drops.Count > 0)
             {
                 foreach (var drop in enemigoData.Drops)
@@ -329,6 +381,14 @@ namespace MiJuegoRPG.Motor
                     var tipo = drop.Tipo.Trim().ToLowerInvariant();
                     var nombre = drop.Nombre.Trim();
                     double chance = Math.Clamp(drop.Chance, 0.0, 1.0);
+                    // Registrar metadatos de cantidad y unique
+                    int cmin = Math.Max(1, drop.CantidadMin);
+                    int cmax = Math.Max(cmin, drop.CantidadMax);
+                    // clamp duro acorde a progresión lenta
+                    int hardCap = 5; // se recorta luego según rareza en Enemigo.DarRecompensas
+                    cmax = Math.Min(cmax, hardCap);
+                    enemigo.RangoCantidadDrop[nombre] = (cmin, cmax);
+                    if (drop.UniqueOnce) enemigo.DropsUniqueOnce.Add(nombre);
 
                     switch (tipo)
                     {
@@ -381,14 +441,7 @@ namespace MiJuegoRPG.Motor
                             break;
                     }
 
-                    if (drop.CantidadMax > 1 || drop.CantidadMin > 1)
-                    {
-                        Logger.Debug($"[GeneradorEnemigos] Cantidades de drop >1 no soportadas aún (se ignorará multiplicidad) para '{nombre}'");
-                    }
-                    if (drop.UniqueOnce)
-                    {
-                        Logger.Debug($"[GeneradorEnemigos] UniqueOnce requiere persistencia en GuardadoService (pendiente)");
-                    }
+                    // Mensajería reducida; ya aplicamos metadatos arriba
                 }
             }
 

@@ -1,0 +1,26 @@
+{
+  "Nombre": "Espectro Antiguo",
+  "VidaBase": 70,
+  "AtaqueBase": 24,
+  "DefensaBase": 6,
+  "DefensaMagicaBase": 22,
+  "Nivel": 8,
+  "ExperienciaRecompensa": 32,
+  "OroRecompensa": 18,
+  "Familia": "NoMuerto",
+  "Rareza": "Raro",
+  "Categoria": "Normal",
+  "ArmaNombre": "Toque Espectral",
+  "MitigacionFisicaPorcentaje": 0.10,
+  "Tags": ["espectro", "ruinas", "no_muerto"],
+  "ResistenciasElementales": { "magia_oscura": 0.40, "fuego": 0.0 },
+  "DanioElementalBase": { "magia_oscura": 10 },
+  "EquipoInicial": { "Arma": "Toque Espectral" },
+  "EvasionFisica": 0.18,
+  "EvasionMagica": 0.28,
+  "SpawnWeight": 3,
+  "Drops": [
+    { "Tipo": "Material", "Nombre": "Esencia Espectral", "Rareza": "Raro", "Chance": 0.14, "CantidadMin": 1, "CantidadMax": 1 },
+    { "Tipo": "Pocion", "Nombre": "Poción de Maná", "Chance": 0.05 }
+  ]
+}

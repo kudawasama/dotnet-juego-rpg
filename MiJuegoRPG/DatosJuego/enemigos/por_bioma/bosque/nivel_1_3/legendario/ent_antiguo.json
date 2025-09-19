@@ -1,0 +1,27 @@
+{
+  "Nombre": "Ent Antiguo",
+  "VidaBase": 200,
+  "AtaqueBase": 22,
+  "DefensaBase": 16,
+  "DefensaMagicaBase": 16,
+  "Nivel": 3,
+  "ExperienciaRecompensa": 90,
+  "OroRecompensa": 42,
+  "Familia": "Elemental",
+  "Rareza": "Legendario",
+  "Categoria": "Legendario",
+  "ArmaNombre": "Ramas Vivientes",
+  "MitigacionFisicaPorcentaje": 0.22,
+  "MitigacionMagicaPorcentaje": 0.20,
+  "Tags": ["legendario", "bosque", "arbol"],
+  "ResistenciasElementales": { "tierra": 0.30, "fuego": 0.0 },
+  "DanioElementalBase": { "tierra": 7 },
+  "EquipoInicial": { "Arma": "Ramas Vivientes" },
+  "EvasionFisica": 0.10,
+  "EvasionMagica": 0.12,
+  "SpawnWeight": 1,
+  "Drops": [
+    { "Tipo": "Material", "Nombre": "Savias Ancestrales", "Rareza": "Épico", "Chance": 0.10, "CantidadMin": 1, "CantidadMax": 1 },
+    { "Tipo": "Material", "Nombre": "Hoja Dorada", "Rareza": "Raro", "Chance": 0.18, "CantidadMin": 1, "CantidadMax": 2 }
+  ]
+}

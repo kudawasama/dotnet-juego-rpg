@@ -1,0 +1,26 @@
+{
+  "Nombre": "Manada de Lobos",
+  "VidaBase": 95,
+  "AtaqueBase": 18,
+  "DefensaBase": 6,
+  "DefensaMagicaBase": 5,
+  "Nivel": 2,
+  "ExperienciaRecompensa": 22,
+  "OroRecompensa": 10,
+  "Familia": "Bestia",
+  "Rareza": "Raro",
+  "Categoria": "Campo",
+  "ArmaNombre": "Garras y Mordiscos",
+  "MitigacionFisicaPorcentaje": 0.08,
+  "MitigacionMagicaPorcentaje": 0.05,
+  "Tags": ["campo", "grupo", "lobo"],
+  "ResistenciasElementales": { "hielo": 0.10 },
+  "DanioElementalBase": { "sangrado": 4 },
+  "EquipoInicial": { "Arma": "Garras y Mordiscos" },
+  "EvasionFisica": 0.16,
+  "EvasionMagica": 0.10,
+  "SpawnWeight": 2,
+  "Drops": [
+    { "Tipo": "Material", "Nombre": "Colmillos de Lobo", "Rareza": "Normal", "Chance": 0.30, "CantidadMin": 1, "CantidadMax": 3 }
+  ]
+}
