@@ -1,4 +1,20 @@
-# Bitácora de desarrollo
+## 2025-09-19
+Última actualización: 2025-09-19
+
+- Combate: el chequeo de precisión en `DamageResolver.ResolverAtaqueFisico` ahora aplica la penalización de Supervivencia cuando el flag `--precision-hit` está activo. Se toma `Precision` del ejecutor y se multiplica por el `FactorPrecision(etH, etS, etF)` derivado de las etiquetas de Hambre/Sed/Fatiga, con clamps centralizados vía `CombatBalanceConfig`. No cambia el daño base ni otros pasos; comportamiento es no intrusivo cuando no hay servicio/config cargada.
+- Documentación: se reflejará en `Docs/Roadmap.md` y en la sección de combate de `Arquitectura_y_Funcionamiento.md` en la próxima pasada de documentación.
+- UX Combate: se agregó un formateador de mensajes explicativos en `DamageResolver` que detalla el pipeline de daño sin alterar cálculos:
+  - Físico: Base → Defensa (con nota de Penetración si está activa) → Mitigación → Crítico (nota) → Final.
+  - Mágico: Base → Defensa Mágica (±Penetración) → Mitigación → Resistencia "magia" → Vulnerabilidad → Final.
+- Mensajería: se mantiene la primera línea compacta para compatibilidad de pruebas, y se agrega una línea extra con el detalle didáctico cuando no hay evasión.
+- Roadmap: ítem [5.14] creado con ejemplos, decisiones y próximos pasos (diseñar `CombatMessageFormatter` más formal y asserts de texto en [9.8]).
+
+- Opciones de juego: se añadió en Menú Principal → Opciones la posibilidad de alternar en runtime:
+  - Precisión (hit-check)
+  - Penetración
+  - Verbosidad de Combate (controla la línea didáctica del cálculo de daño)
+  Esto complementa los flags CLI `--precision-hit`, `--penetracion` y `--combat-verbose`.
+
 
 ## 2025-09-18 — Estado del personaje: modo detallado y acceso por menú
 

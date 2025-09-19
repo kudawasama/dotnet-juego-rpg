@@ -10,6 +10,127 @@ namespace MiJuegoRPG.Motor.Servicios
     public class DamageResolver
     {
         /// <summary>
+        /// Construye un mensaje explicativo para ataques físicos, describiendo pasos:
+        /// Base → Defensa(±Penetración) → Mitigación → Crítico (nota) → Final.
+        /// No altera el cálculo, solo explica con aproximación basada en propiedades públicas.
+        /// </summary>
+        private static string FormatearDetalleFisico(ICombatiente ejecutor, ICombatiente objetivo, int danioBase, int danioFinal, bool fueCritico)
+        {
+            if (danioBase <= 0 || danioFinal < 0) return "";
+            try
+            {
+                double pen = 0.0;
+                if (GameplayToggles.PenetracionEnabled && ejecutor is MiJuegoRPG.Personaje.Personaje pjPen)
+                {
+                    pen = System.Math.Clamp(pjPen.Estadisticas.Penetracion, 0.0, 0.9);
+                }
+
+                int afterDefInt;
+                double defEfectiva;
+                double mitig = 0.0;
+                if (objetivo is MiJuegoRPG.Enemigos.Enemigo ene)
+                {
+                    defEfectiva = System.Math.Round(ene.Defensa * (1.0 - pen), System.MidpointRounding.AwayFromZero);
+                    afterDefInt = System.Math.Max(1, danioBase - (int)defEfectiva);
+                    mitig = System.Math.Clamp(ene.MitigacionFisicaPorcentaje, 0.0, 0.9);
+                    if (mitig > 0)
+                        afterDefInt = (int)System.Math.Max(1, System.Math.Round(afterDefInt * (1.0 - mitig), System.MidpointRounding.AwayFromZero));
+                }
+                else if (objetivo is MiJuegoRPG.Personaje.Personaje pj)
+                {
+                    // Defensa total del jugador (atributo + bonificadores); sin mitigación porcentual específica
+                    double defensaTotal = pj.Defensa + pj.ObtenerBonificadorAtributo("Defensa") + pj.ObtenerBonificadorEstadistica("Defensa Física");
+                    defEfectiva = System.Math.Max(0.0, defensaTotal * (1.0 - pen));
+                    afterDefInt = (int)System.Math.Max(1, System.Math.Round(danioBase - defEfectiva, System.MidpointRounding.AwayFromZero));
+                }
+                else
+                {
+                    // Fallback genérico
+                    defEfectiva = 0.0;
+                    afterDefInt = danioBase;
+                }
+
+                // Armar cadena explicativa
+                var partes = new System.Collections.Generic.List<string>();
+                partes.Add($"Base {danioBase}");
+                if (defEfectiva > 0)
+                {
+                    double redPorDef = System.Math.Clamp((danioBase - System.Math.Max(1, danioBase - defEfectiva)) / System.Math.Max(1.0, danioBase), 0.0, 1.0);
+                    partes.Add($"Defensa efectiva {defEfectiva:0} {(pen > 0 ? $"(Pen {pen*100:0}% )" : "")}");
+                }
+                if (mitig > 0)
+                {
+                    partes.Add($"Mitigación {mitig*100:0}%");
+                }
+                if (fueCritico)
+                {
+                    partes.Add("Crítico"); // Solo nota: el crítico no altera el cálculo actual
+                }
+                partes.Add($"Daño final: {danioFinal}");
+                return string.Join("; ", partes);
+            }
+            catch { return ""; }
+        }
+
+        /// <summary>
+        /// Construye un mensaje explicativo para ataques mágicos: Base → Defensa Mágica(±Pen) → Mitigación → Resistencia "magia" → Vulnerabilidad → Final.
+        /// </summary>
+        private static string FormatearDetalleMagico(ICombatiente ejecutor, ICombatiente objetivo, int danioBase, int danioFinal, bool fueCritico)
+        {
+            if (danioBase <= 0 || danioFinal < 0) return "";
+            try
+            {
+                double pen = 0.0;
+                if (GameplayToggles.PenetracionEnabled && ejecutor is MiJuegoRPG.Personaje.Personaje pjPen)
+                {
+                    pen = System.Math.Clamp(pjPen.Estadisticas.Penetracion, 0.0, 0.9);
+                }
+
+                int afterDefInt;
+                double defEfectiva;
+                double mitig = 0.0;
+                double resMag = 0.0;
+                double vulnMag = 1.0;
+                if (objetivo is MiJuegoRPG.Enemigos.Enemigo ene)
+                {
+                    defEfectiva = System.Math.Round(ene.DefensaMagica * (1.0 - pen), System.MidpointRounding.AwayFromZero);
+                    afterDefInt = System.Math.Max(1, danioBase - (int)defEfectiva);
+                    mitig = System.Math.Clamp(ene.MitigacionMagicaPorcentaje, 0.0, 0.9);
+                    if (mitig > 0)
+                        afterDefInt = (int)System.Math.Max(1, System.Math.Round(afterDefInt * (1.0 - mitig), System.MidpointRounding.AwayFromZero));
+                    if (ene.ResistenciasElementales.TryGetValue("magia", out var r)) resMag = System.Math.Clamp(r, 0.0, 0.9);
+                    if (resMag > 0)
+                        afterDefInt = (int)System.Math.Max(1, System.Math.Round(afterDefInt * (1.0 - resMag), System.MidpointRounding.AwayFromZero));
+                    if (ene.VulnerabilidadesElementales.TryGetValue("magia", out var v)) vulnMag = System.Math.Clamp(v, 1.0, 1.5);
+                    if (vulnMag > 1.0)
+                        afterDefInt = (int)System.Math.Max(1, System.Math.Round(afterDefInt * vulnMag, System.MidpointRounding.AwayFromZero));
+                }
+                else if (objetivo is MiJuegoRPG.Personaje.Personaje pj)
+                {
+                    double defTot = pj.DefensaMagica + pj.ObtenerBonificadorAtributo("Resistencia") + pj.ObtenerBonificadorEstadistica("Defensa Mágica");
+                    defEfectiva = System.Math.Max(0.0, defTot * (1.0 - pen));
+                    afterDefInt = (int)System.Math.Max(1, System.Math.Round(danioBase - defEfectiva, System.MidpointRounding.AwayFromZero));
+                }
+                else
+                {
+                    defEfectiva = 0.0;
+                    afterDefInt = danioBase;
+                }
+
+                var partes = new System.Collections.Generic.List<string>();
+                partes.Add($"Base {danioBase}");
+                if (defEfectiva > 0) partes.Add($"Defensa mágica efectiva {defEfectiva:0} {(pen > 0 ? $"(Pen {pen*100:0}% )" : "")}");
+                if (mitig > 0) partes.Add($"Mitigación {mitig*100:0}%");
+                if (resMag > 0) partes.Add($"Resistencia magia {resMag*100:0}%");
+                if (vulnMag > 1.0) partes.Add($"Vulnerabilidad +{(vulnMag-1.0)*100:0}%");
+                if (fueCritico) partes.Add("Crítico");
+                partes.Add($"Daño final: {danioFinal}");
+                return string.Join("; ", partes);
+            }
+            catch { return ""; }
+        }
+
+        /// <summary>
         /// Resuelve un ataque físico aprovechando la lógica existente del ejecutor.
         /// No modifica el daño retornado actualmente; solo anota si fue crítico.
         /// </summary>
@@ -21,7 +142,21 @@ namespace MiJuegoRPG.Motor.Servicios
             // En caso de fallar, no delegamos al método de ataque y devolvemos un resultado con 0 daño.
             if (GameplayToggles.PrecisionCheckEnabled && ejecutor is MiJuegoRPG.Personaje.Personaje pjPrec)
             {
-                double pHit = System.Math.Clamp(pjPrec.Estadisticas.Precision, 0.0, 0.95);
+                // Base: precisión del ejecutor, con caps desde configuración
+                double pHit = CombatBalanceConfig.ClampPrecision(pjPrec.Estadisticas.Precision);
+                // Penalización por estados de Supervivencia (hambre/sed/fatiga)
+                try
+                {
+                    var juego = MiJuegoRPG.Motor.Juego.ObtenerInstanciaActual();
+                    var sup = juego?.supervivenciaService;
+                    if (sup != null)
+                    {
+                        var (etH, etS, etF) = sup.EtiquetasHSF(pjPrec.Hambre, pjPrec.Sed, pjPrec.Fatiga);
+                        double f = sup.FactorPrecision(etH, etS, etF); // típicamente <= 1.0 en advertencia/crítico
+                        pHit = CombatBalanceConfig.ClampPrecision(pHit * f);
+                    }
+                }
+                catch { /* tolerante: si no hay juego/servicio, no penaliza */ }
                 var rng0 = RandomService.Instancia;
                 bool acierta = rng0.NextDouble() < pHit;
                 if (!acierta)
@@ -101,6 +236,13 @@ namespace MiJuegoRPG.Motor.Servicios
                 res.Mensajes.Add("¡Golpe crítico!");
             }
 
+            // Mensaje explicativo adicional (didáctico) solo si está activo el modo verbose
+            if (!res.FueEvadido && GameplayToggles.CombatVerbose)
+            {
+                var detalle = FormatearDetalleFisico(ejecutor, objetivo, res.DanioBase, res.DanioReal, res.FueCritico);
+                if (!string.IsNullOrWhiteSpace(detalle)) res.Mensajes.Add(detalle);
+            }
+
             return res;
         }
 
@@ -166,6 +308,13 @@ namespace MiJuegoRPG.Motor.Servicios
             else if (fueCrit)
             {
                 res.Mensajes.Add("¡Golpe crítico!");
+            }
+
+            // Mensaje explicativo adicional para mágico solo si verbose está activo
+            if (!res.FueEvadido && GameplayToggles.CombatVerbose)
+            {
+                var detalle = FormatearDetalleMagico(ejecutor, objetivo, res.DanioBase, res.DanioReal, res.FueCritico);
+                if (!string.IsNullOrWhiteSpace(detalle)) res.Mensajes.Add(detalle);
             }
 
             return res;

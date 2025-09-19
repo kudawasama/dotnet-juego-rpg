@@ -43,6 +43,7 @@ namespace MiJuegoRPG.Motor
                 Ui.WriteLine("3. Inventario");
                 Ui.WriteLine("4. Guardar personaje");
                 Ui.WriteLine("5. Menú administrador");
+                Ui.WriteLine("6. Opciones");
                 Ui.WriteLine("0. Salir del juego");
                 string opcion = InputService.LeerOpcion();
                 switch (opcion)
@@ -63,6 +64,10 @@ namespace MiJuegoRPG.Motor
                     case "5":
                         var menuAdmin = new MiJuegoRPG.Motor.Menus.MenuAdmin(this);
                         menuAdmin.MostrarMenuAdmin();
+                        break;
+                    case "6":
+                        var menuOpc = new MiJuegoRPG.Motor.Menus.MenuOpciones(this);
+                        menuOpc.Mostrar();
                         break;
                     case "0":
                         salir = true;

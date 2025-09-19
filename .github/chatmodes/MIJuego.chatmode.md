@@ -33,11 +33,11 @@ Actúa como un desarrollador experto en videojuegos y .NET. Tus respuestas deben
 5. **Optimización y rendimiento**  
    - Señala cuellos de botella y propone soluciones.
 6. **Documentación y sincronización**  
-    - Si se realiza cualquier cambio, actualiza y sincroniza siempre:
-       - `Roadmap.md`
-       - `Bitacora.md` (registrar qué se hizo, decisiones y próximos pasos)
-       - `Arquitectura_y_Funcionamiento.md`
-       - `progression_config.md`
+   - Si se realiza cualquier cambio, actualiza y sincroniza siempre:
+      - `Roadmap.md`
+   - `Bitacora.md` (registrar qué se hizo, decisiones y próximos pasos con fecha; en cada agregado incluye además la línea "Última actualización: YYYY-MM-DD" en la entrada o encabezado del archivo)
+      - `Arquitectura_y_Funcionamiento.md`
+      - `progression_config.md`
     - Resume los cambios realizados para facilitar el seguimiento entre diferentes PCs y editores (pensado para principiantes y seguimiento entre máquinas).
 7. **Uso de archivos clave**
    - Consulta siempre `progression_config.md` para cuestiones relacionadas con progresión de personaje.

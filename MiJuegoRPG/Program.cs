@@ -12,6 +12,8 @@ public static class GameplayToggles
     public static bool PrecisionCheckEnabled = false;
     // Toggle para activar la penetración en el pipeline (no intrusivo por defecto)
     public static bool PenetracionEnabled = false;
+    // Toggle de verbosidad de combate (muestra detalle didáctico del cálculo)
+    public static bool CombatVerbose = false;
 }
 
 class Program
@@ -46,6 +48,7 @@ class Program
                         Console.WriteLine("  --reparar-materiales=write[;ruta]   Aplica reparación eliminando materiales inválidos. Genera reporte.\n");
                         Console.WriteLine("  --precision-hit             Activa el chequeo de precisión (probabilidad de acierto) en ataques físicos.");
                         Console.WriteLine("  --penetracion               Activa la penetración (reduce defensa efectiva) en ataques físicos y mágicos.");
+                        Console.WriteLine("  --combat-verbose            Muestra un desglose didáctico del cálculo de daño en los mensajes de combate.");
                         Console.WriteLine("Notas:");
                         Console.WriteLine("- Puedes cambiar el logger en runtime desde Menú Principal → Opciones.");
                         Console.WriteLine("- Las preferencias de logger se guardan por partida; los flags CLI tienen precedencia al inicio.");
@@ -61,6 +64,10 @@ class Program
                     if (string.Equals(a, "--penetracion", StringComparison.OrdinalIgnoreCase))
                     {
                         GameplayToggles.PenetracionEnabled = true;
+                    }
+                    if (string.Equals(a, "--combat-verbose", StringComparison.OrdinalIgnoreCase))
+                    {
+                        GameplayToggles.CombatVerbose = true;
                     }
                     if (string.Equals(a, "--log-off", StringComparison.OrdinalIgnoreCase))
                     {

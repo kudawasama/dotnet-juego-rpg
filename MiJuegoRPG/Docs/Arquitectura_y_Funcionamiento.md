@@ -158,6 +158,7 @@ Nota práctica (MVP actual):
 - `DamageResolver` incorpora un chequeo de precisión opcional previo al ataque físico (ver flag CLI). Si falla, corta la ejecución con `FueEvadido=true` y `DanioReal=0`.
 - Crítico: si `CritChance >= 1.0` en `Personaje`, el crítico se considera forzado (útil para pruebas deterministas); en runtime normal se aplica probabilidad y multiplicador con clamps conservadores.
 - Mensajería: los mensajes se generan en base a `DanioReal` y flags (`FueEvadido`, `FueCritico`) para mantener coherencia; `CombatePorTurnos` imprime a través de la UI.
+ - Verbosidad de combate: además del flag `--combat-verbose`, puede alternarse en runtime desde Menú Principal → Opciones → "Verbosidad de Combate". Cuando está ON, `DamageResolver` agrega una línea didáctica explicando los pasos del cálculo (Defensa→Mitigación→Resistencias/Vulnerabilidades→Crítico→Daño final).
 
 Ejemplo práctico (flag de precisión activado):
 
