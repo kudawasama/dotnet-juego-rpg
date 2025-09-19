@@ -38,5 +38,10 @@
     "Nombre": "Piel de Oso",
     "Rareza": "Normal",
     "Categoria": "Material"
+  },
+  {
+    "Nombre": "Cola de Zorro",
+    "Rareza": "Normal",
+    "Categoria": "Material"
   }
 ]

@@ -62,6 +62,7 @@ Legend inicial: Solo la 1.x se empieza ahora para evitar cambios masivos de golp
 - [5.14] Texto de combate didáctico/expresivo: ampliar los mensajes de combate para explicar brevemente el cálculo (mitigación, resistencias, vulnerabilidades, crítico y penetración) y el porqué del daño final con ejemplos tipo "Jugador hace 12 de daño; Enemigo reduce 20% por defensa y 10% por mitigación". Integrado un primer formateador en `DamageResolver` y toggle `--combat-verbose` para controlar la verbosidad.
   
   Avance: se agregó control en runtime desde Menú Principal → Opciones para alternar Verbosidad de Combate (ON/OFF) además del flag CLI `--combat-verbose`.
+  Avance 2 (tests): se añadieron pruebas que validan presencia del detalle didáctico cuando está ON (físico y mágico) y ausencia cuando hay evasión/fallo por precisión. Ver `CombatVerboseMessageTests`.
 - [10.6] Validación de datos: extender `DataValidatorService` a esquemas de objetos/drops/armas con rangos y referencias cruzadas.
 - [7.1]/[15.1] Repos JSON: consolidar objetos/materiales/balances bajo `IRepository<T>` con caché e invalidación.
 - [5.2] Refactor a cola de acciones en `CombatePorTurnos` tras estabilizar el pipeline.
@@ -277,6 +278,7 @@ Próxima acción:
 - Unificar mensajería al 100% vía `ResultadoAccion` (5.13) y ampliar asserts de texto en pruebas.
 - Integrar pruebas unitarias para `Supervivencia.FactorPrecision` afectando $p_{hit}$ (ya integrado en código) bajo `--precision-hit`.
 - Añadir pruebas que lean `StatsCaps` custom desde `progression.json` para validar clamps data-driven.
+ - Extender asserts de verbosidad para contemplar nota de Penetración cuando `--penetracion` está ON.
 [9.9] Pendiente | Test | Estados avanzados | Aplicación/decadencia/stacking de Sangrado/Aturdimiento/Buffs y resistencias.
 [9.10] Pendiente | Test | Supervivencia | Tick de hambre/sed/fatiga/temperatura; penalizaciones por umbral y multiplicadores por contexto/bioma.
 

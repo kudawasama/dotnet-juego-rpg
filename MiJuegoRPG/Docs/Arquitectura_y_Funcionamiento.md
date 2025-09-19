@@ -159,6 +159,7 @@ Nota práctica (MVP actual):
 - Crítico: si `CritChance >= 1.0` en `Personaje`, el crítico se considera forzado (útil para pruebas deterministas); en runtime normal se aplica probabilidad y multiplicador con clamps conservadores.
 - Mensajería: los mensajes se generan en base a `DanioReal` y flags (`FueEvadido`, `FueCritico`) para mantener coherencia; `CombatePorTurnos` imprime a través de la UI.
  - Verbosidad de combate: además del flag `--combat-verbose`, puede alternarse en runtime desde Menú Principal → Opciones → "Verbosidad de Combate". Cuando está ON, `DamageResolver` agrega una línea didáctica explicando los pasos del cálculo (Defensa→Mitigación→Resistencias/Vulnerabilidades→Crítico→Daño final).
+  - Pruebas unitarias: `CombatVerboseMessageTests` valida la presencia de esta línea cuando hay impacto y su ausencia cuando el ataque es evadido o falla (por precisión). El gating se respeta siempre: sin `CombatVerbose` no se emite el detalle.
 
 Ejemplo práctico (flag de precisión activado):
 

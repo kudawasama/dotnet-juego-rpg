@@ -246,6 +246,16 @@ class Program
         {
             Console.WriteLine("[INFO] Chequeo de precisión ACTIVADO (--precision-hit)");
         }
+        // Mostrar estado de penetración si está activo
+        if (GameplayToggles.PenetracionEnabled)
+        {
+            Console.WriteLine("[INFO] Penetración ACTIVADA (--penetracion)");
+        }
+        // Mostrar estado de verbosidad de combate si está activo
+        if (GameplayToggles.CombatVerbose)
+        {
+            Console.WriteLine("[INFO] Verbosidad de Combate ACTIVADA (--combat-verbose)");
+        }
         // Genera todos los archivos de regiones del mapa automáticamente al inicio
         //GeneradorSectores.CrearMapaCompleto(@"C:\Users\ASUS\OneDrive\Documentos\GitHub\dotnet-juego-rpg\MiJuegoRPG\DatosJuego\mapa\SectoresMapa");
 
