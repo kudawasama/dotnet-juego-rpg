@@ -57,15 +57,13 @@ Legend inicial: Solo la 1.x se empieza ahora para evitar cambios masivos de golp
 
 Novedades clave recientes (2025-09-22)
 
-
-
 ### 7.a Sistema de Acciones data-driven (nuevo)
-
 
 Tareas:
 
+==================================
 
---------------------------------------
+==================================
 
 ## 2025-09-23 — Modularización de clases (normales y dinámicas)
 
@@ -76,6 +74,7 @@ Tareas:
 - No se eliminó ningún archivo de clase existente; solo se modularizó y documentó la diferencia.
 
 Actualización 2025-09-23
+
 - [ ] 7.a.2 Implementar `AccionRegistry`/`ProgressionTracker` con `RegistrarAccion(string)` y persistencia mínima.
 - [ ] 7.a.3 Integrar llamadas a `RegistrarAccion` en puntos clave: combate (mover+ataque), NPC (diálogo/observar/robo), mundo (explorar), crafteo/recolección.
 - [ ] 7.a.4 Añadir tests: progreso y desbloqueo al cumplir `Cantidad`; no-progreso cuando `accionId` desconocido; determinismo con seed.

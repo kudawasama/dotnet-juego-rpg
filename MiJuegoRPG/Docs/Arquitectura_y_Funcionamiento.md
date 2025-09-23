@@ -43,12 +43,12 @@ Tabla de contenidos
 
 Organización por capas con enfoque data-driven. Piezas principales (enlaces a implementación real):
 
-  - Equipo: `DatosJuego/Equipo/` soporta JSON por ítem en subcarpetas por tipo (armas/armaduras/...) con carga recursiva vía `GeneradorObjetos.CargarEquipoAuto()` y fallback a archivos agregados por tipo. Selección aleatoria puede ser ponderada por rareza.
+- Equipo: `DatosJuego/Equipo/` soporta JSON por ítem en subcarpetas por tipo (armas/armaduras/...) con carga recursiva vía `GeneradorObjetos.CargarEquipoAuto()` y fallback a archivos agregados por tipo. Selección aleatoria puede ser ponderada por rareza.
 **Equipo v2 (no-armas)**: Los tipos de equipo como armaduras, botas, cascos, cinturones, collares, pantalones y accesorios pueden declarar campos opcionales como `RarezasPermitidasCsv`, `PerfeccionMin/Max`, `NivelMin/Max` y rangos de estadística (por ejemplo, `DefensaMin/Max`, `Bonificacion*Min/Max`). El generador intersecta los rangos de perfección por rareza con los declarados por el ítem. La escala usa `Normal = 50%` con redondeo `AwayFromZero`.
-  - Nota: el set GM usa estos campos para bloquear `NivelMin/Max=200` y `PerfeccionMin/Max=100` en todas las piezas no-arma, y definir bonificaciones elevadas coherentes con su rol de QA.
-  - Bonos de equipo (contrato): las piezas implementan `IBonificadorEstadistica.ObtenerBonificador(string estadistica)`. Claves soportadas (case-insensitive): Defensa física = {"Defensa", "DefensaFisica", "Defensa Física"}; Capacidad de carga = {"Carga"}; Recursos = {"Energia", "Mana"}. El personaje suma estos bonos en runtime a través de `Personaje.ObtenerBonificadorEstadistica`.
-    - QA de objetos desde Admin: `MenuAdmin` incluye la opción 22 para entregar un objeto/equipo/material/poción por nombre (busca en catálogos JSON). Útil para validar definiciones y balance rápidamente; permite equipar de inmediato tras conceder.
-  - Esquema v2 de equipo: los DTOs de Armadura/Botas/Casco/Cinturón/Collar/Pantalón admiten rangos `NivelMin/Max`, `PerfeccionMin/Max` y `DefensaMin/Max` (o `Bonificacion*Min/Max`), además de `RarezasPermitidasCsv` y metadatos (`Valor/ValorVenta`, `Peso`, `Durabilidad`, `Descripcion`, `Tags`). Compatibles con el formato legado; los campos son opcionales. Ver ejemplos en `DatosJuego/Equipo/*/*.json` y notas en `Docs/Roadmap.md` (2025-09-20).
+- Nota: el set GM usa estos campos para bloquear `NivelMin/Max=200` y `PerfeccionMin/Max=100` en todas las piezas no-arma, y definir bonificaciones elevadas coherentes con su rol de QA.
+- Bonos de equipo (contrato): las piezas implementan `IBonificadorEstadistica.ObtenerBonificador(string estadistica)`. Claves soportadas (case-insensitive): Defensa física = {"Defensa", "DefensaFisica", "Defensa Física"}; Capacidad de carga = {"Carga"}; Recursos = {"Energia", "Mana"}. El personaje suma estos bonos en runtime a través de `Personaje.ObtenerBonificadorEstadistica`.
+- QA de objetos desde Admin: `MenuAdmin` incluye la opción 22 para entregar un objeto/equipo/material/poción por nombre (busca en catálogos JSON). Útil para validar definiciones y balance rápidamente; permite equipar de inmediato tras conceder.
+- Esquema v2 de equipo: los DTOs de Armadura/Botas/Casco/Cinturón/Collar/Pantalón admiten rangos `NivelMin/Max`, `PerfeccionMin/Max` y `DefensaMin/Max` (o `Bonificacion*Min/Max`), además de `RarezasPermitidasCsv` y metadatos (`Valor/ValorVenta`, `Peso`, `Durabilidad`, `Descripcion`, `Tags`). Compatibles con el formato legado; los campos son opcionales. Ver ejemplos en `DatosJuego/Equipo/*/*.json` y notas en `Docs/Roadmap.md` (2025-09-20).
 - Herramientas/QA: validadores, generadores y reparadores.
 
 Diagrama conceptual (texto):
@@ -114,8 +114,6 @@ Notas: los clamps se aplican de forma centralizada a través de `CombatBalanceCo
 
 ### 3.2 Caps de combate (data‑driven)
 
-
-
 ## 3.3 Modularización de clases (normales y dinámicas)
 
 > **Actualización 2025-09-23**
@@ -127,6 +125,7 @@ Notas: los clamps se aplican de forma centralizada a través de `CombatBalanceCo
 - No se eliminó ningún archivo de clase existente; solo se modularizó y documentó la diferencia.
 
 ---
+
 ## 4. Habilidades (modelo unificado)
 
 > Nota (2025-09-22): Las habilidades físicas fueron migradas de un archivo único (`Hab_Fisicas.json`) a archivos individuales por habilidad bajo `DatosJuego/habilidades/Hab_Fisicas/`. El loader soporta ambos formatos (lista u objeto por archivo). Esta organización facilita QA, versionado y balance granular.
@@ -222,7 +221,7 @@ Orden de pipeline propuesto (futuro inmediato):
 3) Defensa/Penetración: reducir defensa por `Penetracion` y mitigar. Implementación actual detrás de `--penetracion` usando `CombatAmbientContext`.
 4) Mitigaciones del objetivo: físicas/mágicas.
 5) Elementales: resistencias (0..0.9) y vulnerabilidades (1.0..1.5) por canal (`magia` hoy).
-6) Aplicar daño y efectos OnHit/OnKill. 
+6) Aplicar daño y efectos OnHit/OnKill.
 7) Registrar en `ResultadoAccion` y presentar en UI.
 
 Nota práctica (MVP actual):
@@ -230,8 +229,8 @@ Nota práctica (MVP actual):
 - `DamageResolver` incorpora un chequeo de precisión opcional previo al ataque físico (ver flag CLI). Si falla, corta la ejecución con `FueEvadido=true` y `DanioReal=0`.
 - Crítico: si `CritChance >= 1.0` en `Personaje`, el crítico se considera forzado (útil para pruebas deterministas); en runtime normal se aplica probabilidad y multiplicador con clamps conservadores.
 - Mensajería: los mensajes se generan en base a `DanioReal` y flags (`FueEvadido`, `FueCritico`) para mantener coherencia; `CombatePorTurnos` imprime a través de la UI.
- - Verbosidad de combate: además del flag `--combat-verbose`, puede alternarse en runtime desde Menú Principal → Opciones → "Verbosidad de Combate". Cuando está ON, `DamageResolver` agrega una línea didáctica explicando los pasos del cálculo (Defensa→Mitigación→Resistencias/Vulnerabilidades→Crítico→Daño final).
-  - Pruebas unitarias: `CombatVerboseMessageTests` valida la presencia de esta línea cuando hay impacto y su ausencia cuando el ataque es evadido o falla (por precisión). El gating se respeta siempre: sin `CombatVerbose` no se emite el detalle.
+- Verbosidad de combate: además del flag `--combat-verbose`, puede alternarse en runtime desde Menú Principal → Opciones → "Verbosidad de Combate". Cuando está ON, `DamageResolver` agrega una línea didáctica explicando los pasos del cálculo (Defensa→Mitigación→Resistencias/Vulnerabilidades→Crítico→Daño final).
+- Pruebas unitarias: `CombatVerboseMessageTests` valida la presencia de esta línea cuando hay impacto y su ausencia cuando el ataque es evadido o falla (por precisión). El gating se respeta siempre: sin `CombatVerbose` no se emite el detalle.
 
 Ejemplo práctico (flag de precisión activado):
 
