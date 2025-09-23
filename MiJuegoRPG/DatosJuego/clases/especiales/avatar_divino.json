@@ -1,0 +1,15 @@
+{
+  "Nombre": "Avatar Divino",
+  "Categoria": "Divina",
+  "Rareza": "Legendaria",
+  "Oculta": true,
+  "ClasesPrevias": ["Paladín", "Nigromante"],
+  "NivelMinimo": 30,
+  "AtributosRequeridos": {"Fe": 40, "Inteligencia": 35},
+  "EstadisticasRequeridas": {"PoderDivino": 20},
+  "MisionesRequeridas": ["Salvar el mundo"],
+  "ReputacionMinima": 100,
+  "MisionUnica": "Salvar el mundo",
+  "ObjetoUnico": "Reliquia Sagrada",
+  "AtributosGanados": {"Agilidad": 3, "Percepción": 2, "Fuerza": -1}
+}

@@ -4,8 +4,12 @@
 		{
 			"label": "Ejecutar TestGeneradorObjetos",
 			"type": "shell",
-			"command": "dotnet run --project MiJuegoRPG.csproj --no-build",
-			"args": [],
+			"command": "dotnet run",
+			"args": [
+				"--project",
+				"MiJuegoRPG\\MiJuegoRPG.csproj",
+				"--no-build"
+			],
 			"group": "test"
 		},
 		{
@@ -222,6 +226,85 @@
 			"label": "Build .NET project",
 			"type": "shell",
 			"command": "dotnet build",
+			"group": "build"
+		},
+		{
+			"label": "Ejecutar TestGeneradorObjetos",
+			"type": "shell",
+			"command": "dotnet run",
+			"args": [
+				"--project",
+				"MiJuegoRPG\\MiJuegoRPG.csproj",
+				"--no-build"
+			],
+			"group": "test"
+		},
+		{
+			"label": "Build .NET project",
+			"type": "shell",
+			"command": "dotnet build",
+			"args": [],
+			"group": "build"
+		},
+		{
+			"label": "Compilar y ejecutar pruebas",
+			"type": "shell",
+			"command": "dotnet test --nologo",
+			"args": [],
+			"group": "test"
+		},
+		{
+			"label": "Build .NET project",
+			"type": "shell",
+			"command": "dotnet build",
+			"args": [],
+			"group": "build"
+		},
+		{
+			"label": "Build .NET project",
+			"type": "shell",
+			"command": "dotnet build",
+			"problemMatcher": [
+				"$msCompile"
+			],
+			"group": "build"
+		},
+		{
+			"label": "Compilar y ejecutar pruebas",
+			"type": "shell",
+			"command": "dotnet test --nologo",
+			"problemMatcher": [
+				"$msCompile"
+			],
+			"group": "test"
+		},
+		{
+			"label": "Build .NET project",
+			"type": "shell",
+			"command": "dotnet build",
+			"problemMatcher": [
+				"$msCompile"
+			],
+			"group": "build"
+		},
+		{
+			"label": "Build .NET project",
+			"type": "shell",
+			"command": "dotnet build",
+			"problemMatcher": [
+				"$msCompile"
+			],
+			"group": "build"
+		},
+		{
+			"label": "Build .NET project (MenuAdmin opt 22)",
+			"type": "shell",
+			"command": "dotnet build",
+			"args": [],
+			"isBackground": false,
+			"problemMatcher": [
+				"$msbuild"
+			],
 			"group": "build"
 		}
 	]

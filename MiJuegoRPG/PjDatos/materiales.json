@@ -43,5 +43,75 @@
     "Nombre": "Cola de Zorro",
     "Rareza": "Normal",
     "Categoria": "Material"
+  },
+  {
+    "Nombre": "Ala de Avispa",
+    "Rareza": "Normal",
+    "Categoria": "Material"
+  },
+  {
+    "Nombre": "Veneno de Avispa",
+    "Rareza": "Normal",
+    "Categoria": "Material"
+  },
+  {
+    "Nombre": "Seda Real",
+    "Rareza": "Normal",
+    "Categoria": "Material"
+  },
+  {
+    "Nombre": "Gl\u00E1ndula de Veneno",
+    "Rareza": "Normal",
+    "Categoria": "Material"
+  },
+  {
+    "Nombre": "Cola de Rat\u00F3n",
+    "Rareza": "Normal",
+    "Categoria": "Material"
+  },
+  {
+    "Nombre": "Queso Salvaje",
+    "Rareza": "Normal",
+    "Categoria": "Material"
+  },
+  {
+    "Nombre": "Escama de Lagarto",
+    "Rareza": "Normal",
+    "Categoria": "Material"
+  },
+  {
+    "Nombre": "Cola de Lagarto",
+    "Rareza": "Normal",
+    "Categoria": "Material"
+  },
+  {
+    "Nombre": "Miel",
+    "Rareza": "Normal",
+    "Categoria": "Material"
+  },
+  {
+    "Nombre": "Ala de Abeja",
+    "Rareza": "Normal",
+    "Categoria": "Material"
+  },
+  {
+    "Nombre": "Espina de Erizo",
+    "Rareza": "Normal",
+    "Categoria": "Material"
+  },
+  {
+    "Nombre": "Pluma Negra",
+    "Rareza": "Normal",
+    "Categoria": "Material"
+  },
+  {
+    "Nombre": "N\u00FAcleo de Corteza",
+    "Rareza": "Normal",
+    "Categoria": "Material"
+  },
+  {
+    "Nombre": "Fibra Viva",
+    "Rareza": "Normal",
+    "Categoria": "Material"
   }
 ]

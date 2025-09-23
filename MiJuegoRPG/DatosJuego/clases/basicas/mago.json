@@ -1,0 +1,36 @@
+{
+  "Nombre": "Mago",
+  "Categoria": "Magica",
+  "Rareza": "Comun",
+  "Oculta": true,
+  "ClasesPrevias": ["Aprendiz de Mago"],
+  "NivelMinimo": 10,
+  "AtributosRequeridos": {"Inteligencia": 12},
+  "EstadisticasRequeridas": {"PoderMagico": 3},
+  "MisionesRequeridas": ["Descubrir el Grimorio"],
+  "ReputacionMinima": 0,
+  "AtributosGanados": {"Inteligencia": 2, "Sabiduría": 2, "Fuerza": -1, "Vitalidad": -1},
+  "HabilidadesOtorgadas": 
+    {
+        "Bola de Fuego": "NivelRequerido; 10",
+        "Temblor": "NivelRequerido; 10",
+        "Regeneracion de Mana": "NivelRequerido; 10",
+        "Escudo Mágico": "NivelRequerido; 12",
+        "Rayo de Hielo": "NivelRequerido; 15",
+        "Teletransporte": "NivelRequerido; 18",
+        "Espada de Energía": "NivelRequerido; 20"
+    },
+
+
+  "Evolucion": 
+    {
+        "ClasesSiguientes": ["Hechicero", "Nigromante"],
+        "Condiciones": {
+        "NivelMinimo": 15,
+        "AtributosRequeridos": {"Inteligencia": 20},
+        "EstadisticasRequeridas": {"PoderMagico": 10},
+        "MisionesRequeridas": ["Maestría Arcana"],
+        "ReputacionMinima": 10
+        }
+  }
+}

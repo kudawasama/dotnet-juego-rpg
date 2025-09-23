@@ -1,0 +1,13 @@
+{
+  "Nombre": "Hechicero",
+  "Categoria": "Magica",
+  "Rareza": "Rara",
+  "Oculta": true,
+  "ClasesPrevias": ["Mago"],
+  "NivelMinimo": 8,
+  "AtributosRequeridos": {"Inteligencia": 15},
+  "EstadisticasRequeridas": {"PoderOfensivoMagico": 5},
+  "MisionesRequeridas": [],
+  "ReputacionMinima": 0,
+  "AtributosGanados": {"Destreza": 2, "Agilidad": 2, "Carisma": -1}
+}

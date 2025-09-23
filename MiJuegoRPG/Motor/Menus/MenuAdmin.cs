@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Text;
 using System.IO;
+using System.Collections.Generic;
 
 namespace MiJuegoRPG.Motor.Menus
 {
@@ -16,6 +17,17 @@ namespace MiJuegoRPG.Motor.Menus
             this.juego = juego;
         }
 
+        // Helper local para normalizar textos de rareza igual que GeneradorDeObjetos
+        // - Quita acentos y mapea alias comunes a los valores del enum existente
+        private static string NormalizarRarezaTextoLocal(string s)
+        {
+            if (s == null) return "Normal";
+            s = s.Replace("ó", "o").Replace("Ó", "O").Replace("ú", "u").Replace("Ú", "U").Replace("á", "a").Replace("Á", "A").Replace("é", "e").Replace("É", "E").Replace("í", "i").Replace("Í", "I");
+            if (string.Equals(s, "Comun", StringComparison.OrdinalIgnoreCase) || string.Equals(s, "Común", StringComparison.OrdinalIgnoreCase)) return "Normal"; // mapeo a enum existente
+            if (string.Equals(s, "Raro", StringComparison.OrdinalIgnoreCase)) return "Rara";
+            return s;
+        }
+
         public void MostrarMenuAdmin()
         {
             while (true)
@@ -25,7 +37,7 @@ namespace MiJuegoRPG.Motor.Menus
                 juego.Ui.WriteLine("2. Modificar reputación global (+/- N)");
                 juego.Ui.WriteLine("3. Modificar reputación de facción");
                 juego.Ui.WriteLine("4. Ver información de reputación");
-                juego.Ui.WriteLine("5. Alternar modo Verbose reputación (actual: " + (juego.reputacionService.Verbose ? "ON" : "OFF") + ")");
+                juego.Ui.WriteLine("5. Alternar modo Verbose reputación (actual: " + (juego.reputacionService.Verbose ? "ON" : "OFF") + ")");    
                 juego.Ui.WriteLine("6. Ajustar nivel (+/- N)");
                 juego.Ui.WriteLine("7. Modificar atributo (nombre y delta)");
                 juego.Ui.WriteLine("8. Listar clases (desbloqueadas / bloqueadas con motivos)");
@@ -41,6 +53,8 @@ namespace MiJuegoRPG.Motor.Menus
                 juego.Ui.WriteLine("18. Limpiar TODOS los cooldowns de encuentros");
                 juego.Ui.WriteLine("19. Ver drops únicos (UniqueOnce)");
                 juego.Ui.WriteLine("20. Limpiar TODOS los drops únicos");
+                juego.Ui.WriteLine("21. Cambiar clase ACTIVA (sin rebonificar)");
+                juego.Ui.WriteLine("22. Dar objeto/equipo/material por nombre");
                 juego.Ui.WriteLine("0. Volver");
                 var op = InputService.LeerOpcion("Opción: ");
                 switch (op)
@@ -100,7 +114,7 @@ namespace MiJuegoRPG.Motor.Menus
                                 var manaRatio = juego.jugador.ManaMaxima > 0 ? (double)juego.jugador.ManaActual / juego.jugador.ManaMaxima : 1.0;
                                 juego.jugador.Estadisticas = new Personaje.Estadisticas(juego.jugador.AtributosBase);
                                 juego.jugador.ManaActual = (int)(juego.jugador.ManaMaxima * manaRatio);
-                                try { if (juego.claseService.Evaluar(juego.jugador)) juego.Ui.WriteLine("[CLASES] Se han desbloqueado nuevas clases tras el cambio de atributo."); } catch { }
+                                try { if (juego.claseService.Evaluar(juego.jugador)) juego.Ui.WriteLine("[CLASES] Se han desbloqueado nuevas clas\nes tras el cambio de atributo."); } catch { }
                             }
                             break;
                         }
@@ -166,6 +180,12 @@ namespace MiJuegoRPG.Motor.Menus
                     case "20":
                         LimpiarDropsUnicos();
                         break;
+                    case "21":
+                        CambiarClaseActiva();
+                        break;
+                    case "22":
+                        DarObjetoPorNombre();
+                        break;
                     case "0":
                         return;
                     default:
@@ -173,6 +193,487 @@ namespace MiJuegoRPG.Motor.Menus
                         break;
                 }
             }
+        }
+
+        private void DarObjetoPorNombre()
+        {
+            if (juego.jugador == null) { juego.Ui.WriteLine("No hay jugador."); return; }
+            // Asegurar catálogos cargados
+            try { MiJuegoRPG.Motor.GeneradorObjetos.CargarEquipoAuto(); } catch { }
+            try { if (MiJuegoRPG.Objetos.GestorMateriales.MaterialesDisponibles.Count == 0) MiJuegoRPG.Objetos.GestorMateriales.CargarMateriales("materiales.json"); } catch { }
+            try { if (MiJuegoRPG.Objetos.GestorPociones.PocionesDisponibles.Count == 0) MiJuegoRPG.Objetos.GestorPociones.CargarPociones("pociones.json"); } catch { }
+
+            juego.Ui.WriteLine("=== Dar objeto/equipo/material ===");
+            juego.Ui.WriteLine("Formato: [tipo:]nombre  Ejemplos: 'arma:Espada de Aprendiz', 'material:Madera', 'pocion:Poción de Vida'. Si omites tipo, busco en todo.");
+            var entrada = InputService.LeerOpcion("Nombre o filtro: ").Trim();
+            if (string.IsNullOrWhiteSpace(entrada)) { juego.Ui.WriteLine("Cancelado."); return; }
+
+            // Atajo: set GM completo
+            var lower = entrada.ToLowerInvariant();
+            if (lower == "gm:set" || lower == "gm:set-completo" || lower == "gm set" || lower == "gm todo" || lower == "gm:todo")
+            {
+                EntregarSetGMCompleto();
+                return;
+            }
+
+            string? prefijo = null; string nombre = entrada;
+            var idx = entrada.IndexOf(':');
+            if (idx > 0) { prefijo = entrada.Substring(0, idx).Trim().ToLowerInvariant(); nombre = entrada.Substring(idx + 1).Trim(); }
+
+            var pj = juego.jugador;
+            var candidatos = new List<(string tipo, string nombre)>();
+
+            // Helpers de agregación rápida
+            void AgregarMatches(IEnumerable<string> nombres, string tipo)
+            {
+                foreach (var n in nombres)
+                {
+                    if (n.IndexOf(nombre, StringComparison.OrdinalIgnoreCase) >= 0)
+                        candidatos.Add((tipo, n));
+                }
+            }
+
+            // Recolectar catálogo de nombres por tipo
+            // Equipo por GeneradorObjetos (acceder a listas internas vía reflexión simple)
+            try
+            {
+                var gen = typeof(MiJuegoRPG.Motor.GeneradorObjetos);
+                var campos = new (string campo, string tipo)[] {
+                    ("armasDisponibles", "arma"), ("armadurasDisponibles", "armadura"), ("accesoriosDisponibles", "accesorio"),
+                    ("botasDisponibles", "botas"), ("cascosDisponibles", "casco"), ("cinturonesDisponibles", "cinturon"),
+                    ("collaresDisponibles", "collar"), ("pantalonesDisponibles", "pantalon")
+                };
+                foreach (var (campo, tipo) in campos)
+                {
+                    var f = gen.GetField(campo, System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
+                    var val = f?.GetValue(null) as System.Collections.IEnumerable;
+                    if (val == null) continue;
+                    var nombres = new List<string>();
+                    foreach (var it in val)
+                    {
+                        var t = it.GetType(); var pn = t.GetProperty("Nombre"); var v = pn?.GetValue(it)?.ToString(); if (!string.IsNullOrWhiteSpace(v)) nombres.Add(v!);
+                    }
+                    if (prefijo == null || prefijo == tipo)
+                        AgregarMatches(nombres, tipo);
+                }
+            }
+            catch { }
+
+            // Materiales y Pociones por gestores
+            try { if (prefijo == null || prefijo == "material") AgregarMatches(MiJuegoRPG.Objetos.GestorMateriales.MaterialesDisponibles.ConvertAll(m => m.Nombre), "material"); } catch { }
+            try { if (prefijo == null || prefijo == "pocion") AgregarMatches(MiJuegoRPG.Objetos.GestorPociones.PocionesDisponibles.ConvertAll(p => p.Nombre), "pocion"); } catch { }
+
+            if (candidatos.Count == 0)
+            {
+                juego.Ui.WriteLine("No se encontraron candidatos. Verifica el tipo/nombre o que el catálogo esté cargado.");
+                return;
+            }
+
+            // Si muchos, mostrar primeros 25
+            var lista = candidatos.Distinct().OrderBy(t => t.tipo).ThenBy(t => t.nombre, StringComparer.OrdinalIgnoreCase).ToList();
+            const int MAX = 25;
+            for (int i = 0; i < Math.Min(MAX, lista.Count); i++) juego.Ui.WriteLine($"{i + 1}. [{lista[i].tipo}] {lista[i].nombre}");
+            if (lista.Count > MAX) juego.Ui.WriteLine($"... (+{lista.Count - MAX} más)");
+
+            var pick = InputService.LeerOpcion("Elige # o escribe nombre exacto (ENTER cancela): ").Trim();
+            if (string.IsNullOrWhiteSpace(pick)) { juego.Ui.WriteLine("Cancelado."); return; }
+            (string tipo, string nombreSel)? elegido = null;
+            if (int.TryParse(pick, out var idxSel))
+            {
+                if (idxSel >= 1 && idxSel <= Math.Min(MAX, lista.Count)) elegido = lista[idxSel - 1];
+            }
+            else
+            {
+                elegido = lista.FirstOrDefault(t => string.Equals(t.nombre, pick, StringComparison.OrdinalIgnoreCase));
+                if (elegido?.nombreSel == null) elegido = lista.FirstOrDefault(t => t.nombre.IndexOf(pick, StringComparison.OrdinalIgnoreCase) >= 0);
+            }
+            if (elegido == null)
+            {
+                juego.Ui.WriteLine("Selección inválida.");
+                return;
+            }
+
+            // Construir instancia y agregar al inventario
+            var (tipoSel, nombreSel) = elegido.Value;
+            try
+            {
+                Objetos.Objeto? obj = null;
+                switch (tipoSel)
+                {
+                    case "arma":
+                        // Crear un arma concreta a partir de la data base: usar GeneradorObjetos con filtro de nombre
+                        obj = CrearArmaDesdeNombre(nombreSel);
+                        break;
+                    case "armadura": obj = CrearArmaduraDesdeNombre(nombreSel); break;
+                    case "accesorio": obj = CrearAccesorioDesdeNombre(nombreSel); break;
+                    case "botas": obj = CrearBotasDesdeNombre(nombreSel); break;
+                    case "casco": obj = CrearCascoDesdeNombre(nombreSel); break;
+                    case "cinturon": obj = CrearCinturonDesdeNombre(nombreSel); break;
+                    case "collar": obj = CrearCollarDesdeNombre(nombreSel); break;
+                    case "pantalon": obj = CrearPantalonDesdeNombre(nombreSel); break;
+                    case "material":
+                        var mat = MiJuegoRPG.Objetos.GestorMateriales.BuscarMaterialPorNombre(nombreSel);
+                        if (mat != null) { pj.Inventario.Agregar(mat, 1); juego.Ui.WriteLine($"Entregado material '{nombreSel}'."); }
+                        else juego.Ui.WriteLine("Material no encontrado en catálogo.");
+                        return;
+                    case "pocion":
+                        var poc = MiJuegoRPG.Objetos.GestorPociones.BuscarPocionPorNombre(nombreSel);
+                        if (poc != null) { pj.Inventario.AgregarObjeto(poc, 1, pj); juego.Ui.WriteLine($"Entregada poción '{nombreSel}'."); }
+                        else juego.Ui.WriteLine("Poción no encontrada en catálogo.");
+                        return;
+                    default: juego.Ui.WriteLine("Tipo no soportado en esta versión."); return;
+                }
+                if (obj == null) { juego.Ui.WriteLine("No se pudo instanciar el objeto."); return; }
+                pj.Inventario.AgregarObjeto(obj, 1, pj);
+                // Preguntar si equipar si es equipo
+                if (obj is MiJuegoRPG.Objetos.Arma || obj is MiJuegoRPG.Objetos.Armadura || obj is MiJuegoRPG.Objetos.Accesorio || obj is MiJuegoRPG.Objetos.Botas || obj is MiJuegoRPG.Objetos.Casco || obj is MiJuegoRPG.Objetos.Collar || obj is MiJuegoRPG.Objetos.Cinturon || obj is MiJuegoRPG.Objetos.Pantalon)
+                {
+                    var eq = InputService.LeerOpcion("¿Equipar inmediatamente? (si/no): ").Trim().ToLowerInvariant();
+                    if (eq == "si" || eq == "sí") pj.Inventario.EquiparObjeto(obj, pj);
+                }
+                juego.Ui.WriteLine($"Entregado '{nombreSel}' ({tipoSel}).");
+            }
+            catch (Exception ex)
+            {
+                juego.Ui.WriteLine($"[ADMIN] Error al entregar objeto: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Entrega el set GM completo (arma, armadura, casco, botas, cinturón, collar, pantalón) y ofrece equipar todo.
+        /// </summary>
+        private void EntregarSetGMCompleto()
+        {
+            var pj = juego.jugador; if (pj == null) { juego.Ui.WriteLine("No hay jugador."); return; }
+            // nombres exactos según los JSON per-item añadidos
+            var piezas = new List<(string tipo, string nombre, Func<string, MiJuegoRPG.Objetos.Objeto?> creador)>
+            {
+                ("arma", "Estada del Creador", n => CrearArmaDesdeNombre(n)),
+                ("armadura", "Armadura DIVINO GM GOD", n => CrearArmaduraDesdeNombre(n)),
+                ("casco", "Casco DIVINO GM GOD", n => CrearCascoDesdeNombre(n)),
+                ("botas", "Botas DIVINO GM GOD", n => CrearBotasDesdeNombre(n)),
+                ("cinturon", "Cinturon DIVINO GM GOD", n => CrearCinturonDesdeNombre(n)),
+                ("collar", "Collar DIVINO GM GOD", n => CrearCollarDesdeNombre(n)),
+                ("pantalon", "Pantalon DIVINO GM GOD", n => CrearPantalonDesdeNombre(n))
+            };
+
+            var entregados = new List<MiJuegoRPG.Objetos.Objeto>();
+            foreach (var (tipo, nombre, creador) in piezas)
+            {
+                try
+                {
+                    var obj = creador(nombre);
+                    if (obj == null) { juego.Ui.WriteLine($"[GM] No se encontró '{nombre}' ({tipo}) en el catálogo."); continue; }
+                    pj.Inventario.AgregarObjeto(obj, 1, pj);
+                    entregados.Add(obj);
+                    juego.Ui.WriteLine($"[GM] Entregado '{nombre}' ({tipo}).");
+                }
+                catch (Exception ex)
+                {
+                    juego.Ui.WriteLine($"[GM] Error entregando '{nombre}': {ex.Message}");
+                }
+            }
+
+            if (entregados.Count == 0) { juego.Ui.WriteLine("[GM] No se entregó ninguna pieza."); return; }
+
+            var resp = InputService.LeerOpcion("¿Equipar TODO automáticamente? (si/no): ").Trim().ToLowerInvariant();
+            if (resp == "si" || resp == "sí")
+            {
+                foreach (var obj in entregados)
+                {
+                    try { pj.Inventario.EquiparObjeto(obj, pj); } catch { }
+                }
+                juego.Ui.WriteLine("[GM] Set equipado.");
+            }
+        }
+
+        private MiJuegoRPG.Objetos.Arma? CrearArmaDesdeNombre(string nombre)
+        {
+            // Buscar data base por nombre exacto en GeneradorObjetos.armasDisponibles y construir como en GenerarArmaAleatoria, pero sin RNG salvo en rangos
+            var genT = typeof(MiJuegoRPG.Motor.GeneradorObjetos);
+            var f = genT.GetField("armasDisponibles", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
+            var lista = f?.GetValue(null) as System.Collections.IEnumerable; if (lista == null) return null;
+            object? baseData = null;
+            foreach (var it in lista) { var t = it.GetType(); var n = t.GetProperty("Nombre")?.GetValue(it)?.ToString(); if (string.Equals(n, nombre, StringComparison.OrdinalIgnoreCase)) { baseData = it; break; } }
+            if (baseData == null) return null;
+            // Reutilizar lógica de GenerarArmaAleatoria: rareza (permitidas/csv), perfección por rareza y rango, nivel, daño base o rango → construir
+            try
+            {
+                // Extraer propiedades via reflexión (ArmaData)
+                string rzStr = (string)(baseData.GetType().GetProperty("Rareza")?.GetValue(baseData) ?? "Normal");
+                string? rzCsv = baseData.GetType().GetProperty("RarezasPermitidasCsv")?.GetValue(baseData) as string;
+                int perfFija = (int)(baseData.GetType().GetProperty("Perfeccion")?.GetValue(baseData) ?? 50);
+                int? pMin = baseData.GetType().GetProperty("PerfeccionMin")?.GetValue(baseData) as int?;
+                int? pMax = baseData.GetType().GetProperty("PerfeccionMax")?.GetValue(baseData) as int?;
+                int nivel = (int)(baseData.GetType().GetProperty("NivelRequerido")?.GetValue(baseData) ?? 1);
+                int? nMin = baseData.GetType().GetProperty("NivelMin")?.GetValue(baseData) as int?;
+                int? nMax = baseData.GetType().GetProperty("NivelMax")?.GetValue(baseData) as int?;
+                int danio = (int)(baseData.GetType().GetProperty("Daño")?.GetValue(baseData) ?? 1);
+                int? dMin = baseData.GetType().GetProperty("DañoMin")?.GetValue(baseData) as int?;
+                int? dMax = baseData.GetType().GetProperty("DañoMax")?.GetValue(baseData) as int?;
+                // Determinar rareza elegida respetando CSV
+                var candidatas = new List<MiJuegoRPG.Objetos.Rareza>();
+                if (!string.IsNullOrWhiteSpace(rzCsv)) foreach (var r in rzCsv.Split(',')) { var s = NormalizarRarezaTextoLocal(r.Trim()); if (Enum.TryParse<MiJuegoRPG.Objetos.Rareza>(s, true, out var rz)) candidatas.Add(rz); }
+                if (candidatas.Count == 0) { var s = NormalizarRarezaTextoLocal(rzStr); if (Enum.TryParse<MiJuegoRPG.Objetos.Rareza>(s, true, out var rzU)) candidatas.Add(rzU); else candidatas.Add(MiJuegoRPG.Objetos.Rareza.Normal); }
+                var rzElegida = candidatas[0]; // determinista: tomar primera permitida
+                // Rango perfección por rareza intersectado con ítem
+                var rango = (System.ValueTuple<int,int>)typeof(MiJuegoRPG.Motor.GeneradorObjetos).GetMethod("RangoPerfeccionPorRareza", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static)!.Invoke(null, new object[] { rzElegida })!;
+                int pmin = rango.Item1, pmax = rango.Item2;
+                if (pMin.HasValue && pMax.HasValue) { pmin = Math.Max(pmin, pMin.Value); pmax = Math.Min(pmax, pMax.Value); if (pmin > pmax) { pmin = rango.Item1; pmax = rango.Item2; } }
+                int perfeccion = (perfFija <= 0 || perfFija > 100 || pMin.HasValue || pMax.HasValue) ? new Random().Next(pmin, pmax + 1) : perfFija;
+                // Nivel/danio
+                if (nMin.HasValue && nMax.HasValue) { nivel = new Random().Next(Math.Max(1, nMin.Value), Math.Max(nMin.Value, nMax.Value) + 1); }
+                if (dMin.HasValue && dMax.HasValue) { danio = new Random().Next(Math.Max(0, dMin.Value), Math.Max(dMin.Value, dMax.Value) + 1); }
+                int danioFinal = (int)Math.Round(danio * (perfeccion / 50.0), MidpointRounding.AwayFromZero);
+                string tipo = (string)(baseData.GetType().GetProperty("Tipo")?.GetValue(baseData) ?? "UnaMano");
+                return new MiJuegoRPG.Objetos.Arma((string)baseData.GetType().GetProperty("Nombre")!.GetValue(baseData)!, danioFinal, nivel, rzElegida, tipo, perfeccion, 0);
+            }
+            catch { return null; }
+        }
+
+        private MiJuegoRPG.Objetos.Armadura? CrearArmaduraDesdeNombre(string nombre)
+        {
+            var genT = typeof(MiJuegoRPG.Motor.GeneradorObjetos);
+            var f = genT.GetField("armadurasDisponibles", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
+            var lista = f?.GetValue(null) as System.Collections.IEnumerable; if (lista == null) return null;
+            object? baseData = null; foreach (var it in lista) { var t = it.GetType(); var n = t.GetProperty("Nombre")?.GetValue(it)?.ToString(); if (string.Equals(n, nombre, StringComparison.OrdinalIgnoreCase)) { baseData = it; break; } }
+            if (baseData == null) return null;
+            try
+            {
+                string rzStr = (string)(baseData.GetType().GetProperty("Rareza")?.GetValue(baseData) ?? "Normal");
+                string? rzCsv = baseData.GetType().GetProperty("RarezasPermitidasCsv")?.GetValue(baseData) as string;
+                int perfFija = (int)(baseData.GetType().GetProperty("Perfeccion")?.GetValue(baseData) ?? 50);
+                int? pMin = baseData.GetType().GetProperty("PerfeccionMin")?.GetValue(baseData) as int?;
+                int? pMax = baseData.GetType().GetProperty("PerfeccionMax")?.GetValue(baseData) as int?;
+                int nivel = (int)(baseData.GetType().GetProperty("Nivel")?.GetValue(baseData) ?? 1);
+                int? nMin = baseData.GetType().GetProperty("NivelMin")?.GetValue(baseData) as int?;
+                int? nMax = baseData.GetType().GetProperty("NivelMax")?.GetValue(baseData) as int?;
+                int def = (int)(baseData.GetType().GetProperty("Defensa")?.GetValue(baseData) ?? 1);
+                int? dMin = baseData.GetType().GetProperty("DefensaMin")?.GetValue(baseData) as int?;
+                int? dMax = baseData.GetType().GetProperty("DefensaMax")?.GetValue(baseData) as int?;
+                var candidatas = new List<MiJuegoRPG.Objetos.Rareza>();
+                if (!string.IsNullOrWhiteSpace(rzCsv)) foreach (var r in rzCsv.Split(',')) { var s = NormalizarRarezaTextoLocal(r.Trim()); if (Enum.TryParse<MiJuegoRPG.Objetos.Rareza>(s, true, out var rz)) candidatas.Add(rz); }
+                if (candidatas.Count == 0) { var s = NormalizarRarezaTextoLocal(rzStr); if (Enum.TryParse<MiJuegoRPG.Objetos.Rareza>(s, true, out var rzU)) candidatas.Add(rzU); else candidatas.Add(MiJuegoRPG.Objetos.Rareza.Normal); }
+                var rzElegida = candidatas[0];
+                var rango = (System.ValueTuple<int,int>)typeof(MiJuegoRPG.Motor.GeneradorObjetos).GetMethod("RangoPerfeccionPorRareza", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static)!.Invoke(null, new object[] { rzElegida })!;
+                int pmin = rango.Item1, pmax = rango.Item2;
+                if (pMin.HasValue && pMax.HasValue) { pmin = Math.Max(pmin, pMin.Value); pmax = Math.Min(pmax, pMax.Value); if (pmin > pmax) { pmin = rango.Item1; pmax = rango.Item2; } }
+                int perfeccion = (perfFija <= 0 || perfFija > 100 || pMin.HasValue || pMax.HasValue) ? new Random().Next(pmin, pmax + 1) : perfFija;
+                if (nMin.HasValue && nMax.HasValue) { nivel = new Random().Next(Math.Max(1, nMin.Value), Math.Max(nMin.Value, nMax.Value) + 1); }
+                if (dMin.HasValue && dMax.HasValue) { def = new Random().Next(Math.Max(0, dMin.Value), Math.Max(dMin.Value, dMax.Value) + 1); }
+                int defFinal = (int)Math.Round(def * (perfeccion / 50.0), MidpointRounding.AwayFromZero);
+                string tipo = (string)(baseData.GetType().GetProperty("TipoObjeto")?.GetValue(baseData) ?? "Armadura");
+                return new MiJuegoRPG.Objetos.Armadura((string)baseData.GetType().GetProperty("Nombre")!.GetValue(baseData)!, defFinal, nivel, rzElegida, tipo, perfeccion);
+            }
+            catch { return null; }
+        }
+
+        private MiJuegoRPG.Objetos.Accesorio? CrearAccesorioDesdeNombre(string nombre)
+        {
+            var genT = typeof(MiJuegoRPG.Motor.GeneradorObjetos);
+            var f = genT.GetField("accesoriosDisponibles", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
+            var lista = f?.GetValue(null) as System.Collections.IEnumerable; if (lista == null) return null;
+            object? baseData = null; foreach (var it in lista) { var t = it.GetType(); var n = t.GetProperty("Nombre")?.GetValue(it)?.ToString(); if (string.Equals(n, nombre, StringComparison.OrdinalIgnoreCase)) { baseData = it; break; } }
+            if (baseData == null) return null;
+            try
+            {
+                string rzStr = (string)(baseData.GetType().GetProperty("Rareza")?.GetValue(baseData) ?? "Normal");
+                string? rzCsv = baseData.GetType().GetProperty("RarezasPermitidasCsv")?.GetValue(baseData) as string;
+                int perfFija = (int)(baseData.GetType().GetProperty("Perfeccion")?.GetValue(baseData) ?? 50);
+                int? pMin = baseData.GetType().GetProperty("PerfeccionMin")?.GetValue(baseData) as int?;
+                int? pMax = baseData.GetType().GetProperty("PerfeccionMax")?.GetValue(baseData) as int?;
+                int nivel = (int)(baseData.GetType().GetProperty("Nivel")?.GetValue(baseData) ?? 1);
+                int? nMin = baseData.GetType().GetProperty("NivelMin")?.GetValue(baseData) as int?;
+                int? nMax = baseData.GetType().GetProperty("NivelMax")?.GetValue(baseData) as int?;
+                int bonAtk = (int)(baseData.GetType().GetProperty("BonificacionAtaque")?.GetValue(baseData) ?? 0);
+                int bonDef = (int)(baseData.GetType().GetProperty("BonificacionDefensa")?.GetValue(baseData) ?? 0);
+                var candidatas = new List<MiJuegoRPG.Objetos.Rareza>();
+                if (!string.IsNullOrWhiteSpace(rzCsv)) foreach (var r in rzCsv.Split(',')) { var s = NormalizarRarezaTextoLocal(r.Trim()); if (Enum.TryParse<MiJuegoRPG.Objetos.Rareza>(s, true, out var rz)) candidatas.Add(rz); }
+                if (candidatas.Count == 0) { var s = NormalizarRarezaTextoLocal(rzStr); if (Enum.TryParse<MiJuegoRPG.Objetos.Rareza>(s, true, out var rzU)) candidatas.Add(rzU); else candidatas.Add(MiJuegoRPG.Objetos.Rareza.Normal); }
+                var rzElegida = candidatas[0];
+                var rango = (System.ValueTuple<int,int>)typeof(MiJuegoRPG.Motor.GeneradorObjetos).GetMethod("RangoPerfeccionPorRareza", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static)!.Invoke(null, new object[] { rzElegida })!;
+                int pmin = rango.Item1, pmax = rango.Item2;
+                if (pMin.HasValue && pMax.HasValue) { pmin = Math.Max(pmin, pMin.Value); pmax = Math.Min(pmax, pMax.Value); if (pmin > pmax) { pmin = rango.Item1; pmax = rango.Item2; } }
+                int perfeccion = (perfFija <= 0 || perfFija > 100 || pMin.HasValue || pMax.HasValue) ? new Random().Next(pmin, pmax + 1) : perfFija;
+                if (nMin.HasValue && nMax.HasValue) { nivel = new Random().Next(Math.Max(1, nMin.Value), Math.Max(nMin.Value, nMax.Value) + 1); }
+                int bonAtkFinal = (int)Math.Round(bonAtk * (perfeccion / 50.0), MidpointRounding.AwayFromZero);
+                int bonDefFinal = (int)Math.Round(bonDef * (perfeccion / 50.0), MidpointRounding.AwayFromZero);
+                string tipo = (string)(baseData.GetType().GetProperty("TipoObjeto")?.GetValue(baseData) ?? "Accesorio");
+                return new MiJuegoRPG.Objetos.Accesorio((string)baseData.GetType().GetProperty("Nombre")!.GetValue(baseData)!, bonAtkFinal, bonDefFinal, nivel, rzElegida, tipo, perfeccion);
+            }
+            catch { return null; }
+        }
+
+        // Botas/Casco/Cinturón/Collar/Pantalón: se instancian como Armadura-like (defensa base) si existen clases; atajo básico
+        private MiJuegoRPG.Objetos.Botas? CrearBotasDesdeNombre(string nombre)
+        {
+            var t = typeof(MiJuegoRPG.Motor.GeneradorObjetos).GetField("botasDisponibles", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
+            var lista = t?.GetValue(null) as System.Collections.IEnumerable; if (lista == null) return null;
+            object? baseData = null; foreach (var it in lista) { var p = it.GetType().GetProperty("Nombre"); var v = p?.GetValue(it)?.ToString(); if (string.Equals(v, nombre, StringComparison.OrdinalIgnoreCase)) { baseData = it; break; } }
+            if (baseData == null) return null;
+            try
+            {
+                int perfFija = (int)(baseData.GetType().GetProperty("Perfeccion")?.GetValue(baseData) ?? 50);
+                int? pMin = baseData.GetType().GetProperty("PerfeccionMin")?.GetValue(baseData) as int?;
+                int? pMax = baseData.GetType().GetProperty("PerfeccionMax")?.GetValue(baseData) as int?;
+                int nivel = (int)(baseData.GetType().GetProperty("Nivel")?.GetValue(baseData) ?? 1);
+                int? nMin = baseData.GetType().GetProperty("NivelMin")?.GetValue(baseData) as int?;
+                int? nMax = baseData.GetType().GetProperty("NivelMax")?.GetValue(baseData) as int?;
+                int def = (int)(baseData.GetType().GetProperty("Defensa")?.GetValue(baseData) ?? 1);
+                int? dMin = baseData.GetType().GetProperty("DefensaMin")?.GetValue(baseData) as int?;
+                int? dMax = baseData.GetType().GetProperty("DefensaMax")?.GetValue(baseData) as int?;
+                string rzStr = (string)(baseData.GetType().GetProperty("Rareza")?.GetValue(baseData) ?? "Normal");
+                var candidatas = new List<MiJuegoRPG.Objetos.Rareza>();
+                var s = NormalizarRarezaTextoLocal(rzStr); if (Enum.TryParse<MiJuegoRPG.Objetos.Rareza>(s, true, out var rzU)) candidatas.Add(rzU); else candidatas.Add(MiJuegoRPG.Objetos.Rareza.Normal);
+                var rzElegida = candidatas[0];
+                var rango = (System.ValueTuple<int,int>)typeof(MiJuegoRPG.Motor.GeneradorObjetos).GetMethod("RangoPerfeccionPorRareza", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static)!.Invoke(null, new object[] { rzElegida })!;
+                int pmin = rango.Item1, pmax = rango.Item2;
+                if (pMin.HasValue && pMax.HasValue) { pmin = Math.Max(pmin, pMin.Value); pmax = Math.Min(pmax, pMax.Value); if (pmin > pmax) { pmin = rango.Item1; pmax = rango.Item2; } }
+                int perfeccion = (perfFija <= 0 || perfFija > 100 || pMin.HasValue || pMax.HasValue) ? new Random().Next(pmin, pmax + 1) : perfFija;
+                if (nMin.HasValue && nMax.HasValue) { nivel = new Random().Next(Math.Max(1, nMin.Value), Math.Max(nMin.Value, nMax.Value) + 1); }
+                if (dMin.HasValue && dMax.HasValue) { def = new Random().Next(Math.Max(0, dMin.Value), Math.Max(dMin.Value, dMax.Value) + 1); }
+                int defFinal = (int)Math.Round(def * (perfeccion / 50.0), MidpointRounding.AwayFromZero);
+                string tipo = (string)(baseData.GetType().GetProperty("TipoObjeto")?.GetValue(baseData) ?? "Botas");
+                return new MiJuegoRPG.Objetos.Botas((string)baseData.GetType().GetProperty("Nombre")!.GetValue(baseData)!, defFinal, nivel, rzElegida, tipo, perfeccion);
+            }
+            catch { return null; }
+        }
+        private MiJuegoRPG.Objetos.Casco? CrearCascoDesdeNombre(string nombre)
+        {
+            var t = typeof(MiJuegoRPG.Motor.GeneradorObjetos).GetField("cascosDisponibles", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
+            var lista = t?.GetValue(null) as System.Collections.IEnumerable; if (lista == null) return null;
+            object? baseData = null; foreach (var it in lista) { var p = it.GetType().GetProperty("Nombre"); var v = p?.GetValue(it)?.ToString(); if (string.Equals(v, nombre, StringComparison.OrdinalIgnoreCase)) { baseData = it; break; } }
+            if (baseData == null) return null;
+            try
+            {
+                int perfFija = (int)(baseData.GetType().GetProperty("Perfeccion")?.GetValue(baseData) ?? 50);
+                int? pMin = baseData.GetType().GetProperty("PerfeccionMin")?.GetValue(baseData) as int?;
+                int? pMax = baseData.GetType().GetProperty("PerfeccionMax")?.GetValue(baseData) as int?;
+                int nivel = (int)(baseData.GetType().GetProperty("Nivel")?.GetValue(baseData) ?? 1);
+                int? nMin = baseData.GetType().GetProperty("NivelMin")?.GetValue(baseData) as int?;
+                int? nMax = baseData.GetType().GetProperty("NivelMax")?.GetValue(baseData) as int?;
+                int def = (int)(baseData.GetType().GetProperty("Defensa")?.GetValue(baseData) ?? 1);
+                int? dMin = baseData.GetType().GetProperty("DefensaMin")?.GetValue(baseData) as int?;
+                int? dMax = baseData.GetType().GetProperty("DefensaMax")?.GetValue(baseData) as int?;
+                string rzStr = (string)(baseData.GetType().GetProperty("Rareza")?.GetValue(baseData) ?? "Normal");
+                var candidatas = new List<MiJuegoRPG.Objetos.Rareza>();
+                var s = NormalizarRarezaTextoLocal(rzStr); if (Enum.TryParse<MiJuegoRPG.Objetos.Rareza>(s, true, out var rzU)) candidatas.Add(rzU); else candidatas.Add(MiJuegoRPG.Objetos.Rareza.Normal);
+                var rzElegida = candidatas[0];
+                var rango = (System.ValueTuple<int,int>)typeof(MiJuegoRPG.Motor.GeneradorObjetos).GetMethod("RangoPerfeccionPorRareza", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static)!.Invoke(null, new object[] { rzElegida })!;
+                int pmin = rango.Item1, pmax = rango.Item2;
+                if (pMin.HasValue && pMax.HasValue) { pmin = Math.Max(pmin, pMin.Value); pmax = Math.Min(pmax, pMax.Value); if (pmin > pmax) { pmin = rango.Item1; pmax = rango.Item2; } }
+                int perfeccion = (perfFija <= 0 || perfFija > 100 || pMin.HasValue || pMax.HasValue) ? new Random().Next(pmin, pmax + 1) : perfFija;
+                if (nMin.HasValue && nMax.HasValue) { nivel = new Random().Next(Math.Max(1, nMin.Value), Math.Max(nMin.Value, nMax.Value) + 1); }
+                if (dMin.HasValue && dMax.HasValue) { def = new Random().Next(Math.Max(0, dMin.Value), Math.Max(dMin.Value, dMax.Value) + 1); }
+                int defFinal = (int)Math.Round(def * (perfeccion / 50.0), MidpointRounding.AwayFromZero);
+                string tipo = (string)(baseData.GetType().GetProperty("TipoObjeto")?.GetValue(baseData) ?? "Casco");
+                return new MiJuegoRPG.Objetos.Casco((string)baseData.GetType().GetProperty("Nombre")!.GetValue(baseData)!, defFinal, nivel, rzElegida, tipo, perfeccion);
+            }
+            catch { return null; }
+        }
+        private MiJuegoRPG.Objetos.Cinturon? CrearCinturonDesdeNombre(string nombre)
+        {
+            var t = typeof(MiJuegoRPG.Motor.GeneradorObjetos).GetField("cinturonesDisponibles", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
+            var lista = t?.GetValue(null) as System.Collections.IEnumerable; if (lista == null) return null;
+            object? baseData = null; foreach (var it in lista) { var p = it.GetType().GetProperty("Nombre"); var v = p?.GetValue(it)?.ToString(); if (string.Equals(v, nombre, StringComparison.OrdinalIgnoreCase)) { baseData = it; break; } }
+            if (baseData == null) return null;
+            try
+            {
+                int perfFija = (int)(baseData.GetType().GetProperty("Perfeccion")?.GetValue(baseData) ?? 50);
+                int? pMin = baseData.GetType().GetProperty("PerfeccionMin")?.GetValue(baseData) as int?;
+                int? pMax = baseData.GetType().GetProperty("PerfeccionMax")?.GetValue(baseData) as int?;
+                int nivel = (int)(baseData.GetType().GetProperty("Nivel")?.GetValue(baseData) ?? 1);
+                int? nMin = baseData.GetType().GetProperty("NivelMin")?.GetValue(baseData) as int?;
+                int? nMax = baseData.GetType().GetProperty("NivelMax")?.GetValue(baseData) as int?;
+                int carga = (int)(baseData.GetType().GetProperty("BonificacionCarga")?.GetValue(baseData) ?? 1);
+                int? cMin = baseData.GetType().GetProperty("BonificacionCargaMin")?.GetValue(baseData) as int?;
+                int? cMax = baseData.GetType().GetProperty("BonificacionCargaMax")?.GetValue(baseData) as int?;
+                string rzStr = (string)(baseData.GetType().GetProperty("Rareza")?.GetValue(baseData) ?? "Normal");
+                var candidatas = new List<MiJuegoRPG.Objetos.Rareza>();
+                var s = NormalizarRarezaTextoLocal(rzStr); if (Enum.TryParse<MiJuegoRPG.Objetos.Rareza>(s, true, out var rzU)) candidatas.Add(rzU); else candidatas.Add(MiJuegoRPG.Objetos.Rareza.Normal);
+                var rzElegida = candidatas[0];
+                var rango = (System.ValueTuple<int,int>)typeof(MiJuegoRPG.Motor.GeneradorObjetos).GetMethod("RangoPerfeccionPorRareza", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static)!.Invoke(null, new object[] { rzElegida })!;
+                int pmin = rango.Item1, pmax = rango.Item2;
+                if (pMin.HasValue && pMax.HasValue) { pmin = Math.Max(pmin, pMin.Value); pmax = Math.Min(pmax, pMax.Value); if (pmin > pmax) { pmin = rango.Item1; pmax = rango.Item2; } }
+                int perfeccion = (perfFija <= 0 || perfFija > 100 || pMin.HasValue || pMax.HasValue) ? new Random().Next(pmin, pmax + 1) : perfFija;
+                if (nMin.HasValue && nMax.HasValue) { nivel = new Random().Next(Math.Max(1, nMin.Value), Math.Max(nMin.Value, nMax.Value) + 1); }
+                if (cMin.HasValue && cMax.HasValue) { carga = new Random().Next(Math.Max(0, cMin.Value), Math.Max(cMin.Value, cMax.Value) + 1); }
+                int cargaFinal = (int)Math.Round(carga * (perfeccion / 50.0), MidpointRounding.AwayFromZero);
+                string tipo = (string)(baseData.GetType().GetProperty("TipoObjeto")?.GetValue(baseData) ?? "Cinturon");
+                return new MiJuegoRPG.Objetos.Cinturon((string)baseData.GetType().GetProperty("Nombre")!.GetValue(baseData)!, cargaFinal, nivel, rzElegida, tipo, perfeccion);
+            }
+            catch { return null; }
+        }
+        private MiJuegoRPG.Objetos.Collar? CrearCollarDesdeNombre(string nombre)
+        {
+            var t = typeof(MiJuegoRPG.Motor.GeneradorObjetos).GetField("collaresDisponibles", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
+            var lista = t?.GetValue(null) as System.Collections.IEnumerable; if (lista == null) return null;
+            object? baseData = null; foreach (var it in lista) { var p = it.GetType().GetProperty("Nombre"); var v = p?.GetValue(it)?.ToString(); if (string.Equals(v, nombre, StringComparison.OrdinalIgnoreCase)) { baseData = it; break; } }
+            if (baseData == null) return null;
+            try
+            {
+                int perfFija = (int)(baseData.GetType().GetProperty("Perfeccion")?.GetValue(baseData) ?? 50);
+                int? pMin = baseData.GetType().GetProperty("PerfeccionMin")?.GetValue(baseData) as int?;
+                int? pMax = baseData.GetType().GetProperty("PerfeccionMax")?.GetValue(baseData) as int?;
+                int nivel = (int)(baseData.GetType().GetProperty("Nivel")?.GetValue(baseData) ?? 1);
+                int? nMin = baseData.GetType().GetProperty("NivelMin")?.GetValue(baseData) as int?;
+                int? nMax = baseData.GetType().GetProperty("NivelMax")?.GetValue(baseData) as int?;
+                int bonDef = (int)(baseData.GetType().GetProperty("BonificacionDefensa")?.GetValue(baseData) ?? 0);
+                int? bonDefMin = baseData.GetType().GetProperty("BonificacionDefensaMin")?.GetValue(baseData) as int?;
+                int? bonDefMax = baseData.GetType().GetProperty("BonificacionDefensaMax")?.GetValue(baseData) as int?;
+                int bonEne = (int)(baseData.GetType().GetProperty("BonificacionEnergia")?.GetValue(baseData) ?? 0);
+                int? bonEneMin = baseData.GetType().GetProperty("BonificacionEnergiaMin")?.GetValue(baseData) as int?;
+                int? bonEneMax = baseData.GetType().GetProperty("BonificacionEnergiaMax")?.GetValue(baseData) as int?;
+                string rzStr = (string)(baseData.GetType().GetProperty("Rareza")?.GetValue(baseData) ?? "Normal");
+                var candidatas = new List<MiJuegoRPG.Objetos.Rareza>();
+                var s = NormalizarRarezaTextoLocal(rzStr); if (Enum.TryParse<MiJuegoRPG.Objetos.Rareza>(s, true, out var rzU)) candidatas.Add(rzU); else candidatas.Add(MiJuegoRPG.Objetos.Rareza.Normal);
+                var rzElegida = candidatas[0];
+                var rango = (System.ValueTuple<int,int>)typeof(MiJuegoRPG.Motor.GeneradorObjetos).GetMethod("RangoPerfeccionPorRareza", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static)!.Invoke(null, new object[] { rzElegida })!;
+                int pmin = rango.Item1, pmax = rango.Item2;
+                if (pMin.HasValue && pMax.HasValue) { pmin = Math.Max(pmin, pMin.Value); pmax = Math.Min(pmax, pMax.Value); if (pmin > pmax) { pmin = rango.Item1; pmax = rango.Item2; } }
+                int perfeccion = (perfFija <= 0 || perfFija > 100 || pMin.HasValue || pMax.HasValue) ? new Random().Next(pmin, pmax + 1) : perfFija;
+                if (nMin.HasValue && nMax.HasValue) { nivel = new Random().Next(Math.Max(1, nMin.Value), Math.Max(nMin.Value, nMax.Value) + 1); }
+                if (bonDefMin.HasValue && bonDefMax.HasValue) { bonDef = new Random().Next(Math.Max(0, bonDefMin.Value), Math.Max(bonDefMin.Value, bonDefMax.Value) + 1); }
+                if (bonEneMin.HasValue && bonEneMax.HasValue) { bonEne = new Random().Next(Math.Max(0, bonEneMin.Value), Math.Max(bonEneMin.Value, bonEneMax.Value) + 1); }
+                int bonDefFinal = (int)Math.Round(bonDef * (perfeccion / 50.0), MidpointRounding.AwayFromZero);
+                int bonEneFinal = (int)Math.Round(bonEne * (perfeccion / 50.0), MidpointRounding.AwayFromZero);
+                string tipo = (string)(baseData.GetType().GetProperty("TipoObjeto")?.GetValue(baseData) ?? "Collar");
+                return new MiJuegoRPG.Objetos.Collar((string)baseData.GetType().GetProperty("Nombre")!.GetValue(baseData)!, bonDefFinal, bonEneFinal, nivel, rzElegida, tipo, perfeccion);
+            }
+            catch { return null; }
+        }
+        private MiJuegoRPG.Objetos.Pantalon? CrearPantalonDesdeNombre(string nombre)
+        {
+            var t = typeof(MiJuegoRPG.Motor.GeneradorObjetos).GetField("pantalonesDisponibles", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
+            var lista = t?.GetValue(null) as System.Collections.IEnumerable; if (lista == null) return null;
+            object? baseData = null; foreach (var it in lista) { var p = it.GetType().GetProperty("Nombre"); var v = p?.GetValue(it)?.ToString(); if (string.Equals(v, nombre, StringComparison.OrdinalIgnoreCase)) { baseData = it; break; } }
+            if (baseData == null) return null;
+            try
+            {
+                int perfFija = (int)(baseData.GetType().GetProperty("Perfeccion")?.GetValue(baseData) ?? 50);
+                int? pMin = baseData.GetType().GetProperty("PerfeccionMin")?.GetValue(baseData) as int?;
+                int? pMax = baseData.GetType().GetProperty("PerfeccionMax")?.GetValue(baseData) as int?;
+                int nivel = (int)(baseData.GetType().GetProperty("Nivel")?.GetValue(baseData) ?? 1);
+                int? nMin = baseData.GetType().GetProperty("NivelMin")?.GetValue(baseData) as int?;
+                int? nMax = baseData.GetType().GetProperty("NivelMax")?.GetValue(baseData) as int?;
+                int def = (int)(baseData.GetType().GetProperty("Defensa")?.GetValue(baseData) ?? 1);
+                int? dMin = baseData.GetType().GetProperty("DefensaMin")?.GetValue(baseData) as int?;
+                int? dMax = baseData.GetType().GetProperty("DefensaMax")?.GetValue(baseData) as int?;
+                string rzStr = (string)(baseData.GetType().GetProperty("Rareza")?.GetValue(baseData) ?? "Normal");
+                var candidatas = new List<MiJuegoRPG.Objetos.Rareza>();
+                var s = NormalizarRarezaTextoLocal(rzStr); if (Enum.TryParse<MiJuegoRPG.Objetos.Rareza>(s, true, out var rzU)) candidatas.Add(rzU); else candidatas.Add(MiJuegoRPG.Objetos.Rareza.Normal);
+                var rzElegida = candidatas[0];
+                var rango = (System.ValueTuple<int,int>)typeof(MiJuegoRPG.Motor.GeneradorObjetos).GetMethod("RangoPerfeccionPorRareza", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static)!.Invoke(null, new object[] { rzElegida })!;
+                int pmin = rango.Item1, pmax = rango.Item2;
+                if (pMin.HasValue && pMax.HasValue) { pmin = Math.Max(pmin, pMin.Value); pmax = Math.Min(pmax, pMax.Value); if (pmin > pmax) { pmin = rango.Item1; pmax = rango.Item2; } }
+                int perfeccion = (perfFija <= 0 || perfFija > 100 || pMin.HasValue || pMax.HasValue) ? new Random().Next(pmin, pmax + 1) : perfFija;
+                if (nMin.HasValue && nMax.HasValue) { nivel = new Random().Next(Math.Max(1, nMin.Value), Math.Max(nMin.Value, nMax.Value) + 1); }
+                if (dMin.HasValue && dMax.HasValue) { def = new Random().Next(Math.Max(0, dMin.Value), Math.Max(dMin.Value, dMax.Value) + 1); }
+                int defFinal = (int)Math.Round(def * (perfeccion / 50.0), MidpointRounding.AwayFromZero);
+                string tipo = (string)(baseData.GetType().GetProperty("TipoObjeto")?.GetValue(baseData) ?? "Pantalon");
+                return new MiJuegoRPG.Objetos.Pantalon((string)baseData.GetType().GetProperty("Nombre")!.GetValue(baseData)!, defFinal, nivel, rzElegida, tipo, perfeccion);
+            }
+            catch { return null; }
         }
 
         private void VerDropsUnicos()
@@ -213,6 +714,51 @@ namespace MiJuegoRPG.Motor.Menus
             }
         }
 
+        private void CambiarClaseActiva()
+        {
+            if (juego.jugador == null) { juego.Ui.WriteLine("No hay jugador."); return; }
+            var pj = juego.jugador;
+            if (pj.ClasesDesbloqueadas == null || pj.ClasesDesbloqueadas.Count == 0)
+            {
+                juego.Ui.WriteLine("No hay clases desbloqueadas.");
+                return;
+            }
+
+            var lista = pj.ClasesDesbloqueadas.OrderBy(x => x).ToList();
+            juego.Ui.WriteLine("=== Cambiar clase ACTIVA (no rebonifica) ===");
+            for (int i = 0; i < lista.Count; i++)
+            {
+                var nombre = lista[i];
+                var marca = pj.Clase != null && string.Equals(pj.Clase.Nombre, nombre, StringComparison.OrdinalIgnoreCase) ? " [ACTIVA]" : string.Empty;
+                juego.Ui.WriteLine($"{i + 1}. {nombre}{marca}");
+            }
+
+            var entrada = InputService.LeerOpcion("Elige # o nombre (ENTER cancela): ").Trim();
+            if (string.IsNullOrWhiteSpace(entrada)) { juego.Ui.WriteLine("Cancelado."); return; }
+            string? seleccion = null;
+            if (int.TryParse(entrada, out var idx))
+            {
+                if (idx >= 1 && idx <= lista.Count) seleccion = lista[idx - 1];
+            }
+            else
+            {
+                seleccion = lista.FirstOrDefault(n => string.Equals(n, entrada, StringComparison.OrdinalIgnoreCase));
+            }
+            if (seleccion == null) { juego.Ui.WriteLine("Selección inválida."); return; }
+
+            // Cambiar solo la activa, sin rebonificar
+            pj.Clase = new MiJuegoRPG.Personaje.Clase { Nombre = seleccion };
+            // Recalcular estadísticas preservando ratio de maná
+            try
+            {
+                var ratio = pj.ManaMaxima > 0 ? (double)pj.ManaActual / pj.ManaMaxima : 1.0;
+                pj.Estadisticas = new MiJuegoRPG.Personaje.Estadisticas(pj.AtributosBase);
+                pj.ManaActual = (int)(pj.ManaMaxima * ratio);
+            }
+            catch { }
+            juego.Ui.WriteLine($"Clase activa cambiada a '{seleccion}'.");
+        }
+
         private void ListarCooldownsEncuentros()
         {
             if (juego.encuentrosService == null) { juego.Ui.WriteLine("[ADMIN] EncuentrosService no inicializado."); return; }
@@ -231,7 +777,7 @@ namespace MiJuegoRPG.Motor.Menus
         {
             if (juego.encuentrosService == null) { juego.Ui.WriteLine("[ADMIN] EncuentrosService no inicializado."); return; }
             int n = juego.encuentrosService.LimpiarCooldowns(soloVencidos);
-            juego.Ui.WriteLine(soloVencidos ? $"[ADMIN] Eliminados cooldowns vencidos: {n}" : $"[ADMIN] Eliminados TODOS los cooldowns: {n}");
+            juego.Ui.WriteLine(soloVencidos ? $"[ADMIN] Eliminados cooldowns vencidos: {n}" : $"[ADMIN] Eliminados TODOS los cooldowns: {n}");   
         }
 
         private void AjustarNivelAdmin(Personaje.Personaje pj, int delta)
@@ -369,7 +915,7 @@ namespace MiJuegoRPG.Motor.Menus
                 string nombre = tipo.GetProperty("Nombre")?.GetValue(def)?.ToString() ?? "?";
                 if (pj.TieneClase(nombre)) continue;
                 var razones = MotivosBloqueoClase(pj, def);
-                juego.Ui.WriteLine("- " + nombre + (razones.Count == 0 ? " (emergente no alcanzada)" : ": " + string.Join("; ", razones)));
+                juego.Ui.WriteLine("- " + nombre + (razones.Count == 0 ? " (emergente no alcanzada)" : ": " + string.Join("; ", razones)));      
             }
         }
 
@@ -570,7 +1116,7 @@ namespace MiJuegoRPG.Motor.Menus
             if (string.IsNullOrWhiteSpace(nombre)) { juego.Ui.WriteLine("Nombre vacío."); return; }
 
             // Obtener definiciones mediante reflexión
-            var campoDefs = typeof(Motor.Servicios.ClaseDinamicaService).GetField("defs", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                var campoDefs = typeof(Motor.Servicios.ClaseDinamicaService).GetField("defs", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
             if (campoDefs == null) { juego.Ui.WriteLine("No se pudieron leer definiciones de clases."); return; }
             var defs = campoDefs.GetValue(juego.claseService) as System.Collections.IEnumerable;
             if (defs == null) { juego.Ui.WriteLine("Sin definiciones cargadas."); return; }
@@ -651,7 +1197,7 @@ namespace MiJuegoRPG.Motor.Menus
                         string nombre = tipo.GetProperty("Nombre")?.GetValue(def)?.ToString() ?? "?";
                         if (pj.TieneClase(nombre)) continue;
                         var razones = MotivosBloqueoClase(pj, def);
-                        sb.AppendLine("- " + nombre + (razones.Count == 0 ? " (emergente no alcanzada)" : ": " + string.Join("; ", razones)));
+                        sb.AppendLine("- " + nombre + (razones.Count == 0 ? " (emergente no alcanzada)" : ": " + string.Join("; ", razones)));   
                     }
                 }
 

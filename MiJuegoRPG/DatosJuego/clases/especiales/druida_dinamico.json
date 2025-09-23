@@ -1,0 +1,14 @@
+{
+  "Nombre": "Druida",
+  "Categoria": "Mixta",
+  "Rareza": "Epica",
+  "Oculta": true,
+  "ClasesPrevias": ["Sacerdote", "Mago"],
+  "NivelMinimo": 14,
+  "AtributosRequeridos": { "Sabiduria": 18, "Inteligencia": 15 },
+  "EstadisticasRequeridas": { "PoderElemental": 10 },
+  "MisionesRequeridas": ["Bendición del Bosque"],
+  "AtributosGanados": { "Fuerza": 4, "Vitalidad": 3, "Carisma": -2 },
+  "Tier": 3,
+  "Rama": "Hibrida"
+}

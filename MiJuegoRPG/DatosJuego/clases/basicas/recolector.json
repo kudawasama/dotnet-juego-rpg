@@ -1,0 +1,13 @@
+{
+  "Nombre": "Recolector",
+  "Categoria": "Profesión",
+  "Rareza": "Comun",
+  "Oculta": false,
+  "ClasesPrevias": [],
+  "NivelMinimo": 3,
+  "AtributosRequeridos": {"Percepción": 4, "Agilidad": 3},
+  "EstadisticasRequeridas": {},
+  "MisionesRequeridas": ["Recolectar 10 flores"],
+  "ReputacionMinima": 0,
+  "AtributosGanados": {"Percepción": 2, "Agilidad": 1}
+}

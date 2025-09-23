@@ -1,0 +1,21 @@
+﻿{
+  "Nombre": "Cinturon de Cuero",
+  "BonificacionCarga": 5,
+  "BonificacionCargaMin": 4,
+  "BonificacionCargaMax": 6,
+  "Nivel": 1,
+  "NivelMin": 1,
+  "NivelMax": 2,
+  "TipoObjeto": "Cinturon",
+  "Rareza": "Normal",
+  "RarezasPermitidasCsv": "Pobre, Normal, Superior",
+  "Perfeccion": 50,
+  "PerfeccionMin": 45,
+  "PerfeccionMax": 65,
+  "Valor": 6,
+  "ValorVenta": 2,
+  "Peso": 0.5,
+  "Durabilidad": 30,
+  "Descripcion": "Cinturón básico de cuero curtido. Aumenta ligeramente la carga soportada.",
+  "Tags": ["cinturon", "cuero"]
+}

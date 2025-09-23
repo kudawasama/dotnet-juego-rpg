@@ -1,0 +1,18 @@
+{
+  "Nombre": "Minero",
+  "Categoria": "Profesión",
+  "Rareza": "Comun",
+  "Oculta": false,
+  "ClasesPrevias": [],
+  "NivelMinimo": 3,
+  "AtributosRequeridos": { "Fuerza": 4, "Vitalidad": 3 },
+  "MisionesRequeridas": ["Extraer 10 minerales"],
+  "AtributosGanados": { "Fuerza": 2, "Vitalidad": 1 },
+  "ActividadRequerida": { "Recoleccion.Minar": 20 },
+  "Bonificadores": {
+    "Energia.ModAccion.Minar": -0.15,
+    "Drop.Mineral.RarezaBonus": 0.05
+  },
+  "Tier": 1,
+  "Rama": "Oficio"
+}

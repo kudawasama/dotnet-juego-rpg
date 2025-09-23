@@ -33,6 +33,7 @@ También puedes usar las tareas de VS Code del workspace:
 - Build: "Build .NET project" → `dotnet build`
 - Tests: "Compilar y ejecutar pruebas" → `dotnet test --nologo`
 - Ejecutar juego: "Compilar y ejecutar juego para probar nombres de sectores"
+ - Ejecutar TestGeneradorObjetos: "Ejecutar TestGeneradorObjetos" → `dotnet run --project MiJuegoRPG.csproj --no-build`
 
 ## Referencia de CLI y herramientas
 
@@ -143,6 +144,16 @@ Este índice es la fuente única de verdad (SSOT) para estudiar el proyecto. Los
 - Roadmap (plan/estado): [Roadmap.md](./Roadmap.md)
 - Bitácora (historial cronológico): [Bitacora.md](./Bitacora.md)
 - Ejemplos prácticos (principiantes): [Guia_Ejemplos.md](./Guia_Ejemplos.md)
+
+### Organización de datos de habilidades
+
+- Carpeta: `MiJuegoRPG/DatosJuego/habilidades/**`
+- Formatos soportados por el loader:
+	- Lista agregada (array) con múltiples habilidades.
+	- Un archivo por habilidad (objeto) en subcarpetas temáticas (p. ej., `Hab_Fisicas/GolpeFuerte.json`).
+- Recomendado: per-file para facilitar edición y revisión.
+
+Última actualización: 2025-09-22
 
 Política de no duplicación:
 

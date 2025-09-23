@@ -409,5 +409,37 @@
     },
     "Tier": 2,
     "Rama": "Hibrida"
+  },
+  {
+    "Nombre": "Maestro del Juego",
+    "Categoria": "Especial",
+    "Rareza": "Unica en el Universo",
+    "Oculta": true,
+    "ClasesPrevias": [],
+    "NivelMinimo": 0,
+    "AtributosRequeridos": { },
+    "EstadisticasRequeridas": { },
+    "MisionesRequeridas": [],
+    "ReputacionMinima": 0,
+    "MisionUnica": "",
+    "ObjetoUnico": "",
+    "AtributosGanados": { "Fuerza": 9999, "Inteligencia": 9999, "Agilidad": 9999, "Sabiduria": 9999, "Fe": 9999, "Carisma": 9999, "Suerte": 9999, "Vitalidad": 9999 },
+    "Tier": 99,
+    "Bonificadores": {
+      "XP.Combate.Mult": 1.0,
+      "XP.Recoleccion.Mult": 1.0,
+      "XP.Craft.Mult": 1.0,
+      "Drop.RarezaBonus": 0.50,
+      "Energia.Max": 1000,
+      "Energia.Recuperacion.Base": 50,
+      "Ataque": 1000,
+      "Defensa": 1000,
+      "PoderMagico": 1000,
+      "Critico": 50,
+      "Evasion": 50
+    },
+    "HabilidadEspecial": "Control total del juego y sus mecánicas.",
+    "Descripcion": "La clase definitiva que otorga poderes ilimitados dentro del juego.",
+    "Rama": "Dios"
   }
 ]

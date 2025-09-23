@@ -1,0 +1,12 @@
+{
+  "Nombre": "Archimago",
+  "Categoria": "Magica",
+  "Rareza": "Legendaria",
+  "Oculta": true,
+  "ClasesPrevias": ["Mago", "Hechicero"],
+  "NivelMinimo": 25,
+  "AtributosRequeridos": {"Inteligencia": 40, "Sabiduría": 30},
+  "ReputacionMinima": 50,
+  "ObjetoUnico": "Grimorio Supremo",
+  "AtributosGanados": {"Fuerza": 5, "Vitalidad": 4, "Inteligencia": -2}
+}

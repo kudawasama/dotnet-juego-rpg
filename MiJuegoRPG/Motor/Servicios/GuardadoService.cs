@@ -15,6 +15,7 @@ namespace MiJuegoRPG.Motor.Servicios
     private readonly string rutaCooldowns;
     private readonly string rutaEncuentrosCooldowns;
     private readonly string rutaDropsUnicos;
+    private readonly string rutaProgresoAcciones;
 
         public GuardadoService(string? rutaDb = null)
         {
@@ -23,6 +24,7 @@ namespace MiJuegoRPG.Motor.Servicios
             rutaCooldowns = PathProvider.PjDatosPath("cooldowns_nodos.json");
             rutaEncuentrosCooldowns = PathProvider.PjDatosPath("cooldowns_encuentros.json");
             rutaDropsUnicos = PathProvider.PjDatosPath("drops_unicos.json");
+            rutaProgresoAcciones = PathProvider.PjDatosPath("progreso_acciones.json");
         }
 
         public void Guardar(Personaje.Personaje pj)
@@ -59,6 +61,17 @@ namespace MiJuegoRPG.Motor.Servicios
                 catch (Exception exD)
                 {
                     Console.WriteLine($"[Guardado] No se pudieron guardar drops únicos: {exD.Message}");
+                }
+                // Guardar progreso de acciones por habilidad (persistencia ligera fuera de SQLite para facilitar QA)
+                try
+                {
+                    var mapa = pj.ProgresoAccionesPorHabilidad ?? new Dictionary<string, Dictionary<string,int>>();
+                    var jsonP = System.Text.Json.JsonSerializer.Serialize(mapa, new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
+                    System.IO.File.WriteAllText(rutaProgresoAcciones, jsonP);
+                }
+                catch (Exception exP)
+                {
+                    Console.WriteLine($"[Guardado] No se pudo guardar progreso de acciones: {exP.Message}");
                 }
                 if (Verbose) Console.WriteLine($"[Guardado] Personaje '{pj.Nombre}' guardado.");
             }
@@ -115,6 +128,20 @@ namespace MiJuegoRPG.Motor.Servicios
                         catch (Exception exD)
                         {
                             Console.WriteLine($"[Guardado] No se pudieron restaurar drops únicos: {exD.Message}");
+                        }
+                        // Restaurar progreso de acciones por habilidad (si existe)
+                        try
+                        {
+                            if (pj != null && System.IO.File.Exists(rutaProgresoAcciones))
+                            {
+                                var jsonP = System.IO.File.ReadAllText(rutaProgresoAcciones);
+                                var mapa = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, Dictionary<string,int>>>(jsonP);
+                                if (mapa != null) pj.ProgresoAccionesPorHabilidad = new Dictionary<string, Dictionary<string,int>>(mapa, StringComparer.OrdinalIgnoreCase);
+                            }
+                        }
+                        catch (Exception exP)
+                        {
+                            Console.WriteLine($"[Guardado] No se pudo restaurar progreso de acciones: {exP.Message}");
                         }
                     }
                     catch (Exception exCd)

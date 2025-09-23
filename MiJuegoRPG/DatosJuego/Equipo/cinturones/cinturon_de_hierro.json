@@ -1,0 +1,21 @@
+﻿{
+  "Nombre": "Cinturon de Hierro",
+  "BonificacionCarga": 13,
+  "BonificacionCargaMin": 12,
+  "BonificacionCargaMax": 15,
+  "Nivel": 2,
+  "NivelMin": 2,
+  "NivelMax": 3,
+  "TipoObjeto": "Cinturon",
+  "Rareza": "Normal",
+  "RarezasPermitidasCsv": "Normal, Superior, Rara",
+  "Perfeccion": 60,
+  "PerfeccionMin": 50,
+  "PerfeccionMax": 75,
+  "Valor": 18,
+  "ValorVenta": 6,
+  "Peso": 0.9,
+  "Durabilidad": 45,
+  "Descripcion": "Cinturón reforzado con hebilla de hierro. Buena capacidad de carga.",
+  "Tags": ["cinturon", "hierro"]
+}

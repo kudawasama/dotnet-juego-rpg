@@ -1,0 +1,13 @@
+﻿{
+  "Nombre": "Anillo de Proteccion",
+  "BonificacionAtaque": 0,
+  "BonificacionDefensa": 5,
+  "NivelMin": 1,
+  "NivelMax": 5,
+  "TipoObjeto": "Accesorio",
+  "Rareza": "Normal",
+  "RarezasPermitidasCsv": "Rota,Pobre,Normal,Superior,Rara,Legendaria,Ornamentada",
+  "PerfeccionMin": 10,
+  "PerfeccionMax": 100,
+  "Descripcion": "Un anillo sencillo que aporta defensa adicional. Escala con la perfección y la rareza."
+}

@@ -12,5 +12,22 @@
     "Beneficio": "+10% daño con espadas",
     "Mejoras": ["+20% si derrotas 200 enemigos", "Probabilidad de crítico si Destreza > 12"],
     "Oculta": true
+  },
+  {
+    "Id": "GolpeGM",
+    "Nombre": "Golpe de la destrucción",
+    "Tipo": "Activa",
+    "Categoria": "Fisica",
+    "Descripcion": "Golpea fuerte con el puño causando +99999999 al ataque.",
+    "AtributosNecesarios": { "Fuerza": 9999, "Agilidad": 9999, "Destreza": 9999 },
+    "Condiciones": [
+      
+    ],
+    "Beneficio": "+99999999 al ataque físico",
+    "Mejoras": ["Permite aturdir al objetivo si la Fuerza supera 10"],
+    "Oculta": true,
+    "Exp": 0,
+    "CostoMana": 10
+    
   }
 ]

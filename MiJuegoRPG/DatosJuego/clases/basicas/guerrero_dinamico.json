@@ -1,0 +1,32 @@
+{
+    "Nombre": "Guerrero",
+    "Categoria": "Fisica",
+    "Rareza": "Comun",
+    "Oculta": true,
+    "ClasesPrevias": ["Aprendiz de Soldado"],
+    "NivelMinimo": 10,
+
+    "AtributosRequeridos": 
+        { 
+            "Fuerza": 12 
+        },
+    "EstadisticasRequeridas": 
+        { 
+            "Critico": 2, 
+            "Ataque": 5 
+        },
+    "MisionesRequeridas": ["Prueba de Valor"],
+    "AtributosGanados": 
+        { 
+            "Fuerza": 2, 
+            "Vitalidad": 2, 
+            "Inteligencia": -1, 
+            "Fe": -1 
+        },
+
+    "ActividadRequerida": { "Combate.AtaquesEspada": 40 },
+
+    "Tier": 1,
+    "Rama": "Combate"
+
+}

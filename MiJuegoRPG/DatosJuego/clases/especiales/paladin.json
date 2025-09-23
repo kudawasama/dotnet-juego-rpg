@@ -1,0 +1,13 @@
+{
+  "Nombre": "Paladín",
+  "Categoria": "Mixta",
+  "Rareza": "Epica",
+  "Oculta": true,
+  "ClasesPrevias": ["Guerrero", "Sacerdote"],
+  "NivelMinimo": 12,
+  "AtributosRequeridos": {"Fuerza": 18, "Fe": 15},
+  "EstadisticasRequeridas": {"DefensaFisica": 10},
+  "MisionesRequeridas": ["Defensa de la Ciudadela"],
+  "ReputacionMinima": 30,
+  "AtributosGanados": {"Agilidad": 2, "Suerte": 2, "Fuerza": -1}
+}

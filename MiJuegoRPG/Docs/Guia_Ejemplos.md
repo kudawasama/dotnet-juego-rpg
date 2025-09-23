@@ -79,3 +79,17 @@ if (eventoGlobal == "Invasión goblin")
 - Usa el menú Admin para probar sistemas rápidamente.
 - Activa el logger con `--log-level=debug` cuando quieras ver más detalle.
 - Para datos de prueba, usa validadores y herramientas de QA desde CLI.
+
+## Menú Admin y atajos útiles
+
+- Opción 21: Cambiar clase ACTIVA (no rebonifica). Útil para probar builds sin alterar bonos.
+- Opción 22: Dar objeto/equipo/material por nombre. Acepta `tipo:nombre` o solo nombre; muestra coincidencias y permite equipar.
+- Atajo GM: escribe `gm:set` para recibir y equipar el set completo GM (útil para QA extremo).
+
+## Habilidades por archivo y uso en combate
+
+- Organización recomendada: un archivo por habilidad bajo `DatosJuego/habilidades/<tema>/` (ej.: `Hab_Fisicas/GolpeFuerte.json`).
+- El juego mapea habilidades aprendidas a acciones de combate automáticamente (`HabilidadAccionMapper`).
+- En combate, usa la opción "Habilidad" para ver las que son usables con su coste/CD; al usarlas, ganan EXP y pueden evolucionar si cumplen condiciones.
+
+Última actualización: 2025-09-22

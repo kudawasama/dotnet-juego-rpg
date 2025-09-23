@@ -1,16 +1,49 @@
-<!-- markdownlint-disable MD003 -->
+# Mapa
+
+## QoL Menú Administrador (clases y QA de objetos)
+
+- Completo: listado de clases con separación desbloqueadas/disponibles/bloqueadas y motivos.
+- Completo: forzar clase con selector (índice o nombre) y aplicación de bonos.
+- Completo: si la clase ya está desbloqueada, opción de Retomar como ACTIVA (sin volver a sumar bonos) o Reaplicar bonos iniciales (acumulativo) con confirmación; el listado marca [ACTIVA].
+- Completo: opción 21 en MenuAdmin para cambiar la clase ACTIVA entre las desbloqueadas SIN rebonificar (solo cambia `Clase.Nombre` y recalcula stats preservando el % de Maná).
+- Completo: auto-activación al cargar partida si `Clase==null` y existen `ClasesDesbloqueadas` (elige la primera por orden alfabético). Mensaje UI informativo.
+
+- Completo: opción 22 en MenuAdmin para dar objeto/equipo/material/poción por nombre. Busca en catálogos cargados desde JSON (GeneradorObjetos/GestorMateriales/GestorPociones), muestra coincidencias y permite entregar y equipar inmediatamente (para equipo). Pensado para QA y verificación de data.
+  - Nota: Se fortaleció el loader per-item (`GeneradorObjetos.CargarListaDesdeCarpeta<T>`) para soportar JSON objeto o lista, y se ajustaron rutas/fallbacks de `GestorPociones`/`GestorMateriales` usando `PathProvider`.
+
+Actualización 2025-09-21
+
+------------------------
+
+- Fix: Bonificadores de equipo no-arma aplicados correctamente.
+  - `Armadura`, `Botas`, `Pantalon`, `Cinturon`, `Collar` ahora implementan `IBonificadorEstadistica`.
+  - Mapeo de claves estandarizado (case-insensitive): Defensa = {"Defensa", "DefensaFisica", "Defensa Física"}; Carga = {"Carga"}; Recursos = {"Energia", "Mana"}.
+  - Resultado: el set GM aporta sus defensas/carga/recursos al personaje al equiparse.
+
+- Mejora: Set GM reforzado y parametrizado (v2 per-item)
+  - Se bloquearon `NivelMin/Max=200` y `PerfeccionMin/Max=100` en Casco/Botas/Pantalón/Cinturón/Collar/Armadura GM.
+  - Valores elevados coherentes con su rol QA: Armadura 80k DEF, Casco 30k, Pantalón 30k, Botas 25k; Collar +20k DEF y +50k Energía; Cinturón +15k Carga.
+  - Descripciones actualizadas para reflejar uso de pruebas. Loader per-item ya los toma sin advertencias.
+  - Nuevo: piezas de equipo no-arma pueden otorgar habilidades desde JSON (`HabilidadesOtorgadas`) y se añadió un bono de set GM simple (2/4/6 piezas: +DEF/+ATK/+Mana y Energía) aplicado en runtime.
+  - Nuevo (data-driven): Sistema de sets por JSON. `SetBonusService` carga `DatosJuego/Equipo/sets/*.json` y aplica bonos/habilidades por umbral. El set GM fue definido en `sets/GM.json`. Las habilidades otorgadas por equipo/sets son TEMPORALES y se remueven al desequipar/bajar umbral.
+  - Nuevo (unificación habilidades): Habilidades de equipo/sets se instancian desde el catálogo JSON si existen (`HabilidadCatalogService`), trayendo evoluciones/requisitos. Si no existen en data, se crea progreso mínimo. `SubirNivel` intenta desbloquear automáticamente habilidades elegibles básicas.
+
+### Estado migración Equipo v2
+
+- Armas: Soportado por generador; múltiples JSON migrados. Faltan algunos para completar al 100%.
+- No-armas (armaduras, botas, cinturones, collares, pantalones): Generador soporta v2; JSONs principales migrados.
+- Accesorios (anillos): MIGRADO — `anillo_de_poder.json`, `anillo_de_proteccion.json` adoptan Rareza Normal, rangos de Perfección/Nivel y `RarezasPermitidasCsv`.
+
+Siguientes tareas relacionadas:
+
+- [ ] Agregar validador de datos de equipo (coherencia de rangos, rarezas válidas, nombres duplicados).
+- [ ] Completar migración de cualquier JSON restante y añadir tests de regresión para el generador.
+
 PLAN DE REFACTORIZACIÓN Y PROGRESO
+
 ==================================
 
 ## Estado actual (resumen)
-
-- Progreso estimado: 31/221 Hecho, 13/221 Parcial, 177/221 Pendiente (~14%).
-- Sistemas base listos: ProgressionService, RandomService, PathProvider, GuardadoService y EventBus integrados.
-- UI desacoplada: `IUserInterface` implementada con `ConsoleUserInterface` y `SilentUserInterface`; menús principales migrados.
-- Combate: pipeline en progreso (`DamageResolver` con evasión/crit metadata), acciones básicas físicas/mágicas y uso de pociones integrados.
-- Mundo y recolección: biomas con nodos hidratados por data; energía y rarezas operativas; encuentros data-driven con gating por kills/hora y cooldowns.
-- Enemigos data-driven: estructura por bioma/nivel/categoría implementada para Bosque `nivel_1_3` con cuotas cumplidas; validador de datos activo.
-- Documentación: `Docs/Bitacora.md` separada del Roadmap; arquitectura ampliada; tareas y estándares definidos en chatmode.
 
 Más detalle en el snapshot extenso al final de este archivo: ver sección "ESTADO ACTUAL (snapshot)".
 
@@ -21,6 +54,55 @@ Formato columnas: [ID] Estado | Área | Descripción breve | Próxima acción
 Estados posibles: Pendiente, En curso, Parcial, Hecho, Bloqueado
 
 Legend inicial: Solo la 1.x se empieza ahora para evitar cambios masivos de golpe.
+
+Novedades clave recientes (2025-09-22)
+
+
+
+### 7.a Sistema de Acciones data-driven (nuevo)
+
+
+Tareas:
+
+
+--------------------------------------
+
+## 2025-09-23 — Modularización de clases (normales y dinámicas)
+
+- Todas las clases del juego se migraron a archivos individuales `.json` en subcarpetas por tipo (`basicas`, `avanzadas`, `especiales`), tanto para clases normales como dinámicas.
+- **Clases normales**: referencia base para progresión y balance.
+- **Clases dinámicas**: variantes adaptativas para requisitos, habilidades o condiciones especiales.
+- Se recomienda mantener ambos tipos de archivos por ahora, permitiendo que el sistema de carga/prioridad decida cuál usar según el flujo del juego.
+- No se eliminó ningún archivo de clase existente; solo se modularizó y documentó la diferencia.
+
+Actualización 2025-09-23
+- [ ] 7.a.2 Implementar `AccionRegistry`/`ProgressionTracker` con `RegistrarAccion(string)` y persistencia mínima.
+- [ ] 7.a.3 Integrar llamadas a `RegistrarAccion` en puntos clave: combate (mover+ataque), NPC (diálogo/observar/robo), mundo (explorar), crafteo/recolección.
+- [ ] 7.a.4 Añadir tests: progreso y desbloqueo al cumplir `Cantidad`; no-progreso cuando `accionId` desconocido; determinismo con seed.
+- [ ] 7.a.5 Documentar contrato de acciones y convenciones en `Docs/Arquitectura_y_Funcionamiento.md`.
+
+### 7.b Sistema de Acciones — Implementación (Fase 1 · MVP)
+
+- Alcance: servicio central para registrar acciones, mapeo a condiciones de habilidades y desbloqueo, persistencia ligera y 3 hooks iniciales (combate, NPC, mundo). UI sutil (pistas), sin exponer requisitos exactos.
+- Afecta a: `Motor/Servicios` (nuevo `AccionRegistry` o `ProgressionTracker`), `CombatePorTurnos`, `MenuFueraCiudad/ExplorarSector`, `NPC`/`MotorEventos`, `GuardadoService`, `HabilidadCatalogService` (lectura de condiciones) y tests.
+- Datos requeridos: `DatosJuego/acciones/acciones_catalogo.json` (existente) y habilidades con `Condiciones[]` que incluyan `{ "Tipo": "accion", "Accion": "<id>", "Cantidad": N }`.
+
+Tareas (MVP):
+
+- [x] 7.b.1 Contrato del servicio: `RegistrarAccion(string accionId, Personaje pj, object? contexto=null)` y helpers `GetProgreso(pj, habilidadId, accionId)`.
+- [x] 7.b.2 Implementación del servicio: búsqueda de condiciones por acción, suma de progreso, verificación de umbrales y disparo de desbloqueo (vía `HabilidadCatalogService`). Respeto por progresión lenta (incrementos pequeños y no retroactivos).
+- [x] 7.b.3 Persistencia: guardar/leer `ProgresoAccionesPorHabilidad` dentro del save del personaje (estructura compacta `{ habilidadId: { accionId: cantidad } }`). Backward compatible.
+- [x] 7.b.4 Hooks iniciales: Combate (detectar movimiento+ataque → `CorrerGolpear`), NPC (ver ficha → `ObservarNPC`), Mundo (primer descubrimiento de sector → `ExplorarSector`). Opcional: `Craftear`, `Recolectar` si ya hay eventos/listeners.
+- [ ] 7.b.5 UI/Telemetría: logs de debug opcionales y mensajes sutiles de “algo cambió” con frecuencia limitada (cooldown de hint) para evitar spam.
+- [x] 7.b.6 Pruebas: unitarias del servicio (mínimas). Pendiente: integración end-to-end con habilidad oculta de demo.
+
+Criterios de aceptación (Fase 1):
+
+- Build PASS; Tests PASS incluyendo nuevos de acciones.
+- Registrar `CorrerGolpear` N veces desbloquea una habilidad que lo requiera (p. ej., `embestida` en datos de demo si está definida; si no, usar una habilidad de pruebas en `habilidades_mapper_demo.json`).
+- Progreso persiste en el guardado del personaje y no se rompe con saves previos.
+- No hay impresiones ruidosas en consola; hints sutiles activables.
+- Documentación sincronizada (Bitácora + Arquitectura: contrato y ejemplos).
 
 ## Tabla de contenidos
 
@@ -57,6 +139,7 @@ Legend inicial: Solo la 1.x se empieza ahora para evitar cambios masivos de golp
 
 - [5.8] Pipeline de daño (etapa A): chequeo de acierto (Precision vs Evasion) ya integrado de forma opcional en `DamageResolver`. El `Ataque Mágico` ahora también fluye por el resolver (sin paso de precisión) unificando metadatos y mensajería. NUEVO: penetración integrada (reducción de defensa efectiva antes de mitigaciones) detrás del flag `--penetracion`.
 - [9.8] Tests pipeline combate: cobertura base creada (hit/miss/crit) con `RandomService.SetSeed` y dummies deterministas; verificación del orden en daño mágico (Defensa→Mitigación→Resistencia→Vulnerabilidad) y físico (Defensa→Mitigación). NUEVO: pruebas de penetración física y mágica (defensa reducida antes de mitigaciones/resistencias) y gating por toggle. Añadidos casos de interacción Crítico + Penetración (físico y mágico) validando `DanioReal` y `FueCritico`. p_hit integra penalización de Supervivencia cuando `--precision-hit` está activo (ver 27.4), pendiente añadir tests dedicados.
+  Nota: Se endureció `HabilidadesYSetsLifecycleTests` para validar progreso por nivel de habilidad en lugar de desbloqueos de evolución específicos, reduciendo fragilidad por cambios de datos.
 - [5.10]/[3.4] Integrar stats de combate: usar `Precision`, `CritChance`, `CritMult`, `Penetracion` de `Estadisticas` (defaults ya presentes) y parametrizar en JSON (`progression.json`) las curvas/caps. Añadir caps sugeridos en `Docs/progression_config.md`.
 - [5.13] Mensajería unificada: canalizar todos los mensajes de combate vía `ResultadoAccion` para evitar duplicados.
 - [5.14] Texto de combate didáctico/expresivo: ampliar los mensajes de combate para explicar brevemente el cálculo (mitigación, resistencias, vulnerabilidades, crítico y penetración) y el porqué del daño final con ejemplos tipo "Jugador hace 12 de daño; Enemigo reduce 20% por defensa y 10% por mitigación". Integrado un primer formateador en `DamageResolver` y toggle `--combat-verbose` para controlar la verbosidad.
@@ -65,6 +148,7 @@ Legend inicial: Solo la 1.x se empieza ahora para evitar cambios masivos de golp
   Avance 2 (tests): se añadieron pruebas que validan presencia del detalle didáctico cuando está ON (físico y mágico) y ausencia cuando hay evasión/fallo por precisión. Ver `CombatVerboseMessageTests`.
 - [10.6] Validación de datos: extender `DataValidatorService` a esquemas de objetos/drops/armas con rangos y referencias cruzadas.
 - [7.1]/[15.1] Repos JSON: consolidar objetos/materiales/balances bajo `IRepository<T>` con caché e invalidación.
+  Avance relacionado: Loader de equipo por ítem activo con fallback a agregados; migrador `--migrar-equipo` implementado (incluye normalización de armas con esquema legado). Documentado en Bitácora 2025-09-19. NUEVO: pesos de rareza configurables en `DatosJuego/Equipo/rareza_pesos.json`.
 - [5.2] Refactor a cola de acciones en `CombatePorTurnos` tras estabilizar el pipeline.
 - [10.5] Documentación de arquitectura: sección ampliada con fórmulas de estadísticas, encuentros, energía, supervivencia y clases dinámicas (ver `Docs/Arquitectura_y_Funcionamiento.md`).
 
@@ -100,12 +184,12 @@ Legend inicial: Solo la 1.x se empieza ahora para evitar cambios masivos de golp
 
 ## 5. COMBATE
 
-[5.1] Parcial | Dominio | Definir IAccionCombate + ResultadoAccion | Interfaz `IAccionCombate` y DTO `ResultadoAccion` creados. Acciones básicas implementadas: `AtaqueFisicoAccion` y `AtaqueMagicoAccion`. Integración inicial en `CombatePorTurnos` vía menú Habilidad. Acceso al combate desde mundo habilitado: opción "Combatir" en `MenuFueraCiudad` y encuentros aleatorios activos en `ExplorarSector`.
+[5.1] Parcial | Dominio | Definir IAccionCombate + ResultadoAccion | Interfaz `IAccionCombate` y DTO `ResultadoAccion` creados. Acciones básicas implementadas: `AtaqueFisicoAccion` y `AtaqueMagicoAccion`. Integración en `CombatePorTurnos`: menú Habilidad lista habilidades aprendidas usables vía `HabilidadAccionMapper`. Acceso al combate desde mundo habilitado: opción "Combatir" en `MenuFueraCiudad` y encuentros aleatorios activos en `ExplorarSector`.
 [5.2] Pendiente | Dominio | Refactor CombatePorTurnos a cola de acciones | Tras 5.1
 [5.3] Parcial | Estados | Implementar IEfecto (veneno, sangrado, buff) | Base lista: `IEfecto` creado e integrado a `CombatePorTurnos` con tick por turno y expiración; `EfectoVeneno` implementado y aplicable vía acción (coste de maná). Pendiente: sangrado/hemorragia, aturdimiento y buffs; reglas de stacking/resistencias.
 [5.4] Pendiente | Balance | Escalado por velocidad (orden dinámico) | Tras 5.2
 [5.5] Hecho | Flujo | Uso de pociones en combate (selección, confirmación, consumo) | Integrado como `IAccionCombate` (`UsarPocionAccion`) y ejecutado vía helper `TryEjecutarAccion` en `CombatePorTurnos`. Aplica patrón de gating (no perder turno si no hay pociones, selección inválida o cancelación). Mensajería unificada por UI. Tests cubren uso y consumo de stack.
-[5.6] Parcial | Habilidades | Menú “Habilidad” (Ataque Físico/Mágico) con selección de objetivo | MVP integrado en CombatePorTurnos; arquitectura `IAccionCombate` lista (5.1). Pendiente: costes de recursos/cooldowns (17.3) y más acciones.
+[5.6] Hecho (MVP) | Habilidades | Menú “Habilidad” con selección de objetivo | Integrado en `CombatePorTurnos`: lista habilidades aprendidas mapeadas a acciones, muestra coste y cooldown, aplica gating de recursos/cooldowns vía `ActionRulesService` y registra progreso con `GestorHabilidades`. Pendiente: ampliar catálogo de acciones y efectos avanzados.
 
 [5.7] Hecho | Resistencias | Inmunidades/mitigaciones por enemigo | Se añadió a `Enemigo` soporte de `Inmunidades` (por clave, ej. "veneno") y `MitigacionFisicaPorcentaje`/`MitigacionMagicaPorcentaje` aplicadas tras la defensa. `AplicarVenenoAccion` ahora respeta la inmunidad de no-muertos (zombi/esqueleto). Resultado: peleas más duras y coherentes con fantasía de mundo hostil.
 
@@ -278,7 +362,19 @@ Próxima acción:
 - Unificar mensajería al 100% vía `ResultadoAccion` (5.13) y ampliar asserts de texto en pruebas.
 - Integrar pruebas unitarias para `Supervivencia.FactorPrecision` afectando $p_{hit}$ (ya integrado en código) bajo `--precision-hit`.
 - Añadir pruebas que lean `StatsCaps` custom desde `progression.json` para validar clamps data-driven.
- - Extender asserts de verbosidad para contemplar nota de Penetración cuando `--penetracion` está ON.
+- Extender asserts de verbosidad para contemplar nota de Penetración cuando `--penetracion` está ON.
+
+NUEVO — 2025-09-22
+
+- Añadidas pruebas de ciclo de vida de habilidades otorgadas por equipo y de umbrales de set GM en `MiJuegoRPG.Tests/HabilidadesYSetsLifecycleTests.cs`.
+- Cobertura adicional: elegibilidad básica desde `HabilidadCatalogService` y evolución por uso cuando la definición lo permite.
+- Documentación sincronizada: sección dedicada a “Habilidades (modelo unificado)” en `Docs/Arquitectura_y_Funcionamiento.md`.
+
+NUEVO — 2025-09-22 (tarde)
+
+- Mapeo explícito de habilidades a acciones: `HabilidadData` ahora soporta `AccionId` opcional. El `HabilidadAccionMapper` lo prefiere si está presente; si no, usa sinónimos por Id/Nombre. Esto evita ambigüedades y facilita ampliar el catálogo (sangrado, aturdimiento, buffs, curas).
+- Ejemplo en datos: se añadió `DatosJuego/habilidades/habilidades_mapper_demo.json` con la habilidad `descarga_arcana` (`AccionId: "ataque_magico"`, `CostoMana: 8`).
+- Set GM enriquecido: `DatosJuego/Equipo/sets/GM.json` ahora otorga `descarga_arcana` al umbral de 4 piezas (además de los bonos existentes). Las habilidades por set siguen siendo temporales y se limpian al perder piezas.
 [9.9] Pendiente | Test | Estados avanzados | Aplicación/decadencia/stacking de Sangrado/Aturdimiento/Buffs y resistencias.
 [9.10] Pendiente | Test | Supervivencia | Tick de hambre/sed/fatiga/temperatura; penalizaciones por umbral y multiplicadores por contexto/bioma.
 
@@ -345,6 +441,12 @@ Próxima acción:
 
 [15.1] Pendiente | Data | Esquema común de objetos/materiales (JSON) + repositorios | Consolidar GestorArmas/Materiales/Pociones bajo repos JSON; IDs únicos, Rareza, NivelRequerido, BonosAtributo/Stats, DurabilidadBase (opcional). Integrar con PathProvider y validar con 10.6
 [15.2] Hecho | Drops Enemigos | Tablas de botín por enemigo (base) + modificadores por sector/bioma/dificultad | `EnemigoData.Drops` soporta `Tipo/Nombre/Rareza(texto)/Chance/CantidadMin/Max/UniqueOnce`. Runtime: `GeneradorEnemigos` mapea probabilidades + metadatos de cantidad y UniqueOnce; `Enemigo.DarRecompensas` aplica sorteo con clamps anti-farming (máx 3 por kill, 5 para rarezas bajas) y respeta `UniqueOnce` persistiendo claves en `PjDatos/drops_unicos.json` vía `DropsService` integrado en `GuardadoService`. Tests usan `GeneradorEnemigos.DesactivarPersistenciaDrops` para evitar escritura real.
+
+[15.4] Hecho | Loader Equipo por ítem | `DatosJuego/Equipo/` ahora admite subcarpetas por tipo con JSON por ítem (o listas) y carga recursiva. Fallback a archivos agregados (`armas.json`, `Armaduras.json`, etc.) para compatibilidad. Se añadió selección ponderada por Rareza (configurable) para generación aleatoria. Documentación en `DatosJuego/Equipo/README.md`.
+Notas adicionales:
+
+- La selección ponderada por Rareza ahora es data-driven: `rareza_pesos.json` define pesos relativos. Si falta el archivo, se usan defaults conservadores (Rota=50, Pobre=35, Normal=20, Superior=7, Rara=3, Legendaria=1, Ornamentada=1).
+- La base de perfección es Normal=50% para el escalado de valores de equipo (p. ej., daño/defensa/bonificaciones): $valor_{final} = \operatorname{round}(valor_{base} \cdot (Perfeccion/50.0))$.
 [15.3] Pendiente | Drops Mapa | Tablas de botín por sector (cofres/eventos ambientales) | Archivo loot/sectores.json; gating por reputación/llaves/misiones; sincronizar con IDs de sector
 [15.4] Pendiente | Crafteo | Sistema de recetas (recetas.json) + blueprints desbloqueables | Requisitos por atributos/habilidad/misiones; coste de energía/tiempo; chance de fallo; calidad resultante; estaciones de trabajo por ciudad/ubicación
 [15.5] Pendiente | Desmontaje | Desmontar objetos para recuperar materiales | Rendimiento según skill y estado del objeto; pérdida parcial en fallos; economía anti-exploit
@@ -581,3 +683,19 @@ Bitácora movida: La bitácora de sesiones fue reubicada en `Docs/Bitacora.md`.
 - Se amplió `Arquitectura_y_Funcionamiento.md` con contratos (interfaces/DTOs), pipeline de combate por etapas, referencias cruzadas a `Flujo.txt`, y apéndice de firmas.
 - Mantener política de “fuente única” y enlaces cruzados desde `Docs/README.md`.
 - `Docs/README.md` ahora incluye enlaces profundos directos a secciones específicas de `Flujo.txt` (menús) y de `Arquitectura_y_Funcionamiento.md` (pipeline/contratos), para navegación de un clic.
+
+## 2025-09-20 — Migración Equipo v2 (no-armas)
+
+- Hecho: DTOs y Generador soportan v2 para Armaduras, Botas, Cascos, Cinturones, Collares y Pantalones (campos opcionales `NivelMin/Max`, `PerfeccionMin/Max`, `DefensaMin/Max` o `Bonificacion*Min/Max`, `RarezasPermitidasCsv`, metadatos).
+- Hecho (datos migrados hoy):
+  
+  - Botas: `botas_de_tela*.json` (las de cuero se migraron previamente).
+  - Cinturones: `cinturon_de_cuero*.json`, `cinturon_de_hierro*.json`.
+  - Collares: `collar_de_energia.json`, `collar_de_proteccion.json`.
+  - Pantalones: `pantalon_de_cuero*.json`, `pantalon_de_tela*.json`.
+
+- Pendiente:
+  
+  - Cascos: migrar `DatosJuego/Equipo/cascos/**.json` al esquema v2 siguiendo el patrón de Armadura.
+  - Accesorios (anillos): migrar a v2 opcional (rango nivel/perfección, rarezas permitidas, `Valor/ValorVenta`, `Descripcion`).
+  - Añadir validador de Equipo en `DataValidatorService` (rangos/rareza/duplicados por `Nombre`).

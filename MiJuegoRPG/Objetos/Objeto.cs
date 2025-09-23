@@ -10,6 +10,15 @@ namespace MiJuegoRPG.Objetos
         public string Nombre { get; set; }
         public Rareza Rareza { get; set; }
         public string Categoria { get; set; }
+        /// <summary>
+        /// Identificador opcional de set (para aplicar bonos por umbral de piezas equipadas).
+        /// </summary>
+        public string? SetId { get; set; }
+        /// <summary>
+        /// Habilidades que este objeto otorga mientras está equipado.
+        /// Se llenan desde los DTOs (HabilidadesOtorgadas) en el generador.
+        /// </summary>
+        public List<HabilidadOtorgadaRef>? HabilidadesOtorgadas { get; set; }
 
         public Objeto(string nombre, Rareza rareza = Rareza.Normal, string categoria = "Otro")
         {
@@ -19,5 +28,14 @@ namespace MiJuegoRPG.Objetos
         }
 
         public abstract void Usar(MiJuegoRPG.Personaje.Personaje personaje);
+    }
+
+    /// <summary>
+    /// Referencia ligera a una habilidad otorgada por un equipo.
+    /// </summary>
+    public class HabilidadOtorgadaRef
+    {
+        public string Id { get; set; } = string.Empty;
+        public int NivelMinimo { get; set; } = 1;
     }
 }

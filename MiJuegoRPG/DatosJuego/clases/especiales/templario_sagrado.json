@@ -1,0 +1,12 @@
+{
+  "Nombre": "Templario Sagrado",
+  "Categoria": "Divina",
+  "Rareza": "Divina",
+  "Oculta": true,
+  "ClasesPrevias": ["Paladín", "Clérigo"],
+  "NivelMinimo": 28,
+  "AtributosRequeridos": {"Fe": 35, "Fuerza": 30},
+  "ReputacionMinima": 80,
+  "MisionUnica": "Defender el Santuario",
+  "AtributosGanados": {"Fe": 5, "Inteligencia": 4, "Suerte": -2}
+}

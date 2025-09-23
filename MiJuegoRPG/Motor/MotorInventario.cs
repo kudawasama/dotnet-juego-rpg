@@ -106,36 +106,43 @@ namespace MiJuegoRPG.Motor
                 {
                     juego.jugador.Inventario.Equipo.Arma = arma;
                     ui.WriteLine($"Has equipado {arma.Nombre} como arma.");
+                    juego.jugador.Inventario.SincronizarHabilidadesYBonosSet(juego.jugador);
                 }
                 else if (objCant.Objeto.Categoria == "Casco")
                 {
                     juego.jugador.Inventario.Equipo.Casco = objCant.Objeto;
                     ui.WriteLine($"Has equipado {objCant.Objeto.Nombre} como casco.");
+                    juego.jugador.Inventario.SincronizarHabilidadesYBonosSet(juego.jugador);
                 }
                 else if (objCant.Objeto.Categoria == "Armadura")
                 {
                     juego.jugador.Inventario.Equipo.Armadura = objCant.Objeto;
                     ui.WriteLine($"Has equipado {objCant.Objeto.Nombre} como armadura.");
+                    juego.jugador.Inventario.SincronizarHabilidadesYBonosSet(juego.jugador);
                 }
                 else if (objCant.Objeto.Categoria == "Pantalon")
                 {
                     juego.jugador.Inventario.Equipo.Pantalon = objCant.Objeto;
                     ui.WriteLine($"Has equipado {objCant.Objeto.Nombre} como pantalón.");
+                    juego.jugador.Inventario.SincronizarHabilidadesYBonosSet(juego.jugador);
                 }
                 else if (objCant.Objeto.Categoria == "Botas")
                 {
                     juego.jugador.Inventario.Equipo.Zapatos = objCant.Objeto;
                     ui.WriteLine($"Has equipado {objCant.Objeto.Nombre} como botas.");
+                    juego.jugador.Inventario.SincronizarHabilidadesYBonosSet(juego.jugador);
                 }
                 else if (objCant.Objeto.Categoria == "Collar")
                 {
                     juego.jugador.Inventario.Equipo.Collar = objCant.Objeto;
                     ui.WriteLine($"Has equipado {objCant.Objeto.Nombre} como collar.");
+                    juego.jugador.Inventario.SincronizarHabilidadesYBonosSet(juego.jugador);
                 }
                 else if (objCant.Objeto.Categoria == "Cinturon")
                 {
                     juego.jugador.Inventario.Equipo.Cinturon = objCant.Objeto;
                     ui.WriteLine($"Has equipado {objCant.Objeto.Nombre} como cinturón.");
+                    juego.jugador.Inventario.SincronizarHabilidadesYBonosSet(juego.jugador);
                 }
                 else if (objCant.Objeto.Categoria == "Accesorio")
                 {
@@ -143,11 +150,13 @@ namespace MiJuegoRPG.Motor
                     {
                         juego.jugador.Inventario.Equipo.Accesorio1 = objCant.Objeto;
                         ui.WriteLine($"Has equipado {objCant.Objeto.Nombre} en accesorio 1.");
+                        juego.jugador.Inventario.SincronizarHabilidadesYBonosSet(juego.jugador);
                     }
                     else if (juego.jugador.Inventario.Equipo.Accesorio2 == null)
                     {
                         juego.jugador.Inventario.Equipo.Accesorio2 = objCant.Objeto;
                         ui.WriteLine($"Has equipado {objCant.Objeto.Nombre} en accesorio 2.");
+                        juego.jugador.Inventario.SincronizarHabilidadesYBonosSet(juego.jugador);
                     }
                     else
                     {
@@ -176,14 +185,14 @@ namespace MiJuegoRPG.Motor
                 switch (opcion)
                 {
                     case "1": juego.jugador.Inventario.Equipo.Arma = null; ui.WriteLine("Arma desequipada."); break;
-                    case "2": juego.jugador.Inventario.Equipo.Casco = null; ui.WriteLine("Casco desequipado."); break;
-                    case "3": juego.jugador.Inventario.Equipo.Armadura = null; ui.WriteLine("Armadura desequipada."); break;
-                    case "4": juego.jugador.Inventario.Equipo.Pantalon = null; ui.WriteLine("Pantalón desequipado."); break;
-                    case "5": juego.jugador.Inventario.Equipo.Zapatos = null; ui.WriteLine("Botas desequipadas."); break;
-                    case "6": juego.jugador.Inventario.Equipo.Collar = null; ui.WriteLine("Collar desequipado."); break;
-                    case "7": juego.jugador.Inventario.Equipo.Cinturon = null; ui.WriteLine("Cinturón desequipado."); break;
-                    case "8": juego.jugador.Inventario.Equipo.Accesorio1 = null; ui.WriteLine("Accesorio 1 desequipado."); break;
-                    case "9": juego.jugador.Inventario.Equipo.Accesorio2 = null; ui.WriteLine("Accesorio 2 desequipado."); break;
+                    case "2": juego.jugador.Inventario.Equipo.Casco = null; ui.WriteLine("Casco desequipado."); juego.jugador.Inventario.SincronizarHabilidadesYBonosSet(juego.jugador); break;
+                    case "3": juego.jugador.Inventario.Equipo.Armadura = null; ui.WriteLine("Armadura desequipada."); juego.jugador.Inventario.SincronizarHabilidadesYBonosSet(juego.jugador); break;
+                    case "4": juego.jugador.Inventario.Equipo.Pantalon = null; ui.WriteLine("Pantalón desequipado."); juego.jugador.Inventario.SincronizarHabilidadesYBonosSet(juego.jugador); break;
+                    case "5": juego.jugador.Inventario.Equipo.Zapatos = null; ui.WriteLine("Botas desequipadas."); juego.jugador.Inventario.SincronizarHabilidadesYBonosSet(juego.jugador); break;
+                    case "6": juego.jugador.Inventario.Equipo.Collar = null; ui.WriteLine("Collar desequipado."); juego.jugador.Inventario.SincronizarHabilidadesYBonosSet(juego.jugador); break;
+                    case "7": juego.jugador.Inventario.Equipo.Cinturon = null; ui.WriteLine("Cinturón desequipado."); juego.jugador.Inventario.SincronizarHabilidadesYBonosSet(juego.jugador); break;
+                    case "8": juego.jugador.Inventario.Equipo.Accesorio1 = null; ui.WriteLine("Accesorio 1 desequipado."); juego.jugador.Inventario.SincronizarHabilidadesYBonosSet(juego.jugador); break;
+                    case "9": juego.jugador.Inventario.Equipo.Accesorio2 = null; ui.WriteLine("Accesorio 2 desequipado."); juego.jugador.Inventario.SincronizarHabilidadesYBonosSet(juego.jugador); break;
                     case "0": ui.WriteLine("Cancelado."); break;
                     default: ui.WriteLine("Opción no válida."); break;
                 }

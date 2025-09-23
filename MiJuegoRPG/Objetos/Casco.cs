@@ -36,8 +36,13 @@ namespace MiJuegoRPG.Objetos
         // Implementación de bonificador de estadística
         public double ObtenerBonificador(string estadistica)
         {
-            if (estadistica == "DefensaFisica" || estadistica == "Defensa")
+            if (string.IsNullOrWhiteSpace(estadistica)) return 0;
+            if (estadistica.Equals("Defensa", StringComparison.OrdinalIgnoreCase) ||
+                estadistica.Equals("DefensaFisica", StringComparison.OrdinalIgnoreCase) ||
+                estadistica.Equals("Defensa Física", StringComparison.OrdinalIgnoreCase))
+            {
                 return Defensa;
+            }
             return 0;
         }
     }

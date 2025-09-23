@@ -1,0 +1,13 @@
+{
+  "Nombre": "Aprendiz de Soldado",
+  "Categoria": "Fisica",
+  "Rareza": "Comun",
+  "Oculta": true,
+  "ClasesPrevias": [],
+  "NivelMinimo": 5,
+  "AtributosRequeridos": {},
+  "EstadisticasRequeridas": {},
+  "MisionesRequeridas": [],
+  "ReputacionMinima": 0,
+  "AtributosGanados": {"Fuerza": 1, "Vitalidad": 1}
+}

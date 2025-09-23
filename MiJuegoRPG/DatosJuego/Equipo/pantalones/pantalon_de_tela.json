@@ -1,0 +1,21 @@
+﻿{
+  "Nombre": "Pantalon de Tela",
+  "Defensa": 1,
+  "DefensaMin": 1,
+  "DefensaMax": 2,
+  "Nivel": 1,
+  "NivelMin": 1,
+  "NivelMax": 1,
+  "TipoObjeto": "Pantalon",
+  "Rareza": "Normal",
+  "RarezasPermitidasCsv": "Pobre, Normal",
+  "Perfeccion": 50,
+  "PerfeccionMin": 45,
+  "PerfeccionMax": 60,
+  "Valor": 3,
+  "ValorVenta": 1,
+  "Peso": 0.7,
+  "Durabilidad": 18,
+  "Descripcion": "Pantalón de tela simple. Cómodo y ligero.",
+  "Tags": ["pantalon", "tela"]
+}

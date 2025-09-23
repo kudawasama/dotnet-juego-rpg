@@ -1,0 +1,21 @@
+﻿{
+  "Nombre": "Botas de Tela",
+  "Defensa": 1,
+  "DefensaMin": 1,
+  "DefensaMax": 2,
+  "Nivel": 1,
+  "NivelMin": 1,
+  "NivelMax": 1,
+  "TipoObjeto": "Botas",
+  "Rareza": "Normal",
+  "RarezasPermitidasCsv": "Pobre, Normal",
+  "Perfeccion": 50,
+  "PerfeccionMin": 45,
+  "PerfeccionMax": 60,
+  "Valor": 3,
+  "ValorVenta": 1,
+  "Peso": 0.8,
+  "Durabilidad": 20,
+  "Descripcion": "Demasiado ligeras para combates duros, pero cómodas.",
+  "Tags": ["botas", "tela"]
+}

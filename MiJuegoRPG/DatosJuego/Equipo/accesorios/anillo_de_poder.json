@@ -1,0 +1,13 @@
+﻿{
+  "Nombre": "Anillo de Poder",
+  "BonificacionAtaque": 4,
+  "BonificacionDefensa": 0,
+  "NivelMin": 1,
+  "NivelMax": 4,
+  "TipoObjeto": "Accesorio",
+  "Rareza": "Normal",
+  "RarezasPermitidasCsv": "Rota,Pobre,Normal,Superior,Rara,Legendaria,Ornamentada",
+  "PerfeccionMin": 10,
+  "PerfeccionMax": 100,
+  "Descripcion": "Un anillo sencillo que potencia ligeramente el ataque. Escala con la perfección y la rareza."
+}

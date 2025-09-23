@@ -2,7 +2,7 @@ using System;
 
 namespace MiJuegoRPG.Objetos
 {
-    public class Cinturon : Objeto
+    public class Cinturon : Objeto, MiJuegoRPG.Interfaces.IBonificadorEstadistica
     {
         public string TipoObjeto { get; set; } = "Cinturon";
         public int BonificacionCarga { get; set; }
@@ -27,6 +27,20 @@ namespace MiJuegoRPG.Objetos
         public override void Usar(MiJuegoRPG.Personaje.Personaje personaje)
         {
             Console.WriteLine($"{personaje.Nombre} equipa el cinturón {this.Nombre}.");
+        }
+
+        /// <summary>
+        /// Bonificador de estadísticas para el cinturón.
+        /// Aporta a "Carga" (capacidad de carga). Case-insensitive.
+        /// </summary>
+        public double ObtenerBonificador(string estadistica)
+        {
+            if (string.IsNullOrWhiteSpace(estadistica)) return 0;
+            if (estadistica.Equals("Carga", StringComparison.OrdinalIgnoreCase))
+            {
+                return BonificacionCarga;
+            }
+            return 0;
         }
     }
 }

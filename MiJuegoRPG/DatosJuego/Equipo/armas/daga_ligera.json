@@ -1,0 +1,33 @@
+﻿{
+  "Nombre": "Daga Ligera",
+  "Da\u00F1o": 10,
+  "Da\u00F1oMin": 8,
+  "Da\u00F1oMax": 12,
+  "NivelRequerido": 1,
+  "NivelMin": 1,
+  "NivelMax": 3,
+  "Valor": 0,
+  "ValorVenta": 4,
+  "Tipo": "Daga",
+  "Rareza": "Normal",
+  "RarezasPermitidasCsv": "Pobre, Normal, Superior",
+  "Perfeccion": 50,
+  "PerfeccionMin": 40,
+  "PerfeccionMax": 70,
+  "CriticoProbabilidad": 0.1,
+  "CriticoMultiplicador": 1.5,
+  "Penetracion": 0.06,
+  "Precision": 0.03,
+  "VelocidadAtaque": 1.2,
+  "BonificadoresAtributos": { "Destreza": 1 },
+  "BonificadoresEstadisticas": { "Defensa": 0 },
+  "Efectos": [
+    { "Tipo": "OnHit", "Nombre": "Hemorragia", "Probabilidad": 0.04, "Potencia": 1, "DuracionTurnos": 2 }
+  ],
+  "HabilidadesOtorgadas": [],
+  "Requisitos": { "Destreza": 3, "Nivel": 1 },
+  "Peso": 0.8,
+  "Durabilidad": 45,
+  "Descripcion": "Ligera y rápida, ideal para golpes veloces.",
+  "Tags": ["daga", "ligera"]
+}

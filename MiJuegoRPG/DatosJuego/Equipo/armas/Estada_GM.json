@@ -1,0 +1,66 @@
+﻿{
+  "Nombre": "Estada del Creador",
+  "Daño": 9999,
+  "DañoMin": 9999,
+  "DañoMax": 9999,
+  "NivelRequerido": 1,
+  "NivelMin": 1,
+  "NivelMax": 100,
+  "Valor": 0,
+  "ValorVenta": 0,
+  "Tipo": "Baston",
+  "Rareza": "Legendaria",
+  "RarezasPermitidasCsv": "Legendaria",
+  "Perfeccion": 100,
+  "PerfeccionMin": 100,
+  "PerfeccionMax": 100,
+  "CriticoProbabilidad": 1,
+  "CriticoMultiplicador": 10,
+  "Penetracion": 100,
+  "Precision": 100,
+  "VelocidadAtaque": 10,
+  "BonificadoresAtributos": {
+    "Inteligencia": 999,
+    "Fuerza": 999,
+    "Destreza": 999,
+    "Vitalidad": 999
+  },
+  "BonificadoresEstadisticas": {
+    "Vida": 99999,
+    "Mana": 99999,
+    "Defensa": 9999,
+    "Resistencia": 9999,
+    "Evasion": 9999,
+    "ProbabilidadCritico": 1,
+    "MitigacionCritico": 1,
+    "RegeneracionVida": 999,
+    "RegeneracionMana": 999,
+    "VelocidadMovimiento": 100,
+    "VelocidadAtaque": 10,
+    "Alcance": 10,
+    "ProbabilidadBloqueo": 1,
+    "MitigacionBloqueo": 1,
+    "Ataque": 9999,
+    "Magia": 9999,
+    "Curacion": 9999
+
+  },
+  "Efectos": [
+    { "Tipo": "Especial", "Nombre": "Inmortalidad" },
+    { "Tipo": "Especial", "Nombre": "Destrucción Total" },
+    { "Tipo": "Especial", "Nombre": "Control Absoluto" }
+  ],
+  "HabilidadesOtorgadas": [
+    { "Id": "Crear" },
+    { "Id": "Eliminar" },
+    { "Id": "Modificar" }
+  ],
+  "Requisitos": {
+    "Nivel": 1
+  },
+  "Peso": 0.1,
+  "Durabilidad": -1,
+  "Descripcion": "Arma definitiva del Creador del Juego. Solo el GM puede usarla.",
+  "Tags": ["gm", "creador", "legendario", "divino"],
+  "SetId": "GM"
+}

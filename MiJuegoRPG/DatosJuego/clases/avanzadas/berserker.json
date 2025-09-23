@@ -1,0 +1,13 @@
+{
+  "Nombre": "Berserker",
+  "Categoria": "Fisica",
+  "Rareza": "Rara",
+  "Oculta": true,
+  "ClasesPrevias": ["Guerrero"],
+  "NivelMinimo": 10,
+  "AtributosRequeridos": {"Fuerza": 20, "Vitalidad": 15},
+  "EstadisticasRequeridas": {"Ataque": 10},
+  "MisionesRequeridas": [],
+  "ReputacionMinima": -10,
+  "AtributosGanados": {"Inteligencia": 3, "Sabiduría": 2, "Fuerza": -1}
+}

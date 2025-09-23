@@ -47,12 +47,24 @@ namespace MiJuegoRPG.Objetos
         {
             if (!Path.IsPathRooted(rutaArchivo))
             {
-                var dir = Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory);
-                string rutaBase = dir?.Parent?.Parent != null ? dir.Parent.Parent.FullName : AppDomain.CurrentDomain.BaseDirectory;
-                rutaArchivo = Path.Combine(rutaBase, "MiJuegoRPG", "PjDatos", rutaArchivo);
+                rutaArchivo = MiJuegoRPG.Motor.Servicios.PathProvider.PjDatosPath(rutaArchivo);
             }
             try
             {
+                if (!File.Exists(rutaArchivo))
+                {
+                    // Fallback: DatosJuego/pociones/pociones.json
+                    var alternativa = MiJuegoRPG.Motor.Servicios.PathProvider.PocionesPath(Path.GetFileName(rutaArchivo));
+                    if (File.Exists(alternativa))
+                    {
+                        rutaArchivo = alternativa;
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Error al cargar pociones: No existe el archivo '{rutaArchivo}'");
+                        return;
+                    }
+                }
                 string jsonString = File.ReadAllText(rutaArchivo);
                 var options = new JsonSerializerOptions();
                 options.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());

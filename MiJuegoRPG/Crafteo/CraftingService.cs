@@ -51,6 +51,8 @@ namespace MiJuegoRPG.Crafteo
             }
             jugador.Inventario.AgregarObjeto(receta.ObjetoResultado);
             mensaje = $"¡Has creado {receta.ObjetoResultado.Nombre}!";
+            // Hook de acciones: registrar crafteo exitoso
+            try { if (jugador != null) MiJuegoRPG.Motor.Servicios.AccionRegistry.Instancia.RegistrarAccion("CraftearObjeto", jugador); } catch { }
             return true;
         }
     }

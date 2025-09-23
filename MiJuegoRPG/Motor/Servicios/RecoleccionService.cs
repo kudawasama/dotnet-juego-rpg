@@ -463,6 +463,8 @@ namespace MiJuegoRPG.Motor.Servicios
                 catch { }
                 if (juego.jugador != null)
                     progressionService.AplicarExpRecoleccion(juego.jugador, tipo);
+                // Hook de acciones: registrar recolección exitosa
+                try { if (juego.jugador != null) MiJuegoRPG.Motor.Servicios.AccionRegistry.Instancia.RegistrarAccion("RecolectarMaterial", juego.jugador); } catch { }
                 if (juego.jugador != null)
                 {
                     // Registrar actividad y evaluar clases dinámicas

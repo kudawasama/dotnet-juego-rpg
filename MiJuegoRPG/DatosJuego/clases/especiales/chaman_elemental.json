@@ -1,0 +1,10 @@
+{
+  "Nombre": "Chamán Elemental",
+  "Categoria": "Mixta",
+  "Rareza": "Rara",
+  "ClasesPrevias": ["Druida", "Mago"],
+  "NivelMinimo": 20,
+  "AtributosRequeridos": {"Sabiduría": 25, "Inteligencia": 20},
+  "ReputacionMinima": 15,
+  "AtributosGanados": {"Sabiduría": 4, "Vitalidad": 3, "Carisma": -1}
+}

@@ -1,0 +1,21 @@
+﻿{
+  "Nombre": "Armadura de Hierro",
+  "Defensa": 8,
+  "DefensaMin": 7,
+  "DefensaMax": 9,
+  "Nivel": 2,
+  "NivelMin": 2,
+  "NivelMax": 4,
+  "TipoObjeto": "Armadura",
+  "Rareza": "Normal",
+  "RarezasPermitidasCsv": "Normal, Superior, Rara",
+  "Perfeccion": 50,
+  "PerfeccionMin": 50,
+  "PerfeccionMax": 75,
+  "Valor": 18,
+  "ValorVenta": 9,
+  "Peso": 9.5,
+  "Durabilidad": 85,
+  "Descripcion": "Placas de hierro remachadas; notablemente más resistente que el cuero.",
+  "Tags": ["armadura", "hierro"]
+}

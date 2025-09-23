@@ -1,0 +1,14 @@
+{
+  "Nombre": "Clérigo",
+  "Categoria": "Magica",
+  "Rareza": "Rara",
+  "Oculta": true,
+  "ClasesPrevias": ["Sacerdote"],
+  "NivelMinimo": 8,
+  "AtributosRequeridos": { "Fe": 15, "Sabiduria": 10 },
+  "EstadisticasRequeridas": { "PoderCurativo": 5 },
+  "AtributosGanados": { "Fuerza": 3, "Vitalidad": 2, "Inteligencia": -1 },
+  "ActividadRequerida": { "Combate.HechizosSoporte": 60 },
+  "Tier": 2,
+  "Rama": "Magia"
+}

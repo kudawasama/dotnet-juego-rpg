@@ -1,0 +1,12 @@
+{
+  "Nombre": "Asesino Sombrío",
+  "Categoria": "Fisica",
+  "Rareza": "Unica",
+  "Oculta": true,
+  "ClasesPrevias": ["Guerrero"],
+  "NivelMinimo": 18,
+  "AtributosRequeridos": {"Agilidad": 25, "Suerte": 20},
+  "ReputacionMinima": -30,
+  "MisionUnica": "Eliminar al Rey Bandido",
+  "AtributosGanados": {"Carisma": 3, "Suerte": 2, "Vitalidad": -1}
+}

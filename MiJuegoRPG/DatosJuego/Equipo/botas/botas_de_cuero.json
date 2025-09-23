@@ -1,0 +1,21 @@
+﻿{
+  "Nombre": "Botas de Cuero",
+  "Defensa": 3,
+  "DefensaMin": 2,
+  "DefensaMax": 4,
+  "Nivel": 2,
+  "NivelMin": 2,
+  "NivelMax": 3,
+  "TipoObjeto": "Botas",
+  "Rareza": "Normal",
+  "RarezasPermitidasCsv": "Pobre, Normal, Superior",
+  "Perfeccion": 50,
+  "PerfeccionMin": 45,
+  "PerfeccionMax": 65,
+  "Valor": 7,
+  "ValorVenta": 3,
+  "Peso": 1.8,
+  "Durabilidad": 35,
+  "Descripcion": "Botas firmes de cuero curtido.",
+  "Tags": ["botas", "cuero"]
+}

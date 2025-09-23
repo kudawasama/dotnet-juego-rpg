@@ -1,0 +1,20 @@
+{
+	"id": "hierba_curativa",
+	"nombre": "Hierba Curativa",
+	"descripcion": "Una planta común utilizada en pociones de curación básica.",
+	"rareza": "comun",
+	"categoria": "planta",
+	"especialidad": "alquimista",
+	"nivel_requerido": 1,
+	"valor_base": 5,
+	"efectos": [
+		{
+			"tipo": "curacion",
+			"potencia": 10,
+			"descripcion": "Aumenta la eficacia de pociones de curación."
+		}
+	],
+	"tags": ["curacion", "basico", "recoleccion"],
+	"origen": "Praderas, Bosques",
+	"stack_max": 99
+}

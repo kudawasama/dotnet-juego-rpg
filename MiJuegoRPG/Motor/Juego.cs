@@ -742,6 +742,8 @@ namespace MiJuegoRPG.Motor
                 jugador.AtributosBase.Agilidad += 0.0001;
                 jugador.AtributosBase.Percepcion += 0.0002;
             }
+            // Hook de acciones: registrar exploración de sector
+            try { if (jugador != null) MiJuegoRPG.Motor.Servicios.AccionRegistry.Instancia.RegistrarAccion("ExplorarSector", jugador); } catch { }
             // Sistema de encuentros por bioma (instancia única por juego)
             if (encuentrosService == null)
             {
@@ -873,6 +875,21 @@ namespace MiJuegoRPG.Motor
             jugador.ManaActual = jugador.ManaMaxima;
             try { AplicarPreferenciasLoggerDeJugador(); } catch { }
             Ui.WriteLine($"Personaje '{jugador.Nombre}' cargado correctamente.");
+            // Auto-activar una clase por defecto si hay clases desbloqueadas pero no hay clase activa
+            try
+            {
+                if (jugador.Clase == null && jugador.ClasesDesbloqueadas != null && jugador.ClasesDesbloqueadas.Count > 0)
+                {
+                    var seleccion = jugador.ClasesDesbloqueadas.OrderBy(n => n).First();
+                    jugador.Clase = new MiJuegoRPG.Personaje.Clase { Nombre = seleccion };
+                    // Recalcular estadísticas preservando ratio de maná
+                    var ratio = jugador.ManaMaxima > 0 ? (double)jugador.ManaActual / jugador.ManaMaxima : 1.0;
+                    jugador.Estadisticas = new Estadisticas(jugador.AtributosBase);
+                    jugador.ManaActual = (int)(jugador.ManaMaxima * ratio);
+                    Ui.WriteLine($"[CLASES] Clase activa auto-seleccionada: '{seleccion}'. Puedes cambiarla desde Menú Admin → opción 21.");
+                }
+            }
+            catch { /* tolerante a guardados antiguos */ }
             if (!string.IsNullOrEmpty(jugador.UbicacionActualId))
             {
                 var sectorData = mapa.ObtenerSectores().Find(s => s.Id == jugador.UbicacionActualId);

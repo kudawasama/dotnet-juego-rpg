@@ -87,6 +87,16 @@ namespace MiJuegoRPG.Motor
                                     var res = accionFisica.Ejecutar(jugador, objetivo);
                                     foreach (var m in res.Mensajes) ui.WriteLine(m);
                                     RegistrarEfectos(res);
+                                    // Hook de acciones: contar golpe físico como 'Golpear' y provisionalmente 'CorrerGolpear'
+                                    if (jugador is MiJuegoRPG.Personaje.Personaje pjGolpe)
+                                    {
+                                        try
+                                        {
+                                            MiJuegoRPG.Motor.Servicios.AccionRegistry.Instancia.RegistrarAccion("Golpear", pjGolpe);
+                                            MiJuegoRPG.Motor.Servicios.AccionRegistry.Instancia.RegistrarAccion("CorrerGolpear", pjGolpe);
+                                        }
+                                        catch { }
+                                    }
                                 }
                                 break;
                             }
@@ -155,68 +165,79 @@ namespace MiJuegoRPG.Motor
                             }
                             break;
                         case "4":
-                            {
-                                // Submenú de habilidades simples: Físico (por interfaz) o Mágico (cálculo si es Personaje)
-                                ui.WriteLine("Habilidades:");
-                                MiJuegoRPG.Interfaces.IAccionCombate tempFis = new MiJuegoRPG.Motor.Acciones.AtaqueFisicoAccion();
-                                MiJuegoRPG.Interfaces.IAccionCombate tempMag = new MiJuegoRPG.Motor.Acciones.AtaqueMagicoAccion();
-                                // Sufijos y marcado dinámico según estado
-                                bool fisEnCd = actionRules.EstaEnCooldown(jugador, tempFis, out var cdfMenu) && cdfMenu > 0;
-                                bool fisSinRec = !actionRules.TieneRecursos(jugador, tempFis, out var msgResFisMenu);
-                                string sufFis = string.Empty;
-                                if (fisEnCd) sufFis += $" (CD {cdfMenu})";
-                                if (fisSinRec && !string.IsNullOrEmpty(msgResFisMenu)) sufFis += " (Sin maná)";
-                                string marcaFis = (fisEnCd || fisSinRec) ? "[X] " : "";
-
-                                bool magEnCd = actionRules.EstaEnCooldown(jugador, tempMag, out var cdmMenu) && cdmMenu > 0;
-                                bool magSinRec = !actionRules.TieneRecursos(jugador, tempMag, out var msgResMagMenu);
-                                string sufMag = string.Empty;
-                                if (magEnCd) sufMag += $" (CD {cdmMenu})";
-                                if (magSinRec && !string.IsNullOrEmpty(msgResMagMenu)) sufMag += " (Sin maná)";
-                                string marcaMag = (magEnCd || magSinRec) ? "[X] " : "";
-
-                                ui.WriteLine($"1. {marcaFis}{tempFis.Nombre} (Costo: {tempFis.CostoMana}, CD: {tempFis.CooldownTurnos}){sufFis}");
-                                ui.WriteLine($"2. {marcaMag}{tempMag.Nombre} (Costo: {tempMag.CostoMana}, CD: {tempMag.CooldownTurnos}){sufMag}");
-                                var selHab = InputService.LeerOpcion("Elige habilidad: ");
-                                var enemigosVivos = enemigos.Where(e => e.EstaVivo).ToList();
-                                if (enemigosVivos.Count == 0) { ui.WriteLine("No hay objetivos."); continue; }
-                                ICombatiente? objetivo = null;
-                                if (enemigosVivos.Count == 1) objetivo = enemigosVivos[0];
-                                else
                                 {
-                                    UIStyle.Hint(ui, "Elige objetivo:");
-                                    for (int i = 0; i < enemigosVivos.Count; i++)
-                                        ui.WriteLine($"{i + 1}. {enemigosVivos[i].Nombre} ({enemigosVivos[i].Vida}/{enemigosVivos[i].VidaMaxima} HP)");
-                                    var selObj = InputService.LeerOpcion("Número de objetivo: ");
-                                    if (int.TryParse(selObj, out int idxO) && idxO > 0 && idxO <= enemigosVivos.Count)
-                                        objetivo = enemigosVivos[idxO - 1];
-                                }
-                                if (objetivo == null) { ui.WriteLine("Selección inválida."); continue; }
-                                if (selHab == "1")
-                                {
-                                    var accionFisica = new MiJuegoRPG.Motor.Acciones.AtaqueFisicoAccion();
-                                    if (!TryEjecutarAccion(jugador, objetivo, accionFisica, out var msg))
+                                    // Submenú: habilidades aprendidas mapeadas a acciones
+                                    if (jugador is not MiJuegoRPG.Personaje.Personaje pjH || pjH.Habilidades == null || pjH.Habilidades.Count == 0)
                                     {
-                                        ui.WriteLine(msg);
+                                        ui.WriteLine("No tienes habilidades disponibles.");
                                         continue;
                                     }
-                                }
-                                else if (selHab == "2")
-                                {
-                                    var accionMagica = new MiJuegoRPG.Motor.Acciones.AtaqueMagicoAccion();
-                                    if (!TryEjecutarAccion(jugador, objetivo, accionMagica, out var msg))
+                                    var lista = pjH.Habilidades.Values.ToList();
+                                    var acciones = new List<(MiJuegoRPG.Personaje.HabilidadProgreso prog, IAccionCombate acc)>();
+                                    foreach (var h in lista)
                                     {
-                                        ui.WriteLine(msg);
+                                        var acc = MiJuegoRPG.Motor.Servicios.HabilidadAccionMapper.CrearAccionPara(h.Id, h);
+                                        if (acc != null)
+                                            acciones.Add((h, acc));
+                                    }
+                                    if (acciones.Count == 0)
+                                    {
+                                        ui.WriteLine("Tus habilidades actuales no son usables en combate aún.");
                                         continue;
                                     }
+                                    ui.WriteLine("Habilidades disponibles:");
+                                    for (int i = 0; i < acciones.Count; i++)
+                                    {
+                                        var (prog, acc) = acciones[i];
+                                        bool enCd = actionRules.EstaEnCooldown(jugador, acc, out var cd) && cd > 0;
+                                        bool sinRec = !actionRules.TieneRecursos(jugador, acc, out var msgRec);
+                                        string marca = (enCd || sinRec) ? "[X] " : "";
+                                        string suf = string.Empty;
+                                        if (enCd) suf += $" (CD {cd})";
+                                        if (sinRec && !string.IsNullOrEmpty(msgRec)) suf += " (Sin recursos)";
+                                        ui.WriteLine($"{i + 1}. {marca}{prog.Nombre} (Nv {prog.Nivel}) - Costo {acc.CostoMana}, CD {acc.CooldownTurnos}{suf}");
+                                    }
+                                    var sel = InputService.LeerOpcion("Elige habilidad: ");
+                                    if (!int.TryParse(sel, out var idxHab) || idxHab < 1 || idxHab > acciones.Count)
+                                    {
+                                        ui.WriteLine("Selección inválida.");
+                                        continue;
+                                    }
+                                    var (progSel, accSel) = acciones[idxHab - 1];
+                                    var enemigosVivos = enemigos.Where(e => e.EstaVivo).ToList();
+                                    if (enemigosVivos.Count == 0) { ui.WriteLine("No hay objetivos."); continue; }
+                                    ICombatiente? objetivo = null;
+                                    if (enemigosVivos.Count == 1) objetivo = enemigosVivos[0];
+                                    else
+                                    {
+                                        UIStyle.Hint(ui, "Elige objetivo:");
+                                        for (int i = 0; i < enemigosVivos.Count; i++)
+                                            ui.WriteLine($"{i + 1}. {enemigosVivos[i].Nombre} ({enemigosVivos[i].Vida}/{enemigosVivos[i].VidaMaxima} HP)");
+                                        var selObj = InputService.LeerOpcion("Número de objetivo: ");
+                                        if (int.TryParse(selObj, out int idxO) && idxO > 0 && idxO <= enemigosVivos.Count)
+                                            objetivo = enemigosVivos[idxO - 1];
+                                    }
+                                    if (objetivo == null) { ui.WriteLine("Selección inválida."); continue; }
+                                    if (!TryEjecutarAccion(jugador, objetivo, accSel, out var msg))
+                                    {
+                                        if (!string.IsNullOrEmpty(msg)) ui.WriteLine(msg);
+                                        continue;
+                                    }
+                                    // Registrar progreso de la habilidad usada en el personaje (EXP y posibles evoluciones)
+                                    try { pjH.UsarHabilidad(progSel.Id); } catch { }
+                                    // Hook de acciones: si la habilidad mapeada es ataque físico, registrar 'Golpear'/'CorrerGolpear'
+                                    try
+                                    {
+                                        var accId = MiJuegoRPG.Motor.Servicios.HabilidadAccionMapper.ResolverAccionIdPara(progSel.Id);
+                                        if (!string.IsNullOrWhiteSpace(accId) && accId.Equals("ataque_fisico", StringComparison.OrdinalIgnoreCase))
+                                        {
+                                            MiJuegoRPG.Motor.Servicios.AccionRegistry.Instancia.RegistrarAccion("Golpear", pjH);
+                                            MiJuegoRPG.Motor.Servicios.AccionRegistry.Instancia.RegistrarAccion("CorrerGolpear", pjH);
+                                        }
+                                    }
+                                    catch { }
                                 }
-                                else
-                                {
-                                    ui.WriteLine("Habilidad no válida.");
-                                    continue;
-                                }
-                            }
-                            break;
+                                break;
                         case "5":
                             {
                                 // Habilidad: Aplicar Veneno (demo)

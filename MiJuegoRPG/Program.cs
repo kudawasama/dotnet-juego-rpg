@@ -46,6 +46,7 @@ class Program
                         Console.WriteLine("  --hidratar-nodos[=max]     Escribe nodos de recolección en sectores vacíos a partir del bioma. Ej: --hidratar-nodos=5\n");
                         Console.WriteLine("  --reparar-materiales=report[;ruta]  Escanea nodos y reporta materiales inválidos (Nombre vacío/Cantidad<=0). No modifica archivos.\n");
                         Console.WriteLine("  --reparar-materiales=write[;ruta]   Aplica reparación eliminando materiales inválidos. Genera reporte.\n");
+                        Console.WriteLine("  --migrar-equipo=report|write  Divide los JSON agregados de Equipo en archivos por ítem y subcarpetas por tipo.");
                         Console.WriteLine("  --precision-hit             Activa el chequeo de precisión (probabilidad de acierto) en ataques físicos.");
                         Console.WriteLine("  --penetracion               Activa la penetración (reduce defensa efectiva) en ataques físicos y mágicos.");
                         Console.WriteLine("  --combat-verbose            Muestra un desglose didáctico del cálculo de daño en los mensajes de combate.");
@@ -232,6 +233,21 @@ class Program
                         catch (Exception e)
                         {
                             Console.WriteLine($"[ERROR] Reparación de materiales falló: {e.Message}");
+                            salirTrasHerramientas = true;
+                        }
+                    }
+                    else if (a.StartsWith("--migrar-equipo=", StringComparison.OrdinalIgnoreCase))
+                    {
+                        try
+                        {
+                            var mode = a.Substring("--migrar-equipo=".Length).Trim();
+                            bool write = string.Equals(mode, "write", StringComparison.OrdinalIgnoreCase);
+                            MiJuegoRPG.Herramientas.MigradorEquipoPerItem.Migrar(write);
+                            salirTrasHerramientas = true;
+                        }
+                        catch (Exception e)
+                        {
+                            Console.WriteLine($"[ERROR] Migración de equipo falló: {e.Message}");
                             salirTrasHerramientas = true;
                         }
                     }

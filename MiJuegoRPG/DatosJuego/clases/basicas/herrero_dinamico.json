@@ -1,0 +1,14 @@
+{
+  "Nombre": "Herrero",
+  "Categoria": "Profesión",
+  "Rareza": "Comun",
+  "Oculta": false,
+  "ClasesPrevias": [],
+  "NivelMinimo": 15,
+  "AtributosRequeridos": { "Fuerza": 5, "Destreza": 3, "Vitalidad": 5 },
+  "MisionesRequeridas": ["Forjar tu primera arma"],
+  "AtributosGanados": { "Fuerza": 2, "Destreza": 2 },
+  "ActividadRequerida": { "Craft.Forge": 10 },
+  "Tier": 1,
+  "Rama": "Oficio"
+}

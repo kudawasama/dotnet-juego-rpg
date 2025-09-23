@@ -27,6 +27,17 @@ namespace MiJuegoRPG.Personaje
     public string? ClaseDesbloqueada { get; set; }
         // IDs de desbloqueos ya notificados (para avisos automáticos)
         public HashSet<string> DesbloqueosNotificados { get; set; } = new HashSet<string>();
+    /// <summary>
+    /// Bonos temporales aplicados por combinaciones de equipo (p. ej., set GM 2/4/6 piezas).
+    /// Claves insensibles a mayúsculas, usar nombres de estadísticas comunes: "Defensa", "Ataque", "Mana", "Energia".
+    /// </summary>
+    public Dictionary<string, double> BonosTemporalesSet { get; } = new Dictionary<string, double>(StringComparer.OrdinalIgnoreCase);
+
+        /// <summary>
+        /// Conjunto de IDs de habilidades que están activas temporalmente por equipo/set.
+        /// Se usa para poder retirarlas al desequipar/sincronizar.
+        /// </summary>
+        public HashSet<string> HabilidadesTemporalesEquipo { get; } = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
 
         // Completar misión y procesar recompensas
@@ -180,6 +191,16 @@ namespace MiJuegoRPG.Personaje
                 if (obj is MiJuegoRPG.Interfaces.IBonificadorEstadistica boni)
                 {
                     total += boni.ObtenerBonificador(estadistica);
+                }
+            }
+            // Bonos por set (si existen) para esta estadística
+            if (!string.IsNullOrWhiteSpace(estadistica))
+            {
+                if (BonosTemporalesSet.TryGetValue(estadistica, out var extra)) total += extra;
+                // Alias comunes
+                if (estadistica.Equals("Defensa Física", StringComparison.OrdinalIgnoreCase))
+                {
+                    if (BonosTemporalesSet.TryGetValue("Defensa", out var extraDef)) total += extraDef;
                 }
             }
             return total;
@@ -467,34 +488,13 @@ namespace MiJuegoRPG.Personaje
             return rng.NextDouble() < baseEv;
         }
 
-        // Habilidades aprendidas y progreso
-        public Dictionary<string, HabilidadProgreso> Habilidades { get; set; } = new Dictionary<string, HabilidadProgreso>();
-
-        // Clase auxiliar para el progreso de habilidades
-        public class HabilidadProgreso
-        {
-            public string Id { get; set; } = string.Empty;
-            public string Nombre { get; set; } = string.Empty;
-            public int Exp { get; set; }
-            public int Nivel { get; set; }
-            public List<EvolucionHabilidad> Evoluciones { get; set; } = new List<EvolucionHabilidad>();
-            public HashSet<string> EvolucionesDesbloqueadas { get; set; } = new HashSet<string>();
-            public Dictionary<string, int>? AtributosNecesarios { get; set; } // <-- Agregado para requisitos de atributos
-        }
-
-        public class EvolucionHabilidad
-        {
-            public string Id { get; set; } = string.Empty;
-            public string Nombre { get; set; } = string.Empty;
-            public string Beneficio { get; set; } = string.Empty;
-            public List<CondicionEvolucion> Condiciones { get; set; } = new List<CondicionEvolucion>();
-        }
-
-        public class CondicionEvolucion
-        {
-            public string Tipo { get; set; } = string.Empty;
-            public int Cantidad { get; set; }
-        }
+    // Habilidades aprendidas y progreso (usa modelo en Personaje/HabilidadProgreso.cs)
+    public Dictionary<string, HabilidadProgreso> Habilidades { get; set; } = new Dictionary<string, HabilidadProgreso>();
+    /// <summary>
+    /// Progreso acumulado por habilidad y acción para desbloqueos ocultos.
+    /// Estructura: { habilidadId: { accionId: cantidad } }
+    /// </summary>
+    public Dictionary<string, Dictionary<string,int>> ProgresoAccionesPorHabilidad { get; set; } = new Dictionary<string, Dictionary<string,int>>();
 
         public void UsarHabilidad(string habilidadId)
         {
@@ -533,9 +533,11 @@ namespace MiJuegoRPG.Personaje
                 bool cumple = true;
                 foreach (var cond in evo.Condiciones)
                 {
-                    if (cond.Tipo == "NvHabilidad" && progreso.Exp < cond.Cantidad) cumple = false;
-                    if (cond.Tipo == "NvJugador" && Nivel < cond.Cantidad) cumple = false;
-                    if (cond.Tipo == "Ataque" && AtributosBase.Fuerza < cond.Cantidad) cumple = false;
+                    var tipo = (cond.Tipo ?? string.Empty).Trim();
+                    if (tipo.Equals("NvHabilidad", StringComparison.OrdinalIgnoreCase) && progreso.Exp < cond.Cantidad) cumple = false;
+                    else if (tipo.Equals("NvJugador", StringComparison.OrdinalIgnoreCase) && Nivel < cond.Cantidad) cumple = false;
+                    else if (tipo.Equals("Ataque", StringComparison.OrdinalIgnoreCase) && AtributosBase.Fuerza < cond.Cantidad) cumple = false;
+                    // Extensiones posibles: Inteligencia, Destreza, etc.
                 }
                 if (cumple && !progreso.EvolucionesDesbloqueadas.Contains(evo.Id))
                 {
@@ -561,6 +563,7 @@ namespace MiJuegoRPG.Personaje
                 Habilidades.Add(habilidad.Id, habilidad);
                 Console.WriteLine($"Aprendiste la habilidad {habilidad.Nombre}");
                 // Avisos automáticos al aprender habilidad
+                try { MiJuegoRPG.Motor.AvisosAventura.MostrarAviso("Habilidad Desbloqueada", habilidad.Nombre, "Has aprendido una nueva habilidad."); } catch { }
                 MiJuegoRPG.Motor.GestorDesbloqueos.VerificarDesbloqueos(this);
             }
         }
@@ -665,6 +668,17 @@ namespace MiJuegoRPG.Personaje
             Console.WriteLine($"¡Has subido al nivel {Nivel}! Vida máxima ahora: {VidaMaxima}");
             // Revisar desbloqueos automáticos después de subir de nivel
             MiJuegoRPG.Motor.GestorDesbloqueos.VerificarDesbloqueos(this);
+            // Intentar desbloquear habilidades elegibles básicas
+            try
+            {
+                foreach (var h in MiJuegoRPG.Habilidades.HabilidadCatalogService.ElegiblesPara(this))
+                {
+                    var prog = MiJuegoRPG.Habilidades.HabilidadCatalogService.AProgreso(h);
+                    if (!Habilidades.ContainsKey(prog.Id))
+                        AprenderHabilidad(prog);
+                }
+            }
+            catch { /* tolerante: sin datos de habilidades no bloquea nivel */ }
             try { MiJuegoRPG.Motor.Servicios.BusEventos.Instancia.Publicar(new MiJuegoRPG.Motor.Servicios.EventoNivelSubido(Nivel)); } catch { }
         }
 
@@ -713,9 +727,27 @@ namespace MiJuegoRPG.Personaje
 
         }
 
-        // Propiedades de maná
+        // Propiedades de maná (con bonos de equipo)
         public int ManaActual { get; set; }
-        public int ManaMaxima => (int)Estadisticas.Mana;   
+        public int ManaMaxima
+        {
+            get
+            {
+                double baseMana = Estadisticas?.Mana ?? 0;
+                double bonoMana = ObtenerBonificadorEstadistica("Mana") + ObtenerBonificadorEstadistica("Energía");
+                return (int)Math.Max(0, Math.Round(baseMana + bonoMana));
+            }
+        }
+        // Energía con bonos calculados (la base sigue siendo el campo existente EnergiaMaxima)
+        public int EnergiaMaximaConBonos
+        {
+            get
+            {
+                double baseE = this.EnergiaMaxima; // usa propiedad existente definida arriba
+                double bonoE = ObtenerBonificadorEstadistica("Energia");
+                return (int)Math.Max(0, Math.Round(baseE + bonoE));
+            }
+        }
 
         
 

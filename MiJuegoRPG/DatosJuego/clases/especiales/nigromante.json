@@ -1,0 +1,13 @@
+{
+  "Nombre": "Nigromante",
+  "Categoria": "Magica",
+  "Rareza": "Epica",
+  "Oculta": true,
+  "ClasesPrevias": ["Mago", "Hechicero"],
+  "NivelMinimo": 15,
+  "AtributosRequeridos": {"Inteligencia": 20, "Oscuridad": 10},
+  "EstadisticasRequeridas": {"PoderDeInvocacion": 10},
+  "MisionesRequeridas": ["Ritual Oscuro"],
+  "ReputacionMinima": -50,
+  "AtributosGanados": {"Inteligencia": 4, "Oscuridad": 3, "Fe": -2}
+}

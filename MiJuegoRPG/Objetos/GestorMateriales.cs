@@ -46,12 +46,16 @@ namespace MiJuegoRPG.Objetos
         {
             if (!Path.IsPathRooted(rutaArchivo))
             {
-                var dir = Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory);
-                string rutaBase = dir?.Parent?.Parent != null ? dir.Parent.Parent.FullName : AppDomain.CurrentDomain.BaseDirectory;
-                rutaArchivo = Path.Combine(rutaBase, "MiJuegoRPG", "PjDatos", rutaArchivo);
+                rutaArchivo = MiJuegoRPG.Motor.Servicios.PathProvider.PjDatosPath(rutaArchivo);
             }
             try
             {
+                if (!File.Exists(rutaArchivo))
+                {
+                    // Fallback razonable: usar PjDatos/materiales.json tal cual (ya resuelto) o silencio
+                    Console.WriteLine($"Error al cargar materiales: No existe el archivo '{rutaArchivo}'");
+                    return;
+                }
                 string jsonString = File.ReadAllText(rutaArchivo);
                 var options = new JsonSerializerOptions();
                 options.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());

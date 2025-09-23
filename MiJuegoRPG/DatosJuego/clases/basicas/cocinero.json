@@ -1,0 +1,13 @@
+{
+  "Nombre": "Cocinero",
+  "Categoria": "Profesión",
+  "Rareza": "Comun",
+  "Oculta": false,
+  "ClasesPrevias": [],
+  "NivelMinimo": 5,
+  "AtributosRequeridos": {"Inteligencia": 3, "Destreza": 3},
+  "EstadisticasRequeridas": {},
+  "MisionesRequeridas": ["Preparar 3 recetas"],
+  "ReputacionMinima": 0,
+  "AtributosGanados": {"Inteligencia": 1, "Destreza": 2}
+}

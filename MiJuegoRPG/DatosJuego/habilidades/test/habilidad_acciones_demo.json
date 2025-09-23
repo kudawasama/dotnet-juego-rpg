@@ -1,0 +1,13 @@
+{
+  "Id": "habilidad_acciones_demo",
+  "Nombre": "Sentido Explorador",
+  "Tipo": "Pasiva",
+  "Categoria": "Exploracion",
+  "Descripcion": "Mejora tu percepción al explorar sectores y observar NPCs.",
+  "Oculta": true,
+  "Condiciones": [
+    { "Tipo": "accion", "Accion": "ExplorarSector", "Cantidad": 2 },
+    { "Tipo": "accion", "Accion": "ObservarNPC", "Cantidad": 1 }
+  ],
+  "Beneficio": "+2 percepción al explorar sectores nuevos"
+}

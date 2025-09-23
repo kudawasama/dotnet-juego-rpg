@@ -23,6 +23,7 @@ Tabla de contenidos
 1. Visión general del sistema
 1. Núcleo del dominio
 1. Progresión y atributos
+1. Habilidades (modelo unificado)
 1. Combate (pipeline y estados)
 1. Recolección y mundo
 1. Objetos, inventario y comercio
@@ -42,10 +43,12 @@ Tabla de contenidos
 
 Organización por capas con enfoque data-driven. Piezas principales (enlaces a implementación real):
 
-- Dominio (lógica del juego): Personaje, Enemigos, Combate, Progresión, Recolección.
-- Servicios: [`RandomService`](../Motor/Servicios/RandomService.cs), [`ProgressionService`](../Motor/Servicios/ProgressionService.cs), `ReputacionService` (en preparación), [`EnergiaService`](../Motor/EnergiaService.cs), `GuardadoService` (módulo actual), [`SupervivenciaService`](../Motor/Servicios/SupervivenciaService.cs).
-- UI: [`IUserInterface`](../Interfaces/IUserInterface.cs) y adaptadores (consola/silencioso, p. ej. [`ConsoleUserInterface`](../Motor/Servicios/ConsoleUserInterface.cs)); `UIStyle` para consistencia visual.
-- Datos: JSONs en `MiJuegoRPG/DatosJuego/` y modelos persistidos en `PjDatos/`.
+  - Equipo: `DatosJuego/Equipo/` soporta JSON por ítem en subcarpetas por tipo (armas/armaduras/...) con carga recursiva vía `GeneradorObjetos.CargarEquipoAuto()` y fallback a archivos agregados por tipo. Selección aleatoria puede ser ponderada por rareza.
+**Equipo v2 (no-armas)**: Los tipos de equipo como armaduras, botas, cascos, cinturones, collares, pantalones y accesorios pueden declarar campos opcionales como `RarezasPermitidasCsv`, `PerfeccionMin/Max`, `NivelMin/Max` y rangos de estadística (por ejemplo, `DefensaMin/Max`, `Bonificacion*Min/Max`). El generador intersecta los rangos de perfección por rareza con los declarados por el ítem. La escala usa `Normal = 50%` con redondeo `AwayFromZero`.
+  - Nota: el set GM usa estos campos para bloquear `NivelMin/Max=200` y `PerfeccionMin/Max=100` en todas las piezas no-arma, y definir bonificaciones elevadas coherentes con su rol de QA.
+  - Bonos de equipo (contrato): las piezas implementan `IBonificadorEstadistica.ObtenerBonificador(string estadistica)`. Claves soportadas (case-insensitive): Defensa física = {"Defensa", "DefensaFisica", "Defensa Física"}; Capacidad de carga = {"Carga"}; Recursos = {"Energia", "Mana"}. El personaje suma estos bonos en runtime a través de `Personaje.ObtenerBonificadorEstadistica`.
+    - QA de objetos desde Admin: `MenuAdmin` incluye la opción 22 para entregar un objeto/equipo/material/poción por nombre (busca en catálogos JSON). Útil para validar definiciones y balance rápidamente; permite equipar de inmediato tras conceder.
+  - Esquema v2 de equipo: los DTOs de Armadura/Botas/Casco/Cinturón/Collar/Pantalón admiten rangos `NivelMin/Max`, `PerfeccionMin/Max` y `DefensaMin/Max` (o `Bonificacion*Min/Max`), además de `RarezasPermitidasCsv` y metadatos (`Valor/ValorVenta`, `Peso`, `Durabilidad`, `Descripcion`, `Tags`). Compatibles con el formato legado; los campos son opcionales. Ver ejemplos en `DatosJuego/Equipo/*/*.json` y notas en `Docs/Roadmap.md` (2025-09-20).
 - Herramientas/QA: validadores, generadores y reparadores.
 
 Diagrama conceptual (texto):
@@ -111,6 +114,75 @@ Notas: los clamps se aplican de forma centralizada a través de `CombatBalanceCo
 
 ### 3.2 Caps de combate (data‑driven)
 
+
+
+## 3.3 Modularización de clases (normales y dinámicas)
+
+> **Actualización 2025-09-23**
+
+- Todas las clases del juego se migraron a archivos individuales `.json` en subcarpetas por tipo (`basicas`, `avanzadas`, `especiales`), tanto para clases normales como dinámicas.
+- **Clases normales**: definen los parámetros base, progresión y habilidades estándar de cada arquetipo. Son la referencia principal para el balance y la progresión general.
+- **Clases dinámicas**: variantes adaptativas que pueden modificar requisitos, habilidades, progresión o condiciones de desbloqueo según el contexto del jugador, eventos o decisiones. Permiten mayor flexibilidad y personalización.
+- Se recomienda mantener ambos tipos de archivos por ahora, para facilitar el testing, el balance y la migración futura a Unity. El sistema de carga puede priorizar la variante dinámica o la base según el flujo del juego.
+- No se eliminó ningún archivo de clase existente; solo se modularizó y documentó la diferencia.
+
+---
+## 4. Habilidades (modelo unificado)
+
+> Nota (2025-09-22): Las habilidades físicas fueron migradas de un archivo único (`Hab_Fisicas.json`) a archivos individuales por habilidad bajo `DatosJuego/habilidades/Hab_Fisicas/`. El loader soporta ambos formatos (lista u objeto por archivo). Esta organización facilita QA, versionado y balance granular.
+
+Objetivo: todas las habilidades del juego comparten la misma fuente de verdad (JSON en `DatosJuego/habilidades/**`), ya sean aprendidas “in-world” por el personaje o concedidas temporalmente por equipo/sets. Esto garantiza consistencia en requisitos, coste y evoluciones.
+
+Piezas clave
+
+- Loader: `Habilidades/HabilidadLoader.cs` carga archivos en formato objeto o lista, con `PropertyNameCaseInsensitive`, y normaliza campos. Soporta:
+  
+  - `AtributosNecesarios` y `CostoMana`.
+  
+  - `Evoluciones` con `Condiciones` (por ejemplo, `NvHabilidad`, `NvJugador`, `Misiones` o etiquetas de logro futuras).
+- Catálogo: `HabilidadCatalogService` expone:
+  
+  - `Todas`: habilidades disponibles en datos.
+  
+  - `ElegiblesPara(Personaje)`: filtra por condiciones básicas (nivel, misión, atributos mínimos) — extensible.
+  
+  - `AProgreso(HabilidadData)`: crea la instancia runtime `Personaje.HabilidadProgreso` con evoluciones y requisitos.
+- Runtime Personaje:
+  
+  - `Personaje.Habilidades: Dictionary<string,HabilidadProgreso>` — habilidades aprendidas/activas.
+  
+  - `Personaje.UsarHabilidad(id)`: incrementa experiencia, verifica costes/atributos y llama a `RevisarEvolucionHabilidad` para desbloquear evoluciones cuando cumplan sus condiciones.
+  
+  - `Personaje.SubirNivel()`: intenta auto-desbloquear habilidades elegibles del catálogo (no intrusivo).
+
+Habilidades otorgadas por equipo/sets (temporales)
+
+- `Objeto.HabilidadesOtorgadas`: lista de referencias `{ Id, NivelMinimo }` declaradas en el JSON del ítem. Al equiparlo, se agregan temporalmente si el PJ cumple el nivel.
+- `Inventario.SincronizarHabilidadesYBonosSet(Personaje)`: agrega o quita habilidades y aplica bonos de set. La sincronización usa el catálogo cuando la habilidad existe en data, manteniendo un único modelo. Las habilidades otorgadas por equipo/sets se rastrean en `Personaje.HabilidadesTemporalesEquipo` y se eliminan al desequipar o perder umbrales de set.
+- Sets data-driven: `Motor/Servicios/SetBonusService.cs` carga `DatosJuego/Equipo/sets/*.json` y aplica bonificaciones y habilidades por umbral (ej.: 2/4/6 piezas). El matching se realiza por `SetId` del objeto o por coincidencia de nombre.
+
+Habilidades jugables en combate (mapper)
+
+- `Motor/Servicios/HabilidadAccionMapper.cs`: servicio de mapeo tolerante que traduce `HabilidadProgreso` (Id/Nombre) a una `IAccionCombate` concreta. Incluye sinónimos comunes para Físico/Mágico/Veneno y puede envolver una acción base en `AccionCompuestaSimple` para ajustar `CostoMana` y `CooldownTurnos` según el catálogo de la habilidad.
+- Mapeo explícito (opcional): `HabilidadData` incorpora `AccionId` para mapear de forma determinista una habilidad a una acción (por ejemplo, `"ataque_magico"`). El mapper prefiere `AccionId` y, si no está presente, cae a sinónimos por Id/Nombre.
+- Menú de combate (`CombatePorTurnos`, opción Habilidad): lista solo las habilidades que el mapper considera usables, mostrando coste y cooldown actuales. Antes de ejecutar, usa `ActionRulesService` para chequear recursos y cooldowns; en éxito registra el uso con `GestorHabilidades` para dar EXP y posibles subidas de nivel/evoluciones.
+
+Contratos mínimos
+
+- `HabilidadCatalogService`:
+  
+  - `IReadOnlyList<HabilidadData> Todas { get; }`
+  
+  - `IEnumerable<HabilidadData> ElegiblesPara(Personaje pj)`
+  
+  - `HabilidadProgreso AProgreso(HabilidadData data)`
+- `Inventario.SincronizarHabilidadesYBonosSet(Personaje pj)` — llamado tras equipar/desequipar para mantener consistencia de habilidades y sets.
+
+Notas de diseño
+
+- Progresión lenta: los requisitos iniciales son conservadores (niveles/atributos), y las evoluciones se desbloquean con uso frecuente o hitos (niveles/combate). Esto favorece exploración y planificación.
+- Temporalidad clara: las habilidades de equipo/sets no persisten si se quita el origen. Se evita confusión visual limpiando silenciosamente al sincronizar.
+- Compatibilidad: existe un fallback por nombre “GM” para el set legado cuando faltan definiciones JSON, minimizando regresiones.
 Fuente de verdad: `DatosJuego/progression.json` → sección opcional `StatsCaps` (ver `Docs/progression_config.md`).
 
 - Servicio: `Motor/Servicios/CombatBalanceConfig.cs` proporciona `ClampPrecision`, `ClampCritChance`, `ClampCritMult` y `ClampPenetracion`.
@@ -128,7 +200,7 @@ $\text{CritMult} = \operatorname{clamp}(1.5 + 0.001\cdot Sabidur\'ia,\ 1.25,\ 1.
 
 $\text{Penetraci\'on} = \min(0.25,\ 0.002\cdot Destreza)$
 
-## 4. Combate (pipeline y estados)
+## 5. Combate (pipeline y estados)
 
 Estado actual (MVP implementado):
 
@@ -150,7 +222,7 @@ Orden de pipeline propuesto (futuro inmediato):
 3) Defensa/Penetración: reducir defensa por `Penetracion` y mitigar. Implementación actual detrás de `--penetracion` usando `CombatAmbientContext`.
 4) Mitigaciones del objetivo: físicas/mágicas.
 5) Elementales: resistencias (0..0.9) y vulnerabilidades (1.0..1.5) por canal (`magia` hoy).
-6) Aplicar daño y efectos OnHit/OnKill.
+6) Aplicar daño y efectos OnHit/OnKill. 
 7) Registrar en `ResultadoAccion` y presentar en UI.
 
 Nota práctica (MVP actual):
@@ -182,7 +254,42 @@ Edge cases y decisiones:
 - Evasión duplicada: consolidar en un solo chequeo en el resolver (evitar doble miss).
 - Overkill: clamp vida a 0; marcar `ObjetivoDerrotado`.
 
-## 5. Recolección y mundo
+## 6. Sistema de Acciones (AccionRegistry)
+
+Contrato y propósito
+
+- Servicio: `Motor/Servicios/AccionRegistry.cs` centraliza el registro de eventos del juego para impulsar desbloqueos de habilidades definidas en datos.
+- Datos: las habilidades (`Habilidades/HabilidadLoader.cs`) pueden declarar `Condiciones[]` con campos `Tipo` y `Accion`. Cualquier condición que tenga `Accion` se trata como contador accionable; `Tipo` se usa para hints ("nivel", "mision", etc.).
+
+API mínima
+
+- `bool RegistrarAccion(string accionId, Personaje pj, object? contexto = null)`
+  - Suma +1 al progreso de todas las habilidades no aprendidas que refieran `accionId` en sus condiciones.
+  - Si todas las condiciones AND (atributos, nivel/misión básicas y contadores de acción) se cumplen, crea el `HabilidadProgreso` vía `HabilidadCatalogService.AProgreso` y llama `pj.AprenderHabilidad(...)`.
+  - Retorna true si alguna habilidad se desbloqueó en la llamada.
+- `int GetProgreso(Personaje pj, string habilidadId, string accionId)`
+  - Lee el contador acumulado.
+
+Persistencia
+
+- `Personaje.ProgresoAccionesPorHabilidad: Dictionary<string, Dictionary<string,int>>` con la forma `{ habilidadId: { accionId: cantidad } }`.
+- Guardado/Lectura en `GuardadoService` a `PjDatos/progreso_acciones.json` (compatibilidad hacia atrás asegurada).
+
+Hooks iniciales (MVP)
+
+- Combate: al atacar básico y al usar habilidades mapeadas a `ataque_fisico` se registran `Golpear` y `CorrerGolpear`.
+- Mundo: al explorar sector se registra `ExplorarSector`.
+- Recolección: al recolectar con éxito se registra `RecolectarMaterial`.
+- NPC: en el menú de NPCs, la acción "Observar" registra `ObservarNPC` (no afecta misiones/comercio).
+- Crafteo: al craftear con éxito se registra `CraftearObjeto`.
+
+Notas de diseño
+
+- Progresión lenta: los contadores suelen requerir cantidades moderadas/altas; el sistema no otorga avances por acciones desconocidas.
+- Compatibilidad: se respetan condiciones básicas (nivel/misión) y atributos necesarios antes del desbloqueo.
+- Telemetría: se pueden activar hints sutiles con `AvisosAventura` al aprender una habilidad; el ruido de consola se mantiene bajo.
+
+## 6. Recolección y mundo
 
 - Biomas con nodos (rareza, producción min/max, cooldowns).
 - Encuentros aleatorios (Chance/Prioridad/Cooldown) persistidos.
@@ -198,13 +305,15 @@ Archivo de configuración: [`DatosJuego/energia.json`](../DatosJuego/energia.jso
 - Clamps: `CostoMinimo`/`CostoMaximo` (3/25).
 - Energía: máx 100; +1 cada 10 min; posada recupera % decreciente por descanso en el día.
 
-## 6. Objetos, inventario y comercio
+## 7. Objetos, inventario y comercio
+
+Última actualización: 2025-09-22
 
 - Tipos: armas, armaduras, pociones, materiales; gestores en migración a repos JSON.
 - Inventario: `IInventariable`/`IUsable`; consumo en combate vía `IAccionCombate`.
 - Tienda: precios afectan reputación; reglas por facción.
 
-## 7. Misiones y encuentros
+## 8. Misiones y encuentros
 
 - Misiones: requisitos/recompensas (plan a `IRequisito`/`IRecompensa`).
 - `EncuentrosService`: gating por kills, hora, chance, prioridad, cooldown persistente.
@@ -223,7 +332,7 @@ Fuente: [`Motor/Servicios/EncuentrosService.cs`](../Motor/Servicios/EncuentrosSe
   - MiniJefe: requiere `MinKills`; bonus por kills extra y Suerte (máx +50%).
 - Cooldowns consultables/limpiables; expone estado con minutos restantes.
 
-## 8. Supervivencia
+## 9. Supervivencia
 
 - Config: [`DatosJuego/config/supervivencia.json`](../DatosJuego/config/supervivencia.json); servicio [`SupervivenciaService`](../Motor/Servicios/SupervivenciaService.cs) y runtime asociado.
 - Penalizaciones actuales: `FactorEvasion` (jugador) y `FactorRegen` (maná); `FactorPrecision` listo para el paso 1 del pipeline de combate.
@@ -238,7 +347,7 @@ Fuente: [`Motor/Servicios/EncuentrosService.cs`](../Motor/Servicios/EncuentrosSe
 - Runtime: por minuto, incrementa H/S/F con multiplicadores; ajusta `TempActual`; emite eventos al cruzar umbrales.
 - Integraciones: `ActionRulesService` reduce regen de maná; `Personaje.IntentarEvadir` aplica `FactorEvasion`.
 
-## 9. UI y presentación
+## 10. UI y presentación
 
 - `IUserInterface`: desacopla vista; implementaciones de consola y silenciosa (tests).
 - `UIStyle`: estilo de encabezados y etiquetas de reputación/supervivencia.
@@ -255,37 +364,51 @@ Fuente: [`Motor/Servicios/EncuentrosService.cs`](../Motor/Servicios/EncuentrosSe
   - Modo detallado (opcional): sección "Equipo" con slots (Arma, Casco, Armadura, Pantalón, Zapatos, Collar, Cinturón, Accesorio 1/2). Para cada pieza muestra nombre y stats clave (Rareza/Perfección; y en armas, Daño Físico/Mágico). Se activa llamando `EstadoPersonajePrinter.MostrarEstadoPersonaje(pj, true)` o desde el `Menú Fijo` (opción "Estado (detallado)").
 - Decisión de diseño: por defecto, la vista compacta evita listados largos de equipo para priorizar legibilidad. El detalle de equipo está disponible bajo demanda a través del modo detallado o el Inventario.
 
+### 9.3 Clases dinámicas: flujo en Admin
+
+- Carga de definiciones: `MenuAdmin` fuerza `ClaseDinamicaService.Cargar()` antes de listar/forzar para garantizar que el campo interno `defs` esté poblado, evitando listas vacías.
+- Forzar clase: al seleccionar una clase se aplican bonos iniciales y se reevalúan cadenas; si ya estaba desbloqueada, se ofrecen dos opciones:
+  - Retomar como ACTIVA (no se suman bonos nuevamente). Esto sólo actualiza `pj.Clase` y recalcula estadísticas preservando el ratio de maná actual.
+  - Reaplicar bonos iniciales (acumulativo) con confirmación explícita. Tras aplicar, opcionalmente se puede marcar como ACTIVA. En ambos casos, se recalculan estadísticas conservando el porcentaje de maná.
+- Presentación: el listado de “Forzar clase” muestra el estado junto a cada nombre: `[ACTIVA]`, `[DESBLOQUEADA]`, `[DISPONIBLE]` o `[BLOQUEADA]` (esta última con motivos en el listado de diagnóstico).
+
+Nota operativa (clase activa vs desbloqueo):
+
+- Desbloquear una clase aplica sus bonos iniciales (acumulativos) y añade la clase al conjunto `ClasesDesbloqueadas`.
+- La “clase activa” es una etiqueta operativa (`pj.Clase.Nombre`) que puede alternarse sin rebonificar. Usos actuales: gating ligero de UI y futuras reglas de coste/energía. Se puede cambiar desde MenuAdmin opción 21.
+- UX de carga: si un guardado trae clases desbloqueadas pero `Clase == null`, el juego auto-activa la primera por orden alfabético y recalcula estadísticas preservando el ratio de maná. No se aplican bonos adicionales.
+
 ### 9.2 Gating de menús por sector (Ciudad vs Fuera de Ciudad)
 
 - Lógica en `Motor/Juego.cs` (`MostrarMenuPorUbicacion`): el menú de ciudad se muestra solo si `SectorData.Tipo == "Ciudad"` y además `EsCentroCiudad` o `CiudadPrincipal` son verdaderos. Para cualquier otra parte de una ciudad (`ParteCiudad`), se usa el menú de “Fuera de Ciudad”.
 - Justificación: evita mostrar opciones de ciudad completa en entradas/periferias; alinea UX con exploración por zonas.
 - Soporte de datos: `PjDatos/SectorData.cs` define `Tipo` con valor por defecto `"Ruta"`, previniendo clasificaciones incorrectas cuando el JSON omite el campo.
 
-## 10. Datos, validación y guardado
+## 11. Datos, validación y guardado
 
 - `PathProvider` centraliza rutas.
 - `DataValidatorService`: valida mapa, misiones, NPCs, enemigos; objetos pendiente.
 - `GuardadoService`: persiste drops únicos y cooldowns de encuentros; sustituye I/O ad-hoc.
 
-## 11. Testing y determinismo
+## 12. Testing y determinismo
 
 - xUnit; `RandomService.SetSeed` para reproducibilidad.
 - `SilentUserInterface` para evitar bloqueos por input.
 - Proveedores inyectables (hora, paths) para desacoplar entorno.
 
-## 12. Migración a Unity
+## 13. Migración a Unity
 
 - Mantener dominio puro (independiente de consola/UI).
 - Adaptadores de UI/Logger/Input en capa presentación.
 - Convertir JSON a ScriptableObjects; usar adapters para `IUserInterface`.
 
-## 13. Problemas conocidos y edge cases
+## 14. Problemas conocidos y edge cases
 
 - Doble evasión: consolidar en resolver.
 - Contratos JSON: inconsistencias históricas en objetos; mitigado por validadores y herramientas.
 - Balance conservador: evitar “power spikes”; progresión intencionalmente lenta.
 
-## 14. Ejemplos prácticos
+## 15. Ejemplos prácticos
 
 ### 14.1 Secuencia de ataque físico (actual)
 
@@ -303,7 +426,7 @@ $p_{hit} = clamp(0.35 + Precision - 1.0·Evasion,\ 0.20,\ 0.95)$; hit si RNG < $
 
 Jugador con baja `Precision` vs lobo ágil: esperar más fallos; estrategia: entrenar Agilidad/Percepción o equipar bonus de Precision antes de adentrarse.
 
-## 15. Apéndice de contratos (interfaces y DTOs)
+## 16. Apéndice de contratos (interfaces y DTOs)
 
 Resumen de firmas públicas previstas (se omiten namespaces para brevedad):
 
