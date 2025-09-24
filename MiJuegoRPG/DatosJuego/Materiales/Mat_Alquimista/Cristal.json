@@ -1,0 +1,8 @@
+{
+  "id": "cristal",
+  "nombre": "Cristal",
+  "descripcion": "Cristal común, base para objetos mágicos y tecnología.",
+  "rareza": "comun",
+  "categoria": "cristal",
+  "especialidad": "ingeniero"
+}

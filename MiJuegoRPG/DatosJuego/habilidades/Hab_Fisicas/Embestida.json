@@ -8,7 +8,7 @@
   "Condiciones": 
   [
     { "Tipo": "Entrenamiento", "Accion": "Correr", "Cantidad": 30 },
-    { "Tipo": "Combate", "Accion": "Atacar", "Cantidad": 15 }
+    { "Tipo": "Combate", "Accion": "Golpear", "Cantidad": 15 }
   ],
   "Beneficio": "Causa daño y aturde al enemigo por 1 turno.",
   "Mejoras": ["Aumenta el daño si se entrena 100 veces", "Aumenta la duración del aturdimiento a 2 turnos si la Fuerza supera 15"],

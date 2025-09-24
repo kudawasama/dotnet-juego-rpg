@@ -1,0 +1,8 @@
+{
+  "id": "perla",
+  "nombre": "Perla",
+  "descripcion": "Perla natural, usada en joyería y objetos de lujo.",
+  "rareza": "raro",
+  "categoria": "perla",
+  "especialidad": "joyero"
+}

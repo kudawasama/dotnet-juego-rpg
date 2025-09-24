@@ -25,7 +25,10 @@
         },
 
     "ActividadRequerida": { "Combate.AtaquesEspada": 40 },
-
+    "HabilidadesOtorgadas": 
+    {
+     
+    },
     "Tier": 1,
     "Rama": "Combate"
 

@@ -1,0 +1,8 @@
+{
+  "id": "concha_marina",
+  "nombre": "Concha Marina",
+  "descripcion": "Concha recolectada en la orilla, usada en artesanías y joyería.",
+  "rareza": "comun",
+  "categoria": "concha",
+  "especialidad": "sastre"
+}

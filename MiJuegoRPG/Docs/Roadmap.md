@@ -34,7 +34,30 @@ Actualización 2025-09-21
 - No-armas (armaduras, botas, cinturones, collares, pantalones): Generador soporta v2; JSONs principales migrados.
 - Accesorios (anillos): MIGRADO — `anillo_de_poder.json`, `anillo_de_proteccion.json` adoptan Rareza Normal, rangos de Perfección/Nivel y `RarezasPermitidasCsv`.
 
+## 2025-09-23 — Drops de enemigos y menú de combate ampliado
+
+- Se analizaron los archivos de enemigos para identificar materiales únicos en sus drops y se crearon los archivos `.json` correspondientes en la subcarpeta de materiales.
+- Se planificó la ampliación del menú de combate para incluir acciones adicionales (defenderse, observar, usar objeto especial, cambiar de posición, etc.), integrando el sistema de acciones y progresión lenta.
+
+### 2025-09-23 — Creación masiva de materiales de cocina (drops de enemigos)
+
+- Se completó la creación de todos los archivos `.json` de materiales de cocina referenciados como drops de enemigos en `Mat_Cocina`.
+- Todos los materiales están listos para ser usados en recetas, progresión y sistemas de crafteo.
+- Documentación y bitácora sincronizadas.
+
+Actualización 2025-09-23
+
 Siguientes tareas relacionadas:
+
+## 2025-09-23 — Materiales de biomas: creación modular y escalable
+
+- Se analizaron todos los biomas y nodos para extraer la lista completa de materiales únicos presentes en el mundo.
+- Se crearon archivos `.json` individuales para cada material faltante, ubicándolos en la subcarpeta de `Materiales` más lógica según su naturaleza (herbolario, carpintero, herrero, etc.).
+- Cada archivo contiene una plantilla mínima y puede ser ampliado según gameplay.
+- Esta acción permite que el loader y los sistemas de crafteo, recolección y misiones trabajen de forma modular y escalable.
+- No se sobrescribió ningún material existente.
+
+Actualización 2025-09-23
 
 - [ ] Agregar validador de datos de equipo (coherencia de rangos, rarezas válidas, nombres duplicados).
 - [ ] Completar migración de cualquier JSON restante y añadir tests de regresión para el generador.

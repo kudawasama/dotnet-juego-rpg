@@ -1,0 +1,8 @@
+{
+  "id": "seta_brillante",
+  "nombre": "Seta Brillante",
+  "descripcion": "Hongo que emite luz suave, usado en alquimia y cocina.",
+  "rareza": "comun",
+  "categoria": "hongo",
+  "especialidad": "herbolario"
+}

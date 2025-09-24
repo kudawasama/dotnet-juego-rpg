@@ -1,0 +1,8 @@
+{
+  "id": "ala_de_abeja",
+  "nombre": "Ala de Abeja",
+  "descripcion": "Ala translúcida de abeja, usada en pociones y experimentos mágicos.",
+  "rareza": "normal",
+  "categoria": "componente",
+  "especialidad": "alquimista"
+}

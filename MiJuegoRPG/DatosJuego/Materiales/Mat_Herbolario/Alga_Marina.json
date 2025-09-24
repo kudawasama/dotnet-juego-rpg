@@ -1,0 +1,8 @@
+{
+  "id": "alga_marina",
+  "nombre": "Alga Marina",
+  "descripcion": "Alga común de aguas poco profundas, base para ungüentos y comidas.",
+  "rareza": "comun",
+  "categoria": "alga",
+  "especialidad": "herbolario"
+}

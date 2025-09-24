@@ -1,4 +1,6 @@
 [
+  { "Id": "Correr", "Descripcion": "Moverse rápidamente en el campo de batalla.", "Aplicacion": "Permite al jugador desplazarse a una posición más ventajosa." },
+  { "Id": "Golpear", "Descripcion": "Atacar a un enemigo con un arma o habilidad.", "Aplicacion": "Seleccionar la opción de ataque en combate para golpear a un enemigo." },
   { "Id": "CorrerGolpear", "Descripcion": "Moverse y atacar en el mismo turno.", "Aplicacion": "En combate, el jugador se desplaza y realiza un ataque físico inmediatamente." },
   { "Id": "SinArma", "Descripcion": "Atacar sin arma equipada.", "Aplicacion": "El jugador ataca usando solo sus puños o habilidades sin arma." },
   { "Id": "AtaqueFisico", "Descripcion": "Realizar un ataque físico estándar.", "Aplicacion": "Seleccionar la opción de ataque físico en combate." },
@@ -48,5 +50,22 @@
   { "Id": "SubirReputacion", "Descripcion": "Aumentar la reputación global o de facción.", "Aplicacion": "Completar acciones positivas o misiones para subir reputación." },
   { "Id": "BajarReputacion", "Descripcion": "Disminuir la reputación global o de facción.", "Aplicacion": "Realizar acciones negativas o fallar misiones." },
   { "Id": "RecibirBonificacion", "Descripcion": "Recibir un bono temporal o permanente.", "Aplicacion": "Activar eventos, logros o equipar objetos especiales." },
-  { "Id": "RecibirPenalizacion", "Descripcion": "Recibir una penalización temporal o permanente.", "Aplicacion": "Sufrir efectos negativos por eventos, objetos o acciones fallidas." }
+  { "Id": "RecibirPenalizacion", "Descripcion": "Recibir una penalización temporal o permanente.", "Aplicacion": "Sufrir efectos negativos por eventos, objetos o acciones fallidas." },
+  { "Id": "TalarArbol", "Descripcion": "Cortar un árbol para obtener madera.", "Aplicacion": "Usar un hacha en un árbol para recolectar madera." },
+  { "Id": "RecolectarHierbas", "Descripcion": "Recolectar hierbas del entorno.", "Aplicacion": "Usar la opción de recolección en áreas con vegetación." },
+  { "Id": "Cazar", "Descripcion": "Cazar animales para obtener recursos.", "Aplicacion": "Usar un arco o trampa en áreas de caza." },
+  { "Id": "Pescar", "Descripcion": "Pescar en cuerpos de agua.", "Aplicacion": "Usar una caña de pescar en ríos o lagos." },
+  { "Id": "Minar", "Descripcion": "Extraer minerales de una veta.", "Aplicacion": "Usar un pico en una veta de mineral." },
+  { "Id": "CortarMadera", "Descripcion": "Cortar madera de un árbol.", "Aplicacion": "Usar un hacha en un árbol para recolectar madera." },
+  { "Id": "RecolectarPiedras", "Descripcion": "Recolectar piedras del entorno.", "Aplicacion": "Usar las manos o una herramienta para recoger piedras." },
+  { "Id": "UsarPico", "Descripcion": "Equipar y usar un pico para minar.", "Aplicacion": "Seleccionar y equipar un pico desde el inventario." },
+  { "Id": "UsarHacha", "Descripcion": "Equipar y usar un hacha para talar árboles.", "Aplicacion": "Seleccionar y equipar un hacha desde el inventario."},
+  { "Id": "Forjar", "Descripcion": "Forjar un objeto metálico en el yunque.", "Aplicacion": "Usar la opción de forja en la herrería o mesa de trabajo." },
+  { "Id": "Crear", "Descripcion": "Crear un objeto usando una receta específica.", "Aplicacion": "Seleccionar una receta y usar la opción de crear en la mesa de trabajo." },
+  { "Id": "UsarHorno", "Descripcion": "Cocinar o fundir materiales en el horno.", "Aplicacion": "Usar la opción de horno en la ciudad o refugio." },
+  { "Id": "UsarYunque", "Descripcion": "Mejorar o reparar equipo en el yunque.", "Aplicacion": "Usar la opción de yunque en la herrería o mesa de trabajo." },
+  { "Id": "MejorarEquipo", "Descripcion": "Mejorar las estadísticas de un equipo.", "Aplicacion": "Seleccionar un equipo y usar la opción de mejora en la mesa de trabajo." },
+  { "Id": "Cocinar", "Descripcion": "Preparar alimentos cocinados.", "Aplicacion": "Usar la opción de cocina en la ciudad o refugio." },
+  { "Id": "Hornear", "Descripcion": "Hornear pan u otros productos.", "Aplicacion": "Usar la opción de horno en la ciudad o refugio." },
+  { "Id": "Fermentar", "Descripcion": "Fermentar bebidas alcohólicas.", "Aplicacion": "Usar la opción de fermentación en la ciudad o refugio." }
 ]

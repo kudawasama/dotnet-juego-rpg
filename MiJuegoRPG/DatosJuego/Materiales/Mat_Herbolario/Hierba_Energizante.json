@@ -1,0 +1,8 @@
+{
+  "id": "hierba_energizante",
+  "nombre": "Hierba Energizante",
+  "descripcion": "Hierba que restaura energía, usada en tónicos revitalizantes.",
+  "rareza": "comun",
+  "categoria": "hierba",
+  "especialidad": "herbolario"
+}

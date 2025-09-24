@@ -1,0 +1,8 @@
+{
+  "id": "cristales",
+  "nombre": "Cristales",
+  "descripcion": "Cristales de origen mineral, usados en alquimia y tecnología.",
+  "rareza": "comun",
+  "categoria": "cristal",
+  "especialidad": "ingeniero"
+}

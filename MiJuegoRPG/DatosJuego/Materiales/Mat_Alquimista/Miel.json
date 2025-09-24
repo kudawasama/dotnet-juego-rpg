@@ -1,0 +1,8 @@
+{
+  "id": "miel",
+  "nombre": "Miel",
+  "descripcion": "Sustancia dulce producida por abejas, útil en alquimia y cocina.",
+  "rareza": "normal",
+  "categoria": "alimento",
+  "especialidad": "alquimista, cocina"
+}

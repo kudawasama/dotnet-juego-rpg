@@ -1,0 +1,8 @@
+{
+  "id": "piedra_brillante",
+  "nombre": "Piedra Brillante",
+  "descripcion": "Piedra que emite un leve resplandor, usada en forja mágica.",
+  "rareza": "raro",
+  "categoria": "mineral",
+  "especialidad": "herrero"
+}

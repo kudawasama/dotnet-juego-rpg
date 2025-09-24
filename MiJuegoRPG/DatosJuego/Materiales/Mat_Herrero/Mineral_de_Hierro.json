@@ -1,0 +1,8 @@
+{
+  "id": "mineral_de_hierro",
+  "nombre": "Mineral de Hierro",
+  "descripcion": "Mineral básico para forja y herramientas.",
+  "rareza": "comun",
+  "categoria": "mineral",
+  "especialidad": "herrero"
+}

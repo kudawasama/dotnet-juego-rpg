@@ -41,6 +41,19 @@ Tabla de contenidos
 
 ## 1. Visión general del sistema
 
+### Modularidad de materiales y drops de enemigos (2025-09-23)
+
+Todos los materiales referenciados como drops de enemigos cuentan ahora con archivos `.json` individuales en la subcarpeta correspondiente (ejemplo: `Mat_Cocina`).
+
+Esto permite:
+
+- Integración directa con el sistema de crafteo, cocina y progresión.
+- Validación y QA automáticos desde el loader, evitando referencias huérfanas.
+- Escalabilidad para añadir nuevos materiales, recetas y drops sin modificar el código fuente.
+- Trazabilidad y documentación completa de cada material, su rareza, origen y usos.
+
+Esta modularidad es clave para la futura migración a Unity y para mantener la progresión lenta y desafiante definida en `progression_config.md`.
+
 Organización por capas con enfoque data-driven. Piezas principales (enlaces a implementación real):
 
 - Equipo: `DatosJuego/Equipo/` soporta JSON por ítem en subcarpetas por tipo (armas/armaduras/...) con carga recursiva vía `GeneradorObjetos.CargarEquipoAuto()` y fallback a archivos agregados por tipo. Selección aleatoria puede ser ponderada por rareza.

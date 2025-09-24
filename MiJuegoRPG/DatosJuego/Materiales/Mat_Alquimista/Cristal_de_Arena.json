@@ -1,0 +1,8 @@
+{
+  "id": "cristal_de_arena",
+  "nombre": "Cristal de Arena",
+  "descripcion": "Cristal formado en desiertos, usado en alquimia y tecnología.",
+  "rareza": "raro",
+  "categoria": "cristal",
+  "especialidad": "ingeniero"
+}

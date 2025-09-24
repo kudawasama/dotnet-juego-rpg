@@ -1,0 +1,8 @@
+{
+  "id": "Carne_Cruda",
+  "nombre": "Carne Cruda",
+  "descripcion": "Carne fresca y sin procesar, ideal para cocinar.",
+  "rareza": "comun",
+  "categoria": "carne",
+  "especialidad": "cocinero"
+}

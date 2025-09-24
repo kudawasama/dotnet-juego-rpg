@@ -1,0 +1,8 @@
+{
+  "id": "madera_antigua",
+  "nombre": "Madera Antigua",
+  "descripcion": "Madera de árboles milenarios, muy resistente y valiosa.",
+  "rareza": "raro",
+  "categoria": "madera",
+  "especialidad": "carpintero"
+}

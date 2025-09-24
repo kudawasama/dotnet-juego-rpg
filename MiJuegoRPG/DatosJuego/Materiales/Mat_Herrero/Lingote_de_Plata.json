@@ -1,0 +1,8 @@
+{
+  "id": "lingote_de_plata",
+  "nombre": "Lingote de Plata",
+  "descripcion": "Lingote refinado, valioso para joyería y armas especiales.",
+  "rareza": "raro",
+  "categoria": "metal",
+  "especialidad": "herrero"
+}

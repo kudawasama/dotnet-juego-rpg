@@ -1,6 +1,43 @@
 
 # Bitácora de Desarrollo
 
+## 2025-09-23 — Creación masiva de materiales de cocina (drops de enemigos)
+
+- Se completó la creación de archivos `.json` para **todos los materiales de cocina** referenciados como drops de enemigos, ubicándolos en `DatosJuego/Materiales/Mat_Cocina`.
+- Cada archivo sigue la plantilla estándar (Nombre, Descripción, Rareza, Origen, Usos) y respeta la modularidad del sistema.
+- Se verificó que no existieran duplicados y que la estructura de carpetas sea coherente con el loader y el sistema de progresión.
+- Esta acción garantiza que todos los drops de enemigos relacionados con cocina sean utilizables en recetas, crafteo y progresión.
+
+Última actualización: 2025-09-23
+
+## 2025-09-23 — Drops de enemigos y menú de combate ampliado
+
+- Se analizaron los archivos de enemigos para identificar materiales únicos en sus drops.
+- Se crearon archivos `.json` para los materiales "Miel" y "Ala de Abeja" en la subcarpeta `Mat_Alquimista`.
+- Se documentó la lógica de asignación y se recomienda repetir el proceso para todos los enemigos y biomas.
+- Se propuso y planificó la ampliación del menú de combate para incluir acciones adicionales (defenderse, observar, usar objeto especial, cambiar de posición, etc.), integrando el sistema de acciones y progresión lenta.
+
+Última actualización: 2025-09-23
+
+## 2025-09-23 — Materiales de biomas: creación masiva y organización modular
+
+- Se analizaron todos los biomas y nodos definidos en `DatosJuego/biomas.json` para extraer la lista completa de materiales únicos presentes en el mundo.
+- Se crearon archivos `.json` individuales para cada material faltante, ubicándolos en la subcarpeta de `Materiales` más lógica según su naturaleza:
+- **Mat_Herbolario**: plantas, flores, hierbas, setas, algas, frutos mágicos.
+- **Mat_Carpintero**: maderas, troncos.
+- **Mat_Herrero**: minerales, metales, gemas, lingotes, piedra.
+- **Mat_Alquimista**: savias, polvos, esencias, cristales especiales, estrella de mar.
+- **Mat_Encantador**: materiales mágicos, polvo de estrellas, esencia de luz.
+- **Mat_Sastre**: conchas, fragmentos de coral, perlas.
+- **Mat_Curtidor**: espinas, cactus, plantas resistentes.
+- **Mat_Ingeniero**: arena, arcilla, cristales comunes.
+- **Mat_Joyero**: gemas, rubíes, perlas, gemas raras.
+- Cada archivo contiene una plantilla mínima (nombre, descripción, rareza, categoría, especialidad) y puede ser ampliado según gameplay.
+- No se sobrescribió ningún material existente.
+- Esta acción permite que el loader y los sistemas de crafteo, recolección y misiones trabajen de forma modular y escalable.
+
+Última actualización: 2025-09-23
+
 ## 2025-09-23 — Modularización de clases (normales y dinámicas)
 
 - Se migraron todas las clases del juego a archivos individuales `.json` en subcarpetas por tipo (`basicas`, `avanzadas`, `especiales`), tanto para clases normales como dinámicas.

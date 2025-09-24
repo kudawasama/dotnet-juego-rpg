@@ -1,0 +1,8 @@
+{
+  "id": "madera_seca",
+  "nombre": "Madera Seca",
+  "descripcion": "Madera seca, útil para fogatas y construcción básica.",
+  "rareza": "comun",
+  "categoria": "madera",
+  "especialidad": "carpintero"
+}

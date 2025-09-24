@@ -1,0 +1,8 @@
+{
+  "id": "madera_resistente",
+  "nombre": "Madera Resistente",
+  "descripcion": "Madera dura y versátil, base para herramientas y construcciones.",
+  "rareza": "comun",
+  "categoria": "madera",
+  "especialidad": "carpintero"
+}

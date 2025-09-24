@@ -1,0 +1,132 @@
+[
+    {
+
+        "Id": "Cuerpo_Minero",
+        "Nombre": "Cuerpo de Minero",
+        "Descripcion": "Aumenta la resistencia física y la capacidad de carga al llevar equipo pesado.",
+        "Efecto": "Incrementa la resistencia física en un 15% y la capacidad de carga en un 10%.",
+        "Duracion": "Permanente",
+        "Tipo": "Pasiva",
+        "Requisitos": 
+        {
+            "clase": "Minero",
+            "NivelClase": 10,
+            "HabilidadesPrevias": ["Sangre_Minero"]
+        },
+        "Condiciones": 
+        [
+            {"Tipo": "Resistencia", "Accion": "SoportarPeso", "Cantidad": 100},
+            {"Tipo": "Recoleccion", "Accion": "Minar", "Cantidad": 100},
+            {"Tipo": "Recoleccion", "Accion": "Excavar", "Cantidad": 50},
+            {"Tipo": "Recoleccion", "Accion": "UsarPico", "Cantidad": 100},
+            {"Tipo": "Recoleccion", "Accion": "Buscar", "Cantidad": 50},
+            {"Tipo": "Recoleccion", "Accion": "Explorar", "Cantidad": 75},
+            {"NivelPersonaje": 15}
+        ],
+        "Bonificadores": 
+        {
+            "Resistencia.Fisica.Bonus": 0.15,
+            "CapacidadCarga.Bonus": 0.10
+        },
+        "Rareza": "Raro",
+        "Tier": 2,
+        "Categoria": "Habilidad Pasiva",
+
+        "Evolucion": 
+        [
+            {
+                "Id": "Cuerpo_Minero_2",
+                "Nombre": "Cuerpo de Minero Superior",
+                "Descripcion": "Aumenta significativamente la resistencia física y la capacidad de carga al llevar equipo pesado.",
+                "Efecto": "Incrementa la resistencia física en un 30% y la capacidad de carga en un 20%.",
+                "Duracion": "Permanente",
+                "Tipo": "Pasiva",
+                "Requisitos": 
+                {
+                    "clase": "Minero",
+                    "NivelClase": 20,
+                    "HabilidadesPrevias": ["Cuerpo_Minero"]
+                },
+                "Condiciones": 
+                [
+                    {"Tipo": "Resistencia", "Accion": "SoportarPeso", "Cantidad": 300},
+                    {"Tipo": "Recoleccion", "Accion": "Minar", "Cantidad": 300},
+                    {"Tipo": "Recoleccion", "Accion": "Excavar", "Cantidad": 150},
+                    {"Tipo": "Recoleccion", "Accion": "UsarPico", "Cantidad": 300},
+                    {"Tipo": "Recoleccion", "Accion": "Buscar", "Cantidad": 150},
+                    {"Tipo": "Recoleccion", "Accion": "Explorar", "Cantidad": 200},
+                    {"NivelPersonaje": 30}
+                ],
+                "Bonificadores": 
+                {
+                    "Resistencia.Fisica.Bonus": 0.30,
+                    "CapacidadCarga.Bonus": 0.20
+                },
+                "Rareza": "Epico",
+                "Tier": 3,
+                "Categoria": "Habilidad Pasiva"
+            }
+        ]
+    },
+
+    {
+        "Id": "Sangre_Minero",
+        "Nombre": "Sangre de Minero",
+        "Descripcion": "Aumenta la recolección de recursos minerales.",
+        "Efecto": "Incrementa la cantidad de minerales obtenidos en un 20%.",
+        "Duracion": "Permanente",
+        "Tipo": "Pasiva",
+        "Requisitos": {
+            "clase": "Minero",
+            "HabilidadesPrevias": []
+        },
+        "Condiciones": 
+        {
+            "Recoleccion.Minar": 100,
+            "Recoleccion.Excavar": 50,
+            "Recoleccion.UsarPico": 100,
+            "Recoleccion.Buscar": 50,
+            "Recoleccion.Explorar": 75,
+            "NivelPersonaje": 10
+        },
+        "Bonificadores": 
+        {
+            "Drop.Mineral.CantidadBonus": 0.20
+        },
+        "Rareza": "Comun",
+        "Tier": 1,
+        "Categoria": "Habilidad Pasiva",
+
+        "Evolucion": 
+        [
+            {
+                "Id": "Sangre_Minero_2",
+                "Nombre": "Sangre de Minero Avanzada",
+                "Descripcion": "Aumenta significativamente la recolección de recursos minerales.",
+                "Efecto": "Incrementa la cantidad de minerales obtenidos en un 35%.",
+                "Duracion": "Permanente",
+                "Tipo": "Pasiva",
+                "Requisitos": 
+                {
+                    "clase": "Minero",
+                    "HabilidadesPrevias": ["Sangre_Minero"]
+                },
+                "Condiciones": 
+                [
+                    {"Tipo": "Recoleccion", "Accion": "Minar", "Cantidad": 300},
+                    {"Tipo": "Recoleccion", "Accion": "Excavar", "Cantidad": 150},
+                    {"Tipo": "Recoleccion", "Accion": "UsarPico", "Cantidad": 300},
+                    {"Tipo": "Recoleccion", "Accion": "Buscar", "Cantidad": 150},
+                    {"Tipo": "Recoleccion", "Accion": "Explorar", "Cantidad": 200},
+                    {"NivelPersonaje": 20}
+                ],
+                "Bonificadores": 
+                {
+                    "Drop.Mineral.CantidadBonus": 0.35
+                },
+                "Tier": 2,
+                "Categoria": "Habilidad Pasiva"
+            }
+        ]
+    }
+]

@@ -1,0 +1,8 @@
+{
+  "id": "piedra",
+  "nombre": "Piedra",
+  "descripcion": "Material común para construcción y herramientas.",
+  "rareza": "comun",
+  "categoria": "mineral",
+  "especialidad": "herrero"
+}

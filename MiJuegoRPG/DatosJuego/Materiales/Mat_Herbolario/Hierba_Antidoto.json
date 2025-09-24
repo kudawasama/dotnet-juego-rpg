@@ -1,0 +1,8 @@
+{
+  "id": "hierba_antidoto",
+  "nombre": "Hierba Antídoto",
+  "descripcion": "Hierba utilizada para contrarrestar venenos y toxinas.",
+  "rareza": "comun",
+  "categoria": "hierba",
+  "especialidad": "herbolario"
+}

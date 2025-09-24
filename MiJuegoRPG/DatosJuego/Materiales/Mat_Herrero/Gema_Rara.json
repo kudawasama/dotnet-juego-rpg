@@ -1,0 +1,8 @@
+{
+  "id": "gema_rara",
+  "nombre": "Gema Rara",
+  "descripcion": "Gema poco común, muy apreciada por joyeros y magos.",
+  "rareza": "raro",
+  "categoria": "gema",
+  "especialidad": "joyero"
+}
