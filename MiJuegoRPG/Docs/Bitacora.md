@@ -1,5 +1,44 @@
+## 2025-09-24
+Se validó y documentó el soporte de rarezas nuevas (ej. `Epica`) y probabilidades decimales en `rareza_pesos.json`.
+El sistema acepta rarezas adicionales siempre que estén en el enum y en la configuración.
+Las probabilidades decimales (ej. 0.1 para `Ornamentada`) funcionan correctamente.
+Build y pruebas: OK.
+Última actualización: 2025-09-24
+## 2025-09-24
+Normalización de rarezas en `armas.json` para que coincidan con el enum del código (`Normal`, `Superior`, `Rara`, `Ornamentada`, `Legendaria`).
+Se corrigieron valores previos como `Comun`, `PocoComun`, `Raro`, `Epico`, `Legendario`.
+Motivo: evitar errores de deserialización y asegurar integridad de datos en combate y generación de enemigos.
+Validado con build y pruebas: OK.
+Próximos pasos: monitorear aparición de nuevas armas y rarezas en datos enemigos.
+Última actualización: 2025-09-24
+## 2025-09-23
 
-# Bitácora de Desarrollo
+**Mejora de robustez en menú admin (clases):**
+
+Última actualización: 2025-09-23
+
+## 2025-09-23 — Inserción masiva de armas de enemigos
+
+- Se automatizó la detección y creación de **todas las armas referenciadas por enemigos** que no existían en `DatosJuego/Equipo/armas.json`.
+- Cada arma se añadió con rareza `Comun`, daño base y estructura estándar, garantizando que ningún combate falle por armas inexistentes.
+- Validado con build y 70 pruebas unitarias (PASS).
+- Documentación y roadmap sincronizados.
+
+Última actualización: 2025-09-23
+
+# Bitácora de Cambios
+
+## 2025-09-23
+
+### Corrección de enums en materiales.json
+
+- Se reemplazaron todas las ocurrencias de `"Rareza": "Normal"` por `"Rareza": "Comun"` en `PjDatos/materiales.json`.
+- Motivo: evitar errores de deserialización por valores no válidos en el enum `Rareza` de C#.
+- Validado: build y pruebas exitosas, sin errores de carga de materiales.
+
+Última actualización: 2025-09-23
+
+## Bitácora de Desarrollo
 
 ## 2025-09-23 — Creación masiva de materiales de cocina (drops de enemigos)
 

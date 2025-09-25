@@ -9,7 +9,7 @@ namespace MiJuegoRPG.Objetos
         public int Nivel { get; set; }
         public int Perfeccion { get; set; }
 
-        public Cinturon(string nombre, int bonifCarga, int nivel = 1, Rareza rareza = Rareza.Normal, string categoria = "Cinturon", int perfeccion = 50)
+        public Cinturon(string nombre, int bonifCarga, int nivel = 1, string rareza = "Normal", string categoria = "Cinturon", int perfeccion = 50)
             : base(nombre, rareza, categoria)
         {
             Nivel = nivel;
@@ -17,7 +17,7 @@ namespace MiJuegoRPG.Objetos
             Perfeccion = perfeccion;
         }
 
-        public Cinturon() : base("", Rareza.Normal, "Cinturon") { }
+    public Cinturon() : base("", "Normal", "Cinturon") { }
 
         private int CalcularBonificacion(int baseValor, int perfeccion)
         {

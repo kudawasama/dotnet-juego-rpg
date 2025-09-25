@@ -1,0 +1,21 @@
+[
+    {
+        "Id": "proyectil_magico",
+        "Nombre": "Proyectil Mágico",
+        "Descripcion": "Lanza un proyectil de energía mágica que impacta contra un enemigo, causando daño moderado.",
+        "Tipo": "Habilidad Ofensiva",
+        "Efecto": "Causa 50 puntos de daño mágico al objetivo.",
+        "CostoMana": 20,
+        "TiempoRecarga": 5,
+        "Alcance": 15,
+        "AreaEfecto": "Individual",
+        "Requisitos": {
+            "clase": "Mago",
+            "NivelClase": 5,
+            "HabilidadesPrevias": ["conceptos_basicos_magia"]
+        },
+        "Condiciones": [
+            {"Tipo": "Entrenamiento", "Accion": "Meditar", "Cantidad": 100},
+            {"Tipo": "Combate", "Accion": "
+    }
+]

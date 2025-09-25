@@ -10,7 +10,7 @@ namespace MiJuegoRPG.Objetos
         public int Nivel { get; set; }
         public int Perfeccion { get; set; }
 
-        public Collar(string nombre, int bonifDefensa, int bonifEnergia, int nivel = 1, Rareza rareza = Rareza.Normal, string categoria = "Collar", int perfeccion = 50)
+        public Collar(string nombre, int bonifDefensa, int bonifEnergia, int nivel = 1, string rareza = "Normal", string categoria = "Collar", int perfeccion = 50)
             : base(nombre, rareza, categoria)
         {
             Nivel = nivel;
@@ -19,7 +19,7 @@ namespace MiJuegoRPG.Objetos
             Perfeccion = perfeccion;
         }
 
-        public Collar() : base("", Rareza.Normal, "Collar") { }
+    public Collar() : base("", "Normal", "Collar") { }
 
         private int CalcularBonificacion(int baseValor, int perfeccion)
         {

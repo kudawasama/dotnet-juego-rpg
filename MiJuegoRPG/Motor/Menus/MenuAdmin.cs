@@ -898,6 +898,8 @@ namespace MiJuegoRPG.Motor.Menus
         private void ListarClases()
         {
             if (juego.jugador == null) { juego.Ui.WriteLine("No hay jugador."); return; }
+            // Forzar carga de clases antes de mostrar
+            juego.claseService.Cargar();
             var pj = juego.jugador;
             juego.Ui.WriteLine("=== Clases Desbloqueadas ===");
             if (pj.ClasesDesbloqueadas.Count == 0) juego.Ui.WriteLine("(ninguna)");
@@ -921,17 +923,24 @@ namespace MiJuegoRPG.Motor.Menus
 
         private List<string> MotivosBloqueoClase(Personaje.Personaje pj, object def)
         {
+
             var razones = new List<string>();
-            string PropStr(string n) => def.GetType().GetProperty(n)?.GetValue(def) as string ?? string.Empty;
-            int PropInt(string n) { var v = def.GetType().GetProperty(n)?.GetValue(def); return v is int i ? i : 0; }
-            var propDictInt = def.GetType().GetProperty("AtributosRequeridos")?.GetValue(def) as System.Collections.IDictionary;
-            var propAct = def.GetType().GetProperty("ActividadRequerida")?.GetValue(def) as System.Collections.IDictionary;
-            var propStats = def.GetType().GetProperty("EstadisticasRequeridas")?.GetValue(def) as System.Collections.IDictionary;
-            var propMis = def.GetType().GetProperty("MisionesRequeridas")?.GetValue(def) as System.Collections.IEnumerable;
-            var propClasesPrev = def.GetType().GetProperty("ClasesPrevias")?.GetValue(def) as System.Collections.IEnumerable;
-            var propClasesAlguna = def.GetType().GetProperty("ClasesAlguna")?.GetValue(def) as System.Collections.IEnumerable;
-            var propExcl = def.GetType().GetProperty("ClasesExcluidas")?.GetValue(def) as System.Collections.IEnumerable;
-            var propRepFac = def.GetType().GetProperty("ReputacionFaccionMin")?.GetValue(def) as System.Collections.IDictionary;
+            string PropStr(string n)
+            {
+                try { return def?.GetType()?.GetProperty(n)?.GetValue(def) as string ?? string.Empty; } catch { return string.Empty; }
+            }
+            int PropInt(string n)
+            {
+                try { var v = def?.GetType()?.GetProperty(n)?.GetValue(def); return v is int i ? i : 0; } catch { return 0; }
+            }
+            var propDictInt = def?.GetType()?.GetProperty("AtributosRequeridos")?.GetValue(def) as System.Collections.IDictionary;
+            var propAct = def?.GetType()?.GetProperty("ActividadRequerida")?.GetValue(def) as System.Collections.IDictionary;
+            var propStats = def?.GetType()?.GetProperty("EstadisticasRequeridas")?.GetValue(def) as System.Collections.IDictionary;
+            var propMis = def?.GetType()?.GetProperty("MisionesRequeridas")?.GetValue(def) as System.Collections.IEnumerable;
+            var propClasesPrev = def?.GetType()?.GetProperty("ClasesPrevias")?.GetValue(def) as System.Collections.IEnumerable;
+            var propClasesAlguna = def?.GetType()?.GetProperty("ClasesAlguna")?.GetValue(def) as System.Collections.IEnumerable;
+            var propExcl = def?.GetType()?.GetProperty("ClasesExcluidas")?.GetValue(def) as System.Collections.IEnumerable;
+            var propRepFac = def?.GetType()?.GetProperty("ReputacionFaccionMin")?.GetValue(def) as System.Collections.IDictionary;
 
             int nivelMin = PropInt("NivelMinimo");
             int repMin = PropInt("ReputacionMinima");
@@ -940,65 +949,84 @@ namespace MiJuegoRPG.Motor.Menus
 
             // Exclusiones
             if (propExcl != null)
-                foreach (var ex in propExcl) if (pj.TieneClase(ex.ToString()!)) razones.Add("Excluida por: " + ex);
+            {
+                foreach (var ex in propExcl)
+                {
+                    if (ex == null) continue;
+                    if (pj.TieneClase(ex.ToString()!)) razones.Add("Excluida por: " + ex);
+                }
+            }
             // Clases previas
             if (propClasesPrev != null)
             {
                 var faltan = new List<string>();
-                foreach (var c in propClasesPrev) if (!pj.TieneClase(c.ToString()!)) faltan.Add(c.ToString()!);
+                foreach (var c in propClasesPrev)
+                {
+                    if (c == null) continue;
+                    if (!pj.TieneClase(c.ToString()!)) faltan.Add(c.ToString()!);
+                }
                 if (faltan.Count > 0) razones.Add("Faltan clases previas: " + string.Join(", ", faltan));
             }
             // Clases alguna
             if (propClasesAlguna != null)
             {
                 bool tieneAlguna = false; var lista = new List<string>();
-                foreach (var c in propClasesAlguna) { lista.Add(c.ToString()!); if (pj.TieneClase(c.ToString()!)) tieneAlguna = true; }
+                foreach (var c in propClasesAlguna)
+                {
+                    if (c == null) continue;
+                    lista.Add(c.ToString()!); if (pj.TieneClase(c.ToString()!)) tieneAlguna = true;
+                }
                 if (!tieneAlguna && lista.Count > 0) razones.Add("Requiere alguna de: " + string.Join(", ", lista));
             }
-            if (nivelMin > 0 && pj.Nivel < nivelMin) razones.Add($"Nivel {pj.Nivel}/{nivelMin}");
-            if (repMin > 0 && pj.Reputacion < repMin) razones.Add($"Reputación {pj.Reputacion}/{repMin}");
-            if (propRepFac != null)
+            if (nivelMin > 0 && pj != null && pj.Nivel < nivelMin) razones.Add($"Nivel {(pj?.Nivel ?? 0)}/{nivelMin}");
+            if (repMin > 0 && pj != null && pj.Reputacion < repMin) razones.Add($"Reputación {(pj?.Reputacion ?? 0)}/{repMin}");
+            if (propRepFac != null && pj != null && pj.ReputacionesFaccion != null)
             {
                 foreach (System.Collections.DictionaryEntry kv in propRepFac)
                 {
+                    if (kv.Key == null) continue;
                     pj.ReputacionesFaccion.TryGetValue(kv.Key.ToString()!, out var v);
                     int req = kv.Value is int i ? i : 0;
                     if (v < req) razones.Add($"Reputación {kv.Key} {v}/{req}");
                 }
             }
-            if (!string.IsNullOrWhiteSpace(misionUnica) && !pj.MisionesCompletadas.Any(m => m.Id.Equals(misionUnica, StringComparison.OrdinalIgnoreCase) || m.Nombre.Equals(misionUnica, StringComparison.OrdinalIgnoreCase))) razones.Add("Misión única no completada: " + misionUnica);
-            if (!string.IsNullOrWhiteSpace(objetoUnico) && !pj.Inventario.NuevosObjetos.Any(o => o.Objeto.Nombre.Equals(objetoUnico, StringComparison.OrdinalIgnoreCase))) razones.Add("Objeto único faltante: " + objetoUnico);
-            if (propMis != null)
+            if (!string.IsNullOrWhiteSpace(misionUnica) && pj != null && pj.MisionesCompletadas != null && !pj.MisionesCompletadas.Any(m => (m?.Id ?? "").Equals(misionUnica, StringComparison.OrdinalIgnoreCase) || (m?.Nombre ?? "").Equals(misionUnica, StringComparison.OrdinalIgnoreCase))) razones.Add("Misión única no completada: " + misionUnica);
+            if (!string.IsNullOrWhiteSpace(objetoUnico) && pj != null && pj.Inventario != null && pj.Inventario.NuevosObjetos != null && !pj.Inventario.NuevosObjetos.Any(o => o?.Objeto?.Nombre != null && o.Objeto.Nombre.Equals(objetoUnico, StringComparison.OrdinalIgnoreCase))) razones.Add("Objeto único faltante: " + objetoUnico);
+            if (propMis != null && pj != null && pj.MisionesCompletadas != null)
             {
                 var faltanMis = new List<string>();
                 foreach (var m in propMis)
                 {
-                    if (!pj.MisionesCompletadas.Any(x => x.Id.Equals(m.ToString(), StringComparison.OrdinalIgnoreCase) || x.Nombre.Equals(m.ToString(), StringComparison.OrdinalIgnoreCase))) faltanMis.Add(m.ToString()!);
+                    if (m == null) continue;
+                    if (!pj.MisionesCompletadas.Any(x => (x?.Id ?? "").Equals(m.ToString(), StringComparison.OrdinalIgnoreCase) || (x?.Nombre ?? "").Equals(m.ToString(), StringComparison.OrdinalIgnoreCase))) faltanMis.Add(m.ToString()!);
                 }
                 if (faltanMis.Count > 0) razones.Add("Misiones pendientes: " + string.Join(", ", faltanMis));
             }
-            if (propDictInt != null)
+            if (propDictInt != null && pj != null)
             {
                 foreach (System.Collections.DictionaryEntry kv in propDictInt)
                 {
+                    if (kv.Key == null) continue;
                     double val = ObtenerAtributo(pj, kv.Key.ToString()!);
                     int req = kv.Value is int i ? i : 0;
                     if (val < req) razones.Add($"{kv.Key} {val:F1}/{req}");
                 }
             }
-            if (propAct != null)
+            if (propAct != null && pj != null && pj.ContadoresActividad != null)
             {
                 foreach (System.Collections.DictionaryEntry kv in propAct)
                 {
+                    if (kv.Key == null) continue;
                     pj.ContadoresActividad.TryGetValue(kv.Key.ToString()!, out var v);
                     int req = kv.Value is int i ? i : 0;
                     if (v < req) razones.Add($"Actividad {kv.Key} {v}/{req}");
                 }
             }
-            if (propStats != null)
+            if (propStats != null && pj != null)
             {
                 foreach (System.Collections.DictionaryEntry kv in propStats)
                 {
+                    if (kv.Key == null) continue;
                     double val = ObtenerEstadistica(pj, kv.Key.ToString()!);
                     int req = kv.Value is int i ? i : 0;
                     if (val < req) razones.Add($"Stat {kv.Key} {val:F1}/{req}");
@@ -1110,10 +1138,14 @@ namespace MiJuegoRPG.Motor.Menus
 
         private void ForzarClase()
         {
-            if (juego.jugador == null) { juego.Ui.WriteLine("No hay jugador."); return; }
-            var pj = juego.jugador;
-            var nombre = InputService.LeerOpcion("Nombre exacto de la clase a forzar: ").Trim();
-            if (string.IsNullOrWhiteSpace(nombre)) { juego.Ui.WriteLine("Nombre vacío."); return; }
+    if (juego.jugador == null) { juego.Ui.WriteLine("No hay jugador."); return; }
+    // Forzar carga de clases antes de mostrar
+    juego.claseService.Cargar();
+    var pj = juego.jugador;
+    // Mostrar lista de clases antes de pedir el nombre
+    ListarClases();
+    var nombre = InputService.LeerOpcion("Nombre exacto de la clase a forzar (ver arriba): ").Trim();
+    if (string.IsNullOrWhiteSpace(nombre)) { juego.Ui.WriteLine("Nombre vacío."); return; }
 
             // Obtener definiciones mediante reflexión
                 var campoDefs = typeof(Motor.Servicios.ClaseDinamicaService).GetField("defs", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);

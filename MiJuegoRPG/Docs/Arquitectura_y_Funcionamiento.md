@@ -1,4 +1,63 @@
+### Rarezas y probabilidades de aparición
+
+El sistema de equipo permite definir rarezas adicionales (por ejemplo, `Epica`) siempre que:
+
+- Se agregue el valor al enum `Rareza` en el código.
+- Se incluya en los archivos de configuración (`rareza_pesos.json`, `rareza_perfeccion.json`).
+- Se use de forma consistente en los datos de objetos.
+
+Las probabilidades de aparición pueden ser decimales (por ejemplo, `"Ornamentada": 0.1`), lo que permite controlar la rareza de aparición de forma precisa.
+
+Validado en build y pruebas (2025-09-24).
+Última actualización: 2025-09-24
+### Convención de rarezas para equipo (armas.json)
+
+Todos los valores de rareza en los archivos de equipo deben coincidir exactamente con el enum `Rareza` definido en `EnumsObjetos.cs`:
+
+```
+public enum Rareza { Rota, Pobre, Normal, Superior, Rara, Legendaria, Ornamentada }
+```
+
+Mapeo aplicado (2025-09-24):
+
+- `Comun` → `Normal`
+- `PocoComun` → `Superior`
+- `Raro` → `Rara`
+- `Epico` → `Ornamentada`
+- `Legendario`/`Legendaria` → `Legendaria`
+
+Esto es obligatorio para evitar errores de deserialización y garantizar la integridad de datos en combate y generación de enemigos.
+Última actualización: 2025-09-24
+#### 2025-09-23: Robustez en menú admin (clases)
+
+Se reforzó la función `MotivosBloqueoClase` para que todos los accesos a propiedades y colecciones sean seguros ante valores nulos o datos incompletos.
+Esto garantiza que el menú de administración de clases nunca lanza excepción y siempre muestra los requisitos, aunque falte información en los datos o definiciones.
+El cambio es retrocompatible y no afecta la lógica de progresión ni el desbloqueo de clases.
+
+#### 2025-09-23: Inserción masiva de armas de enemigos
+
+Se automatizó la detección y creación de todas las armas referenciadas por enemigos en los JSON de enemigos.
+Ahora, cada arma referenciada existe en `armas.json` con rareza y estructura válidas, evitando errores de combate por datos faltantes.
+El proceso es repetible y puede adaptarse a futuras expansiones de enemigos o biomas.
+Validado con build y pruebas unitarias (PASS).
+
+Última actualización: 2025-09-23
 # MiJuegoRPG — Arquitectura y Funcionamiento (Estudio Detallado)
+
+## Validación de enums en archivos de datos
+
+Todos los archivos JSON que contienen campos de tipo enum (por ejemplo, `Rareza` en materiales, armas, objetos) deben usar exactamente los mismos valores definidos en los enums de C#.
+
+**Ejemplo:**
+
+- Correcto: `"Rareza": "Comun"`
+- Incorrecto: `"Rareza": "Normal"` (no existe en el enum)
+
+Se recomienda validar los datos antes de cargar y mantener tests que verifiquen la correspondencia entre los datos y los enums del código.
+
+Última actualización: 2025-09-23
+
+## Introducción y Documentos Relacionados
 
 Objetivo: documentar con nivel de ingeniería la estructura, el flujo y las reglas del juego para facilitar mantenimiento, onboarding y futura migración a Unity. Este documento sirve como guía viva y complementa `Roadmap.md` y `progression_config.md`.
 

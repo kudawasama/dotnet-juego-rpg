@@ -11,18 +11,21 @@ namespace MiJuegoRPG.Objetos
         public int Nivel { get; set; }
         public Dictionary<string, double>? BonificadorAtributos { get; set; }
 
-        private static readonly Dictionary<Rareza, double> MultiplicadoresRareza = new Dictionary<Rareza, double>
+        /// <summary>
+        /// Multiplicadores de rareza dinámicos (se recomienda obtenerlos desde RarezaConfig)
+        /// </summary>
+        public static Dictionary<string, double> MultiplicadoresRareza { get; set; } = new Dictionary<string, double>
         {
-            { Rareza.Rota, 0.05 },
-            { Rareza.Pobre, 0.20 },
-            { Rareza.Normal, 0.50 },
-            { Rareza.Superior, 0.70 },
-            { Rareza.Rara, 0.85 },
-            { Rareza.Legendaria, 0.95 },
-            { Rareza.Ornamentada, 1.0 }
+            { "Rota", 0.05 },
+            { "Pobre", 0.20 },
+            { "Normal", 0.50 },
+            { "Superior", 0.70 },
+            { "Rara", 0.85 },
+            { "Legendaria", 0.95 },
+            { "Ornamentada", 1.0 }
         };
 
-        public Arma(string nombre, int dañoBase, int nivel = 1, Rareza rareza = Rareza.Normal, string categoria = "UnaMano") : base(nombre, rareza, categoria)
+        public Arma(string nombre, int dañoBase, int nivel = 1, string rareza = "Normal", string categoria = "UnaMano") : base(nombre, rareza, categoria)
         {
             Nivel = nivel;
             DañoFisico = CalcularDaño(dañoBase, nivel, rareza);
@@ -30,9 +33,9 @@ namespace MiJuegoRPG.Objetos
             Perfeccion = 50;
         }
 
-        public Arma() : base("", Rareza.Normal, "UnaMano") { }
+        public Arma() : base("", "Normal", "UnaMano") { }
         // Constructor extendido para permitir setear perfección
-        public Arma(string nombre, int dañoBase, int nivel, Rareza rareza, string categoria, int perfeccion, int bonificadorAtributos)
+        public Arma(string nombre, int dañoBase, int nivel, string rareza, string categoria, int perfeccion, int bonificadorAtributos)
             : base(nombre, rareza, categoria)
         {
             Nivel = nivel;
@@ -41,14 +44,11 @@ namespace MiJuegoRPG.Objetos
             Perfeccion = perfeccion;
         }
 
-        private int CalcularDaño(int dañoBase, int nivel, Rareza rareza)
+        private int CalcularDaño(int dañoBase, int nivel, string rareza)
         {
             var random = MiJuegoRPG.Motor.Servicios.RandomService.Instancia;
-            // Daño base escalado por nivel (ejemplo: dañoBase * nivel)
             int dañoEscalado = dañoBase + (int)(dañoBase * (nivel - 1) * 0.5);
-            // Multiplicador por rareza
             double mult = MultiplicadoresRareza.ContainsKey(rareza) ? MultiplicadoresRareza[rareza] : 1.0;
-            // Daño aleatorio entre 90% y 110% del daño escalado
             int dañoAleatorio = random.Next((int)(dañoEscalado * 0.9), (int)(dañoEscalado * 1.1) + 1);
             return (int)(dañoAleatorio * mult);
         }

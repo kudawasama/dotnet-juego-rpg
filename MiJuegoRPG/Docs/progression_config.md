@@ -1,3 +1,4 @@
+<!-- Última actualización: 2025-09-23 -->
 # Documentación detallada de progression.json
 
 Este documento define, con precisión operativa, los parámetros de balance para la progresión de atributos por actividad y la regeneración de maná, incluyendo fórmulas en orden de aplicación, valores recomendados, ejemplos numéricos paso a paso, y notas de integración con los servicios del juego.

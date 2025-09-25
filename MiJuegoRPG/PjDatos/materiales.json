@@ -11,107 +11,112 @@
   },
   {
     "Nombre": "Ala de Murci\u00E9lago",
-    "Rareza": "Normal",
+    "Rareza": "Comun",
     "Categoria": "Material"
   },
   {
     "Nombre": "Cola de Rat\u00F3n",
-    "Rareza": "Normal",
+    "Rareza": "Comun",
     "Categoria": "Material"
   },
   {
     "Nombre": "Queso Salvaje",
-    "Rareza": "Normal",
+    "Rareza": "Comun",
     "Categoria": "Material"
   },
   {
     "Nombre": "Ala de Murci\u00E9lago",
-    "Rareza": "Normal",
+    "Rareza": "Comun",
     "Categoria": "Material"
   },
   {
     "Nombre": "Garra de Oso",
-    "Rareza": "Normal",
+    "Rareza": "Comun",
     "Categoria": "Material"
   },
   {
     "Nombre": "Piel de Oso",
-    "Rareza": "Normal",
+    "Rareza": "Comun",
     "Categoria": "Material"
   },
   {
     "Nombre": "Cola de Zorro",
-    "Rareza": "Normal",
+    "Rareza": "Comun",
     "Categoria": "Material"
   },
   {
     "Nombre": "Ala de Avispa",
-    "Rareza": "Normal",
+    "Rareza": "Comun",
     "Categoria": "Material"
   },
   {
     "Nombre": "Veneno de Avispa",
-    "Rareza": "Normal",
+    "Rareza": "Comun",
     "Categoria": "Material"
   },
   {
     "Nombre": "Seda Real",
-    "Rareza": "Normal",
+    "Rareza": "Comun",
     "Categoria": "Material"
   },
   {
     "Nombre": "Gl\u00E1ndula de Veneno",
-    "Rareza": "Normal",
+    "Rareza": "Comun",
     "Categoria": "Material"
   },
   {
     "Nombre": "Cola de Rat\u00F3n",
-    "Rareza": "Normal",
+    "Rareza": "Comun",
     "Categoria": "Material"
   },
   {
     "Nombre": "Queso Salvaje",
-    "Rareza": "Normal",
+    "Rareza": "Comun",
     "Categoria": "Material"
   },
   {
     "Nombre": "Escama de Lagarto",
-    "Rareza": "Normal",
+    "Rareza": "Comun",
     "Categoria": "Material"
   },
   {
     "Nombre": "Cola de Lagarto",
-    "Rareza": "Normal",
+    "Rareza": "Comun",
     "Categoria": "Material"
   },
   {
     "Nombre": "Miel",
-    "Rareza": "Normal",
+    "Rareza": "Comun",
     "Categoria": "Material"
   },
   {
     "Nombre": "Ala de Abeja",
-    "Rareza": "Normal",
+    "Rareza": "Comun",
     "Categoria": "Material"
   },
   {
     "Nombre": "Espina de Erizo",
-    "Rareza": "Normal",
+    "Rareza": "Comun",
     "Categoria": "Material"
   },
   {
     "Nombre": "Pluma Negra",
-    "Rareza": "Normal",
+    "Rareza": "Comun",
     "Categoria": "Material"
   },
   {
     "Nombre": "N\u00FAcleo de Corteza",
-    "Rareza": "Normal",
+    "Rareza": "Comun",
     "Categoria": "Material"
   },
   {
     "Nombre": "Fibra Viva",
-    "Rareza": "Normal",
+    "Rareza": "Comun",
+    "Categoria": "Material"
+  },
+  {
+    "Nombre": "Oreja de Goblin",
+    "Rareza": "Comun",
     "Categoria": "Material"
   }
 ]

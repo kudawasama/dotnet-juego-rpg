@@ -416,7 +416,7 @@
     "Rareza": "Unica en el Universo",
     "Oculta": true,
     "ClasesPrevias": [],
-    "NivelMinimo": 0,
+    "NivelMinimo": 999,
     "AtributosRequeridos": { },
     "EstadisticasRequeridas": { },
     "MisionesRequeridas": [],

@@ -809,24 +809,32 @@ namespace MiJuegoRPG.Motor
             }
         }
 
-        private void MostrarMenuCombate()
+        /// <summary>
+        /// Muestra el menú de combate principal, recibiendo el enemigo actual como parámetro.
+        /// </summary>
+        /// <param name="enemigoActual">Instancia del enemigo actual en combate.</param>
+        public void MostrarMenuCombate(Enemigo enemigoActual)
         {
             while (true)
             {
-                juego.Ui.WriteLine("\n=== Combate ===");
+                juego.Ui.WriteLine("\n=== MENÚ DE COMBATE ===");
                 juego.Ui.WriteLine("1. Atacar");
-                juego.Ui.WriteLine("2. Usar habilidad");
-                juego.Ui.WriteLine("3. Usar objeto");
-                juego.Ui.WriteLine("4. Huir");
-                juego.Ui.WriteLine("5. Menú principal (fijo)");
-                var opcion = InputService.LeerOpcion("Seleccione una opción: ");
+                juego.Ui.WriteLine("2. Hechizo/Habilidades");
+                juego.Ui.WriteLine("3. Defenderse");
+                juego.Ui.WriteLine("4. Observar");
+                juego.Ui.WriteLine("5. Usar objeto especial");
+                juego.Ui.WriteLine("6. Cambiar de posición");
+                juego.Ui.WriteLine("7. Huir");
+                juego.Ui.WriteLine("8. Acciones");
+                juego.Ui.WriteLine("9. Menú principal (fijo)");
+                var opcion = InputService.LeerOpcion("Elige una acción: ");
                 switch (opcion)
                 {
                     case "1":
                         // Lógica de ataque
                         break;
                     case "2":
-                        // Usar habilidad
+                        // Hechizo/Habilidades
                         if (juego.jugador == null || juego.jugador.Habilidades == null || juego.jugador.Habilidades.Count == 0)
                         {
                             juego.Ui.WriteLine("No tienes habilidades disponibles.");
@@ -853,12 +861,33 @@ namespace MiJuegoRPG.Motor
                         }
                         break;
                     case "3":
-                        // Lógica de objeto
+                        juego.Ui.WriteLine("Te pones en guardia y aumentas tu defensa temporalmente.");
+                        // Aquí se integrará la lógica real de defenderse
                         break;
                     case "4":
-                        // Lógica de huida
-                        return;
+                        juego.Ui.WriteLine("Observas cuidadosamente al enemigo...");
+                        // Aquí se integrará la lógica real de observar
+                        break;
                     case "5":
+                        juego.Ui.WriteLine("Usas un objeto especial...");
+                        // Aquí se integrará la lógica real de usar objeto especial
+                        break;
+                    case "6":
+                        juego.Ui.WriteLine("Cambias de posición en el campo de batalla.");
+                        // Aquí se integrará la lógica real de cambiar de posición
+                        break;
+                    case "7":
+                        juego.Ui.WriteLine("Intentas huir del combate...");
+                        // Aquí se integrará la lógica real de huida
+                        return;
+                    case "8":
+                        if (juego.jugador is MiJuegoRPG.Personaje.Personaje pjConcreto)
+                            MiJuegoRPG.Motor.Menus.MenuCombateAvanzado.Mostrar(pjConcreto, enemigoActual, string.Empty);
+
+                        else
+                            juego.Ui.WriteLine("Error: El jugador no es del tipo esperado para el menú avanzado.");
+                        break;
+                    case "9":
                         MostrarMenuPrincipalFijo();
                         break;
                     default:

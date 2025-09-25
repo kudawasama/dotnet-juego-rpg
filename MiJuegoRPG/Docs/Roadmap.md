@@ -1,4 +1,21 @@
-# Mapa
+- [x] Normalizar rarezas en armas.json para evitar errores de enum y runtime.
+  - Validar que todos los valores coincidan con el enum del código.
+  - Documentar el mapeo y la convención en la bitácora y arquitectura.
+### 2025-09-23
+- [MEJORA] Robustez en menú admin: null-checks y tolerancia a datos incompletos en requisitos de clase (`MotivosBloqueoClase`).
+- Validado con build y tests.
+
+# Roadmap
+
+## 2025-09-23
+
+### 2025-09-23
+- [MEJORA] Inserción masiva de armas de enemigos: todas las armas referenciadas por enemigos ahora existen en `armas.json`.
+- [x] Validación de build y 70 pruebas unitarias tras la inserción masiva (PASS).
+
+- [x] Validación de build y pruebas tras la corrección.
+
+## Mapa
 
 ## QoL Menú Administrador (clases y QA de objetos)
 

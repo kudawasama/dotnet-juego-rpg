@@ -1,7 +1,7 @@
 {
   "Nombre": "Veneno de Araña",
   "Descripcion": "",
-  "Rareza": "Normal",
+  "Rareza": "Comun",
   "Origen": "Animal",
   "Usos": ["Alquimia", "Cocina"]
 }

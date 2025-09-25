@@ -9,7 +9,7 @@ namespace MiJuegoRPG.Objetos
         public int Nivel { get; set; }
         public int Perfeccion { get; set; }
 
-        public Botas(string nombre, int defensa, int nivel = 1, Rareza rareza = Rareza.Normal, string categoria = "Botas", int perfeccion = 50)
+        public Botas(string nombre, int defensa, int nivel = 1, string rareza = "Normal", string categoria = "Botas", int perfeccion = 50)
             : base(nombre, rareza, categoria)
         {
             Nivel = nivel;
@@ -17,7 +17,7 @@ namespace MiJuegoRPG.Objetos
             Perfeccion = perfeccion;
         }
 
-        public Botas() : base("", Rareza.Normal, "Botas") { }
+    public Botas() : base("", "Normal", "Botas") { }
 
         private int CalcularDefensa(int defensaBase, int perfeccion)
         {

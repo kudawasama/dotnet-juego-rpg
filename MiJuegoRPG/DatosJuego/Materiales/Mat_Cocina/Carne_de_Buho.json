@@ -1,7 +1,7 @@
 {
   "Nombre": "Carne de Búho",
   "Descripcion": "",
-  "Rareza": "Normal",
+  "Rareza": "Comun",
   "Origen": "Animal",
   "Usos": ["Cocina"]
 }

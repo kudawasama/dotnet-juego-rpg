@@ -33,7 +33,7 @@ También puedes usar las tareas de VS Code del workspace:
 - Build: "Build .NET project" → `dotnet build`
 - Tests: "Compilar y ejecutar pruebas" → `dotnet test --nologo`
 - Ejecutar juego: "Compilar y ejecutar juego para probar nombres de sectores"
- - Ejecutar TestGeneradorObjetos: "Ejecutar TestGeneradorObjetos" → `dotnet run --project MiJuegoRPG.csproj --no-build`
+- Ejecutar TestGeneradorObjetos: "Ejecutar TestGeneradorObjetos" → `dotnet run --project MiJuegoRPG.csproj --no-build`
 
 ## Referencia de CLI y herramientas
 
@@ -130,16 +130,16 @@ Este índice es la fuente única de verdad (SSOT) para estudiar el proyecto. Los
 
 - Flujo del juego y navegación: ver [Flujo.txt](../../Flujo.txt)
 
-	- Menú Principal → [link directo](../../Flujo.txt#menu-principal-del-juego-juegoiniciar)
-	- Menú de Rutas → [link directo](../../Flujo.txt#menu-de-rutas-juegomostrarmenurutas)
-	- Menú de Ciudad → [link directo](../../Flujo.txt#menu-de-ciudad-menuciudad)
-	- Menú Fuera de Ciudad → [link directo](../../Flujo.txt#menu-fuera-de-ciudad-menufueraciudad)
-	- Menú de Combate → [link directo](../../Flujo.txt#menu-de-combate-base-actual)
+- Menú Principal → [link directo](../../Flujo.txt#menu-principal-del-juego-juegoiniciar)
+- Menú de Rutas → [link directo](../../Flujo.txt#menu-de-rutas-juegomostrarmenurutas)
+- Menú de Ciudad → [link directo](../../Flujo.txt#menu-de-ciudad-menuciudad)
+- Menú Fuera de Ciudad → [link directo](../../Flujo.txt#menu-fuera-de-ciudad-menufueraciudad)
+- Menú de Combate → [link directo](../../Flujo.txt#menu-de-combate-base-actual)
 - Arquitectura (contratos, servicios, pipelines): [Arquitectura_y_Funcionamiento.md](./Arquitectura_y_Funcionamiento.md)
 
-	- Pipeline de combate → [orden de etapas](./Arquitectura_y_Funcionamiento.md#4-combate-pipeline-y-estados)
-	- Servicios base → [Random/Progression/Energía/Supervivencia](./Arquitectura_y_Funcionamiento.md#1-visión-general-del-sistema)
-	- Contratos de combate → [Interfaces y DTOs](./Arquitectura_y_Funcionamiento.md#15-apéndice-de-contratos-interfaces-y-dtos)
+- Pipeline de combate → [orden de etapas](./Arquitectura_y_Funcionamiento.md#4-combate-pipeline-y-estados)
+- Servicios base → [Random/Progression/Energía/Supervivencia](./Arquitectura_y_Funcionamiento.md#1-visión-general-del-sistema)
+- Contratos de combate → [Interfaces y DTOs](./Arquitectura_y_Funcionamiento.md#15-apéndice-de-contratos-interfaces-y-dtos)
 - Progresión (parámetros y fórmulas): [progression_config.md](./progression_config.md)
 - Roadmap (plan/estado): [Roadmap.md](./Roadmap.md)
 - Bitácora (historial cronológico): [Bitacora.md](./Bitacora.md)
@@ -149,8 +149,8 @@ Este índice es la fuente única de verdad (SSOT) para estudiar el proyecto. Los
 
 - Carpeta: `MiJuegoRPG/DatosJuego/habilidades/**`
 - Formatos soportados por el loader:
-	- Lista agregada (array) con múltiples habilidades.
-	- Un archivo por habilidad (objeto) en subcarpetas temáticas (p. ej., `Hab_Fisicas/GolpeFuerte.json`).
+- Lista agregada (array) con múltiples habilidades.
+- Un archivo por habilidad (objeto) en subcarpetas temáticas (p. ej., `Hab_Fisicas/GolpeFuerte.json`).
 - Recomendado: per-file para facilitar edición y revisión.
 
 Última actualización: 2025-09-22

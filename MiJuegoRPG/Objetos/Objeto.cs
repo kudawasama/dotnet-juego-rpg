@@ -8,7 +8,7 @@ namespace MiJuegoRPG.Objetos
     public abstract class Objeto
     {
         public string Nombre { get; set; }
-        public Rareza Rareza { get; set; }
+        public string Rareza { get; set; }
         public string Categoria { get; set; }
         /// <summary>
         /// Identificador opcional de set (para aplicar bonos por umbral de piezas equipadas).
@@ -20,7 +20,7 @@ namespace MiJuegoRPG.Objetos
         /// </summary>
         public List<HabilidadOtorgadaRef>? HabilidadesOtorgadas { get; set; }
 
-        public Objeto(string nombre, Rareza rareza = Rareza.Normal, string categoria = "Otro")
+        public Objeto(string nombre, string rareza = "Normal", string categoria = "Otro")
         {
             Nombre = nombre;
             Rareza = rareza;

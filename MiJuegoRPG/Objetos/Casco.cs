@@ -9,7 +9,7 @@ namespace MiJuegoRPG.Objetos
         public int Defensa { get; set; }
         public int Nivel { get; set; }
 
-        public Casco(string nombre, int defensaBase, int nivel = 1, Rareza rareza = Rareza.Normal, string categoria = "Cabeza", int perfeccion = 50)
+        public Casco(string nombre, int defensaBase, int nivel = 1, string rareza = "Normal", string categoria = "Cabeza", int perfeccion = 50)
             : base(nombre, rareza, categoria)
         {
             Nivel = nivel;
@@ -17,14 +17,25 @@ namespace MiJuegoRPG.Objetos
             Perfeccion = perfeccion;
         }
 
-        public Casco() : base("", Rareza.Normal, "Cabeza") { }
+    public Casco() : base("", "Normal", "Cabeza") { }
 
-        private int CalcularDefensa(int defensaBase, int nivel, Rareza rareza)
+        /// <summary>
+        /// Calcula la defensa del casco escalando por nivel y rareza dinámica.
+        /// Usa el multiplicador de rareza desde RarezaConfig (JSON), no hardcode.
+        /// </summary>
+        /// <param name="defensaBase">Defensa base del casco.</param>
+        /// <param name="nivel">Nivel del objeto.</param>
+        /// <param name="rareza">Rareza (string, dinámica).</param>
+        /// <returns>Defensa final escalada y ajustada por rareza.</returns>
+        private int CalcularDefensa(int defensaBase, int nivel, string rareza)
         {
             var random = MiJuegoRPG.Motor.Servicios.RandomService.Instancia;
             int defensaEscalada = defensaBase + (int)(defensaBase * (nivel - 1) * 0.5);
             double mult = 1.0;
-            // Puedes agregar lógica de multiplicadores por rareza si lo deseas
+            // Obtener multiplicador de rareza desde RarezaConfig
+            var rarezaConfig = MiJuegoRPG.Objetos.RarezaConfig.Instancia;
+            if (rarezaConfig != null && rarezaConfig.Multiplicadores.TryGetValue(rareza, out var m))
+                mult = m;
             int defensaAleatoria = random.Next((int)(defensaEscalada * 0.9), (int)(defensaEscalada * 1.1) + 1);
             return (int)(defensaAleatoria * mult);
         }

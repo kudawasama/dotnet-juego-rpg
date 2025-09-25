@@ -67,5 +67,11 @@
   { "Id": "MejorarEquipo", "Descripcion": "Mejorar las estadísticas de un equipo.", "Aplicacion": "Seleccionar un equipo y usar la opción de mejora en la mesa de trabajo." },
   { "Id": "Cocinar", "Descripcion": "Preparar alimentos cocinados.", "Aplicacion": "Usar la opción de cocina en la ciudad o refugio." },
   { "Id": "Hornear", "Descripcion": "Hornear pan u otros productos.", "Aplicacion": "Usar la opción de horno en la ciudad o refugio." },
-  { "Id": "Fermentar", "Descripcion": "Fermentar bebidas alcohólicas.", "Aplicacion": "Usar la opción de fermentación en la ciudad o refugio." }
+  { "Id": "Fermentar", "Descripcion": "Fermentar bebidas alcohólicas.", "Aplicacion": "Usar la opción de fermentación en la ciudad o refugio." },
+  { "Id": "Destilar", "Descripcion": "Destilar líquidos para obtener alcohol.", "Aplicacion": "Usar la opción de destilación en la ciudad o refugio." },
+  { "Id": "DetectarEnergia", "Descripcion": "Detectar fuentes de energía mágica.", "Aplicacion": "Usar la opción de detección en áreas con energía mágica." },
+  { "Id": "SentirMana", "Descripcion": "Sentir la presencia de maná en el entorno.", "Aplicacion": "Usar la opción de sentir maná en áreas con alta concentración mágica." },
+  { "Id": "CanalizarMana", "Descripcion": "Canalizar maná para potenciar habilidades.", "Aplicacion": "Usar la opción de canalización en combate o exploración." },
+  { "Id": "AcumularMana", "Descripcion": "Acumular maná para futuras habilidades.", "Aplicacion": "Usar la opción de acumulación en combate o exploración." },
+  
 ]

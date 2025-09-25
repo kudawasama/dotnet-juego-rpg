@@ -24,29 +24,8 @@ namespace MiJuegoRPG.Motor
         /// </summary>
         public static bool UsaSeleccionPonderadaRareza { get; set; } = true;
 
-        // Pesos por rareza (más alto = más probable). Ajustados para progresión lenta.
-        private static Dictionary<MiJuegoRPG.Objetos.Rareza, int> PesosRareza = new()
-        {
-            { MiJuegoRPG.Objetos.Rareza.Rota, 50 },
-            { MiJuegoRPG.Objetos.Rareza.Pobre, 35 },
-            { MiJuegoRPG.Objetos.Rareza.Normal, 20 },
-            { MiJuegoRPG.Objetos.Rareza.Superior, 7 },
-            { MiJuegoRPG.Objetos.Rareza.Rara, 3 },
-            { MiJuegoRPG.Objetos.Rareza.Legendaria, 1 },
-            { MiJuegoRPG.Objetos.Rareza.Ornamentada, 1 } // Ornamentada se considera ultra rara
-        };
-
-        // Rangos de perfección por rareza; por defecto reflejan el mapeo histórico.
-        private static Dictionary<MiJuegoRPG.Objetos.Rareza, (int min, int max)> PerfeccionRangos = new()
-        {
-            { MiJuegoRPG.Objetos.Rareza.Rota, (10, 20) },
-            { MiJuegoRPG.Objetos.Rareza.Pobre, (20, 49) },
-            { MiJuegoRPG.Objetos.Rareza.Normal, (50, 50) },
-            { MiJuegoRPG.Objetos.Rareza.Superior, (51, 60) },
-            { MiJuegoRPG.Objetos.Rareza.Rara, (61, 75) },
-            { MiJuegoRPG.Objetos.Rareza.Legendaria, (75, 89) },
-            { MiJuegoRPG.Objetos.Rareza.Ornamentada, (90, 100) }
-        };
+        // Configuración dinámica de rarezas (fuente: JSON)
+        private static MiJuegoRPG.Objetos.RarezaConfig? rarezaConfig;
 
         /// <summary>
         /// Carga todos los ítems desde carpetas por tipo bajo DatosJuego/Equipo, si existen.
@@ -58,34 +37,38 @@ namespace MiJuegoRPG.Motor
             try
             {
                 string baseDir = MiJuegoRPG.Motor.Servicios.PathProvider.CombineData("Equipo");
-                TryCargarPesosRareza(baseDir);
-                TryCargarRangosPerfeccionPorRareza(baseDir);
+                string configDir = MiJuegoRPG.Motor.Servicios.PathProvider.ConfigPath("");
+                // Inicializar configuración de rarezas
+                rarezaConfig = new MiJuegoRPG.Objetos.RarezaConfig();
+                rarezaConfig.Cargar(
+                    Path.Combine(configDir, "rareza_pesos.json"),
+                    Path.Combine(configDir, "rareza_perfeccion.json")
+                );
+
                 bool hayCarpetas = Directory.Exists(baseDir) && Directory.GetDirectories(baseDir).Length > 0;
 
                 if (hayCarpetas)
                 {
                     armasDisponibles = CargarListaDesdeCarpeta<ArmaData>(Path.Combine(baseDir, "armas"));
-                    armadurasDisponibles = CargarListaDesdeCarpeta<ArmaduraData>(Path.Combine(baseDir, "armaduras"));
-                    accesoriosDisponibles = CargarAccesoriosDesdeCarpetaTolerante(Path.Combine(baseDir, "accesorios"));
-                    botasDisponibles = CargarListaDesdeCarpeta<BotasData>(Path.Combine(baseDir, "botas"));
-                    cascosDisponibles = CargarListaDesdeCarpeta<CascoData>(Path.Combine(baseDir, "cascos"));
-                    cinturonesDisponibles = CargarListaDesdeCarpeta<CinturonData>(Path.Combine(baseDir, "cinturones"));
-                    collaresDisponibles = CargarListaDesdeCarpeta<CollarData>(Path.Combine(baseDir, "collares"));
-                    pantalonesDisponibles = CargarListaDesdeCarpeta<PantalonData>(Path.Combine(baseDir, "pantalones"));
-                    // mochilas: si se agrega clase MochilaData en el futuro, aquí
+                    // ...existing code...
                 }
                 else
                 {
-                    // Fallback: JSONs agregados (compatibilidad)
                     var baseEquipo = MiJuegoRPG.Motor.Servicios.PathProvider.CombineData("Equipo");
                     CargarArmas(Path.Combine(baseEquipo, "armas.json"));
-                    CargarArmaduras(Path.Combine(baseEquipo, "Armaduras.json"));
-                    CargarAccesorios(Path.Combine(baseEquipo, "Accesorios.json"));
-                    CargarBotas(Path.Combine(baseEquipo, "Botas.json"));
-                    CargarCascos(Path.Combine(baseEquipo, "Cascos.json"));
-                    CargarCinturones(Path.Combine(baseEquipo, "Cinturones.json"));
-                    CargarCollares(Path.Combine(baseEquipo, "Collares.json"));
-                    CargarPantalones(Path.Combine(baseEquipo, "Pantalones.json"));
+                    // ...existing code...
+                }
+
+                // Validar rarezas de armas
+                if (armasDisponibles != null && rarezaConfig != null)
+                {
+                    foreach (var arma in armasDisponibles)
+                    {
+                        if (!rarezaConfig.RarezaValida(arma.Rareza))
+                        {
+                            Console.WriteLine($"[Equipo][ADVERTENCIA] Rareza no reconocida en arma '{arma.Nombre}': '{arma.Rareza}'");
+                        }
+                    }
                 }
 
                 Console.WriteLine($"[Equipo] Armas:{armasDisponibles?.Count ?? 0} Armaduras:{armadurasDisponibles?.Count ?? 0} Accesorios:{accesoriosDisponibles?.Count ?? 0} Botas:{botasDisponibles?.Count ?? 0} Cascos:{cascosDisponibles?.Count ?? 0} Cinturones:{cinturonesDisponibles?.Count ?? 0} Collares:{collaresDisponibles?.Count ?? 0} Pantalones:{pantalonesDisponibles?.Count ?? 0}");
@@ -296,28 +279,28 @@ namespace MiJuegoRPG.Motor
         }
 
         /// <summary>
-        /// Selección aleatoria (uniforme o ponderada por rareza según flag).
+        /// Selección aleatoria (uniforme o ponderada por rareza según flag, usando rarezaConfig).
         /// </summary>
-        private static T ElegirAleatorio<T>(IReadOnlyList<T> lista, Func<T, MiJuegoRPG.Objetos.Rareza> rarezaSelector)
+        private static T ElegirAleatorio<T>(IReadOnlyList<T> lista, Func<T, string> rarezaSelector)
         {
             var rand = MiJuegoRPG.Motor.Servicios.RandomService.Instancia;
-            if (!UsaSeleccionPonderadaRareza)
+            if (!UsaSeleccionPonderadaRareza || rarezaConfig == null)
             {
                 return lista[rand.Next(lista.Count)];
             }
 
-            // Construir pesos
-            int totalPeso = 0;
-            var acumulados = new int[lista.Count];
+            // Construir pesos desde rarezaConfig
+            double totalPeso = 0;
+            var acumulados = new double[lista.Count];
             for (int i = 0; i < lista.Count; i++)
             {
                 var rz = rarezaSelector(lista[i]);
-                PesosRareza.TryGetValue(rz, out var peso);
+                rarezaConfig.Pesos.TryGetValue(rz, out var peso);
                 if (peso <= 0) peso = 1; // seguridad
                 totalPeso += peso;
                 acumulados[i] = totalPeso;
             }
-            int tiro = rand.Next(totalPeso); // [0..totalPeso)
+            double tiro = rand.NextDouble() * totalPeso;
             for (int i = 0; i < acumulados.Length; i++)
             {
                 if (tiro < acumulados[i]) return lista[i];
@@ -947,25 +930,26 @@ namespace MiJuegoRPG.Motor
             return s;
         }
 
-        private static (int min, int max) RangoPerfeccionPorRareza(MiJuegoRPG.Objetos.Rareza rz)
+        private static (int min, int max) RangoPerfeccionPorRareza(string rz)
         {
-            if (PerfeccionRangos.TryGetValue(rz, out var r)) return r;
+            if (rarezaConfig != null && rarezaConfig.RangosPerfeccion.TryGetValue(rz, out var r)) return r;
             return (50, 50);
         }
 
-        private static MiJuegoRPG.Objetos.Rareza ElegirRarezaPonderada(List<MiJuegoRPG.Objetos.Rareza> candidatas)
+        private static string ElegirRarezaPonderada(List<string> candidatas)
         {
             var rand = MiJuegoRPG.Motor.Servicios.RandomService.Instancia;
-            int total = 0;
-            var acumulados = new List<(MiJuegoRPG.Objetos.Rareza rz, int acum)>();
+            if (rarezaConfig == null || candidatas.Count == 0) return "Normal";
+            double total = 0;
+            var acumulados = new List<(string rz, double acum)>();
             foreach (var r in candidatas)
             {
-                int peso = PesosRareza.TryGetValue(r, out var p) ? p : 1;
+                rarezaConfig.Pesos.TryGetValue(r, out var peso);
                 if (peso <= 0) peso = 1;
                 total += peso;
                 acumulados.Add((r, total));
             }
-            int tiro = rand.Next(total);
+            double tiro = rand.NextDouble() * total;
             foreach (var (rz, acum) in acumulados)
             {
                 if (tiro < acum) return rz;
