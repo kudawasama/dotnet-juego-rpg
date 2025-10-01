@@ -1,3 +1,5 @@
+# Arquitectura y Funcionamiento (Documento Vivo)
+
 ### Rarezas y probabilidades de aparición (MIGRADO A STRINGS DINÁMICO)
 
 Estado actual (2025-09-30):
@@ -478,6 +480,140 @@ Fases posteriores (referencia):
 - F3: integrar Stamina/Poise y efectos de interrupción.
 
 Impacto esperado: mayor expresividad táctica, micro‑decisiones por turno y base para estados avanzados sin reescribir pipeline de daño.
+
+### 6.2 Diseño Técnico Detallado (Pre‑Implementación) — Sistema de Acciones Encadenadas y Pipeline de Daño Unificado (2025-10-01)
+
+Esta sección fija el contrato técnico completo previo a codificar el loop PA, asegurando trazabilidad y minimizando ambigüedades. Todo lo descrito aquí es DATA / API target; el código legacy sigue activo hasta integrar gradualmente detrás de `CombatConfig.ModoAcciones`.
+
+#### 6.2.1 Resumen Ejecutivo
+Cada combatiente recibe PA (1..PAMax) por turno según atributos (Agilidad, Destreza, Nivel, equipo y efectos). Consume PA ejecutando acciones encadenadas (ataque, moverse, usar poción, observar, defensivas, sociales). El daño usa pipeline determinista (orden fijo) y admite reacciones inmediatas si hay slots de reacción disponibles. Todas las acciones y sus requisitos/costes se describen en JSON extendido; la IA podrá razonar solo con metadatos (sin hardcode de reglas específicas).
+
+#### 6.2.2 Definiciones Básicas
+- PA: puntos enteros gastables en un mini‑turno.
+- Slot de Reacción: capacidad discreta de disparar una acción reactiva fuera del flujo secuencial (por defecto 1; escalable con atributos).
+- Acción Macro: entrada que expande en varias acciones base (p.ej. `CorrerGolpear` → `[Correr, AtaqueFisico]`).
+- Acciones Pasivas: evaluadas por triggers; no consumen PA directamente.
+- Distancia Abstracta: {cuerpo, corto, medio, largo}; acciones de movimiento modifican la distancia actual actor↔objetivo.
+
+#### 6.2.3 Cálculo de PA (Fórmula Implementable)
+PA = clamp(BasePA + floor(Agi / AgilityDivisor) + floor(Dex / DexterityDivisor) + floor(Nivel / LevelDivisor) + Sum(BonusEquipo) + Sum(BuffsPA) - Sum(DebuffsPA), PAMin, PAMax)
+
+Defaults actuales (`CombatConfig`): BasePA=2, PAMax=6, AgilityDivisor=30, DexterityDivisor=40, LevelDivisor=10, PAMin=1.
+Ejemplo A (básico): Agi=20 Dex=15 Nivel=5 ⇒ 2 +0+0+0 =2.
+Ejemplo B (rápido): Agi=70 Dex=55 Nivel=18 ⇒ 2 +2+1+1 =6 (tope).
+
+Extensiones futuras: BonusEquipo (campo `BonusPA` en objetos), Buffs/Debuffs (efectos con interfaz `IEfectoPA`), gating de Stamina/Poise (no afecta PA base, pero limitará acciones pesadas repetidas).
+
+#### 6.2.4 Pipeline de Daño (Orden Inmutable)
+1) BaseDamage (tipo Físico/Mágico/Elemental)  
+2) Hit / Evasión (si falla: daño=0, FueEvadido=true, fin)  
+3) Penetración (DEF * (1-PEN))  
+4) Resta de Defensa (min 1 si impacta)  
+5) Mitigación porcentual (afterDef * (1-MIT))  
+6) Crítico (afterMit * CritMultiplierEscalado)  
+7) Vulnerabilidades/Elementos (afterCrit * VulnFactor)  
+8) Redondeo (AwayFromZero) + Mínimo (≥1 si impactó)  
+
+Fórmulas clave:  
+defensaEfectiva = max(0, DEF * (1 - PEN))  
+afterDef = max(1, DB - defensaEfectiva)  
+afterMit = afterDef * (1 - MIT)  
+final = round(afterMit * (isCrit ? CritMultEscalado : 1) * VulnFactor)  
+final = max(1, final)
+
+CritMultEscalado = 1 + (CritMultBase - 1) * CritScalingFactor (balance fino).  
+Penetración en crítico puede reducirse: PENcrit = PEN * FactorPenetracionCritico (si `ReducePenetracionEnCritico`).
+
+#### 6.2.5 Precisión / Evasión / Crítico
+HitChance = clamp(BasePrecision + PrecisionStats - EvasionObjetivo, MinHit, 1.0).  
+BasePrecision recomendada 0.90; MinHit 0.05.  
+CritChance = clamp(CritStats + CritBuffs, 0, CritCap).  
+Curva DR opcional: chanceDR = stat / (stat + K) con cap superior.
+
+#### 6.2.6 Penetración y Mitigación
+PEN sumada de fuentes y clamp [0, PenetracionMax]. Aplica antes de resta de defensa. MIT aplica después de resta y antes de crítico. Vulnerabilidades multiplican después del crítico para consistencia (crítico amplifica la porción mitigada base y luego se aplica la susceptibilidad).
+
+#### 6.2.7 Reacciones Inmediatas
+ReactionSlots = 1 + floor((Destreza + Agilidad)/100).  
+Uso: durante ejecución de una acción que marque ventana de interrupción (`ventanaInterrupcion.frames > 0`), un defensor puede disparar acción reactiva (ej. `ContraataqueRapido`) si tiene slot libre. Fase 1: modelado de slots; la ejecución real se activará en Fase 2.
+
+#### 6.2.8 Esquema Extendido `acciones_catalogo.json`
+Campos nuevos (todos opcionales para compatibilidad):
+```
+{
+  "Id": "Correr",
+  "Descripcion": "Moverse rápidamente.",
+  "costePA": 1,
+  "tipoAccion": "movimiento",
+  "rangoDistancia": ["medio","largo"],
+  "cambiaDistanciaA": "corto",
+  "requisitos": { "estadosActor": ["Enfocado"], "distanciaActual": ["medio","largo"] },
+  "estadosAplica": { "self": ["Impulso"], "objetivo": [] },
+  "macros": ["AtaqueFisico"],
+  "reacciones": [ { "id": "Retroceder", "probabilidad": 0.5 } ],
+  "personalidadPesos": { "agresivo": 0.4, "defensivo": 0.3, "astuto": 0.3 },
+  "pasiva": false,
+  "interruptible": true,
+  "ventanaInterrupcion": { "frames": 1, "reaccionSugerida": ["ContraataqueRapido"] },
+  "moralImpacto": { "deltaObjetivo": -2, "siFalla": 1 },
+  "meta": { "descripcion": "Acorta distancia 1 paso" }
+}
+```
+Interpretación: Campos ausentes = defaults neutros (p.ej. costePA=1, cualquier distancia, sin reacciones, sin cambios de estado, no pasiva).
+
+#### 6.2.9 Pseudocódigo de Referencia (Consolidado)
+ComputePA, DamageCalculator y bucle PA se documentaron con ejemplos numéricos en §6.2.3/6.2.4. Bucle PA final:
+```
+pa = ComputePA(pj,cfg)
+while (pa > 0 && enemigosVivos) {
+  MostrarAccionesFiltradas(pa, estados, distancia)
+  accion = Seleccionar()
+  if (!Valida(accion)) continue
+  if (accion.EsMacro) Expandir(accion)
+  EjecutarAccion(accion)
+  if (accion.ConsumePA) pa -= accion.CostePA
+  ProcesarReaccionesInmediatas()
+}
+AvanzarCooldowns(pj); RegenerarMana(pj); TickEfectos()
+```
+
+#### 6.2.10 Tests Sugeridos (Resumen Ejecutable)
+1. PA_Calculo_BasicoYRapido (valores de ejemplo).  
+2. Daño_Pipeline_Secuencia (verifica pasos intermedios con seed).  
+3. Critico_Escalado_Factor (comprueba CritScalingFactor).  
+4. Macro_Expansion (CorrerGolpear produce dos acciones).  
+5. Reaccion_SlotConsumido (placeholder futuro).  
+6. Accion_Coste_NoConsumeSiCooldown (fail gating).  
+7. Distancia_Transicion (Correr modifica distancia).  
+8. Fallback_CamposAusentes (acciones sin costePA usan 1).  
+9. Mitigacion_Orden (Penetración antes de defensa; MIT antes de crítico).  
+10. Vulnerabilidad_PostCritico (aplicación final).  
+
+#### 6.2.11 Balance Inicial (Parámetros Recomendados)
+BasePA=2 PAMax=6 CritMultiplierBase=1.5 CritScalingFactor=0.65 CritCap=0.50 PenetracionMax=0.9 MinHit=0.05. Distancias: default inicial = "corto". Costes PA Fase 1: ataque=2, poción=2, moverse=1, observar=1, habilidad ligera=2, habilidad pesada=3 (placeholder; se materializará al introducir tabla coste). Reaccionar (contraataque rápido)=1 (PA reacción separado en fases futuras o utiliza slot).
+
+#### 6.2.12 Riesgos y Mitigaciones
+- Complejidad JSON → Validadores y defaults; warnings no fatales.
+- Explosión combinatoria IA → Iniciar con pesos estáticos personalidad + random sesgado.
+- Narrativa ruidosa → Log condensado por mini‑turno antes de imprimir.
+- Desbalance crítico/penetración → Benchmarks (shadow) ya instalados; repetir tras integrar PA.
+
+#### 6.2.13 Estrategia de Integración Incremental
+1) Implementar soporte `CostoPA` mínimo y loop PA solo jugador (flag).  
+2) Añadir diccionario temporal de costes (sin tocar JSON aún).  
+3) Introducir macro expansión simple.  
+4) Agregar tracking de distancia (enum + campo en contexto de combate).  
+5) Activar reacciones (placeholder: contador slot).  
+6) Migrar costes al JSON extendido.  
+7) IA multi‑acción y pesos de personalidad.
+
+#### 6.2.14 Criterios de “Listo para Fase 2”
+- Loop PA ON produce mismos resultados de daño promedio (±5%) que legacy en benchmark de 100 turnos (seed fija).  
+- Test suite §6.2.10 en verde.  
+- Documentación sincronizada (Bitácora + Roadmap).  
+- Flag OFF: comportamiento idéntico al anterior (prueba regresión).  
+
+Última actualización: 2025-10-01.
 
 ## 6. Recolección y mundo
 

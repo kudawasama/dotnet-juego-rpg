@@ -1,7 +1,10 @@
+
 - [x] Normalizar rarezas en armas.json para evitar errores de enum y runtime.
-  - Validar que todos los valores coincidan con el enum del código.
-  - Documentar el mapeo y la convención en la bitácora y arquitectura.
+- Validar que todos los valores coincidan con el enum del código.
+- Documentar el mapeo y la convención en la bitácora y arquitectura.
+
 ### 2025-09-23
+
 - [MEJORA] Robustez en menú admin: null-checks y tolerancia a datos incompletos en requisitos de clase (`MotivosBloqueoClase`).
 - Validado con build y tests.
 
@@ -27,7 +30,7 @@ Durabilidad & Reparación | Pendiente | 2025-09-30 | No implementado; ligado a e
 Supervivencia (sistemas base) | Parcial | 2025-09-29 | Config + factores penalización; falta cableado ticks y consumos (27.x).
 Acciones de Combate avanzadas (estados/bleed/stun) | Pendiente | 2025-09-30 | IEfecto veneno listo; faltan nuevos efectos y stacking.
 Migración Unity (infra preparación) | Pendiente | 2025-09-30 | Separación dominio/UI parcial; faltan adaptadores y conversión JSON→SO.
-Combate por Acciones (PA) Fase 1 | Planificación | 2025-10-01 | Loop multi‑acción con PA, costes por acción (default=1), flag `ModoAcciones`; sin IA avanzada aún.
+Combate por Acciones (PA) Fase 1 | Planificación | 2025-10-01 | Documentación técnica completa (fórmulas PA, pipeline, reacciones, esquema acciones). Implementación loop pendiente (flag `ModoAcciones`).
 Combate por Acciones (PA) Fase 2 | Pendiente | 2025-10-01 | Iniciativa/cola, coste variable, acciones defensivas y posicionamiento.
 Combate por Acciones (PA) Fase 3 | Pendiente | 2025-10-01 | Integrar efectos avanzados, Stamina/Poise y priorización táctica IA.
 
