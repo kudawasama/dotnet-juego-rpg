@@ -764,3 +764,6 @@ Próximos pasos sugeridos:
 
 - Extender el consumo de `DañoFisico/DañoMagico` y `DañoElemental` en la instancia `Arma` cuando el JSON los defina.
 - Añadir validador de Equipo (rangos de nivel/daño/perfección y rarezas permitidas) y chequeo de duplicados por `Nombre`.
+
+### 2025-10-01 — Validador armas y pociones (fase 1)
+Se amplió `DataValidatorService` agregando: `ValidarArmasBasico()` (duplicados por Nombre, perfección fuera de [0..100] como WARN, >200 error, rarezas desconocidas) y `ValidarPocionesBasico()` (duplicados de Nombre y rareza vacía). Integrado al flujo `ValidarReferenciasBasicas()`. Impacto: primera detección automática de overquality (>100) y duplicado de “Poción Pequeña” sin romper build (tolerancia diseñada). Próximo: extender a equipo v2 completo y acciones (IDs / futuras PA).

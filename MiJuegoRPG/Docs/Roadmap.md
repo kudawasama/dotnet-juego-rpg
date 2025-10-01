@@ -769,3 +769,4 @@ Bitácora movida: La bitácora de sesiones fue reubicada en `Docs/Bitacora.md`.
   - Cascos: migrar `DatosJuego/Equipo/cascos/**.json` al esquema v2 siguiendo el patrón de Armadura.
   - Accesorios (anillos): migrar a v2 opcional (rango nivel/perfección, rarezas permitidas, `Valor/ValorVenta`, `Descripcion`).
   - Añadir validador de Equipo en `DataValidatorService` (rangos/rareza/duplicados por `Nombre`).
+    - Parcial 2025-10-01: agregado `ValidarArmasBasico()` (perfección, rareza, duplicados) y `ValidarPocionesBasico()` (duplicados/rareza vacía). Próximo: extender a armaduras/accesorios con verificación de rangos min/max y rarezas permitidas.

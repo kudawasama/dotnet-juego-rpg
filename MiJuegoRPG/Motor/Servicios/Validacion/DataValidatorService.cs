@@ -277,6 +277,34 @@ namespace MiJuegoRPG.Motor.Servicios.Validacion
                     res.Advertencias++;
                     res.Mensajes.Add($"[Validador][WARN] No se pudo validar enemigos: {ex.Message}");
                 }
+
+                // 7) Armas: rareza y perfección
+                try
+                {
+                    var resArmas = ValidarArmasBasico();
+                    res.Errores += resArmas.Errores;
+                    res.Advertencias += resArmas.Advertencias;
+                    foreach (var m in resArmas.Mensajes) res.Mensajes.Add(m);
+                }
+                catch (Exception ex)
+                {
+                    res.Advertencias++;
+                    res.Mensajes.Add($"[Validador][WARN] No se pudo validar armas: {ex.Message}");
+                }
+
+                // 8) Pociones: duplicados por nombre
+                try
+                {
+                    var resPoc = ValidarPocionesBasico();
+                    res.Errores += resPoc.Errores;
+                    res.Advertencias += resPoc.Advertencias;
+                    foreach (var m in resPoc.Mensajes) res.Mensajes.Add(m);
+                }
+                catch (Exception ex)
+                {
+                    res.Advertencias++;
+                    res.Mensajes.Add($"[Validador][WARN] No se pudo validar pociones: {ex.Message}");
+                }
             }
             catch (Exception ex)
             {
@@ -322,6 +350,144 @@ namespace MiJuegoRPG.Motor.Servicios.Validacion
                 {
                     Console.WriteLine($"[Validador][WARN] No se pudo escribir el reporte: {ex.Message}");
                 }
+            }
+            return res;
+        }
+
+        /// <summary>
+        /// Valida armas en Equipo/armas.json (si existe):
+        /// - Duplicados por Nombre
+        /// - Perfeccion fuera de [0..100] -> advertencia (no error para permitir overquality legacy)
+        /// - Rareza no en catálogo -> advertencia y sugiere minúscula
+        /// </summary>
+        public static Resultado ValidarArmasBasico()
+        {
+            var res = new Resultado();
+            var ruta = PathProvider.EquipoPath("armas.json");
+            if (!File.Exists(ruta))
+            {
+                res.Advertencias++;
+                res.Mensajes.Add($"[Armas][WARN] No existe archivo armas.json en {ruta}");
+                return res;
+            }
+            try
+            {
+                var json = File.ReadAllText(ruta);
+                if (string.IsNullOrWhiteSpace(json)) return res;
+                using var doc = JsonDocument.Parse(json);
+                if (doc.RootElement.ValueKind != JsonValueKind.Array)
+                {
+                    res.Errores++;
+                    res.Mensajes.Add("[Armas][ERR] Raíz no es array");
+                    return res;
+                }
+                var nombres = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                foreach (var el in doc.RootElement.EnumerateArray())
+                {
+                    string nombre = el.TryGetProperty("Nombre", out var pn) ? pn.GetString() ?? "" : "";
+                    string rareza = el.TryGetProperty("Rareza", out var pr) ? pr.GetString() ?? "" : "";
+                    int perfeccion = el.TryGetProperty("Perfeccion", out var pp) && pp.TryGetInt32(out var pf) ? pf : 50;
+                    if (string.IsNullOrWhiteSpace(nombre))
+                    {
+                        res.Errores++;
+                        res.Mensajes.Add("[Armas][ERR] Arma sin Nombre");
+                    }
+                    else if (!nombres.Add(nombre))
+                    {
+                        res.Errores++;
+                        res.Mensajes.Add($"[Armas][ERR] Nombre duplicado '{nombre}'");
+                    }
+                    if (perfeccion < 0 || perfeccion > 200) // límite duro para detectar corrupciones
+                    {
+                        res.Errores++;
+                        res.Mensajes.Add($"[Armas][ERR] Perfeccion fuera de [0..200] en '{nombre}' ({perfeccion})");
+                    }
+                    else if (perfeccion > 100)
+                    {
+                        res.Advertencias++;
+                        res.Mensajes.Add($"[Armas][WARN] Perfeccion >100 en '{nombre}' ({perfeccion}) (overquality legacy)");
+                    }
+                    if (!string.IsNullOrWhiteSpace(rareza))
+                    {
+                        var norm = rareza.Trim();
+                        // Catálogo mínimo conocido (sin forzar error si aparecen otras futuras)
+                        var catalogo = new[] { "Rota","Pobre","Normal","Superior","Rara","Epica","Legendaria","Ornamentada" };
+                        if (!catalogo.Contains(norm, StringComparer.OrdinalIgnoreCase))
+                        {
+                            res.Advertencias++;
+                            res.Mensajes.Add($"[Armas][WARN] Rareza desconocida '{rareza}' en '{nombre}'");
+                        }
+                    }
+                }
+                res.Mensajes.Add($"[Armas] Validadas {nombres.Count} armas");
+            }
+            catch (Exception ex)
+            {
+                res.Errores++;
+                res.Mensajes.Add($"[Armas][ERR] Excepción leyendo armas.json: {ex.Message}");
+            }
+            return res;
+        }
+
+        /// <summary>
+        /// Valida pociones en pociones/pociones.json:
+        /// - Duplicados por Nombre (error)
+        /// - Rareza vacía -> advertencia
+        /// </summary>
+        public static Resultado ValidarPocionesBasico()
+        {
+            var res = new Resultado();
+            var ruta = PathProvider.PocionesPath("pociones.json");
+            if (!File.Exists(ruta))
+            {
+                res.Advertencias++;
+                res.Mensajes.Add($"[Pociones][WARN] No existe pociones.json en {ruta}");
+                return res;
+            }
+            try
+            {
+                var json = File.ReadAllText(ruta);
+                if (string.IsNullOrWhiteSpace(json)) return res;
+                using var doc = JsonDocument.Parse(json);
+                if (doc.RootElement.ValueKind != JsonValueKind.Array)
+                {
+                    res.Errores++;
+                    res.Mensajes.Add("[Pociones][ERR] Raíz no es array");
+                    return res;
+                }
+                var nombres = new Dictionary<string,int>(StringComparer.OrdinalIgnoreCase);
+                foreach (var el in doc.RootElement.EnumerateArray())
+                {
+                    var nombre = el.TryGetProperty("Nombre", out var pn) ? pn.GetString() ?? "" : "";
+                    var rareza = el.TryGetProperty("Rareza", out var pr) ? pr.GetString() ?? "" : "";
+                    if (string.IsNullOrWhiteSpace(nombre))
+                    {
+                        res.Errores++;
+                        res.Mensajes.Add("[Pociones][ERR] Pocion sin Nombre");
+                        continue;
+                    }
+                    if (!nombres.ContainsKey(nombre)) nombres[nombre] = 0;
+                    nombres[nombre]++;
+                    if (string.IsNullOrWhiteSpace(rareza))
+                    {
+                        res.Advertencias++;
+                        res.Mensajes.Add($"[Pociones][WARN] Rareza vacía en '{nombre}'");
+                    }
+                }
+                foreach (var kv in nombres)
+                {
+                    if (kv.Value > 1)
+                    {
+                        res.Errores++;
+                        res.Mensajes.Add($"[Pociones][ERR] Nombre duplicado '{kv.Key}' (x{kv.Value})");
+                    }
+                }
+                res.Mensajes.Add($"[Pociones] Validadas {nombres.Count} pociones");
+            }
+            catch (Exception ex)
+            {
+                res.Errores++;
+                res.Mensajes.Add($"[Pociones][ERR] Excepción leyendo pociones.json: {ex.Message}");
             }
             return res;
         }
