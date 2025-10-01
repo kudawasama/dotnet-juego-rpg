@@ -9,8 +9,13 @@ namespace MiJuegoRPG.Motor
 {
     public static class GeneradorObjetos
     {
+    // Repositorio de armas (lazy) migrando carga jerárquica/overlay
+    private static readonly Lazy<MiJuegoRPG.Motor.Servicios.Repos.ArmaRepository> _armaRepoLazy
+        = new(() => new MiJuegoRPG.Motor.Servicios.Repos.ArmaRepository());
     private static List<ArmaData>? armasDisponibles;
     private static List<ArmaduraData>? armadurasDisponibles;
+    private static readonly Lazy<MiJuegoRPG.Motor.Servicios.Repos.ArmaduraRepository> _armaduraRepoLazy
+        = new(() => new MiJuegoRPG.Motor.Servicios.Repos.ArmaduraRepository());
     private static List<AccesorioData>? accesoriosDisponibles;
     private static List<BotasData>? botasDisponibles;
     private static List<CascoData>? cascosDisponibles;
@@ -50,6 +55,84 @@ namespace MiJuegoRPG.Motor
                 if (hayCarpetas)
                 {
                     armasDisponibles = CargarListaDesdeCarpeta<ArmaData>(Path.Combine(baseDir, "armas"));
+                    // Nuevo: cargar armaduras desde repositorio jerárquico (base + overlay)
+                    try
+                    {
+                        var repoArm = _armaduraRepoLazy.Value; // asegura carga
+                        var todasArm = repoArm.Todas();
+                        if (todasArm != null && todasArm.Count > 0)
+                        {
+                            armadurasDisponibles = new List<ArmaduraData>(todasArm);
+                        }
+                    }
+                    catch (Exception exArm)
+                    {
+                        Console.WriteLine($"[Equipo] Error cargando armaduras repo: {exArm.Message}");
+                    }
+                    // Nuevo: cargar botas desde repositorio jerárquico (base + overlay)
+                    try
+                    {
+                        var repoBotas = new MiJuegoRPG.Motor.Servicios.Repos.BotasRepository();
+                        var todasBotas = repoBotas.Todas();
+                        if (todasBotas != null && todasBotas.Count > 0)
+                        {
+                            botasDisponibles = new List<BotasData>(todasBotas);
+                        }
+                    }
+                    catch (Exception exBotas)
+                    {
+                        Console.WriteLine($"[Equipo] Error cargando botas repo: {exBotas.Message}");
+                    }
+                    // Nuevo: cargar cascos desde repositorio jerárquico (base + overlay)
+                    try
+                    {
+                        var repoCascos = new MiJuegoRPG.Motor.Servicios.Repos.CascosRepository();
+                        var todosCascos = repoCascos.Todas();
+                        if (todosCascos != null && todosCascos.Count > 0)
+                        {
+                            cascosDisponibles = new List<CascoData>(todosCascos);
+                        }
+                    }
+                    catch (Exception exCascos)
+                    {
+                        Console.WriteLine($"[Equipo] Error cargando cascos repo: {exCascos.Message}");
+                    }
+                    // Nuevo: cargar cinturones
+                    try
+                    {
+                        var repoCint = new MiJuegoRPG.Motor.Servicios.Repos.CinturonesRepository();
+                        var todosCint = repoCint.Todas();
+                        if (todosCint != null && todosCint.Count > 0)
+                            cinturonesDisponibles = new List<CinturonData>(todosCint);
+                    }
+                    catch (Exception exCint)
+                    {
+                        Console.WriteLine($"[Equipo] Error cargando cinturones repo: {exCint.Message}");
+                    }
+                    // Nuevo: cargar collares
+                    try
+                    {
+                        var repoCollares = new MiJuegoRPG.Motor.Servicios.Repos.CollaresRepository();
+                        var todosColl = repoCollares.Todas();
+                        if (todosColl != null && todosColl.Count > 0)
+                            collaresDisponibles = new List<CollarData>(todosColl);
+                    }
+                    catch (Exception exColl)
+                    {
+                        Console.WriteLine($"[Equipo] Error cargando collares repo: {exColl.Message}");
+                    }
+                    // Nuevo: cargar pantalones
+                    try
+                    {
+                        var repoPants = new MiJuegoRPG.Motor.Servicios.Repos.PantalonesRepository();
+                        var todosPant = repoPants.Todas();
+                        if (todosPant != null && todosPant.Count > 0)
+                            pantalonesDisponibles = new List<PantalonData>(todosPant);
+                    }
+                    catch (Exception exPant)
+                    {
+                        Console.WriteLine($"[Equipo] Error cargando pantalones repo: {exPant.Message}");
+                    }
                     // ...existing code...
                 }
                 else
@@ -806,15 +889,16 @@ namespace MiJuegoRPG.Motor
         }
     public static void CargarArmaduras(string rutaArchivo)
         {
+            // Legacy: mantener por compatibilidad puntual / herramientas QA.
             try
             {
                 string jsonString = File.ReadAllText(rutaArchivo);
-                armadurasDisponibles = JsonSerializer.Deserialize<List<ArmaduraData>>(jsonString);
-                Console.WriteLine($"Se cargaron {armadurasDisponibles?.Count ?? 0} armaduras del archivo.");
+                armadurasDisponibles = JsonSerializer.Deserialize<List<ArmaduraData>>(jsonString) ?? new();
+                Console.WriteLine($"[Legacy] Cargadas {armadurasDisponibles.Count} armaduras desde '{rutaArchivo}'. Considerar migración a ArmaduraRepository.");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error al cargar armaduras: {ex.Message}");
+                Console.WriteLine($"[Legacy] Error al cargar armaduras: {ex.Message}");
                 armadurasDisponibles = new List<ArmaduraData>();
             }
         }
@@ -835,10 +919,28 @@ namespace MiJuegoRPG.Motor
         }
         public static Armadura GenerarArmaduraAleatoria(int nivelJugador)
         {
-            if (armadurasDisponibles != null && armadurasDisponibles.Count > 0)
+            // Intentar usar ArmaduraRepository primero
+            List<ArmaduraData>? fuente = null;
+            try
+            {
+                var repo = _armaduraRepoLazy.Value;
+                var todas = repo.Todas();
+                if (todas != null && todas.Count > 0)
+                    fuente = new List<ArmaduraData>(todas);
+            }
+            catch { /* ignorar y fallback */ }
+
+            if (fuente == null || fuente.Count == 0)
+            {
+                if (armadurasDisponibles == null || armadurasDisponibles.Count == 0)
+                    throw new InvalidOperationException("No hay armaduras disponibles para generar (repositorio y legacy vacíos).");
+                fuente = armadurasDisponibles;
+            }
+
+            if (fuente.Count > 0)
             {
                 var rand = MiJuegoRPG.Motor.Servicios.RandomService.Instancia;
-                var baseData = armadurasDisponibles[rand.Next(armadurasDisponibles.Count)];
+                var baseData = fuente[rand.Next(fuente.Count)];
 
                 List<string> permitidas = new();
                 if (!string.IsNullOrWhiteSpace(baseData.RarezasPermitidasCsv))
@@ -1064,25 +1166,49 @@ namespace MiJuegoRPG.Motor
 
         public static void CargarArmas(string rutaArchivo)
         {
+            // Mantener compatibilidad: carga manual legacy sólo si se fuerza.
             try
             {
                 string jsonString = File.ReadAllText(rutaArchivo);
-                armasDisponibles = JsonSerializer.Deserialize<List<ArmaData>>(jsonString);
-                Console.WriteLine($"Se cargaron {armasDisponibles?.Count ?? 0} armas del archivo.");
+                armasDisponibles = JsonSerializer.Deserialize<List<ArmaData>>(jsonString) ?? new();
+                Console.WriteLine($"[Legacy] Cargadas {armasDisponibles.Count} armas desde '{rutaArchivo}'. Considerar migración a ArmaRepository.");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error al cargar armas: {ex.Message}");
+                Console.WriteLine($"[Legacy] Error al cargar armas: {ex.Message}");
                 armasDisponibles = new List<ArmaData>();
             }
         }
 
         public static Arma GenerarArmaAleatoria(int nivelJugador)
         {
-            if (armasDisponibles != null && armasDisponibles.Count > 0)
+            // Intentar usar ArmaRepository primero
+            List<ArmaData>? fuente = null;
+            try
             {
-                // Selección aleatoria con opción de ponderación por Rareza, basada en la rareza declarada
-                var baseData = ElegirAleatorio<ArmaData>(armasDisponibles, ad => NormalizarRarezaTexto(ad.Rareza ?? "Normal"));
+                var repo = _armaRepoLazy.Value; // lazy init
+                var todas = repo.Todas();
+                if (todas != null && todas.Count > 0)
+                {
+                    fuente = new List<ArmaData>(todas);
+                }
+            }
+            catch
+            {
+                // ignorar y caer a legacy
+            }
+
+            if (fuente == null || fuente.Count == 0)
+            {
+                // fallback legacy
+                if (armasDisponibles == null || armasDisponibles.Count == 0)
+                    throw new InvalidOperationException("No hay armas disponibles para generar (repositorio y legacy vacíos).");
+                fuente = armasDisponibles;
+            }
+
+            if (fuente.Count > 0)
+            {
+                var baseData = ElegirAleatorio<ArmaData>(fuente, ad => NormalizarRarezaTexto(ad.Rareza ?? "Normal"));
 
                 var rand = MiJuegoRPG.Motor.Servicios.RandomService.Instancia;
 
@@ -1160,10 +1286,7 @@ namespace MiJuegoRPG.Motor
                 var arma = new Arma(baseData.Nombre, danioFinal, nivel, rarezaElegida, baseData.Tipo, perfeccion, 0);
                 return arma;
             }
-            else
-            {
-                throw new InvalidOperationException("No hay armas disponibles para generar.");
-            }
+            throw new InvalidOperationException("No hay armas disponibles para generar.");
         }
     }
 }

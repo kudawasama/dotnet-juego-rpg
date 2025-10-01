@@ -1,11 +1,11 @@
 # Arquitectura y Funcionamiento (Documento Vivo)
 
-### Rarezas y probabilidades de aparición (MIGRADO A STRINGS DINÁMICO)
+## Rarezas y probabilidades de aparición (MIGRADO A STRINGS DINÁMICO)
 
 Estado actual (2025-09-30):
 
 - El sistema YA NO requiere agregar rarezas a un enum. El enum `Rareza` en `EnumsObjetos.cs` queda como legado y no es fuente de verdad para nuevas rarezas (deprecado para extensiones futuras).
-- La única fuente dinámica de pesos y rangos de perfección es la configuración JSON en `DatosJuego/config/rareza_pesos.json` y `DatosJuego/config/rareza_perfeccion.json` (formats tolerantes: objeto, lista, arrays). 
+- La única fuente dinámica de pesos y rangos de perfección es la configuración JSON en `DatosJuego/config/rareza_pesos.json` y `DatosJuego/config/rareza_perfeccion.json` (formats tolerantes: objeto, lista, arrays).
 - Todas las clases runtime de equipo y el `GeneradorObjetos` operan con `string rareza` y consultan `RarezaConfig` para:
   - Pesos de selección ponderada.
   - Rango de perfección por rareza.
@@ -14,6 +14,7 @@ Estado actual (2025-09-30):
 - Las probabilidades/ pesos admiten enteros o decimales y pueden añadirse nuevas rarezas (p.ej. `Epica`, `Mistica`) sin tocar código.
 
 Formato recomendado (ejemplo `rareza_pesos.json` actual, con `Epica` y valores vigentes):
+
 ```json
 {
   "Rota": 20,
@@ -26,9 +27,11 @@ Formato recomendado (ejemplo `rareza_pesos.json` actual, con `Epica` y valores v
   "Ornamentada": 0.1
 }
 ```
+
 Nota: el orden en el archivo no es relevante; los pesos se normalizan al cargar. Valores más altos = más comunes.
 
 Formato alterno listado:
+
 ```json
 [
   { "Nombre": "Rota", "Peso": 50 },
@@ -37,19 +40,25 @@ Formato alterno listado:
 ```
 
 Rangos de perfección (`rareza_perfeccion.json`) soportan:
+
 ```json
 { "Normal": [40,60], "Rara": [70,90] }
 ```
+
 o
+
 ```json
 { "Rara": { "Min": 70, "Max": 90 } }
 ```
+
 o lista
+
 ```json
 [{ "Nombre": "Rara", "Min": 70, "Max": 90 }]
 ```
 
 Reglas vigentes:
+
 - Base de escalado: `Normal = 50%` → factor = Perfeccion/50.0 para daño/defensa/bonos.
 - Intersección: el generador intersecta rangos del ítem (`PerfeccionMin/Max`) con el rango global de la rareza. Si intersección vacía → fallback al rango global.
 - Nueva rareza: agregar en ambos archivos (pesos y perfección). No modificar enum.
@@ -58,7 +67,8 @@ Reglas vigentes:
 Histórico (pre 2025-09-30): el modelo exigía mantener correspondencia estricta con un enum; esa sección se conserva en Bitácora (entradas 2025-09-24) para trazabilidad pero ya no aplica como política.
 
 Última actualización: 2025-09-30 — Migración completa a rarezas dinámicas.
-#### 2025-09-23: Robustez en menú admin (clases)
+
+### 2025-09-23: Robustez en menú admin (clases)
 
 Se reforzó la función `MotivosBloqueoClase` para que todos los accesos a propiedades y colecciones sean seguros ante valores nulos o datos incompletos.
 Esto garantiza que el menú de administración de clases nunca lanza excepción y siempre muestra los requisitos, aunque falte información en los datos o definiciones.
@@ -72,6 +82,7 @@ El proceso es repetible y puede adaptarse a futuras expansiones de enemigos o bi
 Validado con build y pruebas unitarias (PASS).
 
 Última actualización: 2025-09-23
+
 # MiJuegoRPG — Arquitectura y Funcionamiento (Estudio Detallado)
 
 ## (LEGACY / OBSOLETO) Validación estricta de enums
@@ -89,15 +100,15 @@ Documentos relacionados
 - Bitácora (historial): `./Bitacora.md`
 - Config de progresión: `./progression_config.md`
 - Flujo de juego (menús): [`../../Flujo.txt`](../../Flujo.txt)
-  - Inicio: [`INICIO DEL JUEGO`](../../Flujo.txt#inicio-del-juego-programcs)
-  - Menú Principal: [`MENÚ PRINCIPAL DEL JUEGO`](../../Flujo.txt#menu-principal-del-juego-juegoiniciar)
-  - Ciudad: [`MENÚ DE CIUDAD`](../../Flujo.txt#menu-de-ciudad-menuciudad)
-  - Fuera de ciudad: [`MENÚ FUERA DE CIUDAD`](../../Flujo.txt#menu-fuera-de-ciudad-menufueraciudad)
-  - Misiones/NPC: [`MENÚ DE MISIONES Y NPC`](../../Flujo.txt#menu-de-misiones-y-npc-menusjuegomostrarmenumisionesnpc)
-  - Rutas: [`MENÚ DE RUTAS`](../../Flujo.txt#menu-de-rutas-juegomostrarmenurutas)
-  - Combate: [`MENÚ DE COMBATE`](../../Flujo.txt#menu-de-combate-base-actual)
-  - Entre combates: [`MENÚ ENTRE COMBATES`](../../Flujo.txt#menu-entre-combates-menuentrecombate)
-  - Menú fijo: [`MENÚ FIJO`](../../Flujo.txt#menu-fijo-accesible-desde-ciudadfueracombate)
+- Inicio: [`INICIO DEL JUEGO`](../../Flujo.txt#inicio-del-juego-programcs)
+- Menú Principal: [`MENÚ PRINCIPAL DEL JUEGO`](../../Flujo.txt#menu-principal-del-juego-juegoiniciar)
+- Ciudad: [`MENÚ DE CIUDAD`](../../Flujo.txt#menu-de-ciudad-menuciudad)
+- Fuera de ciudad: [`MENÚ FUERA DE CIUDAD`](../../Flujo.txt#menu-fuera-de-ciudad-menufueraciudad)
+- Misiones/NPC: [`MENÚ DE MISIONES Y NPC`](../../Flujo.txt#menu-de-misiones-y-npc-menusjuegomostrarmenumisionesnpc)
+- Rutas: [`MENÚ DE RUTAS`](../../Flujo.txt#menu-de-rutas-juegomostrarmenurutas)
+- Combate: [`MENÚ DE COMBATE`](../../Flujo.txt#menu-de-combate-base-actual)
+- Entre combates: [`MENÚ ENTRE COMBATES`](../../Flujo.txt#menu-entre-combates-menuentrecombate)
+- Menú fijo: [`MENÚ FIJO`](../../Flujo.txt#menu-fijo-accesible-desde-ciudadfueracombate)
 
 Tabla de contenidos
 
@@ -106,9 +117,10 @@ Tabla de contenidos
 1. Progresión y atributos
 1. Habilidades (modelo unificado)
 1. Combate (pipeline y estados)
-  - Nota: Nuevo `DamagePipeline` disponible en modo sombra (flag `--damage-shadow`) comparando resultados sin alterar gameplay; reemplazo total planificado tras calibración.
+- Nota: Nuevo `DamagePipeline` disponible en modo sombra (flag `--damage-shadow`) comparando resultados sin alterar gameplay; reemplazo total planificado tras calibración.
 1. Recolección y mundo
 1. Objetos, inventario y comercio
+1. Repositorio jerárquico de equipo (base + overlay)
 1. Misiones y encuentros
 1. Supervivencia (hambre/sed/fatiga/temperatura)
 1. UI y presentación
@@ -158,6 +170,38 @@ Cada rareza se define en dos JSON: `rareza_pesos.json` (peso/frecuencia) y `rare
 
 `RarezaHelper.MultiplicadorBase/Precio/Drop` consultan esta meta (fallback seguro si rareza desconocida). Eliminados hardcodes previos; agregar rareza nueva sólo necesita editar los JSON.
 
+### Repositorio jerárquico de equipo (base + overlay) – 2025-10-01
+
+Objetivo: unificar la carga de datos de equipo en una capa resiliente y extensible, desacoplando el generador legacy de la estructura física de archivos.
+
+Principios:
+- Base recursiva: se recorren carpetas por tipo (ej. `DatosJuego/Equipo/armaduras/**`) aceptando archivos cuya raíz sea objeto o lista.
+- Overlay opcional: archivos en `PjDatos/` (por convención `<tipo>_overlay.json` o `<tipo>s.json`) reemplazan entradas existentes por `Nombre` (case-insensitive) sin modificar la base.
+- Primer archivo base gana: si dos archivos base definen el mismo `Nombre`, se conserva la primera aparición para evitar efectos de orden no deterministas.
+- Tolerancia a errores: archivo corrupto → `Warn` y continuar; nunca abortar carga total.
+- Normalización de rarezas: cada DTO pasa por `RarezaNormalizer.Normalizar()` (alias históricos: `Raro→Rara`, `Epico→Epica`, `Normal/Comun→Comun`, etc.).
+- Fallback seguro: si falta `Rareza` se asigna `Comun`; si faltan rangos de perfección se usan los de la rareza global.
+
+Orden de precedencia:
+1. Primer registro válido encontrado en base (por carpeta recursiva).
+2. Overlay (jugador) reemplaza totalmente la entrada por nombre.
+
+Beneficios:
+- Fuente única fiable usada por generación, validadores y futuros sistemas (crafteo, economía).
+- Simplifica pruebas: tests de repos no dependen del generador completo.
+- Facilita migración progresiva (se pueden usar repos para piezas ya migradas y legacy para el resto sin romper flujo).
+
+Estado actual (2025-10-01): Migrados `MaterialRepository`, `ArmaRepository`, `ArmaduraRepository`, `BotasRepository`, `CascosRepository`, `CinturonesRepository`, `CollaresRepository` (integrados gradualmente en `GeneradorObjetos.CargarEquipoAuto`). Pendiente migrar: Pantalones, Accesorios, Pociones.
+
+Próximos pasos técnicos:
+- Extraer clase base reutilizable (`HierarchicalOverlayRepository<T>`) para factorizar `CargarBase` / `AplicarOverlay` y reducir duplicación.
+- Añadir validador cruzado (rango de perfección coherente, rarezas válidas, nombres duplicados) consolidado.
+- Consolidar logs de rarezas desconocidas (agrupar por rareza y count) para reducir ruido.
+
+Riesgos y mitigación:
+- Duplicados en overlay: el último en el mismo archivo ganará; se recomienda validación pre-carga (futuro validador).
+- Cambios masivos de estructura: al ser data-driven, solo requiere agregar archivos; la lógica de repos soporta ambas raíces (objeto/lista) sin modificaciones.
+
 Motivación: consistencia economía, balance incremental y evitar divergencias manuales.
 
 Última actualización: 2025-09-30.
@@ -175,7 +219,6 @@ Orden inmutable:
 7. Vulnerabilidad/Elemento (afterCrit * Vuln)
 8. Redondeo (AwayFromZero) + mínimo 1
 
-
 Estructura:
 `DamagePipeline.Request` (parámetros explícitos) → `DamagePipeline.Calcular` → `Result` (FinalDamage, flags y métricas intermedias).
 
@@ -187,7 +230,6 @@ Próximo paso: envolver `DamageResolver` para usar pipeline cuando se active fla
 
 Última actualización: 2025-09-30.
 
-
 Todos los materiales referenciados como drops de enemigos cuentan ahora con archivos `.json` individuales en la subcarpeta correspondiente (ejemplo: `Mat_Cocina`).
 
 Esto permite:
@@ -198,6 +240,8 @@ Esto permite:
 - Trazabilidad y documentación completa de cada material, su rareza, origen y usos.
 
 Esta modularidad es clave para la futura migración a Unity y para mantener la progresión lenta y desafiante definida en `progression_config.md`.
+
+Patrón de carga (Materiales): Base jerárquica (`DatosJuego/Materiales/**`) + overlay jugador (`PjDatos/materiales.json`) con sustitución por Nombre (case-insensitive). Archivos aceptan objeto único o lista; campos tolerantes a mayúsculas/minúsculas y alias (`especialidad` → `Categoria`). Rareza normalizada temprano; errores por archivo degradan (log Warn) sin abortar carga global.
 
 Organización por capas con enfoque data-driven. Piezas principales (enlaces a implementación real):
 
@@ -463,19 +507,70 @@ Reglas Fase 1:
 - Fallo por cooldown / recursos NO consume PA.
 
 Flujo (pseudocódigo):
+
 1. if (!cfg.ModoAcciones) → comportamiento actual.
 2. pa = ComputePA(jugador,cfg).
 3. while (pa > 0 && jugador.EstaVivo && enemigosVivos): mostrar menú acciones.
 4. Ejecutar acción válida → pa -= CostoPA; aplicar cooldown/recursos.
 5. Opción “0” termina turno anticipadamente.
+
+### 6.2 Flags y parámetros experimentales de combate (tabla de referencia)
+
+| Flag / Param | Tipo | Scope | Descripción | Estado | Plan retiro |
+|--------------|------|-------|-------------|--------|-------------|
+| `--damage-shadow` | CLI | Runtime | Ejecuta nuevo DamagePipeline en paralelo (no afecta gameplay) y registra diferencias. | Estable (shadow) | Cuando `--damage-live` alcance drift <±3% en 3 sesiones.
+| `--damage-live` | CLI | Runtime | Reemplaza cálculo legacy por pipeline nuevo (sin shadow). | Experimental | Al confirmar estabilidad (<±3%) retirar legacy.
+| `--precision-hit` | CLI/Toggle | Combate | Activa chequeo de precisión para ataques físicos. | Opcional | Integrar en balance base tras validación caps.
+| `--penetracion` | CLI/Toggle | Combate | Aplica penetración de defensa previa a mitigaciones. | Parcial | Se vuelve siempre ON tras tuning final.
+| `--combat-verbose` | CLI/Toggle | UI | Mensajes explicativos de cálculo de daño. | Parcial | Integrar nivel detalle configurable.
+| `--shadow-benchmark` | CLI | QA | Corre benchmark sintético comparando legacy vs pipeline. | QA | Retirar tras retirar legacy.
+| `--shadow-sweep` | CLI | QA | Recorre combinaciones CritScaling/FactorPenCrit. | QA | Igual que benchmark.
+| `--test-rareza-meta` | CLI | QA | Ejecuta validaciones de rarezas (precio/fallback). | QA | Mantener como smoke-data.
+
+Parámetros dinámicos (`CombatConfig` / `CombatBalanceConfig`):
+
+| Campo | Origen | Default | Efecto | Notas |
+|-------|--------|---------|--------|-------|
+| `CritScalingFactor` | CombatConfig | 0.65 | Fracción aplicada sobre la parte extra del crítico ((Mult-1)*F). | Reduce volatilidad del daño crítico. |
+| `ReducePenetracionEnCritico` | CombatConfig | true | Si ON, aplica `FactorPenetracionCritico` a penetración antes de recalcular defensa. | Evita builds explosivas. |
+| `FactorPenetracionCritico` | CombatConfig | 0.80 | Multiplicador sobre penetración en golpes críticos. | Ajustado vía sweep. |
+| `UseCritDiminishingReturns` | CombatConfig | true | Activa curva DR sobre CritChance. | Usa fórmula en `CombatBalanceConfig.CritChanceWithDR`. |
+| `CritChanceHardCap` | CombatConfig | 0.60 | Cap duro para DR (si DR activo). | Distinto al cap global de progression si se define. |
+| `CritDiminishingK` | CombatConfig | 50 | Factor K para curva DR. | Mayor K = curva más lenta. |
+| `ModoAcciones` | CombatConfig | false | Activa loop de PA. | Fase 1 aún no implementada en loop. |
+| `CritMultiplier` | CombatConfig | 1.35 | Multiplicador base crítico (antes de scaling factor). | Puede ajustarse tras tuning. |
+| `PrecisionMax` | progression.json (StatsCaps) | 0.95 | Clamp de precisión. | Cargado por `CombatBalanceConfig`. |
+| `CritChanceMax` | progression.json (StatsCaps) | 0.50 | Clamp de crit chance pre DR. | Puede ser < HardCap DR. |
+| `CritMultMin/Max` | progression.json (StatsCaps) | 1.25/1.75 | Rango permitido para crit mult derivado. | Se aplica sobre cálculo base. |
+| `PenetracionMax` | progression.json (StatsCaps) | 0.25 | Clamp de penetración base. | Penetración crítica se calcula tras clamp. |
+
+Notas:
+
+- El pipeline nuevo aplica pasos en orden fijo documentado; cualquier ajuste debe reflejarse en esta tabla y la Bitácora.
+- DR de crítico sólo se ejecuta cuando la feature flag correspondiente está activa.
+
+### 6.3 Alias de rareza (transición Normal / Comun)
+
+Contexto: algunos datos históricos emplean "Comun" mientras las configuraciones recientes y documentación usan "Normal" como rareza base. El sistema actual es case-insensitive y tolera ambas, pero para evitar divergencias:
+
+Política temporal:
+
+- Considerar "Comun" y "Normal" alias equivalentes hasta migración definitiva de data.
+- Nuevos JSON deben emplear la forma estándar: `"Normal"` (o minúscula `normal` según convención general) en `rareza_pesos.json` y definiciones de ítems.
+- Validadores registrarán advertencia si aparece "Comun" tras la migración.
+
+Motivación: reducir ruido de balance y evitar multiplicación de entries de rareza en configuraciones.
+
 6. Tras salir: procesar efectos, regen maná, turno enemigos.
 
 Testing previsto:
+
 - Caso feliz: PA=3 → 3 ataques físicos con seed determinista.
 - Edge: acción en cooldown repetida no reduce PA y permite intentar otra.
 - Flag OFF: snapshot daño total tras N turnos igual al legacy.
 
 Fases posteriores (referencia):
+
 - F2: iniciativa por Velocidad, costes variables, acciones defensivas y posicionamiento.
 - F3: integrar Stamina/Poise y efectos de interrupción.
 
@@ -486,9 +581,11 @@ Impacto esperado: mayor expresividad táctica, micro‑decisiones por turno y ba
 Esta sección fija el contrato técnico completo previo a codificar el loop PA, asegurando trazabilidad y minimizando ambigüedades. Todo lo descrito aquí es DATA / API target; el código legacy sigue activo hasta integrar gradualmente detrás de `CombatConfig.ModoAcciones`.
 
 #### 6.2.1 Resumen Ejecutivo
+
 Cada combatiente recibe PA (1..PAMax) por turno según atributos (Agilidad, Destreza, Nivel, equipo y efectos). Consume PA ejecutando acciones encadenadas (ataque, moverse, usar poción, observar, defensivas, sociales). El daño usa pipeline determinista (orden fijo) y admite reacciones inmediatas si hay slots de reacción disponibles. Todas las acciones y sus requisitos/costes se describen en JSON extendido; la IA podrá razonar solo con metadatos (sin hardcode de reglas específicas).
 
 #### 6.2.2 Definiciones Básicas
+
 - PA: puntos enteros gastables en un mini‑turno.
 - Slot de Reacción: capacidad discreta de disparar una acción reactiva fuera del flujo secuencial (por defecto 1; escalable con atributos).
 - Acción Macro: entrada que expande en varias acciones base (p.ej. `CorrerGolpear` → `[Correr, AtaqueFisico]`).
@@ -496,6 +593,7 @@ Cada combatiente recibe PA (1..PAMax) por turno según atributos (Agilidad, Dest
 - Distancia Abstracta: {cuerpo, corto, medio, largo}; acciones de movimiento modifican la distancia actual actor↔objetivo.
 
 #### 6.2.3 Cálculo de PA (Fórmula Implementable)
+
 PA = clamp(BasePA + floor(Agi / AgilityDivisor) + floor(Dex / DexterityDivisor) + floor(Nivel / LevelDivisor) + Sum(BonusEquipo) + Sum(BuffsPA) - Sum(DebuffsPA), PAMin, PAMax)
 
 Defaults actuales (`CombatConfig`): BasePA=2, PAMax=6, AgilityDivisor=30, DexterityDivisor=40, LevelDivisor=10, PAMin=1.
@@ -505,6 +603,7 @@ Ejemplo B (rápido): Agi=70 Dex=55 Nivel=18 ⇒ 2 +2+1+1 =6 (tope).
 Extensiones futuras: BonusEquipo (campo `BonusPA` en objetos), Buffs/Debuffs (efectos con interfaz `IEfectoPA`), gating de Stamina/Poise (no afecta PA base, pero limitará acciones pesadas repetidas).
 
 #### 6.2.4 Pipeline de Daño (Orden Inmutable)
+
 1) BaseDamage (tipo Físico/Mágico/Elemental)  
 2) Hit / Evasión (si falla: daño=0, FueEvadido=true, fin)  
 3) Penetración (DEF * (1-PEN))  
@@ -515,29 +614,33 @@ Extensiones futuras: BonusEquipo (campo `BonusPA` en objetos), Buffs/Debuffs (ef
 8) Redondeo (AwayFromZero) + Mínimo (≥1 si impactó)  
 
 Fórmulas clave:  
-defensaEfectiva = max(0, DEF * (1 - PEN))  
+defensaEfectiva = max(0, DEF *(1 - PEN))  
 afterDef = max(1, DB - defensaEfectiva)  
-afterMit = afterDef * (1 - MIT)  
-final = round(afterMit * (isCrit ? CritMultEscalado : 1) * VulnFactor)  
+afterMit = afterDef* (1 - MIT)  
+final = round(afterMit *(isCrit ? CritMultEscalado : 1)* VulnFactor)  
 final = max(1, final)
 
-CritMultEscalado = 1 + (CritMultBase - 1) * CritScalingFactor (balance fino).  
-Penetración en crítico puede reducirse: PENcrit = PEN * FactorPenetracionCritico (si `ReducePenetracionEnCritico`).
+CritMultEscalado = 1 + (CritMultBase - 1) *CritScalingFactor (balance fino).  
+Penetración en crítico puede reducirse: PENcrit = PEN* FactorPenetracionCritico (si `ReducePenetracionEnCritico`).
 
 #### 6.2.5 Precisión / Evasión / Crítico
+
 HitChance = clamp(BasePrecision + PrecisionStats - EvasionObjetivo, MinHit, 1.0).  
 BasePrecision recomendada 0.90; MinHit 0.05.  
 CritChance = clamp(CritStats + CritBuffs, 0, CritCap).  
 Curva DR opcional: chanceDR = stat / (stat + K) con cap superior.
 
 #### 6.2.6 Penetración y Mitigación
+
 PEN sumada de fuentes y clamp [0, PenetracionMax]. Aplica antes de resta de defensa. MIT aplica después de resta y antes de crítico. Vulnerabilidades multiplican después del crítico para consistencia (crítico amplifica la porción mitigada base y luego se aplica la susceptibilidad).
 
 #### 6.2.7 Reacciones Inmediatas
+
 ReactionSlots = 1 + floor((Destreza + Agilidad)/100).  
 Uso: durante ejecución de una acción que marque ventana de interrupción (`ventanaInterrupcion.frames > 0`), un defensor puede disparar acción reactiva (ej. `ContraataqueRapido`) si tiene slot libre. Fase 1: modelado de slots; la ejecución real se activará en Fase 2.
 
 #### 6.2.8 Esquema Extendido `acciones_catalogo.json`
+
 Campos nuevos (todos opcionales para compatibilidad):
 ```
 {
@@ -559,10 +662,13 @@ Campos nuevos (todos opcionales para compatibilidad):
   "meta": { "descripcion": "Acorta distancia 1 paso" }
 }
 ```
+
 Interpretación: Campos ausentes = defaults neutros (p.ej. costePA=1, cualquier distancia, sin reacciones, sin cambios de estado, no pasiva).
 
 #### 6.2.9 Pseudocódigo de Referencia (Consolidado)
+
 ComputePA, DamageCalculator y bucle PA se documentaron con ejemplos numéricos en §6.2.3/6.2.4. Bucle PA final:
+
 ```
 pa = ComputePA(pj,cfg)
 while (pa > 0 && enemigosVivos) {
@@ -578,6 +684,7 @@ AvanzarCooldowns(pj); RegenerarMana(pj); TickEfectos()
 ```
 
 #### 6.2.10 Tests Sugeridos (Resumen Ejecutable)
+
 1. PA_Calculo_BasicoYRapido (valores de ejemplo).  
 2. Daño_Pipeline_Secuencia (verifica pasos intermedios con seed).  
 3. Critico_Escalado_Factor (comprueba CritScalingFactor).  
@@ -590,15 +697,18 @@ AvanzarCooldowns(pj); RegenerarMana(pj); TickEfectos()
 10. Vulnerabilidad_PostCritico (aplicación final).  
 
 #### 6.2.11 Balance Inicial (Parámetros Recomendados)
+
 BasePA=2 PAMax=6 CritMultiplierBase=1.5 CritScalingFactor=0.65 CritCap=0.50 PenetracionMax=0.9 MinHit=0.05. Distancias: default inicial = "corto". Costes PA Fase 1: ataque=2, poción=2, moverse=1, observar=1, habilidad ligera=2, habilidad pesada=3 (placeholder; se materializará al introducir tabla coste). Reaccionar (contraataque rápido)=1 (PA reacción separado en fases futuras o utiliza slot).
 
 #### 6.2.12 Riesgos y Mitigaciones
+
 - Complejidad JSON → Validadores y defaults; warnings no fatales.
 - Explosión combinatoria IA → Iniciar con pesos estáticos personalidad + random sesgado.
 - Narrativa ruidosa → Log condensado por mini‑turno antes de imprimir.
 - Desbalance crítico/penetración → Benchmarks (shadow) ya instalados; repetir tras integrar PA.
 
 #### 6.2.13 Estrategia de Integración Incremental
+
 1) Implementar soporte `CostoPA` mínimo y loop PA solo jugador (flag).  
 2) Añadir diccionario temporal de costes (sin tocar JSON aún).  
 3) Introducir macro expansión simple.  
@@ -608,6 +718,7 @@ BasePA=2 PAMax=6 CritMultiplierBase=1.5 CritScalingFactor=0.65 CritCap=0.50 Pene
 7) IA multi‑acción y pesos de personalidad.
 
 #### 6.2.14 Criterios de “Listo para Fase 2”
+
 - Loop PA ON produce mismos resultados de daño promedio (±5%) que legacy en benchmark de 100 turnos (seed fija).  
 - Test suite §6.2.10 en verde.  
 - Documentación sincronizada (Bitácora + Roadmap).  

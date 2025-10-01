@@ -18,13 +18,13 @@ Soporte rarezas dinámicas | Hecho | 2025-09-30 | Generador migrado a strings + 
 Sistema de Acciones (Fase 1) | Hecho | 2025-09-29 | Registro acciones, persistencia y hooks combate/NPC/mundo; falta UI hints (7.b.5).
 Pipeline de Daño (MVP) | Parcial | 2025-09-29 | Pasos básicos + penetración behind flag; falta formalizar `IDamageStep` y unificación mensajes (5.8/5.13).
 DamagePipeline modo sombra | Hecho | 2025-10-01 | Benchmark + sweep (F/PenCrit) + agregador y resumen final; desviación ~ -3.5% dentro umbral.
-DamagePipeline modo live (activación gradual) | Parcial | 2025-10-01 | Flag --damage-live experimental; falta: monitoreo multi-sesión, retirar legacy tras estabilidad (<±3%).
+DamagePipeline modo live (activación gradual) | Parcial | 2025-10-01 | Flag --damage-live experimental; monitoreo drift 1/3 sesiones (<±3%) antes de retirar legacy.
 UI Unificada + Verbosidad Combate | Parcial | 2025-09-29 | Menús principales migrados; combate parcialmente; estilo temático pendiente (8.3/8.4).
 Recolección data‑driven | Hecho | 2025-09-24 | Nodos con rareza/cooldown y producción; balance fino pendiente (15.7).
 Enemigos data‑driven por archivo | Hecho | 2025-09-24 | Estructura por bioma/nivel/categoría; falta replicar a otros biomas.
 Validación de Datos | Parcial | 2025-09-29 | Referenciales + enemigos + sectores; falta objetos/equipo avanzado (10.6).
 Set GM / Habilidades por Set | Hecho | 2025-09-22 | Bonos 2/4/6 + habilidad temporal; faltan más sets productivos.
-Repositorios JSON (`IRepository<T>`) | Pendiente | 2025-09-30 | Aún usando gestores ad-hoc (Armas/Materiales/Pociones).
+Repositorios JSON (`IRepository<T>`) | Parcial | 2025-10-01 | Materiales, Armas, Armaduras, Botas, Cascos, Cinturones, Collares, Pantalones migrados; faltan Accesorios/Pociones.
 Crafteo (recetas) | Pendiente | 2025-09-30 | Solo planificación; depende de repos y validación (15.4).
 Durabilidad & Reparación | Pendiente | 2025-09-30 | No implementado; ligado a economía y sinks (15.6).
 Supervivencia (sistemas base) | Parcial | 2025-09-29 | Config + factores penalización; falta cableado ticks y consumos (27.x).
@@ -509,7 +509,7 @@ NUEVO — 2025-09-22 (tarde)
 
 ## 15. OBJETOS / CRAFTEO / DROPS
 
-[15.1] Pendiente | Data | Esquema común de objetos/materiales (JSON) + repositorios | Consolidar GestorArmas/Materiales/Pociones bajo repos JSON; IDs únicos, Rareza, NivelRequerido, BonosAtributo/Stats, DurabilidadBase (opcional). Integrar con PathProvider y validar con 10.6
+[15.1] Parcial | Data | Esquema común de objetos/materiales (JSON) + repositorios | Materiales: repos jerárquico + overlay implementado (normalización rareza, tolerancia datos). Pendiente extender patrón a Armas/Equipo/Pociones y validación referencial (10.6)
 [15.2] Hecho | Drops Enemigos | Tablas de botín por enemigo (base) + modificadores por sector/bioma/dificultad | `EnemigoData.Drops` soporta `Tipo/Nombre/Rareza(texto)/Chance/CantidadMin/Max/UniqueOnce`. Runtime: `GeneradorEnemigos` mapea probabilidades + metadatos de cantidad y UniqueOnce; `Enemigo.DarRecompensas` aplica sorteo con clamps anti-farming (máx 3 por kill, 5 para rarezas bajas) y respeta `UniqueOnce` persistiendo claves en `PjDatos/drops_unicos.json` vía `DropsService` integrado en `GuardadoService`. Tests usan `GeneradorEnemigos.DesactivarPersistenciaDrops` para evitar escritura real.
 
 [15.4] Hecho | Loader Equipo por ítem | `DatosJuego/Equipo/` ahora admite subcarpetas por tipo con JSON por ítem (o listas) y carga recursiva. Fallback a archivos agregados (`armas.json`, `Armaduras.json`, etc.) para compatibilidad. Se añadió selección ponderada por Rareza (configurable) para generación aleatoria. Documentación en `DatosJuego/Equipo/README.md`.

@@ -89,5 +89,53 @@ namespace MiJuegoRPG.Motor.Servicios
         /// </summary>
         public static string EnemigosDir()
             => CombineData("enemigos");
+
+        /// <summary>
+        /// Carpeta base de materiales individuales (DatosJuego/Materiales).
+        /// </summary>
+        public static string MaterialesDir()
+            => CombineData("Materiales");
+
+        /// <summary>
+        /// Carpeta base de armas individuales (DatosJuego/Equipo/armas).
+        /// </summary>
+        public static string ArmasDir()
+            => CombineData("Equipo", "armas");
+
+        /// <summary>
+        /// Carpeta base de armaduras individuales (DatosJuego/Equipo/armaduras).
+        /// </summary>
+        public static string ArmadurasDir()
+            => CombineData("Equipo", "armaduras");
+
+        /// <summary>
+        /// Carpeta base de botas individuales (DatosJuego/Equipo/botas).
+        /// </summary>
+        public static string BotasDir()
+            => CombineData("Equipo", "botas");
+
+        /// <summary>
+        /// Carpeta base de cascos individuales (DatosJuego/Equipo/cascos).
+        /// </summary>
+        public static string CascosDir()
+            => CombineData("Equipo", "cascos");
+
+        /// <summary>
+        /// Carpeta base de cinturones individuales (DatosJuego/Equipo/cinturones).
+        /// </summary>
+        public static string CinturonesDir()
+            => CombineData("Equipo", "cinturones");
+
+        /// <summary>
+        /// Carpeta base de collares individuales (DatosJuego/Equipo/collares).
+        /// </summary>
+        public static string CollaresDir()
+            => CombineData("Equipo", "collares");
+
+        /// <summary>
+        /// Carpeta base de pantalones individuales (DatosJuego/Equipo/pantalones).
+        /// </summary>
+        public static string PantalonesDir()
+            => CombineData("Equipo", "pantalones");
     }
 }

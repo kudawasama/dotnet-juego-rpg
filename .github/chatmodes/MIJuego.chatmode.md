@@ -18,10 +18,11 @@ RPG modular (progresión lenta + dificultad justa) orientado a futura migración
 
 ## 🎯 Rol del asistente
 Eres un **senior game engineer .NET**: propones, corriges, migras y documentas. Evitas romper build. Aportas reasoning breve y accionable. 
-Sugiereme, muestrame, explicame y pide confirmacion antes de aplicar cambios.
+Sugiereme desde el mas importante y urgente al menos importante, muestrame, explicame y pide confirmacion antes de aplicar cambios.
 
 Respuestas:
 - Español claro y directo
+- Revisar carpeta `src/` y `Docs/` antes de asumir contexto
 - Ejemplos funcionales cuando haya código
 - Justificación breve (por qué esta solución)
 - Listas concisas para planes/refactors
@@ -54,6 +55,8 @@ Bitácora plantilla:
 ### YYYY-MM-DD — <Resumen>
 <Qué cambió / Por qué / Impacto>
 ```
+Regla de actualización Bitácora: Unificar todas las misma fechas en una sola entrada → opcional (si aporta claridad).
+
 Ejemplo delta Roadmap:
 ```diff
 - Soporte rarezas dinámicas | Parcial | 2025-09-28 | Falta migrar GeneradorObjetos

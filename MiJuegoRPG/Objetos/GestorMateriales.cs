@@ -39,10 +39,21 @@ namespace MiJuegoRPG.Objetos
 
         public static Material? BuscarMaterialPorNombre(string nombre)
         {
+            // Delegar al repositorio si está disponible (transición gradual)
+            try
+            {
+                var repo = _lazyRepo.Value;
+                var dom = repo.ToDomain(nombre);
+                if (dom != null) return dom;
+            }
+            catch { /* fallback a lista cargada previa */ }
             return MaterialesDisponibles.Find(m => m.Nombre.Equals(nombre, StringComparison.OrdinalIgnoreCase));
         }
 
-        public static void CargarMateriales(string rutaArchivo)
+        private static readonly Lazy<MiJuegoRPG.Motor.Servicios.Repos.MaterialRepository> _lazyRepo
+            = new(() => new MiJuegoRPG.Motor.Servicios.Repos.MaterialRepository());
+
+    public static void CargarMateriales(string rutaArchivo)
         {
             if (!Path.IsPathRooted(rutaArchivo))
             {
@@ -71,6 +82,13 @@ namespace MiJuegoRPG.Objetos
                             material.Categoria
                         ));
                     }
+                    // Sincronizar repositorio (sobrescribir cache actual)
+                    try
+                    {
+                        var repo = _lazyRepo.Value;
+                        repo.SaveAll(materialesJson); // mantiene archivo; repos lee mismo path
+                    }
+                    catch { /* degradar silencioso */ }
                 }
             }
             catch (Exception ex)

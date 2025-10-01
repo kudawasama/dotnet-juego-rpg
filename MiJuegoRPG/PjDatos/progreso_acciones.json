@@ -1,1 +1,6 @@
-{}
+{
+  "habilidad_acciones_demo": {
+    "ExplorarSector": 1,
+    "ObservarNPC": 1
+  }
+}

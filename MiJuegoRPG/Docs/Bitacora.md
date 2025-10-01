@@ -1,6 +1,14 @@
 
 # Bitácora de Cambios (Consolidada)
 
+### 2025-10-01 — Repos jerárquicos de Equipo (Material/Arma/Armadura/Botas/Cascos/Cinturones/Collares/Pantalones) y normalización de rarezas
+
+Implementados `MaterialRepository`, `ArmaRepository`, `ArmaduraRepository`, `BotasRepository`, `CascosRepository`, `CinturonesRepository`, `CollaresRepository` y `PantalonesRepository` con carga recursiva (DatosJuego/**) y overlay (`PjDatos/*.json`) que reemplaza por `Nombre` (case-insensitive). Se centralizó la normalización de rarezas en `RarezaNormalizer` (alias históricos → forma canónica). Impacto: fuente única confiable y homogénea para más tipos de equipo, reducción de duplicación en parseo, preparación para validadores cruzados y futura migración de Accesorios/Pociones. Próximos pasos: factorizar helper genérico (`HierarchicalOverlayRepository<T>`) para eliminar duplicación, migrar restantes repos y consolidar logs de rarezas desconocidas (agrupar contadores en lugar de spam).
+
+## 2025-10-01 — Repositorio Materiales Jerárquico + Overlay
+
+Implementado `MaterialRepository` con carga recursiva desde `DatosJuego/Materiales/**` aceptando archivos individuales (objeto o lista) y overlay opcional `PjDatos/materiales.json` que sobreescribe por nombre. Normalización de rareza inline (alias legacy → convención actual), tolerancia a archivos inválidos (logs Warn sin abortar) y persistencia limitada al overlay para mantener compatibilidad con `GestorMateriales`. Impacto: unifica fuente de verdad de materiales, habilita futuras validaciones cruzadas y reduce riesgo de drift entre datos base y personalizaciones de jugador.
+
 ## 2025-10-01 — Snapshot Resumen Datos (Enemigos, Misiones, Materiales)
 
 Se creó `Docs/Resumen_Datos.md` consolidando una vista tabular de enemigos, líneas de misiones y taxonomía de materiales. Objetivo: acelerar consultas de balance y reducir navegación repetida por múltiples JSON. Impacto: referencia única de alto nivel sin duplicar lógica; prepara siguiente paso de validadores cruzados.
@@ -69,6 +77,10 @@ Se añadió flag `--shadow-sweep` que recorre combinaciones F∈{0.60,0.65,0.70}
 Se incorporó `CritScalingFactor` (default 0.65) a `CombatConfig` y se actualizó el shadow run para usarlo. Añadido flag `--damage-live` que habilita el pipeline nuevo en producción experimental (sin shadow redundante). Impacto: permite transición controlada tras alcanzar desviación aceptable (~ -2.9% con F=0.65, PenCrit=0.80) y futuros ajustes vía JSON sin recompilar.
 
 ## 2025-10-01 — Diseño Combate por Acciones (PA) Fase 1 preparado
+
+### 2025-10-01 — Transición Pipeline: cierre fase shadow y tabla de flags
+
+Se consolidó la fase shadow del DamagePipeline: desviación media estable ~ -3.5% (dentro umbral provisional <±5%). Se documentaron flags y parámetros dinámicos en Arquitectura (§6.2) y se actualizó Roadmap para reflejar monitoreo 1/3 sesiones antes de retirar legacy. Impacto: base clara para ajuste fino restante; reduce ambigüedad sobre CritScalingFactor / Penetración crítica y facilita futura limpieza de código legacy.
 
 Se documentó el plan para migrar el loop de `CombatePorTurnos` a un sistema de Puntos de Acción: cálculo de PA por turno vía `ActionPointService` (ya existente), introducción de `CostoPA` en `IAccionCombate` (default=1), ejecución encadenada mientras `PAActual > 0`, y flag `CombatConfig.ModoAcciones` para activación incremental. Impacto: habilita acciones múltiples (ej. movimiento + ataque + objeto) sin romper el flujo legacy; sienta base para costes variables e iniciativa futura.
 
@@ -766,4 +778,5 @@ Próximos pasos sugeridos:
 - Añadir validador de Equipo (rangos de nivel/daño/perfección y rarezas permitidas) y chequeo de duplicados por `Nombre`.
 
 ### 2025-10-01 — Validador armas y pociones (fase 1)
+
 Se amplió `DataValidatorService` agregando: `ValidarArmasBasico()` (duplicados por Nombre, perfección fuera de [0..100] como WARN, >200 error, rarezas desconocidas) y `ValidarPocionesBasico()` (duplicados de Nombre y rareza vacía). Integrado al flujo `ValidarReferenciasBasicas()`. Impacto: primera detección automática de overquality (>100) y duplicado de “Poción Pequeña” sin romper build (tolerancia diseñada). Próximo: extender a equipo v2 completo y acciones (IDs / futuras PA).
