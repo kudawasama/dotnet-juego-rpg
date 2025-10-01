@@ -118,5 +118,10 @@
     "Nombre": "Oreja de Goblin",
     "Rareza": "Comun",
     "Categoria": "Material"
+  },
+  {
+    "Nombre": "Carne Putrefacta",
+    "Rareza": "Normal",
+    "Categoria": "Material"
   }
 ]

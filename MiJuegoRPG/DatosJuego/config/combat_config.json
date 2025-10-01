@@ -1,0 +1,21 @@
+{
+  "BasePA": 2,
+  "PAMax": 6,
+  "PAMin": 1,
+  "AgilityDivisor": 30,
+  "DexterityDivisor": 40,
+  "LevelDivisor": 10,
+  "CritMultiplier": 1.35,
+  "CritCap": 0.5,
+  "PenetracionMax": 0.9,
+  "MinHit": 0.05,
+  "ModoAcciones": false,
+  "UseNewDamagePipelineShadow": false,
+  "UseNewDamagePipelineLive": false,
+  "ReducePenetracionEnCritico": true,
+  "FactorPenetracionCritico": 0.8,
+  "UseCritDiminishingReturns": true,
+  "CritChanceHardCap": 0.6,
+  "CritDiminishingK": 50.0,
+  "CritScalingFactor": 0.65
+}

@@ -9,6 +9,50 @@ namespace MiJuegoRPG.Motor.Servicios
     /// </summary>
     public class DamageResolver
     {
+        private static CombatConfig _cfg = CombatConfig.LoadOrDefault();
+        private static bool _configLoaded = false;
+        private static ShadowAgg _shadow = new ShadowAgg();
+
+        private class ShadowAgg
+        {
+            public int Muestras;
+            public double SumaDiffAbsoluta;
+            public double SumaDiffPct;
+            public double MinPct = double.MaxValue;
+            public double MaxPct = double.MinValue;
+            public void Registrar(int legacy, int nuevo)
+            {
+                if (legacy <= 0 && nuevo <= 0) return;
+                Muestras++;
+                int diff = nuevo - legacy;
+                double pct = legacy > 0 ? (double)diff / legacy : 0;
+                SumaDiffAbsoluta += diff;
+                SumaDiffPct += pct;
+                if (pct < MinPct) MinPct = pct;
+                if (pct > MaxPct) MaxPct = pct;
+                if (Muestras % 25 == 0)
+                {
+                    Logger.Debug($"[ShadowAgg] muestras={Muestras} avgDiffAbs={SumaDiffAbsoluta/Muestras:0.00} avgDiffPct={(SumaDiffPct/Muestras*100):0.0}% minPct={(MinPct*100):0.0}% maxPct={(MaxPct*100):0.0}%");
+                }
+            }
+            public string ResumenFinal()
+            {
+                if (Muestras == 0) return "[ShadowAgg] Sin muestras registradas";
+                double avgAbs = SumaDiffAbsoluta / Muestras;
+                double avgPct = (SumaDiffPct / Muestras) * 100.0;
+                return $"[ShadowAgg][Final] muestras={Muestras} avgDiffAbs={avgAbs:0.00} avgDiffPct={avgPct:0.0}% minPct={(MinPct*100):0.0}% maxPct={(MaxPct*100):0.0}%";
+            }
+            public void Reset()
+            {
+                Muestras = 0; SumaDiffAbsoluta = 0; SumaDiffPct = 0; MinPct = double.MaxValue; MaxPct = double.MinValue;
+            }
+        }
+        private static void EnsureConfig()
+        {
+            if (_configLoaded) return;
+            try { _cfg = CombatConfig.LoadOrDefault(); } catch { }
+            _configLoaded = true;
+        }
         /// <summary>
         /// Construye un mensaje explicativo para ataques físicos, describiendo pasos:
         /// Base → Defensa(±Penetración) → Mitigación → Crítico (nota) → Final.
@@ -136,6 +180,7 @@ namespace MiJuegoRPG.Motor.Servicios
         /// </summary>
         public ResultadoAccion ResolverAtaqueFisico(ICombatiente ejecutor, ICombatiente objetivo)
         {
+            EnsureConfig();
             int vidaAntes = objetivo.Vida;
             // Paso 0 (opcional): Chequeo de precisión previa al ataque físico.
             // Si está activo el toggle global y el ejecutor es un Personaje, usamos su estadística de Precisión.
@@ -177,19 +222,59 @@ namespace MiJuegoRPG.Motor.Servicios
                 }
             }
 
-            // Ejecuta el ataque físico según la lógica vigente. Si el toggle de penetración está activo
-            // y el ejecutor es Personaje, propagamos su penetración al receptor mediante contexto ambiental.
             int danio;
-            if (GameplayToggles.PenetracionEnabled && (ejecutor is MiJuegoRPG.Personaje.Personaje pjPen))
+            int danioAplicado;
+            bool usandoNuevoLive = false;
+            if (_cfg.UseNewDamagePipelineLive && ejecutor is MiJuegoRPG.Personaje.Personaje pjLive)
             {
-                double pen = System.Math.Clamp(pjPen.Estadisticas.Penetracion, 0.0, 0.9);
-                danio = CombatAmbientContext.WithPenetracion(pen, () => ejecutor.AtacarFisico(objetivo));
+                // Camino live: reproducir cálculo aproximado usando pipeline (forzar impacto para mantener consistencia con legado actual)
+                usandoNuevoLive = true;
+                double critChanceLive = pjLive.Estadisticas.CritChance;
+                if (_cfg.UseCritDiminishingReturns)
+                {
+                    critChanceLive = CombatBalanceConfig.CritChanceWithDR(critChanceLive, _cfg.CritChanceHardCap, _cfg.CritDiminishingK);
+                }
+                var reqLive = new DamagePipeline.Request
+                {
+                    Atacante = ejecutor,
+                    Objetivo = objetivo,
+                    BaseDamage = ejecutor.AtacarFisico(objetivo), // reutiliza método para base (weapon+stats)
+                    EsMagico = false,
+                    PrecisionBase = pjLive.Estadisticas.Precision,
+                    PrecisionExtra = 0,
+                    EvasionObjetivo = 0,
+                    Penetracion = pjLive.Estadisticas.Penetracion,
+                    MitigacionPorcentual = 0, // legado incluía mitigación interna — TODO: integrar cuando se separe
+                    CritChance = critChanceLive,
+                    CritMultiplier = pjLive.Estadisticas.CritMult <= 0 ? _cfg.CritMultiplier : pjLive.Estadisticas.CritMult,
+                    CritScalingFactor = _cfg.CritScalingFactor,
+                    VulnerabilidadMult = 1.0,
+                    MinHitClamp = _cfg.MinHit,
+                    ForzarCritico = false,
+                    ForzarImpacto = true,
+                    ReducePenetracionEnCritico = _cfg.ReducePenetracionEnCritico,
+                    FactorPenetracionCritico = _cfg.FactorPenetracionCritico
+                };
+                var liveRes = DamagePipeline.Calcular(in reqLive, RandomService.Instancia);
+                danio = liveRes.FinalDamage;
+                // Aplicar daño real al objetivo ahora (pipeline no muta)
+                objetivo.RecibirDanioFisico(danio);
+                danioAplicado = System.Math.Max(0, vidaAntes - objetivo.Vida);
             }
             else
             {
-                danio = ejecutor.AtacarFisico(objetivo);
+                // Legacy
+                if (GameplayToggles.PenetracionEnabled && (ejecutor is MiJuegoRPG.Personaje.Personaje pjPen))
+                {
+                    double pen = System.Math.Clamp(pjPen.Estadisticas.Penetracion, 0.0, 0.9);
+                    danio = CombatAmbientContext.WithPenetracion(pen, () => ejecutor.AtacarFisico(objetivo));
+                }
+                else
+                {
+                    danio = ejecutor.AtacarFisico(objetivo);
+                }
+                danioAplicado = System.Math.Max(0, vidaAntes - objetivo.Vida);
             }
-            int danioAplicado = System.Math.Max(0, vidaAntes - objetivo.Vida);
 
             var res = new ResultadoAccion
             {
@@ -205,6 +290,53 @@ namespace MiJuegoRPG.Motor.Servicios
             // Si no hubo daño aplicado, interpretamos como evasión/fallo (o mitigación total);
             // más preciso que depender del valor retornado por AtacarFisico (que puede ser pre-defensas).
             res.FueEvadido = danioAplicado == 0;
+
+            // Shadow run nuevo pipeline (no altera gameplay) si está activado en config.
+            if (!usandoNuevoLive && _cfg.UseNewDamagePipelineShadow && danioAplicado > 0 && ejecutor is MiJuegoRPG.Personaje.Personaje pjShadow)
+            {
+                try
+                {
+                    var rngShadow = RandomService.Instancia;
+                    // Preparar CritChance con DR si procede
+                    double critChance = pjShadow.Estadisticas.CritChance;
+                    if (_cfg.UseCritDiminishingReturns)
+                    {
+                        critChance = CombatBalanceConfig.CritChanceWithDR(
+                            critChance,
+                            _cfg.CritChanceHardCap,
+                            _cfg.CritDiminishingK);
+                    }
+                    var req = new DamagePipeline.Request
+                    {
+                        Atacante = ejecutor,
+                        Objetivo = objetivo,
+                        BaseDamage = danio, // legacy considera defensa internamente; aquí usamos el daño base retornado
+                        EsMagico = false,
+                        PrecisionBase = pjShadow.Estadisticas.Precision,
+                        PrecisionExtra = 0,
+                        EvasionObjetivo = 0, // sin estadística aún
+                        Penetracion = pjShadow.Estadisticas.Penetracion,
+                        MitigacionPorcentual = 0, // legacy la aplica dentro del método AtacarFisico
+                        CritChance = critChance,
+                        CritMultiplier = pjShadow.Estadisticas.CritMult <= 0 ? _cfg.CritMultiplier : pjShadow.Estadisticas.CritMult,
+                        CritScalingFactor = _cfg.CritScalingFactor,
+                        VulnerabilidadMult = 1.0,
+                        MinHitClamp = _cfg.MinHit,
+                        ForzarCritico = false,
+                        ForzarImpacto = true, // evitar variación por hit chance en shadow hasta tener estadística completa
+                        ReducePenetracionEnCritico = _cfg.ReducePenetracionEnCritico,
+                        FactorPenetracionCritico = _cfg.FactorPenetracionCritico
+                    };
+                    var nuevo = DamagePipeline.Calcular(in req, rngShadow);
+                    // Registrar comparación para ajuste futuro
+                    Logger.Debug($"[ShadowDamagePipeline] legacy={danioAplicado} pipeline={nuevo.FinalDamage} base={danio} crit={(nuevo.FueCritico ? 1:0)}");
+                    _shadow.Registrar(danioAplicado, nuevo.FinalDamage);
+                }
+                catch (System.Exception ex)
+                {
+                    Logger.Warn($"[ShadowDamagePipeline] Error: {ex.Message}");
+                }
+            }
 
             // Crítico (no intrusivo): si el ejecutor es Personaje, usar su estadística CritChance/Critico como probabilidad (0..1 aprox.)
             double pCrit = 0.0;
@@ -252,6 +384,7 @@ namespace MiJuegoRPG.Motor.Servicios
         /// </summary>
         public ResultadoAccion ResolverAtaqueMagico(ICombatiente ejecutor, ICombatiente objetivo)
         {
+            EnsureConfig();
             int vidaAntes = objetivo.Vida;
 
             // Ejecuta el ataque mágico según la lógica vigente; aplica el mismo mecanismo de penetración
@@ -278,6 +411,49 @@ namespace MiJuegoRPG.Motor.Servicios
                 EsMagico = true,
                 ObjetivoDerrotado = !objetivo.EstaVivo,
             };
+
+            if (_cfg.UseNewDamagePipelineShadow && danioAplicado > 0 && ejecutor is MiJuegoRPG.Personaje.Personaje pjShadow)
+            {
+                try
+                {
+                    var rngShadowM = RandomService.Instancia;
+                    double critChance = pjShadow.Estadisticas.CritChance;
+                    if (_cfg.UseCritDiminishingReturns)
+                    {
+                        critChance = CombatBalanceConfig.CritChanceWithDR(
+                            critChance,
+                            _cfg.CritChanceHardCap,
+                            _cfg.CritDiminishingK);
+                    }
+                    var req = new DamagePipeline.Request
+                    {
+                        Atacante = ejecutor,
+                        Objetivo = objetivo,
+                        BaseDamage = danio,
+                        EsMagico = true,
+                        PrecisionBase = 1.0,
+                        PrecisionExtra = 0,
+                        EvasionObjetivo = 0,
+                        Penetracion = pjShadow.Estadisticas.Penetracion,
+                        MitigacionPorcentual = 0,
+                        CritChance = critChance,
+                        CritMultiplier = pjShadow.Estadisticas.CritMult <= 0 ? 1.5 : pjShadow.Estadisticas.CritMult,
+                        VulnerabilidadMult = 1.0,
+                        MinHitClamp = _cfg.MinHit,
+                        ForzarCritico = false,
+                        ForzarImpacto = true,
+                        ReducePenetracionEnCritico = _cfg.ReducePenetracionEnCritico,
+                        FactorPenetracionCritico = _cfg.FactorPenetracionCritico
+                    };
+                    var nuevo = DamagePipeline.Calcular(in req, rngShadowM);
+                    Logger.Debug($"[ShadowDamagePipeline][Magico] legacy={danioAplicado} pipeline={nuevo.FinalDamage} base={danio} crit={(nuevo.FueCritico ? 1:0)}");
+                    _shadow.Registrar(danioAplicado, nuevo.FinalDamage);
+                }
+                catch (System.Exception ex)
+                {
+                    Logger.Warn($"[ShadowDamagePipeline][Magico] Error: {ex.Message}");
+                }
+            }
 
             // Si no hubo daño aplicado, interpretamos como evasión/fallo (o mitigación total)
             res.FueEvadido = danioAplicado == 0;
@@ -318,6 +494,16 @@ namespace MiJuegoRPG.Motor.Servicios
             }
 
             return res;
+        }
+
+        /// <summary>
+        /// Devuelve un resumen agregado de las diferencias shadow (si estaban activas) y resetea el acumulador si se solicita.
+        /// </summary>
+        public static string ObtenerResumenShadow(bool reset = false)
+        {
+            var txt = _shadow.ResumenFinal();
+            if (reset) _shadow.Reset();
+            return txt;
         }
     }
 }

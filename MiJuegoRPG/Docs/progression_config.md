@@ -240,7 +240,7 @@ Reglas de validación:
 - `ProgressionService`: aplica las fórmulas de 2.x para otorgar EXP a atributos tras acciones de recolección, entrenamiento y exploración.
 - `EnergiaService`: usa `Indices` y bonificadores de clases (ver `Arquitectura_y_Funcionamiento.md` §5.1 y §15) para coste y progresión relacionada.
 - `CombatePorTurnos`/`ActionRulesService`: consultan los parámetros de regeneración de maná (combate/fuera) combinados con penalizaciones de Supervivencia.
-   - Habilidades del catálogo: cuando una `HabilidadData` define `CostoMana`, el `HabilidadAccionMapper` lo aplica envolviendo la acción base (`AccionCompuestaSimple`). Si existen evoluciones con `CostoMana`, se toma el mínimo entre la base y evoluciones desbloqueadas. Esto mantiene consistencia entre datos y runtime.
+- Habilidades del catálogo: cuando una `HabilidadData` define `CostoMana`, el `HabilidadAccionMapper` lo aplica envolviendo la acción base (`AccionCompuestaSimple`). Si existen evoluciones con `CostoMana`, se toma el mínimo entre la base y evoluciones desbloqueadas. Esto mantiene consistencia entre datos y runtime.
 
 ---
 

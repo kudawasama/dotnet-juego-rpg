@@ -46,7 +46,7 @@ namespace MiJuegoRPG.Tests
             var acc = GeneradorObjetos.GenerarAccesorioAleatorio(nivelJugador: 1);
 
             // Assert: la rareza elegida debe ser Superior (única permitida)
-            Assert.Equal(MiJuegoRPG.Objetos.Rareza.Superior, acc.Rareza);
+            Assert.Equal("Superior", acc.Rareza);
             // Perfección debe estar dentro de la intersección [52..55]
             Assert.InRange(acc.Perfeccion, 52, 55);
         }
@@ -82,7 +82,7 @@ namespace MiJuegoRPG.Tests
             Assert.Equal(14, acc.BonificacionAtaque);
             Assert.Equal(6, acc.BonificacionDefensa);
             Assert.Equal(50, acc.Perfeccion);
-            Assert.Equal(MiJuegoRPG.Objetos.Rareza.Normal, acc.Rareza);
+            Assert.Equal("Normal", acc.Rareza);
         }
 
         private static void SetStaticPrivateList(string fieldName, object value)

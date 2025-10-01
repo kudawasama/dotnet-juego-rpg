@@ -412,12 +412,12 @@ namespace MiJuegoRPG.Motor.Menus
                 int? dMin = baseData.GetType().GetProperty("DañoMin")?.GetValue(baseData) as int?;
                 int? dMax = baseData.GetType().GetProperty("DañoMax")?.GetValue(baseData) as int?;
                 // Determinar rareza elegida respetando CSV
-                var candidatas = new List<MiJuegoRPG.Objetos.Rareza>();
-                if (!string.IsNullOrWhiteSpace(rzCsv)) foreach (var r in rzCsv.Split(',')) { var s = NormalizarRarezaTextoLocal(r.Trim()); if (Enum.TryParse<MiJuegoRPG.Objetos.Rareza>(s, true, out var rz)) candidatas.Add(rz); }
-                if (candidatas.Count == 0) { var s = NormalizarRarezaTextoLocal(rzStr); if (Enum.TryParse<MiJuegoRPG.Objetos.Rareza>(s, true, out var rzU)) candidatas.Add(rzU); else candidatas.Add(MiJuegoRPG.Objetos.Rareza.Normal); }
-                var rzElegida = candidatas[0]; // determinista: tomar primera permitida
+                var candidatas = new List<string>();
+                if (!string.IsNullOrWhiteSpace(rzCsv)) foreach (var r in rzCsv.Split(',')) { var sLoc = NormalizarRarezaTextoLocal(r.Trim()); candidatas.Add(MiJuegoRPG.Objetos.RarezaHelper.Normalizar(sLoc)); }
+                if (candidatas.Count == 0) { candidatas.Add(MiJuegoRPG.Objetos.RarezaHelper.Normalizar(rzStr)); }
+                var rzElegida = candidatas[0];
                 // Rango perfección por rareza intersectado con ítem
-                var rango = (System.ValueTuple<int,int>)typeof(MiJuegoRPG.Motor.GeneradorObjetos).GetMethod("RangoPerfeccionPorRareza", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static)!.Invoke(null, new object[] { rzElegida })!;
+                var rango = (System.ValueTuple<int,int>)typeof(MiJuegoRPG.Motor.GeneradorObjetos).GetMethod("RangoPerfeccionPorRareza", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static)!.Invoke(null, new object[] { rzElegida })!; // método ahora debería aceptar string; si aún acepta enum, se adaptará en refactor posterior
                 int pmin = rango.Item1, pmax = rango.Item2;
                 if (pMin.HasValue && pMax.HasValue) { pmin = Math.Max(pmin, pMin.Value); pmax = Math.Min(pmax, pMax.Value); if (pmin > pmax) { pmin = rango.Item1; pmax = rango.Item2; } }
                 int perfeccion = (perfFija <= 0 || perfFija > 100 || pMin.HasValue || pMax.HasValue) ? new Random().Next(pmin, pmax + 1) : perfFija;
@@ -451,9 +451,9 @@ namespace MiJuegoRPG.Motor.Menus
                 int def = (int)(baseData.GetType().GetProperty("Defensa")?.GetValue(baseData) ?? 1);
                 int? dMin = baseData.GetType().GetProperty("DefensaMin")?.GetValue(baseData) as int?;
                 int? dMax = baseData.GetType().GetProperty("DefensaMax")?.GetValue(baseData) as int?;
-                var candidatas = new List<MiJuegoRPG.Objetos.Rareza>();
-                if (!string.IsNullOrWhiteSpace(rzCsv)) foreach (var r in rzCsv.Split(',')) { var s = NormalizarRarezaTextoLocal(r.Trim()); if (Enum.TryParse<MiJuegoRPG.Objetos.Rareza>(s, true, out var rz)) candidatas.Add(rz); }
-                if (candidatas.Count == 0) { var s = NormalizarRarezaTextoLocal(rzStr); if (Enum.TryParse<MiJuegoRPG.Objetos.Rareza>(s, true, out var rzU)) candidatas.Add(rzU); else candidatas.Add(MiJuegoRPG.Objetos.Rareza.Normal); }
+                var candidatas = new List<string>();
+                if (!string.IsNullOrWhiteSpace(rzCsv)) foreach (var r in rzCsv.Split(',')) { var sLoc = NormalizarRarezaTextoLocal(r.Trim()); candidatas.Add(MiJuegoRPG.Objetos.RarezaHelper.Normalizar(sLoc)); }
+                if (candidatas.Count == 0) { candidatas.Add(MiJuegoRPG.Objetos.RarezaHelper.Normalizar(rzStr)); }
                 var rzElegida = candidatas[0];
                 var rango = (System.ValueTuple<int,int>)typeof(MiJuegoRPG.Motor.GeneradorObjetos).GetMethod("RangoPerfeccionPorRareza", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static)!.Invoke(null, new object[] { rzElegida })!;
                 int pmin = rango.Item1, pmax = rango.Item2;
@@ -487,9 +487,9 @@ namespace MiJuegoRPG.Motor.Menus
                 int? nMax = baseData.GetType().GetProperty("NivelMax")?.GetValue(baseData) as int?;
                 int bonAtk = (int)(baseData.GetType().GetProperty("BonificacionAtaque")?.GetValue(baseData) ?? 0);
                 int bonDef = (int)(baseData.GetType().GetProperty("BonificacionDefensa")?.GetValue(baseData) ?? 0);
-                var candidatas = new List<MiJuegoRPG.Objetos.Rareza>();
-                if (!string.IsNullOrWhiteSpace(rzCsv)) foreach (var r in rzCsv.Split(',')) { var s = NormalizarRarezaTextoLocal(r.Trim()); if (Enum.TryParse<MiJuegoRPG.Objetos.Rareza>(s, true, out var rz)) candidatas.Add(rz); }
-                if (candidatas.Count == 0) { var s = NormalizarRarezaTextoLocal(rzStr); if (Enum.TryParse<MiJuegoRPG.Objetos.Rareza>(s, true, out var rzU)) candidatas.Add(rzU); else candidatas.Add(MiJuegoRPG.Objetos.Rareza.Normal); }
+                var candidatas = new List<string>();
+                if (!string.IsNullOrWhiteSpace(rzCsv)) foreach (var r in rzCsv.Split(',')) { var sLoc = NormalizarRarezaTextoLocal(r.Trim()); candidatas.Add(MiJuegoRPG.Objetos.RarezaHelper.Normalizar(sLoc)); }
+                if (candidatas.Count == 0) { candidatas.Add(MiJuegoRPG.Objetos.RarezaHelper.Normalizar(rzStr)); }
                 var rzElegida = candidatas[0];
                 var rango = (System.ValueTuple<int,int>)typeof(MiJuegoRPG.Motor.GeneradorObjetos).GetMethod("RangoPerfeccionPorRareza", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static)!.Invoke(null, new object[] { rzElegida })!;
                 int pmin = rango.Item1, pmax = rango.Item2;
@@ -523,9 +523,7 @@ namespace MiJuegoRPG.Motor.Menus
                 int? dMin = baseData.GetType().GetProperty("DefensaMin")?.GetValue(baseData) as int?;
                 int? dMax = baseData.GetType().GetProperty("DefensaMax")?.GetValue(baseData) as int?;
                 string rzStr = (string)(baseData.GetType().GetProperty("Rareza")?.GetValue(baseData) ?? "Normal");
-                var candidatas = new List<MiJuegoRPG.Objetos.Rareza>();
-                var s = NormalizarRarezaTextoLocal(rzStr); if (Enum.TryParse<MiJuegoRPG.Objetos.Rareza>(s, true, out var rzU)) candidatas.Add(rzU); else candidatas.Add(MiJuegoRPG.Objetos.Rareza.Normal);
-                var rzElegida = candidatas[0];
+                var rzElegida = MiJuegoRPG.Objetos.RarezaHelper.Normalizar(rzStr);
                 var rango = (System.ValueTuple<int,int>)typeof(MiJuegoRPG.Motor.GeneradorObjetos).GetMethod("RangoPerfeccionPorRareza", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static)!.Invoke(null, new object[] { rzElegida })!;
                 int pmin = rango.Item1, pmax = rango.Item2;
                 if (pMin.HasValue && pMax.HasValue) { pmin = Math.Max(pmin, pMin.Value); pmax = Math.Min(pmax, pMax.Value); if (pmin > pmax) { pmin = rango.Item1; pmax = rango.Item2; } }
@@ -556,9 +554,7 @@ namespace MiJuegoRPG.Motor.Menus
                 int? dMin = baseData.GetType().GetProperty("DefensaMin")?.GetValue(baseData) as int?;
                 int? dMax = baseData.GetType().GetProperty("DefensaMax")?.GetValue(baseData) as int?;
                 string rzStr = (string)(baseData.GetType().GetProperty("Rareza")?.GetValue(baseData) ?? "Normal");
-                var candidatas = new List<MiJuegoRPG.Objetos.Rareza>();
-                var s = NormalizarRarezaTextoLocal(rzStr); if (Enum.TryParse<MiJuegoRPG.Objetos.Rareza>(s, true, out var rzU)) candidatas.Add(rzU); else candidatas.Add(MiJuegoRPG.Objetos.Rareza.Normal);
-                var rzElegida = candidatas[0];
+                var rzElegida = MiJuegoRPG.Objetos.RarezaHelper.Normalizar(rzStr);
                 var rango = (System.ValueTuple<int,int>)typeof(MiJuegoRPG.Motor.GeneradorObjetos).GetMethod("RangoPerfeccionPorRareza", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static)!.Invoke(null, new object[] { rzElegida })!;
                 int pmin = rango.Item1, pmax = rango.Item2;
                 if (pMin.HasValue && pMax.HasValue) { pmin = Math.Max(pmin, pMin.Value); pmax = Math.Min(pmax, pMax.Value); if (pmin > pmax) { pmin = rango.Item1; pmax = rango.Item2; } }
@@ -589,9 +585,7 @@ namespace MiJuegoRPG.Motor.Menus
                 int? cMin = baseData.GetType().GetProperty("BonificacionCargaMin")?.GetValue(baseData) as int?;
                 int? cMax = baseData.GetType().GetProperty("BonificacionCargaMax")?.GetValue(baseData) as int?;
                 string rzStr = (string)(baseData.GetType().GetProperty("Rareza")?.GetValue(baseData) ?? "Normal");
-                var candidatas = new List<MiJuegoRPG.Objetos.Rareza>();
-                var s = NormalizarRarezaTextoLocal(rzStr); if (Enum.TryParse<MiJuegoRPG.Objetos.Rareza>(s, true, out var rzU)) candidatas.Add(rzU); else candidatas.Add(MiJuegoRPG.Objetos.Rareza.Normal);
-                var rzElegida = candidatas[0];
+                var rzElegida = MiJuegoRPG.Objetos.RarezaHelper.Normalizar(rzStr);
                 var rango = (System.ValueTuple<int,int>)typeof(MiJuegoRPG.Motor.GeneradorObjetos).GetMethod("RangoPerfeccionPorRareza", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static)!.Invoke(null, new object[] { rzElegida })!;
                 int pmin = rango.Item1, pmax = rango.Item2;
                 if (pMin.HasValue && pMax.HasValue) { pmin = Math.Max(pmin, pMin.Value); pmax = Math.Min(pmax, pMax.Value); if (pmin > pmax) { pmin = rango.Item1; pmax = rango.Item2; } }
@@ -625,9 +619,7 @@ namespace MiJuegoRPG.Motor.Menus
                 int? bonEneMin = baseData.GetType().GetProperty("BonificacionEnergiaMin")?.GetValue(baseData) as int?;
                 int? bonEneMax = baseData.GetType().GetProperty("BonificacionEnergiaMax")?.GetValue(baseData) as int?;
                 string rzStr = (string)(baseData.GetType().GetProperty("Rareza")?.GetValue(baseData) ?? "Normal");
-                var candidatas = new List<MiJuegoRPG.Objetos.Rareza>();
-                var s = NormalizarRarezaTextoLocal(rzStr); if (Enum.TryParse<MiJuegoRPG.Objetos.Rareza>(s, true, out var rzU)) candidatas.Add(rzU); else candidatas.Add(MiJuegoRPG.Objetos.Rareza.Normal);
-                var rzElegida = candidatas[0];
+                var rzElegida = MiJuegoRPG.Objetos.RarezaHelper.Normalizar(rzStr);
                 var rango = (System.ValueTuple<int,int>)typeof(MiJuegoRPG.Motor.GeneradorObjetos).GetMethod("RangoPerfeccionPorRareza", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static)!.Invoke(null, new object[] { rzElegida })!;
                 int pmin = rango.Item1, pmax = rango.Item2;
                 if (pMin.HasValue && pMax.HasValue) { pmin = Math.Max(pmin, pMin.Value); pmax = Math.Min(pmax, pMax.Value); if (pmin > pmax) { pmin = rango.Item1; pmax = rango.Item2; } }
@@ -660,9 +652,7 @@ namespace MiJuegoRPG.Motor.Menus
                 int? dMin = baseData.GetType().GetProperty("DefensaMin")?.GetValue(baseData) as int?;
                 int? dMax = baseData.GetType().GetProperty("DefensaMax")?.GetValue(baseData) as int?;
                 string rzStr = (string)(baseData.GetType().GetProperty("Rareza")?.GetValue(baseData) ?? "Normal");
-                var candidatas = new List<MiJuegoRPG.Objetos.Rareza>();
-                var s = NormalizarRarezaTextoLocal(rzStr); if (Enum.TryParse<MiJuegoRPG.Objetos.Rareza>(s, true, out var rzU)) candidatas.Add(rzU); else candidatas.Add(MiJuegoRPG.Objetos.Rareza.Normal);
-                var rzElegida = candidatas[0];
+                var rzElegida = MiJuegoRPG.Objetos.RarezaHelper.Normalizar(rzStr);
                 var rango = (System.ValueTuple<int,int>)typeof(MiJuegoRPG.Motor.GeneradorObjetos).GetMethod("RangoPerfeccionPorRareza", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static)!.Invoke(null, new object[] { rzElegida })!;
                 int pmin = rango.Item1, pmax = rango.Item2;
                 if (pMin.HasValue && pMax.HasValue) { pmin = Math.Max(pmin, pMin.Value); pmax = Math.Min(pmax, pMax.Value); if (pmin > pmax) { pmin = rango.Item1; pmax = rango.Item2; } }

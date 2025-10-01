@@ -399,8 +399,9 @@ namespace MiJuegoRPG.Motor
                             {
                                 // Crear stub si no existe
                                 var rzStr = string.IsNullOrWhiteSpace(drop.Rareza) ? "Normal" : drop.Rareza;
-                                if (!Enum.TryParse<Objetos.Rareza>(rzStr, true, out var rzObj)) rzObj = Objetos.Rareza.Normal;
-                                mat = new Objetos.Material(nombre, rzObj, "Material");
+                                // Normalización simple; se mantiene string sin enum
+                                var rzObjStr = MiJuegoRPG.Objetos.RarezaHelper.Normalizar(rzStr);
+                                mat = new Objetos.Material(nombre, rzObjStr, "Material");
                                 if (!DesactivarPersistenciaDrops)
                                     Objetos.GestorMateriales.GuardarMaterialSiNoExiste(mat);
                             }
@@ -462,26 +463,26 @@ namespace MiJuegoRPG.Motor
             // Ejemplo de drops básicos según tipo de enemigo
             if (enemigo.Nombre.ToLower().Contains("goblin"))
             {
-                var armaDrop = new MiJuegoRPG.Objetos.Arma("Espada Oxidada", 5, nivel: 1, rareza: MiJuegoRPG.Objetos.Rareza.Normal, categoria: "UnaMano");
+                var armaDrop = new MiJuegoRPG.Objetos.Arma("Espada Oxidada", 5, nivel: 1, rareza: "Normal", categoria: "UnaMano");
                 enemigo.ObjetosDrop.Add(armaDrop);
                 if (!DesactivarPersistenciaDrops)
                     MiJuegoRPG.Objetos.GestorArmas.GuardarArmaSiNoExiste(armaDrop);
 
-                var pocionDrop = new MiJuegoRPG.Objetos.Pocion("Poción Pequeña", 10, MiJuegoRPG.Objetos.Rareza.Pobre);
+                var pocionDrop = new MiJuegoRPG.Objetos.Pocion("Poción Pequeña", 10, "Pobre");
                 enemigo.ObjetosDrop.Add(pocionDrop);
                 if (!DesactivarPersistenciaDrops)
                     MiJuegoRPG.Objetos.GestorPociones.GuardarPocionSiNoExiste(pocionDrop);
             }
             else if (enemigo.Nombre.ToLower().Contains("slime"))
             {
-                var materialDrop = new MiJuegoRPG.Objetos.Material("Gelatina", MiJuegoRPG.Objetos.Rareza.Rota);
+                var materialDrop = new MiJuegoRPG.Objetos.Material("Gelatina", "Rota");
                 enemigo.ObjetosDrop.Add(materialDrop);
                 if (!DesactivarPersistenciaDrops)
                     MiJuegoRPG.Objetos.GestorMateriales.GuardarMaterialSiNoExiste(materialDrop);
             }
             else if (enemigo.Nombre.ToLower().Contains("golem"))
             {
-                var armaDrop = new MiJuegoRPG.Objetos.Arma("Martillo Pesado", 20, nivel: enemigo.Nivel, rareza: MiJuegoRPG.Objetos.Rareza.Rara, categoria: "DosManos");
+                var armaDrop = new MiJuegoRPG.Objetos.Arma("Martillo Pesado", 20, nivel: enemigo.Nivel, rareza: "Rara", categoria: "DosManos");
                 enemigo.ObjetosDrop.Add(armaDrop);
                 if (!DesactivarPersistenciaDrops)
                     MiJuegoRPG.Objetos.GestorArmas.GuardarArmaSiNoExiste(armaDrop);

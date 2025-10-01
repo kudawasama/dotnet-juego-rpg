@@ -83,6 +83,19 @@ namespace MiJuegoRPG.Motor.Servicios
             return Math.Clamp(c, 0.0, CritChanceMax);
         }
 
+        /// <summary>
+        /// Aplica diminishing returns a una probabilidad de crítico en escala 0..1 usando fórmula cap * (stat*100 / (stat*100 + K)).
+        /// </summary>
+        public static double CritChanceWithDR(double critChanceRaw, double cap, double k)
+        {
+            if (critChanceRaw <= 0) return 0;
+            if (k <= 0) return Math.Clamp(critChanceRaw, 0, cap);
+            double stat = critChanceRaw * 100.0; // reinterpretar como “puntos” para suavizar
+            double eff = cap * (stat / (stat + k));
+            if (eff < 0) eff = 0;
+            return Math.Min(eff, cap);
+        }
+
         public static double ClampCritMult(double m)
         {
             EnsureLoaded();

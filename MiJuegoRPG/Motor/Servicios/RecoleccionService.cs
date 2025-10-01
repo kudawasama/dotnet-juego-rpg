@@ -446,7 +446,7 @@ namespace MiJuegoRPG.Motor.Servicios
                         if (juego.jugador != null && juego.jugador.Inventario != null)
                         {
                             // Rareza futura: mapear Rareza nodo a rareza material (por ahora Normal)
-                            juego.jugador.Inventario.AgregarObjeto(new Objetos.Material(mat.Nombre, Objetos.Rareza.Normal), cantidad);
+                            juego.jugador.Inventario.AgregarObjeto(new Objetos.Material(mat.Nombre, "Normal"), cantidad);
                         }
                     }
                 }

@@ -94,7 +94,7 @@ namespace MiJuegoRPG.Objetos
     {
         public required string Nombre { get; set; }
         public int Curacion { get; set; }
-        public Rareza Rareza { get; set; }
+        public string Rareza { get; set; } = "Normal";
         public required string Categoria { get; set; }
     }
 }

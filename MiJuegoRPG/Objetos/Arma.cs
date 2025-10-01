@@ -48,7 +48,7 @@ namespace MiJuegoRPG.Objetos
         {
             var random = MiJuegoRPG.Motor.Servicios.RandomService.Instancia;
             int dañoEscalado = dañoBase + (int)(dañoBase * (nivel - 1) * 0.5);
-            double mult = MultiplicadoresRareza.ContainsKey(rareza) ? MultiplicadoresRareza[rareza] : 1.0;
+            double mult = MiJuegoRPG.Objetos.RarezaHelper.MultiplicadorBase(rareza);
             int dañoAleatorio = random.Next((int)(dañoEscalado * 0.9), (int)(dañoEscalado * 1.1) + 1);
             return (int)(dañoAleatorio * mult);
         }

@@ -104,7 +104,7 @@ namespace MiJuegoRPG.Objetos
         public int DañoFisico { get; set; }
         public int DañoMagico { get; set; }
         public int NivelRequerido { get; set; }
-        public Rareza Rareza { get; set; }
+        public string Rareza { get; set; } = "Normal";
         public required string Categoria { get; set; }
         public int Perfeccion { get; set; }
         public Dictionary<string, double>? BonificadorAtributos { get; set; }

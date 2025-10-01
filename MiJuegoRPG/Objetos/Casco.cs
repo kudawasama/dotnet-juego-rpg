@@ -33,9 +33,7 @@ namespace MiJuegoRPG.Objetos
             int defensaEscalada = defensaBase + (int)(defensaBase * (nivel - 1) * 0.5);
             double mult = 1.0;
             // Obtener multiplicador de rareza desde RarezaConfig
-            var rarezaConfig = MiJuegoRPG.Objetos.RarezaConfig.Instancia;
-            if (rarezaConfig != null && rarezaConfig.Multiplicadores.TryGetValue(rareza, out var m))
-                mult = m;
+            mult = MiJuegoRPG.Objetos.RarezaHelper.MultiplicadorBase(rareza);
             int defensaAleatoria = random.Next((int)(defensaEscalada * 0.9), (int)(defensaEscalada * 1.1) + 1);
             return (int)(defensaAleatoria * mult);
         }

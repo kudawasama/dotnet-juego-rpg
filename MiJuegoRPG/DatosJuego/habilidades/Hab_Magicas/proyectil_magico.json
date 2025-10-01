@@ -16,6 +16,8 @@
         },
         "Condiciones": [
             {"Tipo": "Entrenamiento", "Accion": "Meditar", "Cantidad": 100},
-            {"Tipo": "Combate", "Accion": "
+            {"Tipo": "Combate", "Accion": "Usar Habilidad", "Cantidad": 100}
+            ]
+     
     }
 ]

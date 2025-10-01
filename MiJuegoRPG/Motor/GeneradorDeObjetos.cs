@@ -388,20 +388,20 @@ namespace MiJuegoRPG.Motor
                 var rand = MiJuegoRPG.Motor.Servicios.RandomService.Instancia;
                 var baseData = botasDisponibles[rand.Next(botasDisponibles.Count)];
 
-                // Rarezas permitidas
-                List<MiJuegoRPG.Objetos.Rareza> permitidas = new();
+                // Rarezas permitidas (string, soporte dinámico)
+                List<string> permitidas = new();
                 if (!string.IsNullOrWhiteSpace(baseData.RarezasPermitidasCsv))
                 {
                     foreach (var r in baseData.RarezasPermitidasCsv.Split(','))
                     {
                         var s = NormalizarRarezaTexto(r.Trim());
-                        if (Enum.TryParse<MiJuegoRPG.Objetos.Rareza>(s, true, out var rzCsv)) permitidas.Add(rzCsv);
+                        if (!string.IsNullOrWhiteSpace(s)) permitidas.Add(s);
                     }
                 }
                 if (permitidas.Count == 0)
                 {
                     var s = NormalizarRarezaTexto(baseData.Rareza ?? "Normal");
-                    if (Enum.TryParse<MiJuegoRPG.Objetos.Rareza>(s, true, out var rzUnico)) permitidas.Add(rzUnico); else permitidas.Add(MiJuegoRPG.Objetos.Rareza.Normal);
+                    if (!string.IsNullOrWhiteSpace(s)) permitidas.Add(s); else permitidas.Add("Normal");
                 }
                 var rzElegida = ElegirRarezaPonderada(permitidas);
 
@@ -411,7 +411,20 @@ namespace MiJuegoRPG.Motor
                 {
                     pMin = Math.Max(pMin, Math.Clamp(baseData.PerfeccionMin.Value, 0, 100));
                     pMax = Math.Min(pMax, Math.Clamp(baseData.PerfeccionMax.Value, 0, 100));
-                    if (pMin > pMax) (pMin, pMax) = RangoPerfeccionPorRareza(rzElegida);
+                    if (pMin > pMax)
+                    {
+                        if (rarezaConfig == null && baseData.PerfeccionMin.HasValue && baseData.PerfeccionMax.HasValue)
+                        {
+                            // Sin config de rarezas: respetar rango declarado en el ítem
+                            pMin = Math.Clamp(baseData.PerfeccionMin.Value, 0, 100);
+                            pMax = Math.Clamp(baseData.PerfeccionMax.Value, 0, 100);
+                            if (pMin > pMax) { pMin = 50; pMax = 50; }
+                        }
+                        else
+                        {
+                            (pMin, pMax) = RangoPerfeccionPorRareza(rzElegida);
+                        }
+                    }
                 }
                 int perfeccion = (baseData.Perfeccion <= 0 || baseData.Perfeccion > 100 || baseData.PerfeccionMin.HasValue || baseData.PerfeccionMax.HasValue)
                     ? rand.Next(pMin, pMax + 1)
@@ -463,19 +476,19 @@ namespace MiJuegoRPG.Motor
                 var rand = MiJuegoRPG.Motor.Servicios.RandomService.Instancia;
                 var baseData = cinturonesDisponibles[rand.Next(cinturonesDisponibles.Count)];
 
-                List<MiJuegoRPG.Objetos.Rareza> permitidas = new();
+                List<string> permitidas = new();
                 if (!string.IsNullOrWhiteSpace(baseData.RarezasPermitidasCsv))
                 {
                     foreach (var r in baseData.RarezasPermitidasCsv.Split(','))
                     {
                         var s = NormalizarRarezaTexto(r.Trim());
-                        if (Enum.TryParse<MiJuegoRPG.Objetos.Rareza>(s, true, out var rzCsv)) permitidas.Add(rzCsv);
+                        if (!string.IsNullOrWhiteSpace(s)) permitidas.Add(s);
                     }
                 }
                 if (permitidas.Count == 0)
                 {
                     var s = NormalizarRarezaTexto(baseData.Rareza ?? "Normal");
-                    if (Enum.TryParse<MiJuegoRPG.Objetos.Rareza>(s, true, out var rzUnico)) permitidas.Add(rzUnico); else permitidas.Add(MiJuegoRPG.Objetos.Rareza.Normal);
+                    if (!string.IsNullOrWhiteSpace(s)) permitidas.Add(s); else permitidas.Add("Normal");
                 }
                 var rzElegida = ElegirRarezaPonderada(permitidas);
 
@@ -484,7 +497,19 @@ namespace MiJuegoRPG.Motor
                 {
                     pMin = Math.Max(pMin, Math.Clamp(baseData.PerfeccionMin.Value, 0, 100));
                     pMax = Math.Min(pMax, Math.Clamp(baseData.PerfeccionMax.Value, 0, 100));
-                    if (pMin > pMax) (pMin, pMax) = RangoPerfeccionPorRareza(rzElegida);
+                    if (pMin > pMax)
+                    {
+                        if (rarezaConfig == null && baseData.PerfeccionMin.HasValue && baseData.PerfeccionMax.HasValue)
+                        {
+                            pMin = Math.Clamp(baseData.PerfeccionMin.Value, 0, 100);
+                            pMax = Math.Clamp(baseData.PerfeccionMax.Value, 0, 100);
+                            if (pMin > pMax) { pMin = 50; pMax = 50; }
+                        }
+                        else
+                        {
+                            (pMin, pMax) = RangoPerfeccionPorRareza(rzElegida);
+                        }
+                    }
                 }
                 int perfeccion = (baseData.Perfeccion <= 0 || baseData.Perfeccion > 100 || baseData.PerfeccionMin.HasValue || baseData.PerfeccionMax.HasValue)
                     ? rand.Next(pMin, pMax + 1)
@@ -533,19 +558,19 @@ namespace MiJuegoRPG.Motor
                 var rand = MiJuegoRPG.Motor.Servicios.RandomService.Instancia;
                 var baseData = collaresDisponibles[rand.Next(collaresDisponibles.Count)];
 
-                List<MiJuegoRPG.Objetos.Rareza> permitidas = new();
+                List<string> permitidas = new();
                 if (!string.IsNullOrWhiteSpace(baseData.RarezasPermitidasCsv))
                 {
                     foreach (var r in baseData.RarezasPermitidasCsv.Split(','))
                     {
                         var s = NormalizarRarezaTexto(r.Trim());
-                        if (Enum.TryParse<MiJuegoRPG.Objetos.Rareza>(s, true, out var rzCsv)) permitidas.Add(rzCsv);
+                        if (!string.IsNullOrWhiteSpace(s)) permitidas.Add(s);
                     }
                 }
                 if (permitidas.Count == 0)
                 {
                     var s = NormalizarRarezaTexto(baseData.Rareza ?? "Normal");
-                    if (Enum.TryParse<MiJuegoRPG.Objetos.Rareza>(s, true, out var rzUnico)) permitidas.Add(rzUnico); else permitidas.Add(MiJuegoRPG.Objetos.Rareza.Normal);
+                    if (!string.IsNullOrWhiteSpace(s)) permitidas.Add(s); else permitidas.Add("Normal");
                 }
                 var rzElegida = ElegirRarezaPonderada(permitidas);
 
@@ -554,7 +579,19 @@ namespace MiJuegoRPG.Motor
                 {
                     pMin = Math.Max(pMin, Math.Clamp(baseData.PerfeccionMin.Value, 0, 100));
                     pMax = Math.Min(pMax, Math.Clamp(baseData.PerfeccionMax.Value, 0, 100));
-                    if (pMin > pMax) (pMin, pMax) = RangoPerfeccionPorRareza(rzElegida);
+                    if (pMin > pMax)
+                    {
+                        if (rarezaConfig == null && baseData.PerfeccionMin.HasValue && baseData.PerfeccionMax.HasValue)
+                        {
+                            pMin = Math.Clamp(baseData.PerfeccionMin.Value, 0, 100);
+                            pMax = Math.Clamp(baseData.PerfeccionMax.Value, 0, 100);
+                            if (pMin > pMax) { pMin = 50; pMax = 50; }
+                        }
+                        else
+                        {
+                            (pMin, pMax) = RangoPerfeccionPorRareza(rzElegida);
+                        }
+                    }
                 }
                 int perfeccion = (baseData.Perfeccion <= 0 || baseData.Perfeccion > 100 || baseData.PerfeccionMin.HasValue || baseData.PerfeccionMax.HasValue)
                     ? rand.Next(pMin, pMax + 1)
@@ -611,19 +648,19 @@ namespace MiJuegoRPG.Motor
                 var rand = MiJuegoRPG.Motor.Servicios.RandomService.Instancia;
                 var baseData = pantalonesDisponibles[rand.Next(pantalonesDisponibles.Count)];
 
-                List<MiJuegoRPG.Objetos.Rareza> permitidas = new();
+                List<string> permitidas = new();
                 if (!string.IsNullOrWhiteSpace(baseData.RarezasPermitidasCsv))
                 {
                     foreach (var r in baseData.RarezasPermitidasCsv.Split(','))
                     {
                         var s = NormalizarRarezaTexto(r.Trim());
-                        if (Enum.TryParse<MiJuegoRPG.Objetos.Rareza>(s, true, out var rzCsv)) permitidas.Add(rzCsv);
+                        if (!string.IsNullOrWhiteSpace(s)) permitidas.Add(s);
                     }
                 }
                 if (permitidas.Count == 0)
                 {
                     var s = NormalizarRarezaTexto(baseData.Rareza ?? "Normal");
-                    if (Enum.TryParse<MiJuegoRPG.Objetos.Rareza>(s, true, out var rzUnico)) permitidas.Add(rzUnico); else permitidas.Add(MiJuegoRPG.Objetos.Rareza.Normal);
+                    if (!string.IsNullOrWhiteSpace(s)) permitidas.Add(s); else permitidas.Add("Normal");
                 }
                 var rzElegida = ElegirRarezaPonderada(permitidas);
 
@@ -632,7 +669,19 @@ namespace MiJuegoRPG.Motor
                 {
                     pMin = Math.Max(pMin, Math.Clamp(baseData.PerfeccionMin.Value, 0, 100));
                     pMax = Math.Min(pMax, Math.Clamp(baseData.PerfeccionMax.Value, 0, 100));
-                    if (pMin > pMax) (pMin, pMax) = RangoPerfeccionPorRareza(rzElegida);
+                    if (pMin > pMax)
+                    {
+                        if (rarezaConfig == null && baseData.PerfeccionMin.HasValue && baseData.PerfeccionMax.HasValue)
+                        {
+                            pMin = Math.Clamp(baseData.PerfeccionMin.Value, 0, 100);
+                            pMax = Math.Clamp(baseData.PerfeccionMax.Value, 0, 100);
+                            if (pMin > pMax) { pMin = 50; pMax = 50; }
+                        }
+                        else
+                        {
+                            (pMin, pMax) = RangoPerfeccionPorRareza(rzElegida);
+                        }
+                    }
                 }
                 int perfeccion = (baseData.Perfeccion <= 0 || baseData.Perfeccion > 100 || baseData.PerfeccionMin.HasValue || baseData.PerfeccionMax.HasValue)
                     ? rand.Next(pMin, pMax + 1)
@@ -681,19 +730,19 @@ namespace MiJuegoRPG.Motor
                 var rand = MiJuegoRPG.Motor.Servicios.RandomService.Instancia;
                 var baseData = cascosDisponibles[rand.Next(cascosDisponibles.Count)];
 
-                List<MiJuegoRPG.Objetos.Rareza> permitidas = new();
+                List<string> permitidas = new();
                 if (!string.IsNullOrWhiteSpace(baseData.RarezasPermitidasCsv))
                 {
                     foreach (var r in baseData.RarezasPermitidasCsv.Split(','))
                     {
                         var s = NormalizarRarezaTexto(r.Trim());
-                        if (Enum.TryParse<MiJuegoRPG.Objetos.Rareza>(s, true, out var rzCsv)) permitidas.Add(rzCsv);
+                        if (!string.IsNullOrWhiteSpace(s)) permitidas.Add(s);
                     }
                 }
                 if (permitidas.Count == 0)
                 {
                     var s = NormalizarRarezaTexto(baseData.Rareza ?? "Normal");
-                    if (Enum.TryParse<MiJuegoRPG.Objetos.Rareza>(s, true, out var rzUnico)) permitidas.Add(rzUnico); else permitidas.Add(MiJuegoRPG.Objetos.Rareza.Normal);
+                    if (!string.IsNullOrWhiteSpace(s)) permitidas.Add(s); else permitidas.Add("Normal");
                 }
                 var rzElegida = ElegirRarezaPonderada(permitidas);
 
@@ -702,7 +751,19 @@ namespace MiJuegoRPG.Motor
                 {
                     pMin = Math.Max(pMin, Math.Clamp(baseData.PerfeccionMin.Value, 0, 100));
                     pMax = Math.Min(pMax, Math.Clamp(baseData.PerfeccionMax.Value, 0, 100));
-                    if (pMin > pMax) (pMin, pMax) = RangoPerfeccionPorRareza(rzElegida);
+                    if (pMin > pMax)
+                    {
+                        if (rarezaConfig == null && baseData.PerfeccionMin.HasValue && baseData.PerfeccionMax.HasValue)
+                        {
+                            pMin = Math.Clamp(baseData.PerfeccionMin.Value, 0, 100);
+                            pMax = Math.Clamp(baseData.PerfeccionMax.Value, 0, 100);
+                            if (pMin > pMax) { pMin = 50; pMax = 50; }
+                        }
+                        else
+                        {
+                            (pMin, pMax) = RangoPerfeccionPorRareza(rzElegida);
+                        }
+                    }
                 }
                 int perfeccion = (baseData.Perfeccion <= 0 || baseData.Perfeccion > 100 || baseData.PerfeccionMin.HasValue || baseData.PerfeccionMax.HasValue)
                     ? rand.Next(pMin, pMax + 1)
@@ -779,19 +840,19 @@ namespace MiJuegoRPG.Motor
                 var rand = MiJuegoRPG.Motor.Servicios.RandomService.Instancia;
                 var baseData = armadurasDisponibles[rand.Next(armadurasDisponibles.Count)];
 
-                List<MiJuegoRPG.Objetos.Rareza> permitidas = new();
+                List<string> permitidas = new();
                 if (!string.IsNullOrWhiteSpace(baseData.RarezasPermitidasCsv))
                 {
                     foreach (var r in baseData.RarezasPermitidasCsv.Split(','))
                     {
                         var s = NormalizarRarezaTexto(r.Trim());
-                        if (Enum.TryParse<MiJuegoRPG.Objetos.Rareza>(s, true, out var rzCsv)) permitidas.Add(rzCsv);
+                        if (!string.IsNullOrWhiteSpace(s)) permitidas.Add(s);
                     }
                 }
                 if (permitidas.Count == 0)
                 {
                     var s = NormalizarRarezaTexto(baseData.Rareza ?? "Normal");
-                    if (Enum.TryParse<MiJuegoRPG.Objetos.Rareza>(s, true, out var rzUnico)) permitidas.Add(rzUnico); else permitidas.Add(MiJuegoRPG.Objetos.Rareza.Normal);
+                    if (!string.IsNullOrWhiteSpace(s)) permitidas.Add(s); else permitidas.Add("Normal");
                 }
                 var rzElegida = ElegirRarezaPonderada(permitidas);
 
@@ -800,7 +861,19 @@ namespace MiJuegoRPG.Motor
                 {
                     pMin = Math.Max(pMin, Math.Clamp(baseData.PerfeccionMin.Value, 0, 100));
                     pMax = Math.Min(pMax, Math.Clamp(baseData.PerfeccionMax.Value, 0, 100));
-                    if (pMin > pMax) (pMin, pMax) = RangoPerfeccionPorRareza(rzElegida);
+                    if (pMin > pMax)
+                    {
+                        if (rarezaConfig == null && baseData.PerfeccionMin.HasValue && baseData.PerfeccionMax.HasValue)
+                        {
+                            pMin = Math.Clamp(baseData.PerfeccionMin.Value, 0, 100);
+                            pMax = Math.Clamp(baseData.PerfeccionMax.Value, 0, 100);
+                            if (pMin > pMax) { pMin = 50; pMax = 50; }
+                        }
+                        else
+                        {
+                            (pMin, pMax) = RangoPerfeccionPorRareza(rzElegida);
+                        }
+                    }
                 }
                 int perfeccion = (baseData.Perfeccion <= 0 || baseData.Perfeccion > 100 || baseData.PerfeccionMin.HasValue || baseData.PerfeccionMax.HasValue)
                     ? rand.Next(pMin, pMax + 1)
@@ -851,15 +924,15 @@ namespace MiJuegoRPG.Motor
                 var baseData = accesoriosDisponibles[rand.Next(accesoriosDisponibles.Count)];
 
                 // 1) Determinar rarezas permitidas por este ítem (si hay lista CSV), si no, permitir todas
-                List<MiJuegoRPG.Objetos.Rareza> permitidas = new();
+                List<string> permitidas = new();
                 if (!string.IsNullOrWhiteSpace(baseData.RarezasPermitidasCsv))
                 {
                     foreach (var r in baseData.RarezasPermitidasCsv.Split(','))
                     {
                         var s = r.Trim();
                         s = NormalizarRarezaTexto(s);
-                        if (Enum.TryParse<MiJuegoRPG.Objetos.Rareza>(s, true, out var rzCsv))
-                            permitidas.Add(rzCsv);
+                        if (!string.IsNullOrWhiteSpace(s))
+                            permitidas.Add(s);
                     }
                 }
                 if (permitidas.Count == 0)
@@ -871,17 +944,14 @@ namespace MiJuegoRPG.Motor
                         foreach (var t in s.Split(','))
                         {
                             var txt = NormalizarRarezaTexto(t.Trim());
-                            if (Enum.TryParse<MiJuegoRPG.Objetos.Rareza>(txt, true, out var rz))
-                                permitidas.Add(rz);
+                            if (!string.IsNullOrWhiteSpace(txt))
+                                permitidas.Add(txt);
                         }
-                    }
-                    else if (Enum.TryParse<MiJuegoRPG.Objetos.Rareza>(NormalizarRarezaTexto(s), true, out var rzUnico))
-                    {
-                        permitidas.Add(rzUnico);
                     }
                     else
                     {
-                        permitidas.Add(MiJuegoRPG.Objetos.Rareza.Normal);
+                        var unico = NormalizarRarezaTexto(s);
+                        if (!string.IsNullOrWhiteSpace(unico)) permitidas.Add(unico); else permitidas.Add("Normal");
                     }
                 }
 
@@ -894,7 +964,19 @@ namespace MiJuegoRPG.Motor
                 {
                     pMin = Math.Max(pMin, baseData.PerfeccionMin.Value);
                     pMax = Math.Min(pMax, baseData.PerfeccionMax.Value);
-                    if (pMin > pMax) (pMin, pMax) = RangoPerfeccionPorRareza(rzElegida); // fallback si la intersección es vacía
+                    if (pMin > pMax)
+                    {
+                        if (rarezaConfig == null && baseData.PerfeccionMin.HasValue && baseData.PerfeccionMax.HasValue)
+                        {
+                            pMin = Math.Clamp(baseData.PerfeccionMin.Value, 0, 100);
+                            pMax = Math.Clamp(baseData.PerfeccionMax.Value, 0, 100);
+                            if (pMin > pMax) { pMin = 50; pMax = 50; }
+                        }
+                        else
+                        {
+                            (pMin, pMax) = RangoPerfeccionPorRareza(rzElegida); // fallback si la intersección es vacía
+                        }
+                    }
                 }
                 int perfeccion = rand.Next(pMin, pMax + 1);
 
@@ -938,194 +1020,47 @@ namespace MiJuegoRPG.Motor
 
         private static string ElegirRarezaPonderada(List<string> candidatas)
         {
-            var rand = MiJuegoRPG.Motor.Servicios.RandomService.Instancia;
-            if (rarezaConfig == null || candidatas.Count == 0) return "Normal";
-            double total = 0;
-            var acumulados = new List<(string rz, double acum)>();
-            foreach (var r in candidatas)
+            // Fallback robusto: si no hay candidatas devolver "Normal" (seguridad)
+            if (candidatas == null || candidatas.Count == 0) return "Normal";
+
+            // Si la configuración dinámica de rarezas aún no está cargada (p.ej. en tests unitarios),
+            // no forzamos "Normal" porque distorsiona la intención de RarezasPermitidasCsv.
+            // Devolvemos determinísticamente la única candidata, o elegimos uniforme entre varias.
+            if (rarezaConfig == null)
             {
+                if (candidatas.Count == 1) return candidatas[0];
+                var randLocal = MiJuegoRPG.Motor.Servicios.RandomService.Instancia;
+                return candidatas[randLocal.Next(candidatas.Count)];
+            }
+
+            var rand = MiJuegoRPG.Motor.Servicios.RandomService.Instancia;
+            double total = 0;
+            var acumulados = new List<(string rz, double acum)>(candidatas.Count);
+            for (int i = 0; i < candidatas.Count; i++)
+            {
+                var r = candidatas[i];
                 rarezaConfig.Pesos.TryGetValue(r, out var peso);
                 if (peso <= 0) peso = 1;
                 total += peso;
                 acumulados.Add((r, total));
             }
             double tiro = rand.NextDouble() * total;
-            foreach (var (rz, acum) in acumulados)
+            for (int i = 0; i < acumulados.Count; i++)
             {
-                if (tiro < acum) return rz;
+                if (tiro < acumulados[i].acum) return acumulados[i].rz;
             }
             return candidatas[^1];
         }
 
-        private static void TryCargarPesosRareza(string baseDir)
-        {
-            try
-            {
-                // Preferir configuración global en DatosJuego/config; fallback a Equipo/rareza_pesos.json
-                string path = MiJuegoRPG.Motor.Servicios.PathProvider.ConfigPath("rareza_pesos.json");
-                if (!File.Exists(path))
-                {
-                    path = Path.Combine(baseDir, "rareza_pesos.json");
-                }
-                if (!File.Exists(path)) return;
-                var json = File.ReadAllText(path);
-                // Aceptar dos formatos: {"Rota":50,...} o [{"Nombre":"Rota","Peso":50},...]
-                try
-                {
-                    var dict = JsonSerializer.Deserialize<Dictionary<string, int>>(json);
-                    if (dict != null && dict.Count > 0)
-                    {
-                        var nuevo = new Dictionary<MiJuegoRPG.Objetos.Rareza, int>();
-                        foreach (var kv in dict)
-                        {
-                            var key = NormalizarRarezaTexto(kv.Key);
-                            if (Enum.TryParse<MiJuegoRPG.Objetos.Rareza>(key, true, out var rz))
-                                nuevo[rz] = Math.Max(1, kv.Value);
-                        }
-                        if (nuevo.Count > 0) PesosRareza = nuevo;
-                        Console.WriteLine("[Equipo] Pesos de rareza cargados (config/rareza_pesos.json o Equipo/rareza_pesos.json)");
-                        return;
-                    }
-                }
-                catch { /* intento alterno */ }
-
-                try
-                {
-                    var arr = JsonSerializer.Deserialize<List<PesoRarezaEntry>>(json);
-                    if (arr != null && arr.Count > 0)
-                    {
-                        var nuevo = new Dictionary<MiJuegoRPG.Objetos.Rareza, int>();
-                        foreach (var e in arr)
-                        {
-                            var key = NormalizarRarezaTexto(e.Nombre ?? "");
-                            if (Enum.TryParse<MiJuegoRPG.Objetos.Rareza>(key, true, out var rz))
-                                nuevo[rz] = Math.Max(1, e.Peso);
-                        }
-                        if (nuevo.Count > 0) PesosRareza = nuevo;
-                        Console.WriteLine("[Equipo] Pesos de rareza cargados (array)");
-                    }
-                }
-                catch { }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"[Equipo] No se pudieron cargar pesos de rareza: {ex.Message}");
-            }
-        }
+        // Obsoleto: la carga de pesos ahora la realiza RarezaConfig (rarezaConfig.Pesos)
+        private static void TryCargarPesosRareza(string baseDir) { }
 
         private class PesoRarezaEntry { public string? Nombre { get; set; } public int Peso { get; set; } }
 
         private class RangoRarezaEntry { public string? Nombre { get; set; } public int Min { get; set; } public int Max { get; set; } }
 
-        private static void TryCargarRangosPerfeccionPorRareza(string baseDir)
-        {
-            try
-            {
-                // Preferir configuración global; fallback a Equipo/rareza_perfeccion.json
-                string path = MiJuegoRPG.Motor.Servicios.PathProvider.ConfigPath("rareza_perfeccion.json");
-                if (!File.Exists(path))
-                {
-                    path = Path.Combine(baseDir, "rareza_perfeccion.json");
-                }
-                if (!File.Exists(path)) return;
-
-                var json = File.ReadAllText(path);
-
-                // Formato 1: { "Rota": [10,20], "Pobre": [20,49], ... }
-                bool actualizado = false;
-                try
-                {
-                    var dictArr = JsonSerializer.Deserialize<Dictionary<string, int[]>>(json);
-                    if (dictArr != null && dictArr.Count > 0)
-                    {
-                        var nuevo = new Dictionary<MiJuegoRPG.Objetos.Rareza, (int min, int max)>();
-                        foreach (var kv in dictArr)
-                        {
-                            var key = NormalizarRarezaTexto(kv.Key);
-                            if (Enum.TryParse<MiJuegoRPG.Objetos.Rareza>(key, true, out var rz) && kv.Value.Length >= 2)
-                            {
-                                int min = Math.Clamp(Math.Min(kv.Value[0], kv.Value[1]), 0, 100);
-                                int max = Math.Clamp(Math.Max(kv.Value[0], kv.Value[1]), 0, 100);
-                                nuevo[rz] = (min, max);
-                            }
-                        }
-                        if (nuevo.Count > 0)
-                        {
-                            PerfeccionRangos = nuevo;
-                            actualizado = true;
-                        }
-                    }
-                }
-                catch { /* intentar otros formatos */ }
-
-                if (!actualizado)
-                {
-                    try
-                    {
-                        // Formato 2: { "Rota": {"Min":10, "Max":20}, ... }
-                        var dictObj = JsonSerializer.Deserialize<Dictionary<string, RangoRarezaEntry>>(json);
-                        if (dictObj != null && dictObj.Count > 0)
-                        {
-                            var nuevo = new Dictionary<MiJuegoRPG.Objetos.Rareza, (int min, int max)>();
-                            foreach (var kv in dictObj)
-                            {
-                                var key = NormalizarRarezaTexto(kv.Key);
-                                if (Enum.TryParse<MiJuegoRPG.Objetos.Rareza>(key, true, out var rz))
-                                {
-                                    int min = Math.Clamp(Math.Min(kv.Value.Min, kv.Value.Max), 0, 100);
-                                    int max = Math.Clamp(Math.Max(kv.Value.Min, kv.Value.Max), 0, 100);
-                                    nuevo[rz] = (min, max);
-                                }
-                            }
-                            if (nuevo.Count > 0)
-                            {
-                                PerfeccionRangos = nuevo;
-                                actualizado = true;
-                            }
-                        }
-                    }
-                    catch { }
-                }
-
-                if (!actualizado)
-                {
-                    try
-                    {
-                        // Formato 3: [ { "Nombre":"Rota", "Min":10, "Max":20 }, ... ]
-                        var lista = JsonSerializer.Deserialize<List<RangoRarezaEntry>>(json);
-                        if (lista != null && lista.Count > 0)
-                        {
-                            var nuevo = new Dictionary<MiJuegoRPG.Objetos.Rareza, (int min, int max)>();
-                            foreach (var e in lista)
-                            {
-                                var key = NormalizarRarezaTexto(e.Nombre ?? "");
-                                if (Enum.TryParse<MiJuegoRPG.Objetos.Rareza>(key, true, out var rz))
-                                {
-                                    int min = Math.Clamp(Math.Min(e.Min, e.Max), 0, 100);
-                                    int max = Math.Clamp(Math.Max(e.Min, e.Max), 0, 100);
-                                    nuevo[rz] = (min, max);
-                                }
-                            }
-                            if (nuevo.Count > 0)
-                            {
-                                PerfeccionRangos = nuevo;
-                                actualizado = true;
-                            }
-                        }
-                    }
-                    catch { }
-                }
-
-                if (actualizado)
-                {
-                    Console.WriteLine("[Equipo] Rangos de perfección por rareza cargados (config/rareza_perfeccion.json o Equipo/rareza_perfeccion.json)");
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"[Equipo] No se pudieron cargar rangos de perfección: {ex.Message}");
-            }
-        }
+        // Obsoleto: rangos gestionados por RarezaConfig
+        private static void TryCargarRangosPerfeccionPorRareza(string baseDir) { }
 
         public static void CargarArmas(string rutaArchivo)
         {
@@ -1147,30 +1082,24 @@ namespace MiJuegoRPG.Motor
             if (armasDisponibles != null && armasDisponibles.Count > 0)
             {
                 // Selección aleatoria con opción de ponderación por Rareza, basada en la rareza declarada
-                var baseData = ElegirAleatorio<ArmaData>(armasDisponibles, ad =>
-                {
-                    var rz0 = MiJuegoRPG.Objetos.Rareza.Normal;
-                    try { Enum.TryParse(NormalizarRarezaTexto(ad.Rareza ?? "Normal"), true, out rz0); } catch { }
-                    return rz0;
-                });
+                var baseData = ElegirAleatorio<ArmaData>(armasDisponibles, ad => NormalizarRarezaTexto(ad.Rareza ?? "Normal"));
 
                 var rand = MiJuegoRPG.Motor.Servicios.RandomService.Instancia;
 
                 // 1) Determinar rarezas permitidas (CSV). Si no hay, usar la del ítem o Normal
-                List<MiJuegoRPG.Objetos.Rareza> candidatas = new();
+                List<string> candidatas = new();
                 if (!string.IsNullOrWhiteSpace(baseData.RarezasPermitidasCsv))
                 {
                     foreach (var r in baseData.RarezasPermitidasCsv.Split(','))
                     {
                         var s = NormalizarRarezaTexto(r.Trim());
-                        if (Enum.TryParse<MiJuegoRPG.Objetos.Rareza>(s, true, out var rzCsv)) candidatas.Add(rzCsv);
+                        if (!string.IsNullOrWhiteSpace(s)) candidatas.Add(s);
                     }
                 }
                 if (candidatas.Count == 0)
                 {
                     var s = NormalizarRarezaTexto(baseData.Rareza ?? "Normal");
-                    if (Enum.TryParse<MiJuegoRPG.Objetos.Rareza>(s, true, out var rzUnico)) candidatas.Add(rzUnico);
-                    else candidatas.Add(MiJuegoRPG.Objetos.Rareza.Normal);
+                    if (!string.IsNullOrWhiteSpace(s)) candidatas.Add(s); else candidatas.Add("Normal");
                 }
                 var rarezaElegida = ElegirRarezaPonderada(candidatas);
 
@@ -1180,7 +1109,19 @@ namespace MiJuegoRPG.Motor
                 {
                     pMin = Math.Max(pMin, Math.Clamp(baseData.PerfeccionMin.Value, 0, 100));
                     pMax = Math.Min(pMax, Math.Clamp(baseData.PerfeccionMax.Value, 0, 100));
-                    if (pMin > pMax) (pMin, pMax) = RangoPerfeccionPorRareza(rarezaElegida);
+                    if (pMin > pMax)
+                    {
+                        if (rarezaConfig == null && baseData.PerfeccionMin.HasValue && baseData.PerfeccionMax.HasValue)
+                        {
+                            pMin = Math.Clamp(baseData.PerfeccionMin.Value, 0, 100);
+                            pMax = Math.Clamp(baseData.PerfeccionMax.Value, 0, 100);
+                            if (pMin > pMax) { pMin = 50; pMax = 50; }
+                        }
+                        else
+                        {
+                            (pMin, pMax) = RangoPerfeccionPorRareza(rarezaElegida);
+                        }
+                    }
                 }
                 int perfeccion = baseData.Perfeccion;
                 if (perfeccion <= 0 || perfeccion > 100 || baseData.PerfeccionMin.HasValue || baseData.PerfeccionMax.HasValue)

@@ -1,33 +1,61 @@
-### Rarezas y probabilidades de aparición
+### Rarezas y probabilidades de aparición (MIGRADO A STRINGS DINÁMICO)
 
-El sistema de equipo permite definir rarezas adicionales (por ejemplo, `Epica`) siempre que:
+Estado actual (2025-09-30):
 
-- Se agregue el valor al enum `Rareza` en el código.
-- Se incluya en los archivos de configuración (`rareza_pesos.json`, `rareza_perfeccion.json`).
-- Se use de forma consistente en los datos de objetos.
+- El sistema YA NO requiere agregar rarezas a un enum. El enum `Rareza` en `EnumsObjetos.cs` queda como legado y no es fuente de verdad para nuevas rarezas (deprecado para extensiones futuras).
+- La única fuente dinámica de pesos y rangos de perfección es la configuración JSON en `DatosJuego/config/rareza_pesos.json` y `DatosJuego/config/rareza_perfeccion.json` (formats tolerantes: objeto, lista, arrays). 
+- Todas las clases runtime de equipo y el `GeneradorObjetos` operan con `string rareza` y consultan `RarezaConfig` para:
+  - Pesos de selección ponderada.
+  - Rango de perfección por rareza.
+  - Multiplicadores opcionales.
+- Si una rareza no existe en la config: se aplica fallback seguro (peso=1, perfección base 50–50) y se emite advertencia (no excepción dura).
+- Las probabilidades/ pesos admiten enteros o decimales y pueden añadirse nuevas rarezas (p.ej. `Epica`, `Mistica`) sin tocar código.
 
-Las probabilidades de aparición pueden ser decimales (por ejemplo, `"Ornamentada": 0.1`), lo que permite controlar la rareza de aparición de forma precisa.
-
-Validado en build y pruebas (2025-09-24).
-Última actualización: 2025-09-24
-### Convención de rarezas para equipo (armas.json)
-
-Todos los valores de rareza en los archivos de equipo deben coincidir exactamente con el enum `Rareza` definido en `EnumsObjetos.cs`:
-
+Formato recomendado (ejemplo `rareza_pesos.json` actual, con `Epica` y valores vigentes):
+```json
+{
+  "Rota": 20,
+  "Pobre": 35,
+  "Normal": 50,
+  "Superior": 10,
+  "Rara": 3,
+  "Epica": 2,
+  "Legendaria": 1,
+  "Ornamentada": 0.1
+}
 ```
-public enum Rareza { Rota, Pobre, Normal, Superior, Rara, Legendaria, Ornamentada }
+Nota: el orden en el archivo no es relevante; los pesos se normalizan al cargar. Valores más altos = más comunes.
+
+Formato alterno listado:
+```json
+[
+  { "Nombre": "Rota", "Peso": 50 },
+  { "Nombre": "Pobre", "Peso": 35 }
+]
 ```
 
-Mapeo aplicado (2025-09-24):
+Rangos de perfección (`rareza_perfeccion.json`) soportan:
+```json
+{ "Normal": [40,60], "Rara": [70,90] }
+```
+o
+```json
+{ "Rara": { "Min": 70, "Max": 90 } }
+```
+o lista
+```json
+[{ "Nombre": "Rara", "Min": 70, "Max": 90 }]
+```
 
-- `Comun` → `Normal`
-- `PocoComun` → `Superior`
-- `Raro` → `Rara`
-- `Epico` → `Ornamentada`
-- `Legendario`/`Legendaria` → `Legendaria`
+Reglas vigentes:
+- Base de escalado: `Normal = 50%` → factor = Perfeccion/50.0 para daño/defensa/bonos.
+- Intersección: el generador intersecta rangos del ítem (`PerfeccionMin/Max`) con el rango global de la rareza. Si intersección vacía → fallback al rango global.
+- Nueva rareza: agregar en ambos archivos (pesos y perfección). No modificar enum.
+- Enum legado: puede retirarse cuando no existan callers que lo consuman (marcado con comentario `[DEPRECATED]`).
 
-Esto es obligatorio para evitar errores de deserialización y garantizar la integridad de datos en combate y generación de enemigos.
-Última actualización: 2025-09-24
+Histórico (pre 2025-09-30): el modelo exigía mantener correspondencia estricta con un enum; esa sección se conserva en Bitácora (entradas 2025-09-24) para trazabilidad pero ya no aplica como política.
+
+Última actualización: 2025-09-30 — Migración completa a rarezas dinámicas.
 #### 2025-09-23: Robustez en menú admin (clases)
 
 Se reforzó la función `MotivosBloqueoClase` para que todos los accesos a propiedades y colecciones sean seguros ante valores nulos o datos incompletos.
@@ -44,18 +72,10 @@ Validado con build y pruebas unitarias (PASS).
 Última actualización: 2025-09-23
 # MiJuegoRPG — Arquitectura y Funcionamiento (Estudio Detallado)
 
-## Validación de enums en archivos de datos
+## (LEGACY / OBSOLETO) Validación estricta de enums
 
-Todos los archivos JSON que contienen campos de tipo enum (por ejemplo, `Rareza` en materiales, armas, objetos) deben usar exactamente los mismos valores definidos en los enums de C#.
-
-**Ejemplo:**
-
-- Correcto: `"Rareza": "Comun"`
-- Incorrecto: `"Rareza": "Normal"` (no existe en el enum)
-
-Se recomienda validar los datos antes de cargar y mantener tests que verifiquen la correspondencia entre los datos y los enums del código.
-
-Última actualización: 2025-09-23
+Esta política aplicaba antes de la migración a rarezas dinámicas (strings + JSON). El enum `Rareza` quedó como legado y ya no es fuente de verdad. Se mantiene la sección sólo para trazabilidad histórica. El flujo actual: rarezas se validan contra `RarezaConfig` (JSON) y el enum se eliminará tras confirmación de no-usos.
+Última actualización legado: 2025-09-23 (marcado obsoleto 2025-09-30)
 
 ## Introducción y Documentos Relacionados
 
@@ -84,6 +104,7 @@ Tabla de contenidos
 1. Progresión y atributos
 1. Habilidades (modelo unificado)
 1. Combate (pipeline y estados)
+  - Nota: Nuevo `DamagePipeline` disponible en modo sombra (flag `--damage-shadow`) comparando resultados sin alterar gameplay; reemplazo total planificado tras calibración.
 1. Recolección y mundo
 1. Objetos, inventario y comercio
 1. Misiones y encuentros
@@ -101,6 +122,69 @@ Tabla de contenidos
 ## 1. Visión general del sistema
 
 ### Modularidad de materiales y drops de enemigos (2025-09-23)
+
+### Sistema de Puntos de Acción (PA) – Fase 1 (2025-09-30)
+
+Objetivo: introducir cálculo determinista de PA por turno para el futuro modo de acciones encadenadas sin alterar aún el combate existente.
+
+Fórmula actual:
+
+PA = BasePA + floor(Agilidad / 30) + floor(Destreza / 40) + floor(Nivel / 10) + BonosEquipo + BuffsPA - DebuffsPA
+
+En Fase 1: BonosEquipo = 0; BuffsPA = 0; DebuffsPA = 0 (placeholders hasta cablear sistemas asociados).
+
+Clamp: PA ∈ [1, PAMax] (por defecto PAMax=6). Config editable en `DatosJuego/config/combat_config.json`.
+
+Archivo nuevo: `CombatConfig` (carga tolerante, fallback a defaults). Servicio puro: `ActionPointService.ComputePA`.
+
+Integración: pendiente – se activará con flag `ModoAcciones` en fases posteriores.
+
+Motivación: escala lenta, decisiones tácticas (pocas acciones de alto impacto vs varias ligeras). Evita explosión combinatoria temprana.
+
+Última actualización: 2025-09-30.
+
+### Pipeline de Daño (Fase 2 aislado – 2025-09-30)
+
+### Meta de Rarezas (Unificación Escalas) – 2025-09-30
+
+Cada rareza se define en dos JSON: `rareza_pesos.json` (peso/frecuencia) y `rareza_perfeccion.json` (rango calidad). A partir de ellos `RarezaConfig` construye `RarezaMeta` con:
+
+- PerfMin/PerfMax/PerfAvg → `BaseStatMult = PerfAvg / 100`.
+- Probabilidad = peso / sumaPesos.
+- Escasez = 1 / prob; normalizada logarítmicamente a [0..1].
+- `PriceMult = BaseStatMult * (1 + K * ScarcityNorm)` con K=0.6 (cap 2.0).
+
+`RarezaHelper.MultiplicadorBase/Precio/Drop` consultan esta meta (fallback seguro si rareza desconocida). Eliminados hardcodes previos; agregar rareza nueva sólo necesita editar los JSON.
+
+Motivación: consistencia economía, balance incremental y evitar divergencias manuales.
+
+Última actualización: 2025-09-30.
+
+Estado: servicio `DamagePipeline` independiente, no altera aún `DamageResolver`.
+
+Orden inmutable:
+
+1. BaseDamage (DB)
+2. Hit/Evasión (HitChance = clamp(PrecisionBase + PrecisionExtra – Evasion, MinHit, 1.0))
+3. Penetración (DEF * (1 - Pen))
+4. Resta de defensa (min 1 si impacta)
+5. Mitigación porcentual (afterDef * (1 - MIT))
+6. Crítico (afterMit * CritMult si Crit)
+7. Vulnerabilidad/Elemento (afterCrit * Vuln)
+8. Redondeo (AwayFromZero) + mínimo 1
+
+
+Estructura:
+`DamagePipeline.Request` (parámetros explícitos) → `DamagePipeline.Calcular` → `Result` (FinalDamage, flags y métricas intermedias).
+
+Motivación: determinismo testable y facilidad para insertar pasos futuros (`IDamageModifierStep`).
+
+No hay mutación directa de vida todavía; el consumo lo realizará un adaptador de combate posterior con logs integrados.
+
+Próximo paso: envolver `DamageResolver` para usar pipeline cuando se active flag experimental.
+
+Última actualización: 2025-09-30.
+
 
 Todos los materiales referenciados como drops de enemigos cuentan ahora con archivos `.json` individuales en la subcarpeta correspondiente (ejemplo: `Mat_Cocina`).
 
@@ -359,6 +443,41 @@ Notas de diseño
 - Progresión lenta: los contadores suelen requerir cantidades moderadas/altas; el sistema no otorga avances por acciones desconocidas.
 - Compatibilidad: se respetan condiciones básicas (nivel/misión) y atributos necesarios antes del desbloqueo.
 - Telemetría: se pueden activar hints sutiles con `AvisosAventura` al aprender una habilidad; el ruido de consola se mantiene bajo.
+
+### 6.1 Extensión (Diseño): Combate por Puntos de Acción (PA) Fase 1
+
+Objetivo: permitir múltiples acciones cortas en un turno (ej. movimiento + ataque + usar poción) sin acelerar exponencialmente la progresión.
+
+Componentes:
+- Flag `CombatConfig.ModoAcciones` para activar la lógica PA (OFF → loop legacy intacto).
+- `ActionPointService` (existente) calcula PA inicial por turno: se almacena localmente como `paRestantes`.
+- Extensión mínima de `IAccionCombate`: propiedad opcional `CostoPA` (default=1). Acciones actuales retornan 1 vía wrapper si no implementan.
+- Bucle interno del turno jugador: mientras `paRestantes > 0` mostrar menú reducido (acciones disponibles + opción terminar turno).
+
+Reglas Fase 1:
+- Todos los costes = 1. (Futuro: ataque pesado 2, defensa 1, moverse 1, habilidad compleja 2…)
+- Enemigos mantienen 1 acción estándar por turno para estabilidad inicial.
+- Regeneración de maná y avance de efectos/cooldowns ocurren al cerrar el bloque PA, no por cada acción.
+- Fallo por cooldown / recursos NO consume PA.
+
+Flujo (pseudocódigo):
+1. if (!cfg.ModoAcciones) → comportamiento actual.
+2. pa = ComputePA(jugador,cfg).
+3. while (pa > 0 && jugador.EstaVivo && enemigosVivos): mostrar menú acciones.
+4. Ejecutar acción válida → pa -= CostoPA; aplicar cooldown/recursos.
+5. Opción “0” termina turno anticipadamente.
+6. Tras salir: procesar efectos, regen maná, turno enemigos.
+
+Testing previsto:
+- Caso feliz: PA=3 → 3 ataques físicos con seed determinista.
+- Edge: acción en cooldown repetida no reduce PA y permite intentar otra.
+- Flag OFF: snapshot daño total tras N turnos igual al legacy.
+
+Fases posteriores (referencia):
+- F2: iniciativa por Velocidad, costes variables, acciones defensivas y posicionamiento.
+- F3: integrar Stamina/Poise y efectos de interrupción.
+
+Impacto esperado: mayor expresividad táctica, micro‑decisiones por turno y base para estados avanzados sin reescribir pipeline de daño.
 
 ## 6. Recolección y mundo
 

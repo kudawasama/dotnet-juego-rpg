@@ -29,7 +29,7 @@ namespace MiJuegoRPG.Motor
         public Material GenerarMaterialAleatorio()
         {
             // Stub temporal: retorna un material de prueba
-            return new Material("Madera", MiJuegoRPG.Objetos.Rareza.Normal);
+            return new Material("Madera", "Normal");
         }
         public void Iniciar()
         {

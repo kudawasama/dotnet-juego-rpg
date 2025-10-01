@@ -23,7 +23,7 @@ namespace MiJuegoRPG.Tests
             var pj = new PJ.Personaje("Tester");
             var e = new DummyEnemy();
             e.IdData = "dummy-1";
-            var material = new Material("Insignia", Rareza.Normal, "Material");
+            var material = new Material("Insignia", "Normal", "Material");
             e.ObjetosDrop.Add(material);
             e.ProbabilidadesDrop[material.Nombre] = 1.0; // siempre cae
             e.DropsUniqueOnce.Add(material.Nombre);
@@ -59,7 +59,7 @@ namespace MiJuegoRPG.Tests
             var pj = new PJ.Personaje("Tester");
             var e = new DummyEnemy();
 
-            var matComun = new Material("Madera", Rareza.Pobre, "Material");
+            var matComun = new Material("Madera", "Pobre", "Material");
             e.ObjetosDrop.Add(matComun);
             e.ProbabilidadesDrop[matComun.Nombre] = 1.0; // forzar drop
             e.RangoCantidadDrop[matComun.Nombre] = (1, 10); // debe clamp a 5 por ser Pobre
@@ -78,7 +78,7 @@ namespace MiJuegoRPG.Tests
 
             // Legendario clamp 3
             var e2 = new DummyEnemy();
-            var matRaro = new Material("Gema", Rareza.Legendaria, "Material");
+            var matRaro = new Material("Gema", "Legendaria", "Material");
             e2.ObjetosDrop.Add(matRaro);
             e2.ProbabilidadesDrop[matRaro.Nombre] = 1.0;
             e2.RangoCantidadDrop[matRaro.Nombre] = (2, 10); // clamp a 3

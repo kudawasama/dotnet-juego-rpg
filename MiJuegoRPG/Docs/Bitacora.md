@@ -1,17 +1,79 @@
-## 2025-09-24
+
+### 2025-10-01 — Test unitario CritScalingFactor
+Se añadieron `CritScalingFactorTests` validando: (1) aplicación parcial del multiplicador crítico (daño = base * (1 + (mult-1)*F)), (2) fallback a F=1 cuando `CritScalingFactor <= 0`, (3) recalculo de defensa en crítico con reducción de penetración antes de aplicar el multiplicador. Impacto: previene regresiones silenciosas en tuning de crítico y asegura comportamiento estable para futuras variaciones de penetración o ajustes de F.
+
+### 2025-10-01 — Test integración CritScalingFactor + Mitigación + Vulnerabilidad
+Se añadió `CritScalingFactorIntegrationTests` que recorre el pipeline completo (Defensa→Mitigación→Crítico escalado→Vulnerabilidad) verificando valores intermedios (`AfterDefensa`, `AfterMitigacion`) y resultado final redondeado. Caso controlado reproduce fórmula manual (200 base, DEF 50, Pen 25%, Mit 20%, Mult 1.5, F 0.65, Vuln 1.3 => 225). Impacto: blinda orden de pasos y evita que futuras refactorizaciones alteren inadvertidamente la secuencia o apliquen vulnerabilidad antes del crítico.
+
+### 2025-10-01 — Resumen final agregador ShadowDamagePipeline
+
+Se añadió `DamageResolver.ObtenerResumenShadow(reset)` y llamada automática al cerrar la sesión interactiva (si shadow activo y no live). Muestra: muestras totales, diff absoluto promedio, diff porcentual promedio y extremos min/max%. Impacto: facilita verificación rápida post-sesión sin revisar logs DEBUG completos, soporta monitoreo continuo hasta retirar el pipeline legacy.
+
+### 2025-10-01 — Estado consolidado DamagePipeline y pendientes
+
+Desviación estabilizada dentro de ±5% (actual ~ -3.5%); modo sombra declarado estable y marcado como Hecho en roadmap. Activación live disponible vía `--damage-live` (etapa Parcial). Pendientes: (1) monitoreo multi-sesión y confirmar drift <±3%, (2) añadir flag `--shadow-summary` opcional, (3) suite adicional efectos/mitigación elemental, (4) retirar cálculo legacy y simplificar `DamageResolver`, (5) documentación de tuning crítico en README principal.
+
+### 2025-09-30 — Migración GeneradorObjetos a rarezas dinámicas (string)
+
+Se refactorizaron todos los métodos de `GeneradorObjetos` (botas, cinturón, collar, pantalón, casco, armadura, accesorio y arma) para eliminar dependencia del enum `Rareza` y operar únicamente con `string` + `RarezaConfig` (pesos y rangos). Se retiró lógica interna duplicada de carga de pesos/rangos (`TryCargarPesosRareza`, `TryCargarRangosPerfeccionPorRareza`) en favor de la configuración central `DatosJuego/config/rareza_pesos.json` y `rareza_perfeccion.json`. Fallback seguro: rareza desconocida → peso 1 y perfección 50–50 con advertencia. Impacto: añadir nuevas rarezas ya no requiere tocar código ni actualizar enums, reduce riesgo de deserialización y facilita balance incremental.
+
+### 2025-09-30 — Reconstrucción del chatmode operativo
+
+### 2025-09-30 — Infraestructura inicial de Puntos de Acción (PA)
+
+Se agregó `CombatConfig` (configurable vía `DatosJuego/config/combat_config.json`) y `ActionPointService.ComputePA` con fórmula: BasePA + floor(Agilidad/30) + floor(Destreza/40) + floor(Nivel/10), clamp a [1,6]. Aún sin integración al loop de combate (feature flag `ModoAcciones` reservado). Impacto: habilita migración incremental al sistema de acciones encadenadas sin romper combate legacy.
+
+### 2025-09-30 — DamagePipeline aislado (Fase 2 preliminar)
+
+### 2025-09-30 — Rarezas meta unificadas (precio/stats/probabilidad)
+
+Se amplió `RarezaConfig` para derivar `RarezaMeta` (peso, prob, perfección promedio, multiplicadores BaseStat y Precio con factor de escasez logarítmico). `RarezaHelper` ahora consulta `RarezaConfig.Metas` en vez de diccionarios hardcode. Cobertura de rarezas incluye "Epica". Impacto: economía y escalado de stats coherentes y data-driven; agregar una rareza sólo requiere ajustar JSON. Pendiente: recalibrar factor PRICE_K (0.6) tras playtest.
+
+Se añadió `DamagePipeline` (servicio puro) con orden fijo: Base → Hit/Evasión → Penetración → Defensa → Mitigación% → Crítico → Vulnerabilidad → Redondeo. Incluye struct `Request` y `Result`, soporta flags de prueba (`ForzarCritico`, `ForzarImpacto`). Test manual `TestDamagePipeline.Probar()` reproduce ejemplo de diseño (DB=41, DEF=15, PEN=0.2, MIT=0.1, Crit=1.5 -> 39 crítico / 26 no crítico). Aún no integrado a combate legacy; siguiente fase: adaptar `DamageResolver` para delegar gradualmente.
+
+### 2025-09-30 — DamagePipeline en modo sombra + Test RarezaMeta
+Integrado modo sombra del nuevo `DamagePipeline` detrás de flags (`CombatConfig.UseNewDamagePipelineShadow` y CLI `--damage-shadow`). `DamageResolver` ejecuta el pipeline tras el cálculo legacy cuando hay daño (>0) y registra diferencias en nivel DEBUG (`[ShadowDamagePipeline] legacy=XX pipeline=YY`). No altera gameplay ni estadísticas actuales; sirve para calibrar penetración, críticos y orden de pasos antes del reemplazo vivo. Añadido `TestRarezaMeta` (flag `--test-rareza-meta`) validando: (1) fallback seguro para rareza desconocida (precio 0.5, perfección 50–50), (2) monotonía aproximada del multiplicador de precio respecto a peso (tolerancia 5%). Impacto: reduce riesgo de regresión al migrar totalmente el pipeline y formaliza verificación mínima de integridad de rarezas.
+
+\n### 2025-10-01 — Ajustes anti-build crítica + agregador shadow
+Se añadieron parámetros en `CombatConfig` para mitigar explosión de builds de crítico: reducción de penetración efectiva en golpes críticos (`ReducePenetracionEnCritico`, `FactorPenetracionCritico=0.75`), diminishing returns opcional de CritChance (`UseCritDiminishingReturns`, curva cap=0.60, K=50) y agregador estadístico de diferencias shadow (cada 25 muestras log avgDiffAbs / avgDiffPct). `DamagePipeline` ahora recalcula defensa para críticos con penetración reducida. `TestRarezaMeta` refinado: verifica que `PriceMult` no decrece con perfección promedio. Impacto: base técnica para balance fino previo a activar pipeline live.
+Se agregó `TestShadowBenchmark` (`--shadow-benchmark[=N]`) para ejecutar simulaciones sintéticas y obtener medias, rango y tasa real de críticos comparando legacy vs pipeline.
+
+### 2025-10-01 — Benchmark ampliado + ajuste inicial de CritMultiplier
+Se extendió `TestShadowBenchmark` para mostrar Min/Max legacy y pipeline, calcular PASS/FAIL contra umbral (±5% configurable vía `SHADOW_BENCH_THRESHOLD`) y sugerir ajustes cuando falla. Resultado actual: pipeline +19.5% sobre legacy (FAIL). Se redujo `CombatConfig.CritMultiplier` de 1.50 a 1.35 como primera aproximación para acercar medias antes de tocar penetración o orden de pasos. Impacto: base cuantitativa para iterar hacia desviación ≤5% antes de habilitar modo live.
+
+### 2025-10-01 — Normalización crítica (F=0.6) y comparación apples-to-apples
+Se agregó `CritScalingFactor` al `DamagePipeline` para aplicar sólo una fracción del multiplicador crítico sobre el extra (F=0.6) y se habilitó opción de que el benchmark aplique el mismo tratamiento al legado, generando comparación justa. Primer resultado tras ajuste: pipeline queda -9.3% por debajo de legacy con crítico normalizado (Legacy Avg 65.65 vs Pipeline 59.57). Impacto: acota el espacio de tuning; siguiente paso será refinar F o recalibrar penetración previa al crítico para converger al umbral ±5%.
+
+### 2025-10-01 — Sweep tuning crítico/penetración y ajuste PenCrit 0.80
+Se añadió flag `--shadow-sweep` que recorre combinaciones F∈{0.60,0.65,0.70} y PenCrit∈{0.75,0.80}. Se elevó `FactorPenetracionCritico` default 0.75→0.80 para reducir castigo en golpes críticos. Impacto: facilita selección paramétrica objetiva (tabla) para converger a desviación media ±5% antes de habilitar pipeline live.
+
+### 2025-10-01 — Parametrización CritScalingFactor y modo live experimental
+Se incorporó `CritScalingFactor` (default 0.65) a `CombatConfig` y se actualizó el shadow run para usarlo. Añadido flag `--damage-live` que habilita el pipeline nuevo en producción experimental (sin shadow redundante). Impacto: permite transición controlada tras alcanzar desviación aceptable (~ -2.9% con F=0.65, PenCrit=0.80) y futuros ajustes vía JSON sin recompilar.
+
+### 2025-10-01 — Diseño Combate por Acciones (PA) Fase 1 preparado
+Se documentó el plan para migrar el loop de `CombatePorTurnos` a un sistema de Puntos de Acción: cálculo de PA por turno vía `ActionPointService` (ya existente), introducción de `CostoPA` en `IAccionCombate` (default=1), ejecución encadenada mientras `PAActual > 0`, y flag `CombatConfig.ModoAcciones` para activación incremental. Impacto: habilita acciones múltiples (ej. movimiento + ataque + objeto) sin romper el flujo legacy; sienta base para costes variables e iniciativa futura.
+
+
+Se reemplazó el archivo `.github/chatmodes/MIJuego.chatmode.md` que estaba truncado y con bloques de código abiertos por una versión consolidada. Ahora incluye: flujo estándar (intención→lectura→micro‑plan→aplicar→validar→documentar), quality gates, reglas de sincronización con Roadmap/Bitácora, lineamientos de rarezas dinámicas (sin enums), plantillas de entrega y manejo de frustración del usuario. Impacto: reduce ambigüedad en futuras interacciones y estandariza respuestas para evitar divergencias arquitectónicas.
+
+## 2025-09-24 (1)
+
 Se validó y documentó el soporte de rarezas nuevas (ej. `Epica`) y probabilidades decimales en `rareza_pesos.json`.
 El sistema acepta rarezas adicionales siempre que estén en el enum y en la configuración.
 Las probabilidades decimales (ej. 0.1 para `Ornamentada`) funcionan correctamente.
 Build y pruebas: OK.
 Última actualización: 2025-09-24
+
 ## 2025-09-24
+
 Normalización de rarezas en `armas.json` para que coincidan con el enum del código (`Normal`, `Superior`, `Rara`, `Ornamentada`, `Legendaria`).
 Se corrigieron valores previos como `Comun`, `PocoComun`, `Raro`, `Epico`, `Legendario`.
 Motivo: evitar errores de deserialización y asegurar integridad de datos en combate y generación de enemigos.
 Validado con build y pruebas: OK.
 Próximos pasos: monitorear aparición de nuevas armas y rarezas en datos enemigos.
 Última actualización: 2025-09-24
-## 2025-09-23
+
+## 2025-09-23 (1)
 
 **Mejora de robustez en menú admin (clases):**
 
@@ -29,6 +91,8 @@ Próximos pasos: monitorear aparición de nuevas armas y rarezas en datos enemig
 # Bitácora de Cambios
 
 ## 2025-09-23
+
+
 
 ### Corrección de enums en materiales.json
 

@@ -23,15 +23,7 @@ namespace MiJuegoRPG.Comercio
             };
 
             // multiplicador por rareza
-            double multRareza = item.Rareza switch
-            {
-                Rareza.Normal      => 1.0,
-                Rareza.Rara        => 1.5,
-                Rareza.Superior    => 2.2,
-                Rareza.Legendaria  => 3.5,
-                Rareza.Ornamentada => 1.2,
-                _ => 1.0
-            };
+            double multRareza = MiJuegoRPG.Objetos.RarezaHelper.MultiplicadorPrecio(item.Rareza);
 
             // pequeño plus por atributos comunes (si existen)
             int plus = 0;

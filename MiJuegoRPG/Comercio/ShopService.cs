@@ -255,12 +255,9 @@ namespace MiJuegoRPG.Comercio
     static class MapExtensions
     {
         public static Objeto ToDomain(this ArmaDto dto)
-            => new Arma(dto.Nombre, dto.DañoBase, dto.Perfeccion, ParseRareza(dto.Rareza), "Arma");
+            => new Arma(dto.Nombre, dto.DañoBase, nivel:1, rareza: MiJuegoRPG.Objetos.RarezaHelper.Normalizar(dto.Rareza), categoria: "Arma");
 
         public static Objeto ToDomain(this PocionDto dto)
-            => new Pocion(dto.Nombre, dto.Curacion, ParseRareza(dto.Rareza), "Consumible");
-
-        private static Rareza ParseRareza(string r)
-            => Enum.TryParse<Rareza>(r, true, out var rr) ? rr : Rareza.Normal;
+            => new Pocion(dto.Nombre, dto.Curacion, MiJuegoRPG.Objetos.RarezaHelper.Normalizar(dto.Rareza), "Consumible");
     }
 }

@@ -72,6 +72,6 @@
   { "Id": "DetectarEnergia", "Descripcion": "Detectar fuentes de energía mágica.", "Aplicacion": "Usar la opción de detección en áreas con energía mágica." },
   { "Id": "SentirMana", "Descripcion": "Sentir la presencia de maná en el entorno.", "Aplicacion": "Usar la opción de sentir maná en áreas con alta concentración mágica." },
   { "Id": "CanalizarMana", "Descripcion": "Canalizar maná para potenciar habilidades.", "Aplicacion": "Usar la opción de canalización en combate o exploración." },
-  { "Id": "AcumularMana", "Descripcion": "Acumular maná para futuras habilidades.", "Aplicacion": "Usar la opción de acumulación en combate o exploración." },
+  { "Id": "AcumularMana", "Descripcion": "Acumular maná para futuras habilidades.", "Aplicacion": "Usar la opción de acumulación en combate o exploración." }
   
 ]

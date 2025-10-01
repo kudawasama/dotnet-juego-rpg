@@ -170,16 +170,7 @@ namespace MiJuegoRPG.Enemigos
 
                 double rate = BASE_DROP_RATE;
                 // Ajuste por rareza
-                switch (obj.Rareza)
-                {
-                    case Rareza.Rota: rate *= RAREZA_MULTIPLIER_Rota; break;
-                    case Rareza.Pobre: rate *= RAREZA_MULTIPLIER_Pobre; break;
-                    case Rareza.Normal: rate *= RAREZA_MULTIPLIER_Normal; break;
-                    case Rareza.Superior: rate *= RAREZA_MULTIPLIER_Superior; break;
-                    case Rareza.Rara: rate *= RAREZA_MULTIPLIER_Rara; break;
-                    case Rareza.Legendaria: rate *= RAREZA_MULTIPLIER_Legendaria; break;
-                    case Rareza.Ornamentada: rate *= RAREZA_MULTIPLIER_Ornamentada; break;
-                }
+                rate *= MiJuegoRPG.Objetos.RarezaHelper.MultiplicadorDrop(obj.Rareza);
                 // Ajuste por nivel del monstruo y del objeto
                 // Ejemplo: si el objeto es de nivel mucho mayor que el monstruo, reduce el rate
                 int nivelMonstruo = this.Nivel;
@@ -292,7 +283,7 @@ namespace MiJuegoRPG.Enemigos
                         int min = Math.Max(1, rango.min);
                         int max = Math.Max(min, rango.max);
                         // clamp anti-exploit (progresión lenta): máximo 3 por kill salvo drops de calidad Rota/Pobre
-                        int hardCap = (drop.Rareza == Objetos.Rareza.Rota || drop.Rareza == Objetos.Rareza.Pobre) ? 5 : 3;
+                        int hardCap = (drop.Rareza.Equals("Rota", StringComparison.OrdinalIgnoreCase) || drop.Rareza.Equals("Pobre", StringComparison.OrdinalIgnoreCase)) ? 5 : 3;
                         max = Math.Min(max, hardCap);
                         if (min > max) min = max;
                         cant = (min == max) ? min : MiJuegoRPG.Motor.Servicios.RandomService.Instancia.Next(min, max + 1);
