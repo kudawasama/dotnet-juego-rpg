@@ -11,9 +11,9 @@ namespace MiJuegoRPG.Motor.Servicios
     {
         // @AgenteCombate: mantener orden estable (Base -> Hit/Evasion -> Pen -> Defensa -> Mitigacion -> Critico -> Vulnerabilidad -> Redondeo)
         // @AgenteCombate: si se modifica lógica de penetración crítica revisar tests CritPenetracionInteractionTests y DamagePipelineOrderTests
-        private static CombatConfig _cfg = CombatConfig.LoadOrDefault();
-        private static bool _configLoaded = false;
-        private static ShadowAgg _shadow = new ShadowAgg();
+        private static CombatConfig combatConfig = CombatConfig.LoadOrDefault();
+        private static bool configLoaded = false;
+        private static ShadowAgg shadowAgg = new ShadowAgg();
 
         private class ShadowAgg
         {
@@ -24,7 +24,11 @@ namespace MiJuegoRPG.Motor.Servicios
             public double MaxPct = double.MinValue;
             public void Registrar(int legacy, int nuevo)
             {
-                if (legacy <= 0 && nuevo <= 0) return;
+                if (legacy <= 0 && nuevo <= 0)
+                {
+                    return;
+                }
+
                 Muestras++;
                 int diff = nuevo - legacy;
                 double pct = legacy > 0 ? (double)diff / legacy : 0;
@@ -39,7 +43,11 @@ namespace MiJuegoRPG.Motor.Servicios
             }
             public string ResumenFinal()
             {
-                if (Muestras == 0) return "[ShadowAgg] Sin muestras registradas";
+                if (Muestras == 0)
+                {
+                    return "[ShadowAgg] Sin muestras registradas";
+                }
+
                 double avgAbs = SumaDiffAbsoluta / Muestras;
                 double avgPct = (SumaDiffPct / Muestras) * 100.0;
                 return $"[ShadowAgg][Final] muestras={Muestras} avgDiffAbs={avgAbs:0.00} avgDiffPct={avgPct:0.0}% minPct={(MinPct*100):0.0}% maxPct={(MaxPct*100):0.0}%";
@@ -49,12 +57,39 @@ namespace MiJuegoRPG.Motor.Servicios
                 Muestras = 0; SumaDiffAbsoluta = 0; SumaDiffPct = 0; MinPct = double.MaxValue; MaxPct = double.MinValue;
             }
         }
+
         private static void EnsureConfig()
         {
-            if (_configLoaded) return;
-            try { _cfg = CombatConfig.LoadOrDefault(); } catch { }
-            _configLoaded = true;
+            if (configLoaded)
+            {
+                return;
+            }
+            try
+            {
+                combatConfig = CombatConfig.LoadOrDefault();
+            }
+            catch
+            {
+                // Intencional: tolerante a fallo de carga, se mantiene config por defecto
+            }
+            configLoaded = true;
         }
+
+        /// <summary>
+        /// Devuelve un resumen agregado de las diferencias shadow (si estaban activas) y opcionalmente resetea el acumulador.
+        /// </summary>
+        /// <param name="reset">Indica si se limpia el acumulador tras recuperar el resumen.</param>
+        /// <returns>Cadena resumen o mensaje sin muestras.</returns>
+        public static string ObtenerResumenShadow(bool reset = false)
+        {
+            var txt = shadowAgg.ResumenFinal();
+            if (reset)
+            {
+                shadowAgg.Reset();
+            }
+            return txt;
+        }
+
         /// <summary>
         /// Construye un mensaje explicativo para ataques físicos, describiendo pasos:
         /// Base → Defensa(±Penetración) → Mitigación → Crítico (nota) → Final.
@@ -62,7 +97,10 @@ namespace MiJuegoRPG.Motor.Servicios
         /// </summary>
         private static string FormatearDetalleFisico(ICombatiente ejecutor, ICombatiente objetivo, int danioBase, int danioFinal, bool fueCritico)
         {
-            if (danioBase <= 0 || danioFinal < 0) return "";
+            if (danioBase <= 0 || danioFinal < 0)
+            {
+                return string.Empty;
+            }
             try
             {
                 double pen = 0.0;
@@ -80,7 +118,9 @@ namespace MiJuegoRPG.Motor.Servicios
                     afterDefInt = System.Math.Max(1, danioBase - (int)defEfectiva);
                     mitig = System.Math.Clamp(ene.MitigacionFisicaPorcentaje, 0.0, 0.9);
                     if (mitig > 0)
+                    {
                         afterDefInt = (int)System.Math.Max(1, System.Math.Round(afterDefInt * (1.0 - mitig), System.MidpointRounding.AwayFromZero));
+                    }
                 }
                 else if (objetivo is MiJuegoRPG.Personaje.Personaje pj)
                 {
@@ -106,8 +146,9 @@ namespace MiJuegoRPG.Motor.Servicios
                 }
                 if (mitig > 0)
                 {
-                    partes.Add($"Mitigación {mitig*100:0}%");
+                    partes.Add($"Mitigación {mitig * 100:0}%");
                 }
+
                 if (fueCritico)
                 {
                     partes.Add("Crítico"); // Solo nota: el crítico no altera el cálculo actual
@@ -115,7 +156,11 @@ namespace MiJuegoRPG.Motor.Servicios
                 partes.Add($"Daño final: {danioFinal}");
                 return string.Join("; ", partes);
             }
-            catch { return ""; }
+            catch
+            {
+                // Intencional: si falla el formato, se omite detalle
+                return string.Empty;
+            }
         }
 
         /// <summary>
@@ -123,7 +168,10 @@ namespace MiJuegoRPG.Motor.Servicios
         /// </summary>
         private static string FormatearDetalleMagico(ICombatiente ejecutor, ICombatiente objetivo, int danioBase, int danioFinal, bool fueCritico)
         {
-            if (danioBase <= 0 || danioFinal < 0) return "";
+            if (danioBase <= 0 || danioFinal < 0)
+            {
+                return string.Empty;
+            }
             try
             {
                 double pen = 0.0;
@@ -143,13 +191,19 @@ namespace MiJuegoRPG.Motor.Servicios
                     afterDefInt = System.Math.Max(1, danioBase - (int)defEfectiva);
                     mitig = System.Math.Clamp(ene.MitigacionMagicaPorcentaje, 0.0, 0.9);
                     if (mitig > 0)
+                    {
                         afterDefInt = (int)System.Math.Max(1, System.Math.Round(afterDefInt * (1.0 - mitig), System.MidpointRounding.AwayFromZero));
+                    }
                     if (ene.ResistenciasElementales.TryGetValue("magia", out var r)) resMag = System.Math.Clamp(r, 0.0, 0.9);
                     if (resMag > 0)
+                    {
                         afterDefInt = (int)System.Math.Max(1, System.Math.Round(afterDefInt * (1.0 - resMag), System.MidpointRounding.AwayFromZero));
+                    }
                     if (ene.VulnerabilidadesElementales.TryGetValue("magia", out var v)) vulnMag = System.Math.Clamp(v, 1.0, 1.5);
                     if (vulnMag > 1.0)
+                    {
                         afterDefInt = (int)System.Math.Max(1, System.Math.Round(afterDefInt * vulnMag, System.MidpointRounding.AwayFromZero));
+                    }
                 }
                 else if (objetivo is MiJuegoRPG.Personaje.Personaje pj)
                 {
@@ -165,15 +219,34 @@ namespace MiJuegoRPG.Motor.Servicios
 
                 var partes = new System.Collections.Generic.List<string>();
                 partes.Add($"Base {danioBase}");
-                if (defEfectiva > 0) partes.Add($"Defensa mágica efectiva {defEfectiva:0} {(pen > 0 ? $"(Pen {pen*100:0}% )" : "")}");
-                if (mitig > 0) partes.Add($"Mitigación {mitig*100:0}%");
-                if (resMag > 0) partes.Add($"Resistencia magia {resMag*100:0}%");
-                if (vulnMag > 1.0) partes.Add($"Vulnerabilidad +{(vulnMag-1.0)*100:0}%");
-                if (fueCritico) partes.Add("Crítico");
+                if (defEfectiva > 0)
+                {
+                    partes.Add($"Defensa mágica efectiva {defEfectiva:0} {(pen > 0 ? $"(Pen {pen*100:0}% )" : "")}");
+                }
+                if (mitig > 0)
+                {
+                    partes.Add($"Mitigación {mitig*100:0}%");
+                }
+                if (resMag > 0)
+                {
+                    partes.Add($"Resistencia magia {resMag*100:0}%");
+                }
+                if (vulnMag > 1.0)
+                {
+                    partes.Add($"Vulnerabilidad +{(vulnMag - 1.0) * 100:0}%");
+                }
+                if (fueCritico)
+                {
+                    partes.Add("Crítico");
+                }
                 partes.Add($"Daño final: {danioFinal}");
                 return string.Join("; ", partes);
             }
-            catch { return ""; }
+            catch
+            {
+                // Intencional: si falla el formato, se omite detalle
+                return string.Empty;
+            }
         }
 
         /// <summary>
@@ -184,6 +257,7 @@ namespace MiJuegoRPG.Motor.Servicios
         {
             EnsureConfig();
             int vidaAntes = objetivo.Vida;
+            
             // Paso 0 (opcional): Chequeo de precisión previa al ataque físico.
             // Si está activo el toggle global y el ejecutor es un Personaje, usamos su estadística de Precisión.
             // En caso de fallar, no delegamos al método de ataque y devolvemos un resultado con 0 daño.
@@ -191,6 +265,7 @@ namespace MiJuegoRPG.Motor.Servicios
             {
                 // Base: precisión del ejecutor, con caps desde configuración
                 double pHit = CombatBalanceConfig.ClampPrecision(pjPrec.Estadisticas.Precision);
+                
                 // Penalización por estados de Supervivencia (hambre/sed/fatiga)
                 try
                 {
@@ -227,14 +302,14 @@ namespace MiJuegoRPG.Motor.Servicios
             int danio;
             int danioAplicado;
             bool usandoNuevoLive = false;
-            if (_cfg.UseNewDamagePipelineLive && ejecutor is MiJuegoRPG.Personaje.Personaje pjLive)
+            if (combatConfig.UseNewDamagePipelineLive && ejecutor is MiJuegoRPG.Personaje.Personaje pjLive)
             {
                 // Camino live: reproducir cálculo aproximado usando pipeline (forzar impacto para mantener consistencia con legado actual)
                 usandoNuevoLive = true;
                 double critChanceLive = pjLive.Estadisticas.CritChance;
-                if (_cfg.UseCritDiminishingReturns)
+                if (combatConfig.UseCritDiminishingReturns)
                 {
-                    critChanceLive = CombatBalanceConfig.CritChanceWithDR(critChanceLive, _cfg.CritChanceHardCap, _cfg.CritDiminishingK);
+                    critChanceLive = CombatBalanceConfig.CritChanceWithDR(critChanceLive, combatConfig.CritChanceHardCap, combatConfig.CritDiminishingK);
                 }
                 var reqLive = new DamagePipeline.Request
                 {
@@ -248,17 +323,18 @@ namespace MiJuegoRPG.Motor.Servicios
                     Penetracion = pjLive.Estadisticas.Penetracion,
                     MitigacionPorcentual = 0, // legado incluía mitigación interna — TODO: integrar cuando se separe
                     CritChance = critChanceLive,
-                    CritMultiplier = pjLive.Estadisticas.CritMult <= 0 ? _cfg.CritMultiplier : pjLive.Estadisticas.CritMult,
-                    CritScalingFactor = _cfg.CritScalingFactor,
+                    CritMultiplier = pjLive.Estadisticas.CritMult <= 0 ? combatConfig.CritMultiplier : pjLive.Estadisticas.CritMult,
+                    CritScalingFactor = combatConfig.CritScalingFactor,
                     VulnerabilidadMult = 1.0,
-                    MinHitClamp = _cfg.MinHit,
+                    MinHitClamp = combatConfig.MinHit,
                     ForzarCritico = false,
                     ForzarImpacto = true,
-                    ReducePenetracionEnCritico = _cfg.ReducePenetracionEnCritico,
-                    FactorPenetracionCritico = _cfg.FactorPenetracionCritico
+                    ReducePenetracionEnCritico = combatConfig.ReducePenetracionEnCritico,
+                    FactorPenetracionCritico = combatConfig.FactorPenetracionCritico
                 };
                 var liveRes = DamagePipeline.Calcular(in reqLive, RandomService.Instancia);
                 danio = liveRes.FinalDamage;
+
                 // Aplicar daño real al objetivo ahora (pipeline no muta)
                 objetivo.RecibirDanioFisico(danio);
                 danioAplicado = System.Math.Max(0, vidaAntes - objetivo.Vida);
@@ -293,20 +369,22 @@ namespace MiJuegoRPG.Motor.Servicios
             // más preciso que depender del valor retornado por AtacarFisico (que puede ser pre-defensas).
             res.FueEvadido = danioAplicado == 0;
 
+            
             // Shadow run nuevo pipeline (no altera gameplay) si está activado en config.
-            if (!usandoNuevoLive && _cfg.UseNewDamagePipelineShadow && danioAplicado > 0 && ejecutor is MiJuegoRPG.Personaje.Personaje pjShadow)
+            if (!usandoNuevoLive && combatConfig.UseNewDamagePipelineShadow && danioAplicado > 0 && ejecutor is MiJuegoRPG.Personaje.Personaje pjShadow)
             {
                 try
                 {
                     var rngShadow = RandomService.Instancia;
+                    
                     // Preparar CritChance con DR si procede
                     double critChance = pjShadow.Estadisticas.CritChance;
-                    if (_cfg.UseCritDiminishingReturns)
+                    if (combatConfig.UseCritDiminishingReturns)
                     {
                         critChance = CombatBalanceConfig.CritChanceWithDR(
                             critChance,
-                            _cfg.CritChanceHardCap,
-                            _cfg.CritDiminishingK);
+                            combatConfig.CritChanceHardCap,
+                            combatConfig.CritDiminishingK);
                     }
                     var req = new DamagePipeline.Request
                     {
@@ -320,19 +398,20 @@ namespace MiJuegoRPG.Motor.Servicios
                         Penetracion = pjShadow.Estadisticas.Penetracion,
                         MitigacionPorcentual = 0, // legacy la aplica dentro del método AtacarFisico
                         CritChance = critChance,
-                        CritMultiplier = pjShadow.Estadisticas.CritMult <= 0 ? _cfg.CritMultiplier : pjShadow.Estadisticas.CritMult,
-                        CritScalingFactor = _cfg.CritScalingFactor,
+                        CritMultiplier = pjShadow.Estadisticas.CritMult <= 0 ? combatConfig.CritMultiplier : pjShadow.Estadisticas.CritMult,
+                        CritScalingFactor = combatConfig.CritScalingFactor,
                         VulnerabilidadMult = 1.0,
-                        MinHitClamp = _cfg.MinHit,
+                        MinHitClamp = combatConfig.MinHit,
                         ForzarCritico = false,
                         ForzarImpacto = true, // evitar variación por hit chance en shadow hasta tener estadística completa
-                        ReducePenetracionEnCritico = _cfg.ReducePenetracionEnCritico,
-                        FactorPenetracionCritico = _cfg.FactorPenetracionCritico
+                        ReducePenetracionEnCritico = combatConfig.ReducePenetracionEnCritico,
+                        FactorPenetracionCritico = combatConfig.FactorPenetracionCritico
                     };
                     var nuevo = DamagePipeline.Calcular(in req, rngShadow);
+
                     // Registrar comparación para ajuste futuro
-                    Logger.Debug($"[ShadowDamagePipeline] legacy={danioAplicado} pipeline={nuevo.FinalDamage} base={danio} crit={(nuevo.FueCritico ? 1:0)}");
-                    _shadow.Registrar(danioAplicado, nuevo.FinalDamage);
+                    Logger.Debug($"[ShadowDamagePipeline] legacy={danioAplicado} pipeline={nuevo.FinalDamage} base={danio} crit={(nuevo.FueCritico ? 1 : 0)}");
+                    shadowAgg.Registrar(danioAplicado, nuevo.FinalDamage);
                 }
                 catch (System.Exception ex)
                 {
@@ -340,13 +419,16 @@ namespace MiJuegoRPG.Motor.Servicios
                 }
             }
 
+            
             // Crítico (no intrusivo): si el ejecutor es Personaje, usar su estadística CritChance/Critico como probabilidad (0..1 aprox.)
             double pCrit = 0.0;
             bool forceCrit = false;
             if (ejecutor is MiJuegoRPG.Personaje.Personaje pj)
             {
+                
                 // Preferir CritChance si está disponible (>0); de lo contrario usar 'Critico' legacy.
                 double raw = pj.Estadisticas.CritChance > 0 ? pj.Estadisticas.CritChance : pj.Estadisticas.Critico;
+                
                 // Clamp conservador: 0..0.95; si CritChance>=1.0, consideramos crítico forzado (útil para pruebas deterministas)
                 pCrit = System.Math.Clamp(raw, 0.0, 0.95);
                 if (raw >= 1.0)
@@ -370,11 +452,15 @@ namespace MiJuegoRPG.Motor.Servicios
                 res.Mensajes.Add("¡Golpe crítico!");
             }
 
+            
             // Mensaje explicativo adicional (didáctico) solo si está activo el modo verbose
             if (!res.FueEvadido && GameplayToggles.CombatVerbose)
             {
                 var detalle = FormatearDetalleFisico(ejecutor, objetivo, res.DanioBase, res.DanioReal, res.FueCritico);
-                if (!string.IsNullOrWhiteSpace(detalle)) res.Mensajes.Add(detalle);
+                if (!string.IsNullOrWhiteSpace(detalle))
+                {
+                    res.Mensajes.Add(detalle);
+                }
             }
 
             return res;
@@ -414,18 +500,18 @@ namespace MiJuegoRPG.Motor.Servicios
                 ObjetivoDerrotado = !objetivo.EstaVivo,
             };
 
-            if (_cfg.UseNewDamagePipelineShadow && danioAplicado > 0 && ejecutor is MiJuegoRPG.Personaje.Personaje pjShadow)
+            if (combatConfig.UseNewDamagePipelineShadow && danioAplicado > 0 && ejecutor is MiJuegoRPG.Personaje.Personaje pjShadow)
             {
                 try
                 {
                     var rngShadowM = RandomService.Instancia;
                     double critChance = pjShadow.Estadisticas.CritChance;
-                    if (_cfg.UseCritDiminishingReturns)
+                    if (combatConfig.UseCritDiminishingReturns)
                     {
                         critChance = CombatBalanceConfig.CritChanceWithDR(
                             critChance,
-                            _cfg.CritChanceHardCap,
-                            _cfg.CritDiminishingK);
+                            combatConfig.CritChanceHardCap,
+                            combatConfig.CritDiminishingK);
                     }
                     var req = new DamagePipeline.Request
                     {
@@ -441,15 +527,15 @@ namespace MiJuegoRPG.Motor.Servicios
                         CritChance = critChance,
                         CritMultiplier = pjShadow.Estadisticas.CritMult <= 0 ? 1.5 : pjShadow.Estadisticas.CritMult,
                         VulnerabilidadMult = 1.0,
-                        MinHitClamp = _cfg.MinHit,
+                        MinHitClamp = combatConfig.MinHit,
                         ForzarCritico = false,
                         ForzarImpacto = true,
-                        ReducePenetracionEnCritico = _cfg.ReducePenetracionEnCritico,
-                        FactorPenetracionCritico = _cfg.FactorPenetracionCritico
+                        ReducePenetracionEnCritico = combatConfig.ReducePenetracionEnCritico,
+                        FactorPenetracionCritico = combatConfig.FactorPenetracionCritico
                     };
                     var nuevo = DamagePipeline.Calcular(in req, rngShadowM);
-                    Logger.Debug($"[ShadowDamagePipeline][Magico] legacy={danioAplicado} pipeline={nuevo.FinalDamage} base={danio} crit={(nuevo.FueCritico ? 1:0)}");
-                    _shadow.Registrar(danioAplicado, nuevo.FinalDamage);
+                    Logger.Debug($"[ShadowDamagePipeline][Magico] legacy={danioAplicado} pipeline={nuevo.FinalDamage} base={danio} crit={(nuevo.FueCritico ? 1 : 0)}");
+                    shadowAgg.Registrar(danioAplicado, nuevo.FinalDamage);
                 }
                 catch (System.Exception ex)
                 {
@@ -492,20 +578,15 @@ namespace MiJuegoRPG.Motor.Servicios
             if (!res.FueEvadido && GameplayToggles.CombatVerbose)
             {
                 var detalle = FormatearDetalleMagico(ejecutor, objetivo, res.DanioBase, res.DanioReal, res.FueCritico);
-                if (!string.IsNullOrWhiteSpace(detalle)) res.Mensajes.Add(detalle);
+                if (!string.IsNullOrWhiteSpace(detalle))
+                {
+                    res.Mensajes.Add(detalle);
+                }
             }
 
             return res;
         }
 
-        /// <summary>
-        /// Devuelve un resumen agregado de las diferencias shadow (si estaban activas) y resetea el acumulador si se solicita.
-        /// </summary>
-        public static string ObtenerResumenShadow(bool reset = false)
-        {
-            var txt = _shadow.ResumenFinal();
-            if (reset) _shadow.Reset();
-            return txt;
-        }
+        // ObtenerResumenShadow movido arriba para cumplir orden de miembros estáticos
     }
 }
