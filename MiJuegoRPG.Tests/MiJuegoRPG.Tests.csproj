@@ -17,6 +17,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\MiJuegoRPG\MiJuegoRPG.csproj" />
+    <ProjectReference Include="..\MiJuegoRPG.Validacion\MiJuegoRPG.Validacion.csproj" />
+    <ProjectReference Include="..\MiJuegoRPG.Core\MiJuegoRPG.Core.csproj" />
   </ItemGroup>
 
   <!-- Copiar assets de datos del juego al output de tests (estructura recursiva) -->

@@ -9,9 +9,18 @@ namespace MiJuegoRPG.Motor.Servicios
     /// </summary>
     public static class PathProvider
     {
+        private static string? _overrideRoot;
         // Raíz del repo (detectada por Juego.ObtenerRutaRaizProyecto cuando está disponible)
-        private static string RaizProyecto
-            => MiJuegoRPG.Motor.Juego.ObtenerRutaRaizProyecto();
+        private static string RaizProyecto => _overrideRoot ?? MiJuegoRPG.Motor.Juego.ObtenerRutaRaizProyecto();
+
+        /// <summary>
+        /// (Uso pruebas) Sobrescribe la raíz del proyecto para redirigir lectura de DatosJuego.
+        /// No usar en runtime normal.
+        /// </summary>
+        public static void OverrideRootForTests(string? newRoot)
+        {
+            _overrideRoot = newRoot;
+        }
 
         /// <summary>
         /// Devuelve la carpeta raíz de datos del juego (DatosJuego).

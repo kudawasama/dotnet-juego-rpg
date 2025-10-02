@@ -1,0 +1,5 @@
+<Project>
+  <PropertyGroup>
+    <DefineConstants>$(DefineConstants);TEST_MODE</DefineConstants>
+  </PropertyGroup>
+</Project>

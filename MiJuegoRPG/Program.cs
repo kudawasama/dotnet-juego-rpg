@@ -112,7 +112,7 @@ class Program
                         }
 
                         // Ejecutar validador y continuar
-                        var r = MiJuegoRPG.Motor.Servicios.Validacion.DataValidatorService.ValidarReferenciasBasicas(generarReporte, ruta);
+                        var r = MiJuegoRPG.Validacion.DataValidatorService.ValidarReferenciasBasicas(generarReporte, ruta);
                         if (!r.IsOk)
                         {
                             Console.WriteLine("[Validador] Se encontraron problemas (ver mensajes arriba). Se continuará igualmente.");

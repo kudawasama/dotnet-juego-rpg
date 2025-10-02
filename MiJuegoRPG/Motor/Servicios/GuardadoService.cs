@@ -10,7 +10,9 @@ namespace MiJuegoRPG.Motor.Servicios
     /// </summary>
     public class GuardadoService
     {
-        private readonly PersonajeSqliteService _sqlite;
+    #if !TEST_MODE
+    private readonly PersonajeSqliteService _sqlite;
+    #endif
         public bool Verbose { get; set; } = true;
     private readonly string rutaCooldowns;
     private readonly string rutaEncuentrosCooldowns;
@@ -19,7 +21,9 @@ namespace MiJuegoRPG.Motor.Servicios
 
         public GuardadoService(string? rutaDb = null)
         {
+            #if !TEST_MODE
             _sqlite = new PersonajeSqliteService(rutaDb);
+            #endif
             // Archivo adicional para cooldowns (persistencia ligera fuera de SQLite por simplicidad temporal)
             rutaCooldowns = PathProvider.PjDatosPath("cooldowns_nodos.json");
             rutaEncuentrosCooldowns = PathProvider.PjDatosPath("cooldowns_encuentros.json");
@@ -36,7 +40,9 @@ namespace MiJuegoRPG.Motor.Servicios
                 var juego = Juego.ObtenerInstanciaActual();
                 if (juego?.mapa?.UbicacionActual != null)
                     pj.UbicacionActualId = juego.mapa.UbicacionActual.Id;
+                #if !TEST_MODE
                 _sqlite.Guardar(pj);
+                #endif
                 // Guardar cooldowns de nodos si existe servicio de recolección
                 if (juego?.recoleccionService != null)
                 {
@@ -85,7 +91,11 @@ namespace MiJuegoRPG.Motor.Servicios
         {
             try
             {
+                #if TEST_MODE
+                var nombres = new List<string>();
+                #else
                 var nombres = _sqlite.ListarNombres();
+                #endif
                 if (nombres.Count == 0)
                 {
                     Console.WriteLine("No hay personajes guardados.");
@@ -97,7 +107,11 @@ namespace MiJuegoRPG.Motor.Servicios
                 var op = Console.ReadLine();
                 if (int.TryParse(op, out int idx) && idx > 0 && idx <= nombres.Count)
                 {
+                    #if TEST_MODE
+                    Personaje.Personaje? pj = null; // no disponible en test mode
+                    #else
                     var pj = _sqlite.Cargar(nombres[idx - 1]);
+                    #endif
                     if (pj != null && Verbose) Console.WriteLine($"[Guardado] Personaje '{pj.Nombre}' cargado.");
                     // Cargar cooldowns si archivo existe y servicios ya inicializados
                     try

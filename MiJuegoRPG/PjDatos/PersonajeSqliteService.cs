@@ -1,3 +1,4 @@
+﻿#if !TEST_MODE
 using Microsoft.Data.Sqlite;
 using System.Text.Json;
 using MiJuegoRPG.Personaje;
@@ -102,3 +103,4 @@ namespace MiJuegoRPG.PjDatos
         }
     }
 }
+#endif

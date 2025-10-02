@@ -1,5 +1,6 @@
+using System;
 using System.IO;
-using MiJuegoRPG.Motor.Servicios.Validacion;
+using global::MiJuegoRPG.Validacion;
 using Xunit;
 
 namespace MiJuegoRPG.Tests
