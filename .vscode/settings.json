@@ -1,0 +1,14 @@
+{
+  // Habilita sugerencias también dentro de comentarios y strings
+  "editor.quickSuggestions": {
+    "other": true,
+    "comments": true,
+    "strings": true
+  },
+  // Asegura que snippets se muestren al principio
+  "editor.snippetSuggestions": "top",
+  // Forzar aparecer sugerencias mientras escribes
+  "editor.suggestOnTriggerCharacters": true,
+  // Mostrar descripción avanzada de snippet
+  "editor.suggest.showSnippets": true
+}
