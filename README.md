@@ -8,7 +8,7 @@ Centro de documentación y enlaces rápidos del proyecto. Para la guía completa
 - Arquitectura y funcionamiento: [MiJuegoRPG/Docs/Arquitectura_y_Funcionamiento.md](MiJuegoRPG/Docs/Arquitectura_y_Funcionamiento.md)
 - Configuración de progresión: [MiJuegoRPG/Docs/progression_config.md](MiJuegoRPG/Docs/progression_config.md)
 - Guía de ejemplos (principiantes): [MiJuegoRPG/Docs/Guia_Ejemplos.md](MiJuegoRPG/Docs/Guia_Ejemplos.md)
-- Movimiento (cómo moverse): ver Menú de Rutas en [Flujo.txt](Flujo.txt)
+ Movimiento (cómmo moverse): ver Menú de Rutas en [Flujo de Menús](MiJuegoRPG/Docs/Flujo.md)
 
 Cómo compilar y probar (PowerShell):
 
@@ -18,6 +18,28 @@ dotnet test --nologo
 ```
 
 Ejecutar el juego (desde carpeta `MiJuegoRPG/`):
+## Uso del Agente (Copilot / Reglas Internas)
+
+Fuente única de reglas: `copilot/agent.md`.
+
+Pasos recomendados al iniciar una sesión de trabajo:
+1. Abrir `copilot/agent.md` y leer cambios recientes (sección Roadmap de Infra).
+2. Consultar prompts especializados según el tipo de tarea:
+	- Combate: `copilot/prompts/combate.md`
+	- Datos / Repos: `copilot/prompts/datos.md`
+	- Infra / CI / Estilo: `copilot/prompts/infra.md`
+	- Tests: `copilot/prompts/tests.md`
+	- Review: `copilot/prompts/review.md`
+3. Añadir comentarios guía en código cuando proceda:
+	```csharp
+	// @AgenteCombate: validar interacción crítico vs penetración antes de tunear
+	// @AgenteDatos: revisar duplicados en overlay
+	```
+4. Tras aplicar cambios relevantes a núcleo / datos: actualizar Bitácora y Roadmap.
+
+## CI
+
+Workflow básico (build + test) en `.github/workflows/ci.yml`. El badge se añadirá al estabilizar la rama principal.
 
 ```
 dotnet run --project MiJuegoRPG.csproj

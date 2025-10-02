@@ -1,4 +1,6 @@
-# Prompt Maestro — dotnet-juego-rpg
+# LEGACY (usar copilot/agent.md) — Prompt Maestro — dotnet-juego-rpg
+
+Este archivo se conserva solo como referencia histórica. Las reglas vivas del asistente están ahora en `copilot/agent.md` y los prompts especializados en `copilot/prompts/`. No añadir reglas nuevas aquí.
 
 **Repositorio:** [kudawasama/dotnet-juego-rpg](https://github.com/kudawasama/dotnet-juego-rpg)
 

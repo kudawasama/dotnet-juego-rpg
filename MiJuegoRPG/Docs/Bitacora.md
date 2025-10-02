@@ -1,6 +1,9 @@
 
 # Bitácora de Cambios (Consolidada)
 
+### 2025-10-02 — Infraestructura Agente Copilot + Estandarización Docs
+Creada carpeta `copilot/` con `agent.md` (fuente única de reglas) y prompts especializados (`combate`, `datos`, `infra`, `tests`, `review`). Añadido workflow CI (build+test), `.editorconfig` base y analyzers (NetAnalyzers + StyleCop en modo warning). Migrado `Flujo.txt` a `Docs/Flujo.md` (markdown estructurado). Marcado `MIJuego.chatmode.md` como LEGACY para evitar duplicación. Impacto: mejora consistencia de contribuciones, facilita revisiones automatizadas y reduce deuda de formatos dispersos. Pendiente: completar contenido pleno de prompts y evaluar eliminación de script legacy `FixTipoObjetoJson.cs`.
+
 ### 2025-10-01 — Repos jerárquicos de Equipo (Material/Arma/Armadura/Botas/Cascos/Cinturones/Collares/Pantalones) y normalización de rarezas
 
 Implementados `MaterialRepository`, `ArmaRepository`, `ArmaduraRepository`, `BotasRepository`, `CascosRepository`, `CinturonesRepository`, `CollaresRepository` y `PantalonesRepository` con carga recursiva (DatosJuego/**) y overlay (`PjDatos/*.json`) que reemplaza por `Nombre` (case-insensitive). Se centralizó la normalización de rarezas en `RarezaNormalizer` (alias históricos → forma canónica). Impacto: fuente única confiable y homogénea para más tipos de equipo, reducción de duplicación en parseo, preparación para validadores cruzados y futura migración de Accesorios/Pociones. Próximos pasos: factorizar helper genérico (`HierarchicalOverlayRepository<T>`) para eliminar duplicación, migrar restantes repos y consolidar logs de rarezas desconocidas (agrupar contadores en lugar de spam).

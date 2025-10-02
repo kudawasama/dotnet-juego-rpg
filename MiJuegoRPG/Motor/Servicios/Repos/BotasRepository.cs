@@ -14,6 +14,7 @@ namespace MiJuegoRPG.Motor.Servicios.Repos
     /// </summary>
     public class BotasRepository
     {
+        // @AgenteDatos: validar que primer archivo base gana y overlay reemplaza. Si se factoriza a genérico, mover esta regla a la clase base.
         private readonly Dictionary<string, BotasData> _cache = new(StringComparer.OrdinalIgnoreCase);
         private bool _loaded;
 

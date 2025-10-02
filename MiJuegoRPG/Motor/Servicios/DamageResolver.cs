@@ -9,6 +9,8 @@ namespace MiJuegoRPG.Motor.Servicios
     /// </summary>
     public class DamageResolver
     {
+        // @AgenteCombate: mantener orden estable (Base -> Hit/Evasion -> Pen -> Defensa -> Mitigacion -> Critico -> Vulnerabilidad -> Redondeo)
+        // @AgenteCombate: si se modifica lógica de penetración crítica revisar tests CritPenetracionInteractionTests y DamagePipelineOrderTests
         private static CombatConfig _cfg = CombatConfig.LoadOrDefault();
         private static bool _configLoaded = false;
         private static ShadowAgg _shadow = new ShadowAgg();
