@@ -1,0 +1,4 @@
+"Archivo","Linea","Comentario"
+"C:\Users\jose.cespedes\Documents\GitHub\dotnet-juego-rpg\MiJuegoRPG\Motor\Servicios\DamageResolver.cs","12","// @AgenteCombate: mantener orden estable (Base -> Hit/Evasion -> Pen -> Defensa -> Mitigacion -> Critico -> Vulnerabilidad -> Redondeo)"
+"C:\Users\jose.cespedes\Documents\GitHub\dotnet-juego-rpg\MiJuegoRPG\Motor\Servicios\DamageResolver.cs","13","// @AgenteCombate: si se modifica l?gica de penetraci?n cr?tica revisar tests CritPenetracionInteractionTests y DamagePipelineOrderTests"
+"C:\Users\jose.cespedes\Documents\GitHub\dotnet-juego-rpg\MiJuegoRPG\Motor\Servicios\Repos\BotasRepository.cs","17","// @AgenteDatos: validar que primer archivo base gana y overlay reemplaza. Si se factoriza a gen?rico, mover esta regla a la clase base."

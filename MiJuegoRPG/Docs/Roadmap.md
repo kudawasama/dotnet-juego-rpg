@@ -1,13 +1,3 @@
-
-- [x] Normalizar rarezas en armas.json para evitar errores de enum y runtime.
-- Validar que todos los valores coincidan con el enum del código.
-- Documentar el mapeo y la convención en la bitácora y arquitectura.
-
-### 2025-09-23
-
-- [MEJORA] Robustez en menú admin: null-checks y tolerancia a datos incompletos en requisitos de clase (`MotivosBloqueoClase`).
-- Validado con build y tests.
-
 # Roadmap
 
 ## Resumen Normalizado (Tabla)
@@ -16,9 +6,9 @@ Feature | Estado | Última actualización | Notas
 --- | --- | --- | ---
 Soporte rarezas dinámicas | Hecho | 2025-09-30 | Generador migrado a strings + RarezaConfig central; enum legado solo para compat.
 Sistema de Acciones (Fase 1) | Hecho | 2025-09-29 | Registro acciones, persistencia y hooks combate/NPC/mundo; falta UI hints (7.b.5).
-Pipeline de Daño (MVP) | Parcial | 2025-09-29 | Pasos básicos + penetración behind flag; falta formalizar `IDamageStep` y unificación mensajes (5.8/5.13).
-DamagePipeline modo sombra | Hecho | 2025-10-01 | Benchmark + sweep (F/PenCrit) + agregador y resumen final; desviación ~ -3.5% dentro umbral.
-DamagePipeline modo live (activación gradual) | Parcial | 2025-10-01 | Flag --damage-live experimental; monitoreo drift 1/3 sesiones (<±3%) antes de retirar legacy.
+Pipeline de Daño (MVP) | Regresión temporal | 2025-10-02 | Rollback a resolver mínimo (archivo corrupto). Reinstalar pasos y contrato `IDamageStep` tras estabilizar 2 tests verbosos.
+DamagePipeline modo sombra | Regresión temporal | 2025-10-02 | Desactivado (comparador removido). Rehabilitar cuando verbose tests verdes y drift re-validado (<±5%).
+DamagePipeline modo live (activación gradual) | Regresión temporal | 2025-10-02 | Flag suspendido; se requiere nueva calibración (crit/penetración) tras reintroducción shadow.
 UI Unificada + Verbosidad Combate | Parcial | 2025-09-29 | Menús principales migrados; combate parcialmente; estilo temático pendiente (8.3/8.4).
 Recolección data‑driven | Hecho | 2025-09-24 | Nodos con rareza/cooldown y producción; balance fino pendiente (15.7).
 Enemigos data‑driven por archivo | Hecho | 2025-09-24 | Estructura por bioma/nivel/categoría; falta replicar a otros biomas.
@@ -30,9 +20,10 @@ Durabilidad & Reparación | Pendiente | 2025-09-30 | No implementado; ligado a e
 Supervivencia (sistemas base) | Parcial | 2025-09-29 | Config + factores penalización; falta cableado ticks y consumos (27.x).
 Acciones de Combate avanzadas (estados/bleed/stun) | Pendiente | 2025-09-30 | IEfecto veneno listo; faltan nuevos efectos y stacking.
 Migración Unity (infra preparación) | Pendiente | 2025-09-30 | Separación dominio/UI parcial; faltan adaptadores y conversión JSON→SO.
-Combate por Acciones (PA) Fase 1 | Planificación | 2025-10-01 | Documentación técnica completa (fórmulas PA, pipeline, reacciones, esquema acciones). Implementación loop pendiente (flag `ModoAcciones`).
+Combate por Acciones (PA) Fase 1 | Planificación | 2025-10-01 | Documentación técnica completa (fórmulas PA, pipeline, reacciones, esquema acciones). Implementación loop pendiente (flag `ModoAcciones`). (Sin impacto por rollback del DamagePipeline).
 Combate por Acciones (PA) Fase 2 | Pendiente | 2025-10-01 | Iniciativa/cola, coste variable, acciones defensivas y posicionamiento.
 Combate por Acciones (PA) Fase 3 | Pendiente | 2025-10-01 | Integrar efectos avanzados, Stamina/Poise y priorización táctica IA.
+Limpieza StyleCop focalizada (Program/SmokeRunner) | Hecho | 2025-10-07 | Separado `GameplayToggles` (SA1402/SA1649) y fixes SA1503/SA1028. Ver Bitácora 2025‑10‑07.
 
 > Esta tabla resume el estado por feature de alto nivel. El contenido posterior conserva detalle histórico y granular (legado). Cuando se actualice una feature, modificar SOLO esta tabla y, si la implementación es significativa, añadir entrada en Bitácora.
 
@@ -40,7 +31,8 @@ Combate por Acciones (PA) Fase 3 | Pendiente | 2025-10-01 | Integrar efectos ava
 
 ## 2025-09-23
 
-### 2025-09-23
+### 2025-09-23 (detalle)
+
 - [MEJORA] Inserción masiva de armas de enemigos: todas las armas referenciadas por enemigos ahora existen en `armas.json`.
 - [x] Validación de build y 70 pruebas unitarias tras la inserción masiva (PASS).
 
@@ -61,7 +53,7 @@ Combate por Acciones (PA) Fase 3 | Pendiente | 2025-10-01 | Integrar efectos ava
 
 Actualización 2025-09-21
 
-------------------------
+---
 
 - Fix: Bonificadores de equipo no-arma aplicados correctamente.
   - `Armadura`, `Botas`, `Pantalon`, `Cinturon`, `Collar` ahora implementan `IBonificadorEstadistica`.

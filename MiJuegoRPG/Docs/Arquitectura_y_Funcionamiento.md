@@ -2,7 +2,7 @@
 
 ## Rarezas y probabilidades de aparición (MIGRADO A STRINGS DINÁMICO)
 
-Estado actual (2025-09-30):
+Estado actual (2025-10-06):
 
 - El sistema YA NO requiere agregar rarezas a un enum. El enum `Rareza` en `EnumsObjetos.cs` queda como legado y no es fuente de verdad para nuevas rarezas (deprecado para extensiones futuras).
 - La única fuente dinámica de pesos y rangos de perfección es la configuración JSON en `DatosJuego/config/rareza_pesos.json` y `DatosJuego/config/rareza_perfeccion.json` (formats tolerantes: objeto, lista, arrays).
@@ -10,6 +10,8 @@ Estado actual (2025-09-30):
   - Pesos de selección ponderada.
   - Rango de perfección por rareza.
   - Multiplicadores opcionales.
+- Detalles de implementación: `RarezaConfig` realiza búsquedas case-insensitive y tolera JSON con comas finales/comentarios; construye metas sobre la unión de claves de pesos y rangos. Ver código: [`../Objetos/RarezaConfig.cs`](../Objetos/RarezaConfig.cs).
+- El generador consolidado usa repositorios como fuente preferida y cae a JSON como fallback, normaliza rarezas y aplica intersección de rangos de perfección por ítem+rareza. Ver código: [`../Motor/GeneradorObjetos.cs`](../Motor/GeneradorObjetos.cs).
 - Si una rareza no existe en la config: se aplica fallback seguro (peso=1, perfección base 50–50) y se emite advertencia (no excepción dura).
 - Las probabilidades/ pesos admiten enteros o decimales y pueden añadirse nuevas rarezas (p.ej. `Epica`, `Mistica`) sin tocar código.
 
@@ -66,7 +68,19 @@ Reglas vigentes:
 
 Histórico (pre 2025-09-30): el modelo exigía mantener correspondencia estricta con un enum; esa sección se conserva en Bitácora (entradas 2025-09-24) para trazabilidad pero ya no aplica como política.
 
-Última actualización: 2025-09-30 — Migración completa a rarezas dinámicas.
+Última actualización: 2025-10-06 — Migración consolidada + robustez de config y generador.
+
+### 2025-10-06: Robustez RarezaConfig y GeneradorObjetos consolidado
+
+- `RarezaConfig` ahora:
+  - Usa diccionarios case-insensitive para `Pesos`, `RangosPerfeccion` y `Metas`.
+  - Carga JSON con opciones tolerantes (comentarios y comas finales).
+  - Construye metas sobre la unión de claves (Pesos ∪ Rangos) y aplica clamps seguros.
+- `GeneradorObjetos` ahora:
+  - Carga repos primero (si existen), y hace fallback a JSON por tipo.
+  - Intersecta rangos `PerfeccionMin/Max` del ítem con el rango global por rareza.
+  - Normaliza nombres de rareza y usa selección ponderada consultando `RarezaConfig`.
+  - Unifica el archivo canónico en `Motor/GeneradorObjetos.cs` (el legacy queda como stub para evitar duplicados de tipo).
 
 ### 2025-09-23: Robustez en menú admin (clases)
 
@@ -83,7 +97,7 @@ Validado con build y pruebas unitarias (PASS).
 
 Última actualización: 2025-09-23
 
-# MiJuegoRPG — Arquitectura y Funcionamiento (Estudio Detallado)
+## MiJuegoRPG — Arquitectura y Funcionamiento (Estudio Detallado)
 
 ## (LEGACY / OBSOLETO) Validación estricta de enums
 
@@ -94,42 +108,43 @@ Esta política aplicaba antes de la migración a rarezas dinámicas (strings + J
 
 Objetivo: documentar con nivel de ingeniería la estructura, el flujo y las reglas del juego para facilitar mantenimiento, onboarding y futura migración a Unity. Este documento sirve como guía viva y complementa `Roadmap.md` y `progression_config.md`.
 
-Documentos relacionados
+Documentos relacionados:
 
 - Roadmap (plan y estado): `./Roadmap.md`
 - Bitácora (historial): `./Bitacora.md`
 - Config de progresión: `./progression_config.md`
-- Flujo de juego (menús): [`../../Flujo.txt`](../../Flujo.txt)
-- Inicio: [`INICIO DEL JUEGO`](../../Flujo.txt#inicio-del-juego-programcs)
-- Menú Principal: [`MENÚ PRINCIPAL DEL JUEGO`](../../Flujo.txt#menu-principal-del-juego-juegoiniciar)
-- Ciudad: [`MENÚ DE CIUDAD`](../../Flujo.txt#menu-de-ciudad-menuciudad)
-- Fuera de ciudad: [`MENÚ FUERA DE CIUDAD`](../../Flujo.txt#menu-fuera-de-ciudad-menufueraciudad)
-- Misiones/NPC: [`MENÚ DE MISIONES Y NPC`](../../Flujo.txt#menu-de-misiones-y-npc-menusjuegomostrarmenumisionesnpc)
-- Rutas: [`MENÚ DE RUTAS`](../../Flujo.txt#menu-de-rutas-juegomostrarmenurutas)
-- Combate: [`MENÚ DE COMBATE`](../../Flujo.txt#menu-de-combate-base-actual)
-- Entre combates: [`MENÚ ENTRE COMBATES`](../../Flujo.txt#menu-entre-combates-menuentrecombate)
-- Menú fijo: [`MENÚ FIJO`](../../Flujo.txt#menu-fijo-accesible-desde-ciudadfueracombate)
+- Flujo de juego (menús): [`./Flujo.md`](./Flujo.md)
+- Inicio: [`INICIO DEL JUEGO`](./Flujo.md#inicio-del-juego-programcs)
+- Menú Principal: [`MENÚ PRINCIPAL DEL JUEGO`](./Flujo.md#menú-principal-del-juego-juegoiniciar)
+- Ciudad: [`MENÚ DE CIUDAD`](./Flujo.md#menú-de-ciudad-menuciudad)
+- Fuera de ciudad: [`MENÚ FUERA DE CIUDAD`](./Flujo.md#menú-fuera-de-ciudad-menufueraciudad)
+- Misiones/NPC: [`MENÚ DE MISIONES Y NPC`](./Flujo.md#menú-de-misiones-y-npc-menusjuegomostrarmenumisionesnpc)
+- Rutas: [`MENÚ DE RUTAS`](./Flujo.md#menú-de-rutas-juegomostrarmenurutas)
+- Combate: [`MENÚ DE COMBATE`](./Flujo.md#menú-de-combate-base-actual)
+- Entre combates: [`MENÚ ENTRE COMBATES`](./Flujo.md#menú-entre-combates-menuentrecombate)
+- Menú fijo: [`MENÚ FIJO`](./Flujo.md#menú-fijo-accesible-desde-ciudadfueracombate)
 
 Tabla de contenidos
 
 1. Visión general del sistema
-1. Núcleo del dominio
-1. Progresión y atributos
-1. Habilidades (modelo unificado)
-1. Combate (pipeline y estados)
-- Nota: Nuevo `DamagePipeline` disponible en modo sombra (flag `--damage-shadow`) comparando resultados sin alterar gameplay; reemplazo total planificado tras calibración.
-1. Recolección y mundo
-1. Objetos, inventario y comercio
-1. Repositorio jerárquico de equipo (base + overlay)
-1. Misiones y encuentros
-1. Supervivencia (hambre/sed/fatiga/temperatura)
-1. UI y presentación
-1. Datos, validación y guardado
-1. Testing y determinismo
-1. Migración a Unity (consideraciones)
-1. Problemas conocidos y edge cases
-1. Ejemplos prácticos (recetas de uso)
-1. Apéndice de contratos (interfaces y DTOs)
+2. Núcleo del dominio
+3. Progresión y atributos
+4. Habilidades (modelo unificado)
+5. Combate (pipeline y estados)
+6. Recolección y mundo
+7. Objetos, inventario y comercio
+8. Repositorio jerárquico de equipo (base + overlay)
+9. Misiones y encuentros
+10. Supervivencia (hambre/sed/fatiga/temperatura)
+11. UI y presentación
+12. Datos, validación y guardado
+13. Testing y determinismo
+14. Migración a Unity (consideraciones)
+15. Problemas conocidos y edge cases
+16. Ejemplos prácticos (recetas de uso)
+17. Apéndice de contratos (interfaces y DTOs)
+
+Nota: Nuevo `DamagePipeline` disponible en modo sombra (flag `--damage-shadow`) comparando resultados sin alterar gameplay; reemplazo total planificado tras calibración.
 
 ---
 
@@ -175,6 +190,7 @@ Cada rareza se define en dos JSON: `rareza_pesos.json` (peso/frecuencia) y `rare
 Objetivo: unificar la carga de datos de equipo en una capa resiliente y extensible, desacoplando el generador legacy de la estructura física de archivos.
 
 Principios:
+
 - Base recursiva: se recorren carpetas por tipo (ej. `DatosJuego/Equipo/armaduras/**`) aceptando archivos cuya raíz sea objeto o lista.
 - Overlay opcional: archivos en `PjDatos/` (por convención `<tipo>_overlay.json` o `<tipo>s.json`) reemplazan entradas existentes por `Nombre` (case-insensitive) sin modificar la base.
 - Primer archivo base gana: si dos archivos base definen el mismo `Nombre`, se conserva la primera aparición para evitar efectos de orden no deterministas.
@@ -183,10 +199,12 @@ Principios:
 - Fallback seguro: si falta `Rareza` se asigna `Comun`; si faltan rangos de perfección se usan los de la rareza global.
 
 Orden de precedencia:
+
 1. Primer registro válido encontrado en base (por carpeta recursiva).
 2. Overlay (jugador) reemplaza totalmente la entrada por nombre.
 
 Beneficios:
+
 - Fuente única fiable usada por generación, validadores y futuros sistemas (crafteo, economía).
 - Simplifica pruebas: tests de repos no dependen del generador completo.
 - Facilita migración progresiva (se pueden usar repos para piezas ya migradas y legacy para el resto sin romper flujo).
@@ -194,11 +212,13 @@ Beneficios:
 Estado actual (2025-10-01): Migrados `MaterialRepository`, `ArmaRepository`, `ArmaduraRepository`, `BotasRepository`, `CascosRepository`, `CinturonesRepository`, `CollaresRepository` (integrados gradualmente en `GeneradorObjetos.CargarEquipoAuto`). Pendiente migrar: Pantalones, Accesorios, Pociones.
 
 Próximos pasos técnicos:
+
 - Extraer clase base reutilizable (`HierarchicalOverlayRepository<T>`) para factorizar `CargarBase` / `AplicarOverlay` y reducir duplicación.
 - Añadir validador cruzado (rango de perfección coherente, rarezas válidas, nombres duplicados) consolidado.
 - Consolidar logs de rarezas desconocidas (agrupar por rareza y count) para reducir ruido.
 
 Riesgos y mitigación:
+
 - Duplicados en overlay: el último en el mismo archivo ganará; se recomienda validación pre-carga (futuro validador).
 - Cambios masivos de estructura: al ser data-driven, solo requiere agregar archivos; la lógica de repos soporta ambas raíces (objeto/lista) sin modificaciones.
 
@@ -495,12 +515,14 @@ Notas de diseño
 Objetivo: permitir múltiples acciones cortas en un turno (ej. movimiento + ataque + usar poción) sin acelerar exponencialmente la progresión.
 
 Componentes:
+
 - Flag `CombatConfig.ModoAcciones` para activar la lógica PA (OFF → loop legacy intacto).
 - `ActionPointService` (existente) calcula PA inicial por turno: se almacena localmente como `paRestantes`.
 - Extensión mínima de `IAccionCombate`: propiedad opcional `CostoPA` (default=1). Acciones actuales retornan 1 vía wrapper si no implementan.
 - Bucle interno del turno jugador: mientras `paRestantes > 0` mostrar menú reducido (acciones disponibles + opción terminar turno).
 
 Reglas Fase 1:
+
 - Todos los costes = 1. (Futuro: ataque pesado 2, defensa 1, moverse 1, habilidad compleja 2…)
 - Enemigos mantienen 1 acción estándar por turno para estabilidad inicial.
 - Regeneración de maná y avance de efectos/cooldowns ocurren al cerrar el bloque PA, no por cada acción.
@@ -518,14 +540,14 @@ Flujo (pseudocódigo):
 
 | Flag / Param | Tipo | Scope | Descripción | Estado | Plan retiro |
 |--------------|------|-------|-------------|--------|-------------|
-| `--damage-shadow` | CLI | Runtime | Ejecuta nuevo DamagePipeline en paralelo (no afecta gameplay) y registra diferencias. | Estable (shadow) | Cuando `--damage-live` alcance drift <±3% en 3 sesiones.
-| `--damage-live` | CLI | Runtime | Reemplaza cálculo legacy por pipeline nuevo (sin shadow). | Experimental | Al confirmar estabilidad (<±3%) retirar legacy.
-| `--precision-hit` | CLI/Toggle | Combate | Activa chequeo de precisión para ataques físicos. | Opcional | Integrar en balance base tras validación caps.
-| `--penetracion` | CLI/Toggle | Combate | Aplica penetración de defensa previa a mitigaciones. | Parcial | Se vuelve siempre ON tras tuning final.
-| `--combat-verbose` | CLI/Toggle | UI | Mensajes explicativos de cálculo de daño. | Parcial | Integrar nivel detalle configurable.
-| `--shadow-benchmark` | CLI | QA | Corre benchmark sintético comparando legacy vs pipeline. | QA | Retirar tras retirar legacy.
-| `--shadow-sweep` | CLI | QA | Recorre combinaciones CritScaling/FactorPenCrit. | QA | Igual que benchmark.
-| `--test-rareza-meta` | CLI | QA | Ejecuta validaciones de rarezas (precio/fallback). | QA | Mantener como smoke-data.
+| `--damage-shadow` | CLI | Runtime | Ejecuta nuevo DamagePipeline en paralelo (no afecta gameplay) y registra diferencias. | Estable (shadow) | Cuando `--damage-live` alcance drift <±3% en 3 sesiones. |
+| `--damage-live` | CLI | Runtime | Reemplaza cálculo legacy por pipeline nuevo (sin shadow). | Experimental | Al confirmar estabilidad (<±3%) retirar legacy. |
+| `--precision-hit` | CLI/Toggle | Combate | Activa chequeo de precisión para ataques físicos. | Opcional | Integrar en balance base tras validación caps. |
+| `--penetracion` | CLI/Toggle | Combate | Aplica penetración de defensa previa a mitigaciones. | Parcial | Se vuelve siempre ON tras tuning final. |
+| `--combat-verbose` | CLI/Toggle | UI | Mensajes explicativos de cálculo de daño. | Parcial | Integrar nivel detalle configurable. |
+| `--shadow-benchmark` | CLI | QA | Corre benchmark sintético comparando legacy vs pipeline. | QA | Retirar tras retirar legacy. |
+| `--shadow-sweep` | CLI | QA | Recorre combinaciones CritScaling/FactorPenCrit. | QA | Igual que benchmark. |
+| `--test-rareza-meta` | CLI | QA | Ejecuta validaciones de rarezas (precio/fallback). | QA | Mantener como smoke-data. |
 
 Parámetros dinámicos (`CombatConfig` / `CombatBalanceConfig`):
 
@@ -561,7 +583,7 @@ Política temporal:
 
 Motivación: reducir ruido de balance y evitar multiplicación de entries de rareza en configuraciones.
 
-6. Tras salir: procesar efectos, regen maná, turno enemigos.
+1. Tras salir: procesar efectos, regen maná, turno enemigos.
 
 Testing previsto:
 
@@ -642,7 +664,8 @@ Uso: durante ejecución de una acción que marque ventana de interrupción (`ven
 #### 6.2.8 Esquema Extendido `acciones_catalogo.json`
 
 Campos nuevos (todos opcionales para compatibilidad):
-```
+
+```json
 {
   "Id": "Correr",
   "Descripcion": "Moverse rápidamente.",
@@ -669,7 +692,7 @@ Interpretación: Campos ausentes = defaults neutros (p.ej. costePA=1, cualquier 
 
 ComputePA, DamageCalculator y bucle PA se documentaron con ejemplos numéricos en §6.2.3/6.2.4. Bucle PA final:
 
-```
+```text
 pa = ComputePA(pj,cfg)
 while (pa > 0 && enemigosVivos) {
   MostrarAccionesFiltradas(pa, estados, distancia)

@@ -6,6 +6,7 @@ Este documento define, con precisión operativa, los parámetros de balance para
 Referencias cruzadas:
 
 - Arquitectura y pipeline: `./Arquitectura_y_Funcionamiento.md`
+- Flujo de juego (menús y navegación): `./Flujo.md`
 - Pruebas relacionadas: [`MiJuegoRPG.Tests/ProgressionServiceTests.cs`](../../MiJuegoRPG.Tests/ProgressionServiceTests.cs)
 - Servicio: [`ProgressionService`](../Motor/Servicios/ProgressionService.cs)
 

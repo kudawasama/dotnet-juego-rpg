@@ -27,6 +27,7 @@ Total listados: 16
 | Dragón Bebé | 10 | 180 | 40 | 22 | Legendario | Jefe | Dragon | 100 | 80 |
 
 Observaciones:
+
 - Curva de Vida/Daño aumenta de forma escalonada; jefes y élites presentan saltos (checkpoints de progresión).
 - Rarezas no determinan directamente el loot aquí; la escalada se apoya en EXP/Oro.
 - Espacios para futuros biomas: añadir variantes elementales y categorías específicas.
@@ -55,6 +56,7 @@ Ejemplo de gating compuesto: `BAI-ESP-001` requiere completar BAI-REC-002 y BAI-
 Raíz: `DatosJuego/Materiales/` → subcarpetas por especialidad: `Mat_Herrero`, `Mat_Herbolario`, `Mat_Sastre`, `Mat_Curtidor`, `Mat_Ingeniero`, `Mat_Mistico`, (y otras similares si se añaden). Más de 200 definiciones individuales.
 
 Ejemplo (Herrero): `Mineral_de_Hierro.json`
+
 ```json
 { "id": "mineral_de_hierro", "nombre": "Mineral de Hierro", "rareza": "comun", "especialidad": "herrero" }
 ```
@@ -81,6 +83,7 @@ Uso previsto:
 ## 5. Referencias Cruzadas
 
 - Fórmulas, pipeline y PA: ver `Arquitectura_y_Funcionamiento.md` (§3, §5, §6.1, §6.2).
+- Flujo de navegación de menús: `Flujo.md`.
 - Balance y caps: `progression_config.md`.
 - Evolución de sistemas: `Bitacora.md` (entradas por fecha).
 
@@ -193,10 +196,12 @@ Checklist inicial para un `DataValidatorService` extendido:
 ## 16. Biomas (biomas.json)
 
 Biomas definidos (muestra): Bosque Encantado, Bosque, Montaña, Lago, Desierto, Cueva, CuevaProfunda, Cañon, Océano, Océano Lejano, Campo (y continúa en archivo). Cada bioma:
+
 - NodosComunes / NodosRaros: lista de nodos con Materiales (Nombre, Cantidad), cooldown y producción min/max.
 - Campos opcionales: Tipo (Talar/Minar), Requiere (herramienta), Rareza nodal.
 
 Observaciones:
+
 - Duplicidad de ciertos nodos (Piedra Brillante/Cristales) entre Cueva y CuevaProfunda; considerar escalado de cantidades o rareza distinta.
 - Normalizar acentos / nombres para slug (`BosqueEncantado`, `Cueva_Profunda`).
 - Integrar peso de aparición para spawn procedural (aún no existe campo `Peso`).
@@ -204,6 +209,7 @@ Observaciones:
 ## 17. Progresión (progression.json)
 
 Claves:
+
 - Exp base (Recolección/Entrenamiento/Exploración) y escalados >1 para costo incremental.
 - Índices de atributos (Fuerza 3.0, Inteligencia 8.0, etc.) sugieren coste relativo para subirlos.
 - Regen de Maná en combate y fuera con base + factor + límite por tick/turno.
@@ -222,6 +228,7 @@ Contrato propuesto fórmula:
 Define umbrales globales [-100,-50,0,50,100] y por facción (Guardia de Bairan, Gremio de Ladrones) con mensajes por tramo.
 
 Faltantes:
+
 - No hay escalado numérico de efectos (descuentos, agresividad); sólo flavor text.
 - Recomendado: añadir `Efectos` (ej. `{ "DescuentoComercio": 0.05 }`) por umbral.
 
@@ -234,12 +241,14 @@ Parámetros ya descritos en secciones previas (PA, crítico, penetración, flags
 Pesos: Rota 20, Pobre 35, Normal 50, Superior 10, Rara 3, Epica 2, Legendaria 1, Ornamentada 0.1 (suma > 121.1 → se normaliza en carga). Perfección por rareza escalonada en bloques no uniformes.
 
 Pendientes:
+
 - Añadir documentación para derivar `Probabilidad = peso / Σ` y validación de monotonía de rangos (sin superposiciones).
 - Considerar rareza “Unica” vs. “Legendaria/Ornamentada” si aparece en otros datasets (clases la usan, falta en pesos).
 
-## 22. Crafteo (crafteo/recetas.json + Recetas<Especialidad>.json)
+## 22. Crafteo (crafteo/recetas.json + Recetas por Especialidad)
 
 `recetas.json` vacío (placeholder). Archivos específicos por especialidad con formato aún no revisado (no cargado aquí). Acciones:
+
 1. Consolidar esquema común (Inputs[], Output, Tiempo, Herramienta, Estacion, Experiencia).
 2. Validar que cada material referenciado exista.
 3. Integrar coste de energía usando `energia.json`.
@@ -249,6 +258,7 @@ Pendientes:
 Listado de 10 eventos (Festival, Invasión, Ruinas, Mercado Nocturno, Duelo, Tesoro, Rescate, Meteorito, Fiesta Cosecha, Portal). Campos: Id, Tipo, Categoria, Rareza, Unico, Mision (opcional).
 
 Observaciones:
+
 - Rarezas usan acentos inconsistentes ("Épico" vs `Epica` en otras partes) → normalizar.
 - Falta ventana temporal / condiciones de aparición (hora, bioma, reputación mínima).
 
@@ -257,6 +267,7 @@ Observaciones:
 Archivo con duplicado de “Poción Pequeña”. Requiere desduplicación e inclusión de identificador (`Id`). Campos mínimos actuales: Nombre, Curacion, Rareza, Categoria.
 
 Recomendado:
+
 - Añadir `Cooldown`, `StackMax`, `CostoEconomiaBase` y `EfectosSecundarios`.
 - Normalizar rarezas a minúsculas y catálogo central.
 
@@ -265,6 +276,7 @@ Recomendado:
 Subcarpetas `basicas`, `avanzadas`, `especiales` con pares `<nombre>.json` y `<nombre>_dinamico.json`. Objetivo: override condicional (misiones, reputación) sin editar base.
 
 Pendiente establecer regla de fusión:
+
 1. Cargar base.
 2. Si existe `_dinamico`, aplicar diff (sólo campos presentes) conservando ausentes.
 3. Registrar en log campos sobreescritos.

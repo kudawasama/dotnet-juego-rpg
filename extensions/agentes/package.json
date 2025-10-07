@@ -1,0 +1,35 @@
+{
+  "name": "agentes-juego-rpg",
+  "displayName": "Agentes Juego RPG",
+  "description": "Comandos rápidos para prompts especializados (@AgenteCombate, Datos, Tests, Infra, Review)",
+  "version": "0.0.1",
+  "publisher": "local-dev",
+  "engines": { "vscode": ">=1.85.0" },
+  "categories": ["Other"],
+  "activationEvents": [
+    "onCommand:agentes.promptCombate",
+    "onCommand:agentes.promptDatos",
+    "onCommand:agentes.promptTests",
+    "onCommand:agentes.promptInfra",
+    "onCommand:agentes.promptReview"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "commands": [
+      { "command": "agentes.promptCombate", "title": "Agente: Prompt Combate" },
+      { "command": "agentes.promptDatos", "title": "Agente: Prompt Datos" },
+      { "command": "agentes.promptTests", "title": "Agente: Prompt Tests" },
+      { "command": "agentes.promptInfra", "title": "Agente: Prompt Infra" },
+      { "command": "agentes.promptReview", "title": "Agente: Prompt Review" }
+    ]
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.85.0",
+    "typescript": "^5.4.0",
+    "esbuild": "^0.21.0"
+  },
+  "scripts": {
+    "build": "node ./scripts/build.mjs",
+    "watch": "node ./scripts/build.mjs --watch"
+  }
+}

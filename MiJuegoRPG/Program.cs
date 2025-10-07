@@ -1,31 +1,25 @@
-﻿using MiJuegoRPG.Motor;
-using MiJuegoRPG.Interfaces;
-using System;
+﻿using System;
 using System.IO;
 using System.Text.Json;
 using MiJuegoRPG.Herramientas;
+using MiJuegoRPG.Interfaces;
+using MiJuegoRPG.Motor;
 using MiJuegoRPG.Motor.Servicios;
 using MiJuegoRPG.Objetos;
 
-// Bandera global para activar el chequeo de precisión (hit chance)
-public static class GameplayToggles
+internal class Program
 {
-    public static bool PrecisionCheckEnabled = false;
-    // Toggle para activar la penetración en el pipeline (no intrusivo por defecto)
-    public static bool PenetracionEnabled = false;
-    // Toggle de verbosidad de combate (muestra detalle didáctico del cálculo)
-    public static bool CombatVerbose = false;
-}
-
-class Program
-{
-    static void Main(string[] args)
+    private static void Main(string[] args)
     {
         // Flags de logging: --log-off o --log-level=debug|info|warn|error|off
         bool salirTrasHerramientas = false; // permite salir tras ejecutar ciertas herramientas CLI
 
         // Paso 0: procesar flags de salida temprana (help, tests, benchmarks) antes de cargar nada pesado
-        if (ProcesarFlagsTempranos(args)) return;
+        if (ProcesarFlagsTempranos(args))
+        {
+            return;
+        }
+
         try
         {
             if (args != null && args.Length > 0)
@@ -41,7 +35,9 @@ class Program
                 {
                     // Early flags ya procesados en ProcesarFlagsTempranos (shadow-benchmark / test-rareza-meta)
                     if (a.StartsWith("--shadow-benchmark", StringComparison.OrdinalIgnoreCase) || string.Equals(a, "--test-rareza-meta", StringComparison.OrdinalIgnoreCase))
+                    {
                         continue;
+                    }
 
                     if (string.Equals(a, "--precision-hit", StringComparison.OrdinalIgnoreCase))
                     {
@@ -64,9 +60,10 @@ class Program
                     {
                         var cfg = CombatConfig.LoadOrDefault();
                         cfg.UseNewDamagePipelineLive = true;
+
                         // Activar también shadow para telemetría comparativa residual hasta retirar legacy
                         cfg.UseNewDamagePipelineShadow = false; // evitar doble cálculo innecesario
-                        Console.WriteLine("[Pipeline] MODO LIVE ACTIVADO (experimental)." );
+                        Console.WriteLine("[Pipeline] MODO LIVE ACTIVADO (experimental).");
                     }
                     else if (string.Equals(a, "--log-off", StringComparison.OrdinalIgnoreCase))
                     {
@@ -167,9 +164,17 @@ class Program
                             {
                                 var val = a.Substring("--asignar-biomas=".Length).Trim();
                                 var partes = val.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-                                if (partes.Length >= 1 && int.TryParse(partes[0], out int tmpOl)) ol = Math.Max(0, tmpOl);
-                                if (partes.Length >= 2 && int.TryParse(partes[1], out int tmpOc)) oc = Math.Max(0, tmpOc);
+                                if (partes.Length >= 1 && int.TryParse(partes[0], out int tmpOl))
+                                {
+                                    ol = Math.Max(0, tmpOl);
+                                }
+
+                                if (partes.Length >= 2 && int.TryParse(partes[1], out int tmpOc))
+                                {
+                                    oc = Math.Max(0, tmpOc);
+                                }
                             }
+
                             var mapaTxt = PathProvider.MapaTxtPath();
                             var sectoresDir = PathProvider.SectoresDir();
                             Console.WriteLine($"[INIT] Asignando biomas por bandas (OL={ol}, O={oc})");
@@ -188,15 +193,26 @@ class Program
                             if (a.StartsWith("--hidratar-nodos=", StringComparison.OrdinalIgnoreCase))
                             {
                                 var val = a.Substring("--hidratar-nodos=".Length).Trim();
-                                if (int.TryParse(val, out int tmp)) max = Math.Clamp(tmp, 1, 12);
+                                if (int.TryParse(val, out int tmp))
+                                {
+                                    max = Math.Clamp(tmp, 1, 12);
+                                }
                             }
+
                             // Asegurar biomas cargados antes de hidratar
                             var rutaBiomas = PathProvider.CombineData("biomas.json");
                             if (File.Exists(rutaBiomas))
                             {
-                                try { TablaBiomas.CargarDesdeJson(rutaBiomas); }
-                                catch (Exception ex) { Console.WriteLine($"[WARN] No se pudieron cargar biomas: {ex.Message}"); }
+                                try
+                                {
+                                    TablaBiomas.CargarDesdeJson(rutaBiomas);
+                                }
+                                catch (Exception ex)
+                                {
+                                    Console.WriteLine($"[WARN] No se pudieron cargar biomas: {ex.Message}");
+                                }
                             }
+
                             var sectoresDir = PathProvider.SectoresDir();
                             Console.WriteLine($"[INIT] Hidratando nodos en: {sectoresDir} (max={max})");
                             MiJuegoRPG.Herramientas.HidratadorNodos.HidratarDesdeBiomas(sectoresDir, max);
@@ -212,19 +228,25 @@ class Program
                         {
                             var val = a.Substring("--reparar-materiales=".Length).Trim();
                             var partes = val.Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-                            bool write = false; string? ruta = null;
+                            bool write = false;
+                            string? ruta = null;
                             if (partes.Length >= 1)
                             {
                                 write = string.Equals(partes[0], "write", StringComparison.OrdinalIgnoreCase) ? true : false;
                             }
+
                             if (partes.Length >= 2)
                             {
                                 ruta = partes[1];
                             }
+
                             var res = MiJuegoRPG.Herramientas.ReparadorMateriales.Reparar(write, ruta);
                             Console.WriteLine($"[ReparadorMateriales] {(write ? "WRITE" : "DRY-RUN")} done → sectores={res.SectoresEscaneados}, modificados={res.SectoresModificados}, nodos={res.NodosAfectados}, materialesEliminados={res.MaterialesEliminados}, listasNormalizadas={res.ListasNullNormalizadas}");
                             if (!string.IsNullOrWhiteSpace(res.ReportePath))
+                            {
                                 Console.WriteLine($"Reporte: {res.ReportePath}");
+                            }
+
                             // Salir tras completar esta herramienta para evitar entrar al juego en modo interactivo
                             salirTrasHerramientas = true;
                         }
@@ -248,35 +270,47 @@ class Program
                             Console.WriteLine($"[ERROR] Migración de equipo falló: {e.Message}");
                             salirTrasHerramientas = true;
                         }
+
                         continue;
                     }
                 }
             }
         }
-        catch { /* best-effort: flags no críticos */ }
+        catch
+        {
+            // best-effort: flags no críticos
+        }
+
         // Si se solicitó salir tras ejecutar herramientas, terminar aquí
-        if (salirTrasHerramientas) return;
+        if (salirTrasHerramientas)
+        {
+            return;
+        }
+
         // Mostrar estado de la bandera de precisión si está activa
         if (GameplayToggles.PrecisionCheckEnabled)
         {
             Console.WriteLine("[INFO] Chequeo de precisión ACTIVADO (--precision-hit)");
         }
+
         // Mostrar estado de penetración si está activo
         if (GameplayToggles.PenetracionEnabled)
         {
             Console.WriteLine("[INFO] Penetración ACTIVADA (--penetracion)");
         }
+
         // Mostrar estado de verbosidad de combate si está activo
         if (GameplayToggles.CombatVerbose)
         {
             Console.WriteLine("[INFO] Verbosidad de Combate ACTIVADA (--combat-verbose)");
         }
+
         // Genera todos los archivos de regiones del mapa automáticamente al inicio
-        //GeneradorSectores.CrearMapaCompleto(@"C:\Users\ASUS\OneDrive\Documentos\GitHub\dotnet-juego-rpg\MiJuegoRPG\DatosJuego\mapa\SectoresMapa");
+        // GeneradorSectores.CrearMapaCompleto(@"C:\Users\ASUS\OneDrive\Documentos\GitHub\dotnet-juego-rpg\MiJuegoRPG\DatosJuego\mapa\SectoresMapa");
 
         // Cambia la ruta según la ubicación real de tus sectores
-        //string rutaSectores = @"c:\Users\jose.cespedes\Documents\GitHub\dotnet-juego-rpg\MiJuegoRPG\DatosJuego\mapa\SectoresMapa";
-        //ValidadorSectores.ValidarSectores(rutaSectores);
+        // string rutaSectores = @"c:\Users\jose.cespedes\Documents\GitHub\dotnet-juego-rpg\MiJuegoRPG\DatosJuego\mapa\SectoresMapa";
+        // ValidadorSectores.ValidarSectores(rutaSectores);
 
         // Cargar biomas desde datos (best-effort, para recolección por bioma y herramientas)
         try
@@ -320,7 +354,7 @@ class Program
             }
         }
 
-    // Aquí puedes agregar la lógica para iniciar el juego
+        // Aquí puedes agregar la lógica para iniciar el juego
         try
         {
             Juego juego = new Juego();
@@ -343,6 +377,7 @@ class Program
                         ui.WriteLine("No se pudo cargar el personaje. Se creará uno nuevo.");
                         juego.CrearPersonaje();
                     }
+
                     break;
                 case "1":
                     juego.CrearPersonaje();
@@ -371,6 +406,7 @@ class Program
             {
                 ui.WriteLine("No hay personaje para guardar.");
             }
+
             ui.WriteLine("Presiona cualquier tecla para salir...");
             MiJuegoRPG.Motor.InputService.Pausa();
         }
@@ -380,6 +416,7 @@ class Program
             Console.WriteLine("Presiona cualquier tecla para salir...");
             Console.ReadKey();
         }
+
         // Al terminar la ejecución interactiva, si el pipeline shadow estuvo activo (y no live) mostrar resumen agregado.
         var cfgFinal = CombatConfig.LoadOrDefault();
         if (cfgFinal.UseNewDamagePipelineShadow && !cfgFinal.UseNewDamagePipelineLive)
@@ -387,9 +424,15 @@ class Program
             Console.WriteLine(MiJuegoRPG.Motor.Servicios.DamageResolver.ObtenerResumenShadow(reset: true));
         }
     }
-    public static void InicializarRarezasSiNecesario()
+
+    // Hacer privada para cumplir el orden de miembros (públicos antes que privados)
+    private static void InicializarRarezasSiNecesario()
     {
-        if (RarezaConfig.Instancia != null) return;
+        if (RarezaConfig.Instancia != null)
+        {
+            return;
+        }
+
         try
         {
             var cfg = new RarezaConfig();
@@ -409,7 +452,11 @@ class Program
 
     private static bool ProcesarFlagsTempranos(string[] args)
     {
-        if (args == null || args.Length == 0) return false;
+        if (args == null || args.Length == 0)
+        {
+            return false;
+        }
+
         foreach (var a in args)
         {
             if (string.Equals(a, "--help", StringComparison.OrdinalIgnoreCase) || string.Equals(a, "-h", StringComparison.OrdinalIgnoreCase))
@@ -417,40 +464,69 @@ class Program
                 // Dejar que la lógica normal imprima help (no early return aquí para no duplicar)
                 return false;
             }
+
             if (a.StartsWith("--shadow-sweep", StringComparison.OrdinalIgnoreCase))
             {
                 int n = 300;
                 if (a.StartsWith("--shadow-sweep=", StringComparison.OrdinalIgnoreCase))
                 {
                     var val = a.Substring("--shadow-sweep=".Length).Trim();
-                    if (int.TryParse(val, out var parsed)) n = Math.Clamp(parsed, 50, 5000);
+                    if (int.TryParse(val, out var parsed))
+                    {
+                        n = Math.Clamp(parsed, 50, 5000);
+                    }
                 }
+
                 Console.WriteLine("[Sweep] Iniciando sweep shadow (F in {0.60,0.65,0.70} x PenCrit in {0.75,0.80})...");
-                MiJuegoRPG.Motor.TestShadowBenchmark.Sweep(n, 100, 50, 0.10, 0.20, 0.40, CombatConfig.LoadOrDefault().CritMultiplier,
-                    new double[]{0.60,0.65,0.70}, new double[]{0.75,0.80});
+                MiJuegoRPG.Motor.TestShadowBenchmark.Sweep(
+                    n,
+                    100,
+                    50,
+                    0.10,
+                    0.20,
+                    0.40,
+                    CombatConfig.LoadOrDefault().CritMultiplier,
+                    new double[] { 0.60, 0.65, 0.70 },
+                    new double[] { 0.75, 0.80 });
                 Console.WriteLine("[Sweep] Fin.");
                 return true;
             }
+
             if (a.StartsWith("--shadow-benchmark", StringComparison.OrdinalIgnoreCase))
             {
                 int n = 100;
                 if (a.StartsWith("--shadow-benchmark=", StringComparison.OrdinalIgnoreCase))
                 {
                     var val = a.Substring("--shadow-benchmark=".Length).Trim();
-                    if (int.TryParse(val, out var parsed)) n = Math.Clamp(parsed, 10, 10000);
+                    if (int.TryParse(val, out var parsed))
+                    {
+                        n = Math.Clamp(parsed, 10, 10000);
+                    }
                 }
+
                 Console.WriteLine("[Benchmark] Iniciando benchmark shadow...");
                 MiJuegoRPG.Motor.TestShadowBenchmark.Run(n);
                 Console.WriteLine("[Benchmark] Fin.");
                 return true;
             }
+
             if (string.Equals(a, "--test-rareza-meta", StringComparison.OrdinalIgnoreCase))
             {
                 InicializarRarezasSiNecesario();
                 MiJuegoRPG.Motor.TestRarezaMeta.Probar();
                 return true;
             }
+
+            if (string.Equals(a, "--smoke-combate", StringComparison.OrdinalIgnoreCase))
+            {
+                // Ejecuta un recorrido mínimo de combate y sale sin entrar a UI
+                var code = MiJuegoRPG.Motor.Servicios.SmokeRunner.RunCombateSmoke();
+
+                // Devuelve true para cortar la ejecución normal
+                return true;
+            }
         }
+
         return false;
     }
 
@@ -459,21 +535,22 @@ class Program
         Console.WriteLine("Opciones CLI disponibles:\n");
         Console.WriteLine("  --help | -h                Muestra esta ayuda.");
         Console.WriteLine("  --precision-hit            Activa chequeo de precisión en ataques físicos.");
-        Console.WriteLine("  --penetracion              Activa penetración (reduce defensa efectiva)." );
+        Console.WriteLine("  --penetracion              Activa penetración (reduce defensa efectiva).");
         Console.WriteLine("  --combat-verbose           Muestra desglose detallado del cálculo de daño.");
-        Console.WriteLine("  --damage-shadow            Ejecuta DamagePipeline en modo sombra (comparativo)." );
-    Console.WriteLine("  --damage-live              (Experimental) Reemplaza cálculo legacy por nuevo pipeline." );
-        Console.WriteLine("  --shadow-benchmark[=N]     Ejecuta benchmark sintético (N por defecto 100) y sale." );
-    Console.WriteLine("  --shadow-sweep[=N]         Ejecuta barrido tuning (F x PenCrit) N muestras por combinación y sale." );
+        Console.WriteLine("  --damage-shadow            Ejecuta DamagePipeline en modo sombra (comparativo).");
+        Console.WriteLine("  --damage-live              (Experimental) Reemplaza cálculo legacy por nuevo pipeline.");
+        Console.WriteLine("  --shadow-benchmark[=N]     Ejecuta benchmark sintético (N por defecto 100) y sale.");
+        Console.WriteLine("  --shadow-sweep[=N]         Ejecuta barrido tuning (F x PenCrit) N muestras por combinación y sale.");
         Console.WriteLine("  --test-rareza-meta         Ejecuta pruebas manuales de RarezaMeta y sale.");
+        Console.WriteLine("  --smoke-combate            Recorre crear PJ básico -> 1 encuentro simple -> 1 ataque y sale.");
         Console.WriteLine("  --log-off                  Desactiva logger al inicio.");
         Console.WriteLine("  --log-level=debug|info|warn|error|off  Ajusta nivel de log.");
-        Console.WriteLine("  --validar-datos[=report|ruta]  Valida referencias básicas (opcional genera reporte)." );
+        Console.WriteLine("  --validar-datos[=report|ruta]  Valida referencias básicas (opcional genera reporte).");
         Console.WriteLine("  --generar-conexiones       Genera conexiones a partir de mapa base.");
         Console.WriteLine("  --validar-sectores         Valida consistencia de sectores.");
         Console.WriteLine("  --normalizar-conexiones    Fuerza bidireccionalidad de conexiones.");
-        Console.WriteLine("  --asignar-biomas[=OL,OC]   Asigna biomas por bandas (overlap lineal y columnas)." );
-        Console.WriteLine("  --hidratar-nodos[=N]       Pobla nodos de recolección (default 5, máx 12)." );
+        Console.WriteLine("  --asignar-biomas[=OL,OC]   Asigna biomas por bandas (overlap lineal y columnas).");
+        Console.WriteLine("  --hidratar-nodos[=N]       Pobla nodos de recolección (default 5, máx 12).");
         Console.WriteLine("  --reparar-materiales=report[;ruta]  Reporta materiales inválidos.");
         Console.WriteLine("  --reparar-materiales=write[;ruta]   Repara eliminando materiales inválidos.");
         Console.WriteLine("  --migrar-equipo=report|write       Divide JSON agregados de equipo en uno por ítem.");

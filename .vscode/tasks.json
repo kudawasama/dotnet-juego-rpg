@@ -306,6 +306,37 @@
 				"$msbuild"
 			],
 			"group": "build"
+		},
+		{
+			"label": "format-whitespace-GeneradorDeObjetos",
+			"type": "shell",
+			"command": "dotnet format whitespace --include MiJuegoRPG\\Motor\\GeneradorDeObjetos.cs"
+		},
+		{
+			"label": "Build .NET project (MenuAdmin opt 22)",
+			"type": "shell",
+			"command": "dotnet build",
+			"args": [],
+			"group": "build"
+		},
+		{
+			"label": "Build .NET project",
+			"type": "shell",
+			"command": "dotnet build",
+			"group": "build"
+		},
+		{
+			"label": "Build .NET project (MenuAdmin opt 22)",
+			"type": "shell",
+			"command": "dotnet build",
+			"args": [],
+			"group": "build"
+		},
+		{
+			"label": "Build .NET project",
+			"type": "shell",
+			"command": "dotnet build",
+			"group": "build"
 		}
 	]
 }
