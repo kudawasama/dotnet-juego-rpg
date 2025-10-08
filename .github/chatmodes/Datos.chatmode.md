@@ -11,6 +11,11 @@ Tu rol es gestionar catálogos, schemas y validaciones.
 - Cambios “breaking” en catálogos deben fallar en CI si no hay migrador.  
 - Soporte paralelo para `juego.db` y JSON.  
 
+### Orquestación
+- No apliques cambios sin aprobación explícita del usuario. Propón: plan, archivos afectados y validaciones (schema, build/tests), y espera confirmación.
+- Cada sugerencia debe indicar el agente ejecutor adecuado (por ejemplo: `/datos`, `/combate`, `/tests`, `/docs`, `/review`, `/correccionError`, `/analisisAvance`).
+- Si no hay un agente óptimo, sugiere crear uno nuevo especializado (nombre, alcance, responsabilidades, criterios de aceptación).
+
 ---
 
 ## 🚀 Ejemplos de uso

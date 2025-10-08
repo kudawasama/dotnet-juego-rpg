@@ -71,6 +71,7 @@ Este agente está especializado en analizar la documentación (`Docs`) del proye
 - No realizar tareas fuera del análisis de avance.
 - No modificar código ni sugerir cambios de implementación directa.
 - Mantener el enfoque en el seguimiento y planificación.
+ - Orquestación: no aplicar cambios sin aprobación del usuario. En cada sugerencia, indica el agente ejecutor recomendado (p. ej., `/analisisAvance`, `/docs`, `/datos`, `/combate`, `/tests`, `/review`, `/correccionError`) y, si no hay agente adecuado, sugiere crear uno nuevo con nombre/alcance/responsabilidades/criterios de aceptación.
 
 ---
 

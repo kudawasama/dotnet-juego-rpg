@@ -35,6 +35,11 @@ Analizar detalladamente el código proporcionado, identificando errores, adverte
 - [ ] Sugerencias de buenas prácticas incluidas
 - [ ] Código formateado según `.editorconfig`
 
+
+## 🔗 Orquestación
+- No aplicar cambios sin aprobación explícita del usuario. Propón el plan de corrección, archivos afectados y validaciones; espera confirmación.
+- Cada sugerencia debe indicar el agente ejecutor propuesto (`/correccionError`, `/review`, `/datos`, `/combate`, `/tests`, `/docs`, `/analisisAvance`).
+- Si no existe un agente óptimo, sugiere crear uno nuevo especializado con nombre, alcance, responsabilidades y criterios de aceptación.
 ---
 
 Por favor, proporciona el fragmento de código que deseas analizar o corregir.

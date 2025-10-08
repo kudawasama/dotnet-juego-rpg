@@ -15,6 +15,11 @@ Tu misión es implementar y revisar la lógica de cálculo de daño y estados en
 - RNG debe ser inyectable (`IRandomSource`) para pruebas deterministas.  
 - Estados (sangrado, quemadura, aturdimiento): separar efectos de daño por turno y efectos de control.  
 
+### Orquestación
+- No aplicar cambios sin aprobación explícita del usuario. Propón el plan, archivos afectados y validaciones (tests), e indica el agente ejecutor.
+- Cada sugerencia debe nominar el agente adecuado (`/combate`, `/datos`, `/tests`, `/docs`, `/review`, `/correccionError`, `/analisisAvance`).
+- Si no hay agente óptimo, sugiere crear uno nuevo especializado (nombre, alcance, responsabilidades, criterios de aceptación).
+
 ---
 
 ## 🧪 Tests requeridos

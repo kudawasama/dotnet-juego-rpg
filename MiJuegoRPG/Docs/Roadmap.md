@@ -20,9 +20,11 @@ Durabilidad & Reparación | Pendiente | 2025-09-30 | No implementado; ligado a e
 Supervivencia (sistemas base) | Parcial | 2025-09-29 | Config + factores penalización; falta cableado ticks y consumos (27.x).
 Acciones de Combate avanzadas (estados/bleed/stun) | Pendiente | 2025-09-30 | IEfecto veneno listo; faltan nuevos efectos y stacking.
 Migración Unity (infra preparación) | Pendiente | 2025-09-30 | Separación dominio/UI parcial; faltan adaptadores y conversión JSON→SO.
-Combate por Acciones (PA) Fase 1 | Planificación | 2025-10-01 | Documentación técnica completa (fórmulas PA, pipeline, reacciones, esquema acciones). Implementación loop pendiente (flag `ModoAcciones`). (Sin impacto por rollback del DamagePipeline).
-Combate por Acciones (PA) Fase 2 | Pendiente | 2025-10-01 | Iniciativa/cola, coste variable, acciones defensivas y posicionamiento.
-Combate por Acciones (PA) Fase 3 | Pendiente | 2025-10-01 | Integrar efectos avanzados, Stamina/Poise y priorización táctica IA.
+Combate por Acciones (PA) Fase 1 | En curso | 2025-10-08 | PA es el modelo principal: loop por acciones con costes; acumulación oculta para perfilar estilo. Acciones catálogo en `DatosJuego/acciones/acciones_catalogo.json`.
+Combate por Acciones (PA) Fase 2 | Planificación | 2025-10-08 | Iniciativa/cola dinámica, acciones defensivas y posicionamiento; hint UI sutil.
+Combate por Acciones (PA) Fase 3 | Pendiente | 2025-10-08 | Integrar efectos avanzados, Stamina/Poise y priorización táctica IA.
+Capas de progresión por acciones → Habilidades/Clases | Planificación | 2025-10-08 | Acciones acumulan progreso oculto; desbloquean/evolucionan habilidades y títulos. Clases/profesiones ligadas a NPC/Misiones y estilo.
+Adaptación Comercio/Objetos/Enemigos | Planificación | 2025-10-08 | Alinear precios, loot y comportamientos al sistema de acciones y estilos.
 Limpieza StyleCop focalizada (Program/SmokeRunner) | Hecho | 2025-10-07 | Separado `GameplayToggles` (SA1402/SA1649) y fixes SA1503/SA1028. Ver Bitácora 2025‑10‑07.
 
 > Esta tabla resume el estado por feature de alto nivel. El contenido posterior conserva detalle histórico y granular (legado). Cuando se actualice una feature, modificar SOLO esta tabla y, si la implementación es significativa, añadir entrada en Bitácora.

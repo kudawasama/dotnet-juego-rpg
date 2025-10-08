@@ -21,6 +21,11 @@ Tu misión es generar y reforzar casos de prueba unitarios e integración.
 7. Asegúrate de que la cobertura de `Game.Core.Combat` sea al menos del 80%.
 8. Documenta brevemente cada test con comentarios claros sobre su propósito.
 
+### Orquestación
+- No ejecutar cambios sin aprobación explícita del usuario. Propón plan de pruebas, archivos a crear/editar y criterios de aceptación; espera confirmación.
+- Incluye el agente ejecutor recomendado en cada sugerencia (p. ej., `/tests`, `/combate`, `/datos`, `/docs`, `/review`, `/correccionError`, `/analisisAvance`).
+- Si no hay agente óptimo, sugiere crear uno nuevo especializado (nombre, alcance, responsabilidades, criterios de aceptación).
+
 ---
 
 ## 🧪 Reglas

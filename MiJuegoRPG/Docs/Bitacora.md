@@ -1,6 +1,105 @@
 
 # Bitácora de Cambios (Consolidada)
 
+## 2025-10-08 — Inyección ActionPoints en progression.json + Orquestación de Agentes
+
+Contexto: establecer base de Puntos de Acción (PA) en datos, sin alterar gameplay todavía; y formalizar la política de orquestación: MiJuego propone y coordina, el Agente Maestro (usuario) aprueba/ejecuta.
+
+### Cambios clave — 2025-10-08 (AP + Orquestación)
+
+- Se agregó el bloque `ActionPoints` a `MiJuegoRPG/DatosJuego/progression.json` con parámetros: `BasePA=3`, `PAMax=6`, `DivAgi=30`, `DivDex=40`, `DivNivel=10`.
+- Se actualizaron chatmodes para orquestación: todas las sugerencias deben nominar agente ejecutor; si no existe uno óptimo, proponer crear agente especializado. MiJuego no edita ni aplica cambios sin aprobación explícita.
+- Sin cambios de código de gameplay; preparación para introducir `ActionPointService` en próximos pasos.
+
+### Archivos afectados (resumen) — 2025-10-08
+
+| Archivo | Tipo | Motivo del cambio |
+|---|---|---|
+| `MiJuegoRPG/DatosJuego/progression.json` | datos | Agregar bloque `ActionPoints` (base de PA en datos, data-driven). |
+| `.github/chatmodes/MIJuego.chatmode.md` | docs/config agentes | Instrucción: MiJuego propone y orquesta; no aplica cambios sin aprobación. |
+| `.github/chatmodes/Datos.chatmode.md` | docs/config agentes | Orquestación: nominar agente ejecutor, no auto-aplicar; sugerir crear agente si falta. |
+| `.github/chatmodes/Docs.chatmode.md` | docs/config agentes | Igual política de orquestación y aprobación. |
+| `.github/chatmodes/Combate.chatmode.md` | docs/config agentes | Igual política de orquestación y aprobación. |
+| `.github/chatmodes/Review.chatmode.md` | docs/config agentes | Igual política de orquestación y aprobación. |
+| `.github/chatmodes/Tests.chatmode.md` | docs/config agentes | Igual política de orquestación y aprobación. |
+| `.github/chatmodes/CorreccionError.chatmode.md` | docs/config agentes | Igual política de orquestación y aprobación. |
+| `.github/chatmodes/AnalisisAvance.chatmode.md` | docs/config agentes | Igual política de orquestación y aprobación. |
+
+### Decisiones técnicas — 2025-10-08
+
+- Primero datos, luego servicios: establecer contrato en `progression.json` permite iterar sin romper compatibilidad ni tocar el loop actual.
+- Política de seguridad: ningún agente aplica cambios sin tu aprobación; MiJuego actúa como planificador central y nombra agentes ejecutores.
+
+### Impacto funcional — 2025-10-08
+
+- Base de PA documentada en datos. Gameplay actual no cambia aún.
+- Flujo de trabajo de agentes más seguro y trazable.
+
+### Validación (Quality Gates) — 2025-10-08
+
+- Build: PASS (dotnet build) — sin cambios de código.
+- Tests: PASS — 127/127 (dotnet test). Evidencia reciente en terminal: restauración y ejecución completas.
+- Lint/Análisis: N/A para datos; chatmodes actualizados (markdown simple).
+
+### Requisitos cubiertos — 2025-10-08
+
+- “Inyectar ActionPoints en progression.json” → Hecho. Validado con suite completa en verde.
+- “Restringir MiJuego a proponer/orquestar y exigir nominación de agente ejecutor” → Hecho. Chatmodes actualizados.
+
+### Próximos pasos — 2025-10-08 (AP + Orquestación)
+
+1) Combat → Crear `ActionPointService` con `ComputePA` configurable (usa `progression.json/ActionPoints`; clamp a [1, PAMax]; sin tocar el loop).
+2) Tests → Agregar `ActionPointServiceTests` (inicio/late/borde; valida clamp y aportes por Agilidad/Destreza/Nivel).
+3) Docs → Actualizar `Docs/progression_config.md` y `Docs/Roadmap.md` (estado: ActionPoints en datos “Hecho”; servicio “Pendiente”).
+
+
+## 2025-10-08 — Documento de Visión de Juego (North Star)
+
+Contexto: centralizar la intención creativa y técnica del juego para alinear decisiones de diseño, datos y código y facilitar la futura migración a Unity.
+
+### Cambios clave — 2025-10-08
+
+- Nuevo documento `Docs/Vision_de_Juego.md` con pilares, fantasía del jugador, economía, principios técnicos, contratos mínimos (RNG/PA/resultado de daño), heurísticas y métricas de balance.
+- `Docs/README.md`: agregado enlace en el índice principal.
+
+### Impacto — 2025-10-08
+
+- Punto de referencia único para priorizar features y evaluar trade-offs sin dispersión.
+- Acelera onboarding y reduce ambigüedad entre diseño y ejecución técnica.
+
+### Validación — 2025-10-08
+
+- Documentación compila (mdlint): headings y listas formateadas; enlaces locales verificados.
+
+### Próximos pasos — 2025-10-08
+
+- Revisar `Arquitectura_y_Funcionamiento.md` para referenciar secciones de la visión donde aplique (combate, economía, progresión).
+- Mantener sincronía Roadmap ↔ Visión para evitar desalineación.
+
+## 2025-10-08 — Cambio de paradigma: Combate por Acciones (PA) como modelo principal
+
+Contexto: se decide reemplazar el esquema por turnos por un sistema de acciones encadenadas y dinámicas. Las acciones se acumulan de forma oculta para perfilar el estilo del jugador. Este cambio afecta combate, progresión, habilidades/clases, economía, objetos y enemigos.
+
+### Cambios de documentación — 2025-10-08
+
+- Roadmap actualizado: PA Fase 1 pasa a “En curso”; se agregan filas para “Capas de progresión por acciones → Habilidades/Clases” y “Adaptación Comercio/Objetos/Enemigos”.
+- Visión actualizada: PA pasa de “futuro” a “modelo principal”; se documenta acumulación oculta y ejemplos de evolución por uso (p.ej., Correr+Empujar → Embestida).
+- Referencia de catálogo de acciones: `DatosJuego/acciones/acciones_catalogo.json` como fuente actual de acciones consideradas.
+
+### Impacto esperado — 2025-10-08
+
+- Combate dinámico y estratégico: cada acción tiene coste y oportunidad; se incentiva la planificación.
+- Progresión por uso: habilidades que evolucionan/desbloquean por acciones realizadas; títulos por maestría.
+- Clases/profesiones: gating por NPC/Misiones/estilo; integración con reputación.
+- Economía/objetos/enemigos: re-balance necesario para costes, loot y comportamientos acorde al nuevo flujo.
+
+### Próximas tareas — 2025-10-08
+
+- Definir costos PA por acción base y caps iniciales.
+- Diseñar mapeo acciones→condiciones de desbloqueo (`accionId`, cantidades) en data de habilidades.
+- Añadir pruebas deterministas de progresión por acciones (MVP) y un test de smoke para PA.
+- Especificar impactos en comercio/precios (acciones productivas vs. riesgos) y loot enemigo (acciones requeridas para patrones).
+
 ## 2025-10-07 — Limpieza StyleCop focalizada (Program.cs, SmokeRunner) + extracción GameplayToggles
 
 Contexto: reducir avisos StyleCop de alto impacto sin alterar gameplay, dejando Program.cs limpio de reglas estructurales y corrigiendo warnings puntuales en el smoke test.
