@@ -26,6 +26,8 @@ Combate por Acciones (PA) Fase 3 | Pendiente | 2025-10-08 | Integrar efectos ava
 Capas de progresión por acciones → Habilidades/Clases | Planificación | 2025-10-08 | Acciones acumulan progreso oculto; desbloquean/evolucionan habilidades y títulos. Clases/profesiones ligadas a NPC/Misiones y estilo.
 Adaptación Comercio/Objetos/Enemigos | Planificación | 2025-10-08 | Alinear precios, loot y comportamientos al sistema de acciones y estilos.
 Limpieza StyleCop focalizada (Program/SmokeRunner) | Hecho | 2025-10-07 | Separado `GameplayToggles` (SA1402/SA1649) y fixes SA1503/SA1028. Ver Bitácora 2025‑10‑07.
+Núcleo Combate determinista (Timeline+Eventos+RNG) | En progreso | 2025-10-09 | Modularización creada (archivos untracked). Integrar en solución y eliminar monolito `Core.cs`. Ver Bitácora 2025‑10‑09.
+Documento técnico Timeline | Hecho | 2025-10-09 | Nuevo `MiJuegoRPG/Docs/Combate_Timeline.md` con pipeline por tick y claves de orden.
 
 > Esta tabla resume el estado por feature de alto nivel. El contenido posterior conserva detalle histórico y granular (legado). Cuando se actualice una feature, modificar SOLO esta tabla y, si la implementación es significativa, añadir entrada en Bitácora.
 

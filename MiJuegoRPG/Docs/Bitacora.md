@@ -1,6 +1,84 @@
 
 # Bitácora de Cambios (Consolidada)
 
+## 2025-10-09 — Modularización motor de combate y eliminación del monolito Core.cs (en progreso)
+
+Contexto: reducir deuda técnica y warnings de estilo separando el monolito `MiJuegoRPG.Core/Combate/Core.cs` en archivos por tipo (Acciones, Timeline, Eventos, Rng, Orden, Context, Enums) y asegurar determinismo con pruebas de hash.
+
+### Cambios clave — 2025-10-09
+
+- Se extrajeron tipos a archivos dedicados:
+  - `Combate/Acciones/CombatAction.cs`, `Combate/Acciones/SimpleAttackAction.cs`.
+  - `Combate/Timeline/CombatTimeline.cs` con `ComputeDeterminismHash()`.
+  - `Combate/Eventos/CombatEvent.cs`, `Combate/Eventos/CombatEventLog.cs` (hash determinista de eventos).
+  - `Combate/Orden/ActionOrderKey.cs` (clave de orden estable).
+  - `Combate/Rng/SplitRngFactory.cs` (RNG particionado por stream) y `Combate/Enums/RngStreamId.cs`.
+  - `Combate/Context/CombatContext.cs` con proveedor `CurrentTick`.
+- Se actualizaron tests `MiJuegoRPG.Tests/CombateTimelineTests.cs` para usar namespaces modulares y el cómputo de hash determinista de la timeline.
+- Se reintrodujo el crítico simple (10%) en `SimpleAttackAction` usando `RngStreamId.Crit` para validar divergencia por seed.
+
+Enlace técnico ampliado: ver documento de diseño y flujo del timeline en `MiJuegoRPG/Docs/Combate_Timeline.md`.
+
+### Archivos afectados (resumen — 2025-10-09)
+
+| Archivo | Tipo | Motivo del cambio |
+|---|---|---|
+| `MiJuegoRPG.Core/Combate/Core.cs` | código | Monolito heredado a eliminar; duplica tipos y rompe compilación. |
+| `MiJuegoRPG.Core/Combate/Acciones/CombatAction.cs` | código | Tipo base de acción; fases y orden determinista. |
+| `MiJuegoRPG.Core/Combate/Acciones/SimpleAttackAction.cs` | código | Acción concreta; daño base con crítico simple. |
+| `MiJuegoRPG.Core/Combate/Timeline/CombatTimeline.cs` | código | Orquestador de ticks y eventos; hash determinista. |
+| `MiJuegoRPG.Core/Combate/Eventos/CombatEvent.cs` | código | Tipos de evento y struct `CombatEvent`. |
+| `MiJuegoRPG.Core/Combate/Eventos/CombatEventLog.cs` | código | Registro y cómputo de hash determinista. |
+| `MiJuegoRPG.Core/Combate/Orden/ActionOrderKey.cs` | código | Comparador determinista por tick/fase/pri/vel/seq/actor. |
+| `MiJuegoRPG.Core/Combate/Rng/SplitRngFactory.cs` | código | RNG particionado; semilla base con fallback seguro. |
+| `MiJuegoRPG.Core/Combate/Enums/RngStreamId.cs` | código | Enum modular de streams RNG. |
+| `MiJuegoRPG.Core/Combate/Context/CombatContext.cs` | código | Contexto con Rng, Log y `CurrentTick`. |
+| `MiJuegoRPG.Tests/CombateTimelineTests.cs` | test | Usings a nuevos namespaces; asserts de hash. |
+
+### Decisiones técnicas — 2025-10-09
+
+- Un tipo por archivo (SA1402/SA1649) para reducir ruido de StyleCop y facilitar mantenibilidad.
+- `CombatEventLog` expone `ComputeDeterministicHash()` (int) y un wrapper `ComputeDeterminismHash()` (hex) consumido por la timeline; pendiente unificar nombre.
+- `CombatContext` recibe `currentTickProvider` para evitar acoplar acciones a la timeline concreta.
+- Hash de determinismo basado en secuencia de eventos; divergencia de seeds garantizada al menos por RNG de crítico.
+
+Observación de repositorio (git): actualmente los nuevos archivos del núcleo determinista se encuentran como No rastreados (untracked), por lo que no forman parte aún del build oficial. Esto explica por qué los errores de compilación mencionados solo aparecen al intentar incluir `MiJuegoRPG.Core/` y los tests nuevos en la solución.
+
+### Impacto funcional — 2025-10-09
+
+- No cambia gameplay del juego principal; afecta el prototipo de combate determinista (módulo Core) y su suite de pruebas.
+- Las colisiones de tipos por `Core.cs` rompen el build hasta que se elimine ese archivo del proyecto.
+
+Nota de orquestación: este trabajo corresponde a “Tarea de mantenimiento” y requiere aprobación del Agente Maestro para integrar (agregar a solución y commitear) y eliminar el monolito.
+
+### Validación (Quality Gates) — 2025-10-09
+
+- Build: Pendiente — los archivos del nuevo núcleo (`MiJuegoRPG.Core/…`) y el test `MiJuegoRPG.Tests/CombateTimelineTests.cs` están Untracked; no participan del build actual. Al integrarlos, se espera inicialmente FAIL por duplicación con `Core.cs` hasta su eliminación.
+- Lint/Análisis: Pendiente — se prevé alto volumen de advertencias StyleCop en los nuevos archivos hasta mover `using` dentro del namespace y ordenar miembros.
+- Tests: Pendiente — suite de determinismo lista, pero requiere integrar proyecto `MiJuegoRPG.Core` y referenciarlo desde Tests.
+
+Evidencia rápida (git status):
+
+- Untracked: `MiJuegoRPG.Core/`, `MiJuegoRPG.Tests/CombateTimelineTests.cs`, `MiJuegoRPG/Docs/Combate_Timeline.md`.
+- Modificados: `MiJuegoRPG/Docs/Bitacora.md`, `MiJuegoRPG/MiJuegoRPG.csproj`, `MiJuegoRPG.sln`, chatmodes.
+
+### Requisitos cubiertos — 2025-10-09
+
+- “Dividir Core.cs en archivos por tipo y reducir warnings” → En progreso: extracción realizada; pendiente eliminar monolito y pasar build.
+- “Determinismo por hash de eventos y divergencia por seed” → Implementado en código modular; validación pendiente de ejecución por build roto.
+
+### Próximos pasos — 2025-10-09
+
+1) Eliminar `MiJuegoRPG.Core/Combate/Core.cs` del proyecto (bloqueante). Origen: Tarea de mantenimiento.
+2) Unificar API de hash (sugerido: solo `ComputeDeterministicHash()` en Timeline y Log). Origen: Mejora técnica.
+3) Recompilar y ejecutar tests; reportar resultados (debería PASS). Origen: Validación.
+4) Hacer pasada rápida de StyleCop en nuevos archivos (usings, SA1200/SA1516). Origen: Limpieza.
+
+Acción sugerida de orquestación (requiere aprobación del Agente Maestro):
+
+- Nominar agente ejecutor “Agente CombateDeterminista” para: (a) integrar `MiJuegoRPG.Core` en la solución, (b) eliminar `Core.cs`, (c) unificar API de hash, (d) pasar build/tests y (e) actualizar referencias en `MiJuegoRPG.Tests`.
+- Criterios de aceptación: Build PASS; Tests determinismo PASS; 0 errores; advertencias StyleCop ≤ 50 en los nuevos archivos; Bitácora y Roadmap sincronizados.
+
 ## 2025-10-08 — Inyección ActionPoints en progression.json + Orquestación de Agentes
 
 Contexto: establecer base de Puntos de Acción (PA) en datos, sin alterar gameplay todavía; y formalizar la política de orquestación: MiJuego propone y coordina, el Agente Maestro (usuario) aprueba/ejecuta.

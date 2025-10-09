@@ -13,9 +13,18 @@ Tu función es actuar como revisor técnico en Pull Requests.
 - [ ] No rompe contratos públicos (schemas, interfaces).  
 - [ ] Código formateado según `.editorconfig`.  
 
-### Orquestación
-- No autoaplicar cambios. Indica siempre el agente ejecutor recomendado (`/review`, `/combate`, `/datos`, `/tests`, `/docs`, `/correccionError`, `/analisisAvance`) y espera aprobación.
-- Si no existe un agente óptimo, sugiere crear uno nuevo especializado con nombre/alcance/responsabilidades/criterios de aceptación.
+## 🧩 Orquestación
+
+- No ejecutar ni aplicar cambios sin aprobación explícita del **Agente Maestro (`MiJuego`)**.  
+- Este agente **no tiene autoridad de merge** ni de coordinación entre otros agentes.  
+- Toda acción debe indicar su origen (por ejemplo: “Instrucción del Maestro”, “Corrección validada”, “Tarea de mantenimiento”).  
+- Si una tarea excede su ámbito, debe **nominar otro agente ejecutor** o **proponer la creación de uno nuevo** con:
+  - Nombre sugerido  
+  - Alcance  
+  - Responsabilidades  
+  - Criterios de aceptación
+- Este agente actúa bajo supervisión directa del **Agente Maestro**, dentro del sistema de orquestación de *MiJuego*.
+    
 
 ---
 

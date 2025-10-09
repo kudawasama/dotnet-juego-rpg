@@ -6,6 +6,7 @@ Este índice centraliza la documentación del proyecto y sirve como punto de ent
 - [Bitácora (historial por sesión)](./Bitacora.md)
 - [Arquitectura y funcionamiento](./Arquitectura_y_Funcionamiento.md)
 - [Visión de juego (North Star)](./Vision_de_Juego.md)
+- [Timeline de combate determinista](./Combate_Timeline.md)
 - [Configuración de progresión](./progression_config.md)
 - [Guía de ejemplos (para principiantes)](./Guia_Ejemplos.md)
 
