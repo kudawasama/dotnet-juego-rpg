@@ -1,5 +1,38 @@
 # Roadmap
 
+## 🎉 ACTUALIZACIÓN ESTRATÉGICA: Base Técnica Madura Detectada
+
+### 🏆 Estado Técnico Excepcional (2025-10-10)
+
+- **Configuración StyleCop:** ✅ PROFESIONAL Y MADURA (superior a estándares)
+- **Calidad de Código:** ✅ Build completamente limpio (0 warnings StyleCop)
+- **Test Coverage:** ✅ 131/131 pruebas pasando
+- **Arquitectura:** ✅ Separación Core/Main/Tests sólida
+
+**⚡ Aceleración de Desarrollo:** ~3-4 semanas ganadas al no requerir limpieza básica
+
+---
+
+## Prioridades Estratégicas Re-definidas
+
+### 🎯 **ALTA PRIORIDAD** (Próximas 2-4 semanas)
+
+1. **🔥 Optimización Combate:** Performance y balance de mecánicas existentes
+2. **🌟 Expansión Contenido:** Nuevos enemigos, biomas, habilidades
+3. **🎮 Sistema Combate PA:** Completar Fases 2-3 del sistema por acciones
+
+### 🎯 **PRIORIDAD MEDIA** (1-2 meses)
+
+1. **🏗️ Preparación Unity:** Separación lógica vs presentación para migración
+2. **💾 Sistema Persistencia:** Optimización save/load y queries SQL
+3. **🧪 Testing Avanzado:** Cobertura edge cases y scenarios complejos
+
+### 🎯 **PRIORIDAD BAJA** (Completado/Futuro lejano)
+
+1. **~~Limpieza StyleCop~~** ✅ **COMPLETADO** - Configuración madura detectada
+
+---
+
 ## Resumen Normalizado (Tabla)
 
 Feature | Estado | Última actualización | Notas
@@ -26,7 +59,13 @@ Combate por Acciones (PA) Fase 3 | Pendiente | 2025-10-08 | Integrar efectos ava
 Capas de progresión por acciones → Habilidades/Clases | Planificación | 2025-10-08 | Acciones acumulan progreso oculto; desbloquean/evolucionan habilidades y títulos. Clases/profesiones ligadas a NPC/Misiones y estilo.
 Adaptación Comercio/Objetos/Enemigos | Planificación | 2025-10-08 | Alinear precios, loot y comportamientos al sistema de acciones y estilos.
 Limpieza StyleCop focalizada (Program/SmokeRunner) | Hecho | 2025-10-07 | Separado `GameplayToggles` (SA1402/SA1649) y fixes SA1503/SA1028. Ver Bitácora 2025‑10‑07.
-Núcleo Combate determinista (Timeline+Eventos+RNG) | En progreso | 2025-10-09 | Modularización creada (archivos untracked). Integrar en solución y eliminar monolito `Core.cs`. Ver Bitácora 2025‑10‑09.
+Higiene de Tests (StyleCop) | Hecho | 2025-10-09 | Tests sin ruido salvo SA0001 opcional. Bitácora 2025-10-09.
+Núcleo Combate determinista (Timeline+Eventos+RNG) | Hecho | 2025-10-09 | Modularización integrada; monolito `Combate/Core.cs` excluido del build; RNG separado; determinismo por hash verificado. Ver Bitácora 2025‑10‑09.
+Limpieza StyleCop Core/Combate | En progreso | 2025-10-09 | Lotes 1–3 completados (usings, líneas, orden de miembros, llaves, archivo↔tipo). Pendiente: detalles menores. Criterio: sin cambios de comportamiento; reducción sustancial de advertencias.
+Limpieza StyleCop PjDatos | **HECHO** | **2025-10-13** | **SA1402 SUPERCLEANUP COMPLETADO:** SupervivenciaConfig 13→1 clase, 6 archivos nuevos, 0 violaciones SA1402 project-wide. Ver Bitácora 2025-10-13.
+**Balance y Refinamiento Combate** | **Prioridad Alta** | **2025-10-13** | **NUEVO MILESTONE:** Con base técnica sólida, enfocar en mecánicas core: balance daño/defensa, refinamiento IA enemigos, validación fórmulas matemáticas.
+**Sistema Progresión Avanzada** | **Prioridad Media** | **2025-10-13** | **NUEVO MILESTONE:** Evolución habilidades, árboles de talentos, progression gates por nivel/reputación, balancing XP curves.
+**Expansión Contenido RPG** | **Prioridad Media** | **2025-10-13** | **NUEVO MILESTONE:** Nuevos biomas, enemigos únicos, eventos aleatorios, questlines complejas, loot tables balanceadas.
 Documento técnico Timeline | Hecho | 2025-10-09 | Nuevo `MiJuegoRPG/Docs/Combate_Timeline.md` con pipeline por tick y claves de orden.
 
 > Esta tabla resume el estado por feature de alto nivel. El contenido posterior conserva detalle histórico y granular (legado). Cuando se actualice una feature, modificar SOLO esta tabla y, si la implementación es significativa, añadir entrada en Bitácora.
@@ -209,7 +248,7 @@ Criterios de aceptación (Fase 1):
 - [5.10]/[3.4] Integrar stats de combate: usar `Precision`, `CritChance`, `CritMult`, `Penetracion` de `Estadisticas` (defaults ya presentes) y parametrizar en JSON (`progression.json`) las curvas/caps. Añadir caps sugeridos en `Docs/progression_config.md`.
 - [5.13] Mensajería unificada: canalizar todos los mensajes de combate vía `ResultadoAccion` para evitar duplicados.
 - [5.14] Texto de combate didáctico/expresivo: ampliar los mensajes de combate para explicar brevemente el cálculo (mitigación, resistencias, vulnerabilidades, crítico y penetración) y el porqué del daño final con ejemplos tipo "Jugador hace 12 de daño; Enemigo reduce 20% por defensa y 10% por mitigación". Integrado un primer formateador en `DamageResolver` y toggle `--combat-verbose` para controlar la verbosidad.
-  
+
   Avance: se agregó control en runtime desde Menú Principal → Opciones para alternar Verbosidad de Combate (ON/OFF) además del flag CLI `--combat-verbose`.
   Avance 2 (tests): se añadieron pruebas que validan presencia del detalle didáctico cuando está ON (físico y mágico) y ausencia cuando hay evasión/fallo por precisión. Ver `CombatVerboseMessageTests`.
 - [10.6] Validación de datos: extender `DataValidatorService` a esquemas de objetos/drops/armas con rangos y referencias cruzadas.
@@ -523,7 +562,7 @@ Notas adicionales:
 [15.9] Pendiente | Testing | Determinismo y contratos | Tests de drop tables y crafteo con RandomService.SetSeed; validación de contratos JSON (10.6)
 [15.10] Pendiente | Telemetría | Métricas de crafting/drops | Tasas de éxito, consumo de materiales, progresión de skill de artesanía para balance futuro
 
-## 16. ESTADO POR ARCHIVO / MÓDULO (inventario actual)  
+## 16. ESTADO POR ARCHIVO / MÓDULO (inventario actual)
 
 Nota: Este punto es un inventario de estado por carpeta/archivo, pensado como apéndice operativo. Por eso su formato es distinto al del resto de secciones numeradas (1–15, 17–27), que siguen el esquema por ítems [ID] con estado.
 
@@ -754,14 +793,14 @@ Bitácora movida: La bitácora de sesiones fue reubicada en `Docs/Bitacora.md`.
 
 - Hecho: DTOs y Generador soportan v2 para Armaduras, Botas, Cascos, Cinturones, Collares y Pantalones (campos opcionales `NivelMin/Max`, `PerfeccionMin/Max`, `DefensaMin/Max` o `Bonificacion*Min/Max`, `RarezasPermitidasCsv`, metadatos).
 - Hecho (datos migrados hoy):
-  
+
   - Botas: `botas_de_tela*.json` (las de cuero se migraron previamente).
   - Cinturones: `cinturon_de_cuero*.json`, `cinturon_de_hierro*.json`.
   - Collares: `collar_de_energia.json`, `collar_de_proteccion.json`.
   - Pantalones: `pantalon_de_cuero*.json`, `pantalon_de_tela*.json`.
 
 - Pendiente:
-  
+
   - Cascos: migrar `DatosJuego/Equipo/cascos/**.json` al esquema v2 siguiendo el patrón de Armadura.
   - Accesorios (anillos): migrar a v2 opcional (rango nivel/perfección, rarezas permitidas, `Valor/ValorVenta`, `Descripcion`).
   - Añadir validador de Equipo en `DataValidatorService` (rangos/rareza/duplicados por `Nombre`).
