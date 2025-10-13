@@ -15,10 +15,24 @@ namespace MiJuegoRPG.Tests
             public int Defensa { get; set; } = 0;
             public int DefensaMagica { get; set; } = 0;
             public bool EstaVivo => Vida > 0;
-            public int AtacarFisico(ICombatiente objetivo) { objetivo.RecibirDanioFisico(10); return 10; }
-            public int AtacarMagico(ICombatiente objetivo) { objetivo.RecibirDanioMagico(12); return 12; }
-            public void RecibirDanioFisico(int d) { Vida = System.Math.Max(0, Vida - System.Math.Max(1, d - Defensa)); }
-            public void RecibirDanioMagico(int d) { Vida = System.Math.Max(0, Vida - System.Math.Max(1, d - DefensaMagica)); }
+            public int AtacarFisico(ICombatiente objetivo)
+            {
+                objetivo.RecibirDanioFisico(10);
+                return 10;
+            }
+            public int AtacarMagico(ICombatiente objetivo)
+            {
+                objetivo.RecibirDanioMagico(12);
+                return 12;
+            }
+            public void RecibirDanioFisico(int d)
+            {
+                Vida = System.Math.Max(0, Vida - System.Math.Max(1, d - Defensa));
+            }
+            public void RecibirDanioMagico(int d)
+            {
+                Vida = System.Math.Max(0, Vida - System.Math.Max(1, d - DefensaMagica));
+            }
         }
 
         [Fact]

@@ -22,7 +22,7 @@ namespace MiJuegoRPG.Tests
                 NodosRecoleccion = new List<NodoRecoleccion> { nodo }
             };
             var mapa = new Mapa(new Dictionary<string, SectorData> { [sector.Id] = sector });
-            juego.mapa = mapa; // Sobre-escribimos el mapa del juego por el de prueba
+            juego.Mapa = mapa; // Sobre-escribimos el mapa del juego por el de prueba
             return (juego, mapa, sector, nodo);
         }
 
@@ -30,7 +30,7 @@ namespace MiJuegoRPG.Tests
         public void AlEntrarSector_AplicaCooldownsVigentes()
         {
             var (juego, mapa, sector, nodo) = CrearJuegoConSectorYNodo(cooldown: 60);
-            var svc = juego.recoleccionService;
+            var svc = juego.RecoleccionService;
             var ahora = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
             // Importar cooldown con último uso hace 30s (debe seguir en cooldown)
             var data = new Dictionary<string, Dictionary<string, long>>
@@ -51,7 +51,7 @@ namespace MiJuegoRPG.Tests
         public void AlEntrarSector_LimpiaCooldownsExpirados()
         {
             var (juego, mapa, sector, nodo) = CrearJuegoConSectorYNodo(cooldown: 30);
-            var svc = juego.recoleccionService;
+            var svc = juego.RecoleccionService;
             var ahora = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
             // Último uso hace 100s (ya expirado)
             var data = new Dictionary<string, Dictionary<string, long>>

@@ -5,7 +5,8 @@ namespace MiJuegoRPG.Motor
 {
     public class Ubicacion
     {
-        public Ubicacion() {
+        public Ubicacion()
+        {
             Id = "";
             Nombre = "";
             Tipo = "";
@@ -22,10 +23,22 @@ namespace MiJuegoRPG.Motor
             ParteCiudad = data.ParteCiudad;
             // Copiar otros campos relevantes si es necesario
         }
-        public string Id { get; set; }
-        public string Nombre { get; set; }
-        public string Tipo { get; set; } // Ciudad, Ruta, Mazmorra, etc.
-        public string Descripcion { get; set; }
+        public string Id
+        {
+            get; set;
+        }
+        public string Nombre
+        {
+            get; set;
+        }
+        public string Tipo
+        {
+            get; set;
+        } // Ciudad, Ruta, Mazmorra, etc.
+        public string Descripcion
+        {
+            get; set;
+        }
         public List<Ruta> Rutas { get; set; } = new List<Ruta>();
         public List<string> EventosPosibles { get; set; } = new List<string>();
         public bool Desbloqueada { get; set; } = false;
@@ -40,12 +53,19 @@ namespace MiJuegoRPG.Motor
 
     public class Ruta
     {
-        public Ruta() {
+        public Ruta()
+        {
             Nombre = "";
             Destino = "";
         }
-        public string Nombre { get; set; }
-        public string Destino { get; set; }
+        public string Nombre
+        {
+            get; set;
+        }
+        public string Destino
+        {
+            get; set;
+        }
         public bool Desbloqueada { get; set; } = false;
         public Dictionary<string, object> Requisitos { get; set; } = new Dictionary<string, object>();
         public string Estado { get; set; } = "Insegura"; // Segura/Insegura

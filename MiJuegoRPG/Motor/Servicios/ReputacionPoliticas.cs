@@ -11,8 +11,14 @@ namespace MiJuegoRPG.Motor.Servicios
         private class BandaRepConfig
         {
             public string Nombre { get; set; } = string.Empty;
-            public int Min { get; set; }
-            public int Max { get; set; }
+            public int Min
+            {
+                get; set;
+            }
+            public int Max
+            {
+                get; set;
+            }
             public string Color { get; set; } = "Gray";
         }
 
@@ -28,14 +34,15 @@ namespace MiJuegoRPG.Motor.Servicios
             public PoliticaBloqueo Tienda { get; set; } = new();
         }
 
-        private static List<BandaRepConfig>? _bandas;
-        private static Politicas? _politicas;
-        private static bool _cargado = false;
+        private static List<BandaRepConfig>? bandas;
+        private static Politicas? politicas;
+        private static bool cargado = false;
 
         private static void Cargar()
         {
-            if (_cargado) return;
-            _cargado = true;
+            if (cargado)
+                return;
+            cargado = true;
             try
             {
                 // Cargar bandas
@@ -50,7 +57,7 @@ namespace MiJuegoRPG.Motor.Servicios
                 if (!string.IsNullOrEmpty(bandasPath) && File.Exists(bandasPath))
                 {
                     var json = File.ReadAllText(bandasPath);
-                    _bandas = JsonSerializer.Deserialize<List<BandaRepConfig>>(json);
+                    bandas = JsonSerializer.Deserialize<List<BandaRepConfig>>(json);
                 }
             }
             catch { }
@@ -69,13 +76,13 @@ namespace MiJuegoRPG.Motor.Servicios
                 if (!string.IsNullOrEmpty(politicasPath) && File.Exists(politicasPath))
                 {
                     var json = File.ReadAllText(politicasPath);
-                    _politicas = JsonSerializer.Deserialize<Politicas>(json);
+                    politicas = JsonSerializer.Deserialize<Politicas>(json);
                 }
             }
             catch { }
 
             // Fallback por defecto si no hay archivos
-            _bandas ??= new List<BandaRepConfig>
+            bandas ??= new List<BandaRepConfig>
             {
                 new() { Nombre = "Perseguido", Min = -9999, Max = -151, Color = "DarkRed" },
                 new() { Nombre = "Hostil",     Min = -150,  Max = -51,  Color = "Red" },
@@ -84,7 +91,7 @@ namespace MiJuegoRPG.Motor.Servicios
                 new() { Nombre = "Amistoso",   Min = 50,    Max = 99,   Color = "Green" },
                 new() { Nombre = "Aliado",     Min = 100,   Max = 9999, Color = "Cyan" }
             };
-            _politicas ??= new Politicas
+            politicas ??= new Politicas
             {
                 NPC = new PoliticaBloqueo
                 {
@@ -103,21 +110,23 @@ namespace MiJuegoRPG.Motor.Servicios
         {
             foreach (var r in candidatos)
             {
-                if (File.Exists(r)) return r;
+                if (File.Exists(r))
+                    return r;
             }
             return null;
         }
 
         private static ConsoleColor ParseColor(string? color)
         {
-            if (string.IsNullOrWhiteSpace(color)) return ConsoleColor.Gray;
+            if (string.IsNullOrWhiteSpace(color))
+                return ConsoleColor.Gray;
             return Enum.TryParse<ConsoleColor>(color, true, out var c) ? c : ConsoleColor.Gray;
         }
 
         public static (string nombre, ConsoleColor color) BandaPorValor(int valor)
         {
             Cargar();
-            foreach (var b in _bandas!)
+            foreach (var b in bandas!)
             {
                 if (valor >= b.Min && valor <= b.Max)
                 {
@@ -133,8 +142,8 @@ namespace MiJuegoRPG.Motor.Servicios
             Cargar();
             var bandaFac = BandaPorValor(repFac).nombre;
             var bandaGlobal = BandaPorValor(repGlobal).nombre;
-            return _politicas!.NPC.BloqueaFac.Any(b => string.Equals(b, bandaFac, StringComparison.OrdinalIgnoreCase))
-                || _politicas!.NPC.BloqueaGlobal.Any(b => string.Equals(b, bandaGlobal, StringComparison.OrdinalIgnoreCase));
+            return politicas!.NPC.BloqueaFac.Any(b => string.Equals(b, bandaFac, StringComparison.OrdinalIgnoreCase))
+                || politicas!.NPC.BloqueaGlobal.Any(b => string.Equals(b, bandaGlobal, StringComparison.OrdinalIgnoreCase));
         }
 
         public static bool DebeBloquearTienda(int repFac, int repGlobal)
@@ -142,8 +151,8 @@ namespace MiJuegoRPG.Motor.Servicios
             Cargar();
             var bandaFac = BandaPorValor(repFac).nombre;
             var bandaGlobal = BandaPorValor(repGlobal).nombre;
-            return _politicas!.Tienda.BloqueaFac.Any(b => string.Equals(b, bandaFac, StringComparison.OrdinalIgnoreCase))
-                || _politicas!.Tienda.BloqueaGlobal.Any(b => string.Equals(b, bandaGlobal, StringComparison.OrdinalIgnoreCase));
+            return politicas!.Tienda.BloqueaFac.Any(b => string.Equals(b, bandaFac, StringComparison.OrdinalIgnoreCase))
+                || politicas!.Tienda.BloqueaGlobal.Any(b => string.Equals(b, bandaGlobal, StringComparison.OrdinalIgnoreCase));
         }
     }
 }

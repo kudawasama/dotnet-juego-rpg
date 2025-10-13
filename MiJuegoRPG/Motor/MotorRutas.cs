@@ -13,8 +13,8 @@ namespace MiJuegoRPG.Motor
         }
         public void MostrarMenuRutas()
         {
-            var ubicacionActual = juego.mapa.UbicacionActual;
-            var sectores = juego.mapa.ObtenerSectores();
+            var ubicacionActual = juego.Mapa.UbicacionActual;
+            var sectores = juego.Mapa.ObtenerSectores();
             Console.Clear();
             Console.WriteLine(juego.FormatoRelojMundo);
             Console.WriteLine($"Sectores conectados desde {ubicacionActual.Nombre}:");
@@ -39,7 +39,7 @@ namespace MiJuegoRPG.Motor
             if (int.TryParse(opcion, out int idx) && idx > 0 && idx <= sectoresConectados.Count)
             {
                 var destino = sectoresConectados[idx - 1];
-                if (juego.mapa.MoverseA(destino.Id))
+                if (juego.Mapa.MoverseA(destino.Id))
                 {
                     Console.WriteLine($"Te has movido a: {destino.Nombre}");
                     Console.WriteLine(destino.Descripcion);

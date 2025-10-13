@@ -65,7 +65,11 @@ namespace MiJuegoRPG.Tests
             for (int i = 0; i < 10; i++)
             {
                 var res = svc.Resolver("TestBioma2", pj, c => GetKills(c));
-                if (res.Tipo == TipoEncuentro.MiniJefe) { visto = res.Tipo; break; }
+                if (res.Tipo == TipoEncuentro.MiniJefe)
+                {
+                    visto = res.Tipo;
+                    break;
+                }
             }
 
             // Assert
@@ -178,7 +182,11 @@ namespace MiJuegoRPG.Tests
             for (int i = 0; i < 10; i++)
             {
                 var res = svc.Resolver("BiomaChance0", pj, c => GetKills(c));
-                if (res.Tipo == TipoEncuentro.MiniJefe) { vistoMini = true; break; }
+                if (res.Tipo == TipoEncuentro.MiniJefe)
+                {
+                    vistoMini = true;
+                    break;
+                }
             }
 
             // Assert

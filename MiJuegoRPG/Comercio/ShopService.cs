@@ -5,25 +5,15 @@ namespace MiJuegoRPG.Comercio
     using MiJuegoRPG.Objetos;
     using MiJuegoRPG.Motor; // Para acceder a Juego.ObtenerInstanciaActual()
 
-    public record StockItem(Objeto Item, int Cantidad);
-
-    public class Vendor
-    {
-        public string Id { get; init; } = "";
-        public string Nombre { get; init; } = "";
-        public string Ubicacion { get; init; } = "";
-        public List<StockItem> Stock { get; } = new();
-    }
-
     public class ShopService
     {
-        private readonly IPriceService _precios;
-        private readonly Dictionary<string, Vendor> _vendors = new();
-    private static Dictionary<string, string>? _faccionPorUbicacionCache; // carga perezosa desde JSON
+        private readonly IPriceService precios;
+        private readonly Dictionary<string, Vendor> vendors = new();
+        private static Dictionary<string, string>? faccionPorUbicacionCache; // carga perezosa desde JSON
 
         public ShopService(IPriceService precios)
         {
-            _precios = precios;
+            this.precios = precios;
             CargarVendors();
         }
 
@@ -32,7 +22,6 @@ namespace MiJuegoRPG.Comercio
 
         private void CargarVendors()
         {
-
             var npcPath = MiJuegoRPG.Motor.Servicios.PathProvider.NpcsPath("npc.json");
             var armasPath = MiJuegoRPG.Motor.Servicios.PathProvider.EquipoPath("armas.json");
             var pocionesPath = MiJuegoRPG.Motor.Servicios.PathProvider.PocionesPath("pociones.json");
@@ -44,21 +33,25 @@ namespace MiJuegoRPG.Comercio
             foreach (var npc in npcs.Where(n => string.Equals(n.Tipo, "Mercader", StringComparison.OrdinalIgnoreCase)))
             {
                 var v = new Vendor { Id = npc.Id, Nombre = npc.Nombre, Ubicacion = npc.Ubicacion };
-                foreach (var a in armas.Take(5)) v.Stock.Add(new StockItem(a.ToDomain(), 3));
-                foreach (var p in pociones.Take(3)) v.Stock.Add(new StockItem(p.ToDomain(), 10));
-                _vendors[v.Ubicacion] = v;
+                foreach (var a in armas.Take(5))
+                    v.Stock.Add(new StockItem(a.ToDomain(), 3));
+                foreach (var p in pociones.Take(3))
+                    v.Stock.Add(new StockItem(p.ToDomain(), 10));
+                vendors[v.Ubicacion] = v;
             }
         }
 
         public Vendor? GetVendorPorUbicacion(string? ubicacion)
         {
-            if (ubicacion != null && _vendors.TryGetValue(ubicacion, out var directo)) return directo;
+            if (ubicacion != null && vendors.TryGetValue(ubicacion, out var directo))
+                return directo;
             // Búsqueda tolerante: por Id/Nombre de la ubicación actual (mezcla de datos en npc.json)
             try
             {
                 var juego = Juego.ObtenerInstanciaActual();
-                var sector = juego?.mapa?.UbicacionActual;
-                if (sector == null) return null;
+                var sector = juego?.Mapa?.UbicacionActual;
+                if (sector == null)
+                    return null;
                 // Buscar vendor cuyo Ubicacion coincida con cualquiera de las variantes
                 var candidatos = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
                 {
@@ -66,9 +59,10 @@ namespace MiJuegoRPG.Comercio
                     sector.Id ?? string.Empty,
                     sector.Nombre ?? string.Empty
                 };
-                foreach (var v in _vendors.Values)
+                foreach (var v in vendors.Values)
                 {
-                    if (candidatos.Contains(v.Ubicacion)) return v;
+                    if (candidatos.Contains(v.Ubicacion))
+                        return v;
                 }
             }
             catch { }
@@ -78,14 +72,30 @@ namespace MiJuegoRPG.Comercio
         public bool Comprar(Personaje pj, Vendor v, int index, int cantidad, out string msg)
         {
             // Verificación de atención por reputación en cada operación
-            if (!PuedeAtender(pj, v, out var motivo)) { msg = motivo; return false; }
-            if (index < 0 || index >= v.Stock.Count) { msg = "Ítem inválido."; return false; }
+            if (!PuedeAtender(pj, v, out var motivo))
+            {
+                msg = motivo;
+                return false;
+            }
+            if (index < 0 || index >= v.Stock.Count)
+            {
+                msg = "Ítem inválido.";
+                return false;
+            }
             var s = v.Stock[index];
-            if (cantidad <= 0 || cantidad > s.Cantidad) { msg = "Cantidad no disponible."; return false; }
+            if (cantidad <= 0 || cantidad > s.Cantidad)
+            {
+                msg = "Cantidad no disponible.";
+                return false;
+            }
 
             var precioUnit = GetPrecioCompra(pj, v, s.Item);
             var total = precioUnit * cantidad;
-            if (pj.Oro < total) { msg = $"Oro insuficiente. Necesitas {total}."; return false; }
+            if (pj.Oro < total)
+            {
+                msg = $"Oro insuficiente. Necesitas {total}.";
+                return false;
+            }
 
             pj.Oro -= total;
             pj.Inventario.AgregarObjeto(s.Item, cantidad);
@@ -96,13 +106,14 @@ namespace MiJuegoRPG.Comercio
             try
             {
                 var juego = Juego.ObtenerInstanciaActual();
-                if (juego?.reputacionService != null)
+                if (juego?.ReputacionService != null)
                 {
                     int puntos = Math.Max(0, total / 100); // +1 reputación por cada 100 de oro gastado
                     if (puntos > 0)
                     {
                         var fac = FaccionPorUbicacion(v.Ubicacion);
-                        if (!string.IsNullOrWhiteSpace(fac)) juego.reputacionService.ModificarReputacionFaccion(fac, puntos, afectarGlobal: false);
+                        if (!string.IsNullOrWhiteSpace(fac))
+                            juego.ReputacionService.ModificarReputacionFaccion(fac, puntos, afectarGlobal: false);
                     }
                 }
             }
@@ -113,11 +124,23 @@ namespace MiJuegoRPG.Comercio
         public bool Vender(Personaje pj, Vendor v, int indexInventario, int cantidad, out string msg)
         {
             // Verificación de atención por reputación en cada operación
-            if (!PuedeAtender(pj, v, out var motivo)) { msg = motivo; return false; }
+            if (!PuedeAtender(pj, v, out var motivo))
+            {
+                msg = motivo;
+                return false;
+            }
             var inv = pj.Inventario.NuevosObjetos;
-            if (indexInventario < 0 || indexInventario >= inv.Count) { msg="Ítem inválido."; return false; }
+            if (indexInventario < 0 || indexInventario >= inv.Count)
+            {
+                msg = "Ítem inválido.";
+                return false;
+            }
             var oc = inv[indexInventario];
-            if (cantidad <= 0 || cantidad > oc.Cantidad) { msg="Cantidad inválida."; return false; }
+            if (cantidad <= 0 || cantidad > oc.Cantidad)
+            {
+                msg = "Cantidad inválida.";
+                return false;
+            }
 
             var precioUnit = GetPrecioVenta(pj, v, oc.Objeto);
             var total = precioUnit * cantidad;
@@ -125,21 +148,24 @@ namespace MiJuegoRPG.Comercio
             // RemoverObjeto puede llamarse QuitarObjeto si así se llama en tu Inventario
             pj.Inventario.QuitarObjeto(oc.Objeto, cantidad);
             var i = v.Stock.FindIndex(s => s.Item.Nombre == oc.Objeto.Nombre);
-            if (i >= 0) v.Stock[i] = new StockItem(v.Stock[i].Item, v.Stock[i].Cantidad + cantidad);
-            else v.Stock.Add(new StockItem(oc.Objeto, cantidad));
+            if (i >= 0)
+                v.Stock[i] = new StockItem(v.Stock[i].Item, v.Stock[i].Cantidad + cantidad);
+            else
+                v.Stock.Add(new StockItem(oc.Objeto, cantidad));
 
             msg = $"Has vendido {cantidad} x {oc.Objeto.Nombre} por {total} oro.";
             // Reputación: ventas también aportan ligeramente a la facción local
             try
             {
                 var juego = Juego.ObtenerInstanciaActual();
-                if (juego?.reputacionService != null)
+                if (juego?.ReputacionService != null)
                 {
                     int puntos = Math.Max(0, total / 200); // +1 reputación por cada 200 de oro vendido
                     if (puntos > 0)
                     {
                         var fac = FaccionPorUbicacion(v.Ubicacion);
-                        if (!string.IsNullOrWhiteSpace(fac)) juego.reputacionService.ModificarReputacionFaccion(fac, puntos, afectarGlobal: false);
+                        if (!string.IsNullOrWhiteSpace(fac))
+                            juego.ReputacionService.ModificarReputacionFaccion(fac, puntos, afectarGlobal: false);
                     }
                 }
             }
@@ -152,7 +178,9 @@ namespace MiJuegoRPG.Comercio
         {
             motivo = string.Empty;
             var fac = FaccionPorUbicacion(v.Ubicacion);
-            int repFac = 0; if (!string.IsNullOrWhiteSpace(fac)) pj.ReputacionesFaccion.TryGetValue(fac, out repFac);
+            int repFac = 0;
+            if (!string.IsNullOrWhiteSpace(fac))
+                pj.ReputacionesFaccion.TryGetValue(fac, out repFac);
             int repGlobal = pj.Reputacion;
             if (MiJuegoRPG.Motor.Servicios.ReputacionPoliticas.DebeBloquearTienda(repFac, repGlobal))
             {
@@ -167,13 +195,13 @@ namespace MiJuegoRPG.Comercio
         // Helpers públicos de precio con reputación aplicada (fuente única de verdad)
         public int GetPrecioCompra(Personaje pj, Vendor v, Objeto item)
         {
-            var basePrice = _precios.PrecioDe(item);
+            var basePrice = precios.PrecioDe(item);
             return AplicarDescuentoReputacionCompra(basePrice, pj, v.Ubicacion);
         }
 
         public int GetPrecioVenta(Personaje pj, Vendor v, Objeto item)
         {
-            var basePrice = _precios.PrecioReventa(item);
+            var basePrice = precios.PrecioReventa(item);
             return AplicarDescuentoReputacionVenta(basePrice, pj, v.Ubicacion);
         }
 
@@ -183,7 +211,8 @@ namespace MiJuegoRPG.Comercio
             var faccion = FaccionPorUbicacion(ubicacion);
             int repGlobal = pj.Reputacion;
             int repFaccion = 0;
-            if (!string.IsNullOrWhiteSpace(faccion)) pj.ReputacionesFaccion.TryGetValue(faccion, out repFaccion);
+            if (!string.IsNullOrWhiteSpace(faccion))
+                pj.ReputacionesFaccion.TryGetValue(faccion, out repFaccion);
 
             double modGlobal = Math.Clamp(repGlobal / 1000.0, -0.10, 0.10);
             double modFaccion = Math.Clamp(repFaccion / 500.0, -0.15, 0.15);
@@ -197,21 +226,22 @@ namespace MiJuegoRPG.Comercio
             var faccion = FaccionPorUbicacion(ubicacion);
             int repGlobal = pj.Reputacion;
             int repFaccion = 0;
-            if (!string.IsNullOrWhiteSpace(faccion)) pj.ReputacionesFaccion.TryGetValue(faccion, out repFaccion);
+            if (!string.IsNullOrWhiteSpace(faccion))
+                pj.ReputacionesFaccion.TryGetValue(faccion, out repFaccion);
 
             double modGlobal = Math.Clamp(repGlobal / 1000.0, -0.10, 0.10);
             double modFaccion = Math.Clamp(repFaccion / 500.0, -0.15, 0.15);
             // Para venta, el beneficio es menor: 50% del efecto
-            double factor = 1.0 + (modGlobal + modFaccion) * 0.5;
+            double factor = 1.0 + ((modGlobal + modFaccion) * 0.5);
             int precio = (int)Math.Max(1, Math.Round(precioBase * factor));
             return precio;
         }
 
-    internal static string FaccionPorUbicacion(string ubicacion)
+        internal static string FaccionPorUbicacion(string ubicacion)
         {
             // 1) Intentar mapa data-driven desde DatosJuego/facciones_ubicacion.json (cacheado)
-            _faccionPorUbicacionCache ??= CargarFaccionesUbicacion();
-            if (_faccionPorUbicacionCache != null && _faccionPorUbicacionCache.TryGetValue(ubicacion, out var fac) && !string.IsNullOrWhiteSpace(fac))
+            faccionPorUbicacionCache ??= CargarFaccionesUbicacion();
+            if (faccionPorUbicacionCache != null && faccionPorUbicacionCache.TryGetValue(ubicacion, out var fac) && !string.IsNullOrWhiteSpace(fac))
                 return fac;
             // 2) Fallback mínimo (compatibilidad)
             return ubicacion switch
@@ -238,26 +268,13 @@ namespace MiJuegoRPG.Comercio
                     {
                         var json = File.ReadAllText(ruta);
                         var dict = JsonSerializer.Deserialize<Dictionary<string, string>>(json);
-                        if (dict != null) return dict;
+                        if (dict != null)
+                            return dict;
                     }
                 }
             }
             catch { }
             return null;
         }
-    }
-
-    // DTOs públicos y fuera de ShopService
-    public record NpcDto(string Id, string Nombre, string Tipo, string Ubicacion);
-    public record ArmaDto(string Nombre, int DañoBase, int Perfeccion, string Rareza);
-    public record PocionDto(string Nombre, int Curacion, string Rareza);
-
-    static class MapExtensions
-    {
-        public static Objeto ToDomain(this ArmaDto dto)
-            => new Arma(dto.Nombre, dto.DañoBase, nivel:1, rareza: MiJuegoRPG.Objetos.RarezaHelper.Normalizar(dto.Rareza), categoria: "Arma");
-
-        public static Objeto ToDomain(this PocionDto dto)
-            => new Pocion(dto.Nombre, dto.Curacion, MiJuegoRPG.Objetos.RarezaHelper.Normalizar(dto.Rareza), "Consumible");
     }
 }

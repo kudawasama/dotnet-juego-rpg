@@ -33,3 +33,39 @@ dotnet_diagnostic.SA1101.severity = suggestion
 
 # Parámetros no usados (informativo)
 dotnet_diagnostic.IDE0060.severity = silent
+
+# === SUPRESIONES SINCRONIZADAS CON TESTS ===
+# Usings y orden
+dotnet_diagnostic.SA1200.severity = none   # using dentro namespace
+dotnet_diagnostic.SA1208.severity = none   # orden system usings
+dotnet_diagnostic.SA1210.severity = none   # orden alfabético usings
+
+# Líneas en blanco / formato
+dotnet_diagnostic.SA1516.severity = none   # blank line antes elementos
+dotnet_diagnostic.SA1513.severity = none   # blank line después llaves
+dotnet_diagnostic.SA1515.severity = none   # blank line antes comentarios
+dotnet_diagnostic.SA1518.severity = none   # archivo termina newline
+
+# Estilo de llaves / multilínea
+dotnet_diagnostic.SA1500.severity = none   # llaves multilínea
+dotnet_diagnostic.SA1501.severity = none   # statement single line
+dotnet_diagnostic.SA1502.severity = none   # elemento single line
+dotnet_diagnostic.SA1503.severity = none   # llaves requeridas
+dotnet_diagnostic.SA1507.severity = none   # múltiples blank lines
+
+# Múltiples statements y formato
+dotnet_diagnostic.SA1107.severity = none   # múltiples statements línea
+dotnet_diagnostic.SA1413.severity = none   # trailing comma
+dotnet_diagnostic.SA1001.severity = none   # comas seguidas espacio
+dotnet_diagnostic.SA1003.severity = none   # operadores espaciado
+
+# Comentarios y strings
+dotnet_diagnostic.SA1005.severity = none   # comentarios con espacio
+dotnet_diagnostic.SA1028.severity = none   # trailing whitespace
+dotnet_diagnostic.SA1122.severity = none   # string.Empty vs ""
+
+# === REGLAS IMPORTANTES MANTENIDAS ACTIVAS ===
+# SA1137 - indentación (warning) 
+# SA1401 - campos públicos (warning)
+# SA1201 - orden elementos (warning)
+# SA1202 - orden elementos por acceso (warning)

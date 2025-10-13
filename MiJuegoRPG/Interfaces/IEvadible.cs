@@ -9,6 +9,7 @@ namespace MiJuegoRPG.Interfaces
         /// Devuelve true si el ataque es evadido (sin daño).
         /// </summary>
         /// <param name="esAtaqueMagico">true si el ataque es mágico; false si es físico.</param>
+        /// <returns></returns>
         bool IntentarEvadir(bool esAtaqueMagico);
     }
 }

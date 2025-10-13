@@ -17,8 +17,17 @@ namespace MiJuegoRPG.Objetos
                 // Clonar opciones para insertar converter leniente de strings (si no está)
                 var localOpts = new JsonSerializerOptions(options);
                 bool tieneLenient = false;
-                foreach (var c in localOpts.Converters) if (c is MiJuegoRPG.Motor.Servicios.LenientStringConverter) { tieneLenient = true; break; }
-                if (!tieneLenient) localOpts.Converters.Insert(0, new MiJuegoRPG.Motor.Servicios.LenientStringConverter());
+                foreach (var c in localOpts.Converters)
+                {
+                    if (c is MiJuegoRPG.Motor.Servicios.LenientStringConverter)
+                    {
+                        tieneLenient = true;
+                        break;
+                    }
+                }
+
+                if (!tieneLenient)
+                    localOpts.Converters.Insert(0, new MiJuegoRPG.Motor.Servicios.LenientStringConverter());
 
                 Objeto? obj = tipo switch
                 {
@@ -61,14 +70,20 @@ namespace MiJuegoRPG.Objetos
                         }
                         catch { obj.Rareza = "Comun"; }
                     }
-                    if (string.IsNullOrWhiteSpace(obj.Rareza)) obj.Rareza = "Comun"; // fallback estándar
+                    if (string.IsNullOrWhiteSpace(obj.Rareza))
+                        obj.Rareza = "Comun"; // fallback estándar
                     var r = obj.Rareza.Trim();
                     // Mapear variantes conocidas
-                    if (r.Equals("Normal", StringComparison.OrdinalIgnoreCase)) r = "Comun";
-                    if (r.Equals("PocoComun", StringComparison.OrdinalIgnoreCase) || r.Equals("Poco Comun", StringComparison.OrdinalIgnoreCase)) r = "Superior";
-                    if (r.Equals("Raro", StringComparison.OrdinalIgnoreCase)) r = "Rara";
-                    if (r.Equals("Epico", StringComparison.OrdinalIgnoreCase)) r = "Epica";
-                    if (r.Equals("Legendario", StringComparison.OrdinalIgnoreCase)) r = "Legendaria";
+                    if (r.Equals("Normal", StringComparison.OrdinalIgnoreCase))
+                        r = "Comun";
+                    if (r.Equals("PocoComun", StringComparison.OrdinalIgnoreCase) || r.Equals("Poco Comun", StringComparison.OrdinalIgnoreCase))
+                        r = "Superior";
+                    if (r.Equals("Raro", StringComparison.OrdinalIgnoreCase))
+                        r = "Rara";
+                    if (r.Equals("Epico", StringComparison.OrdinalIgnoreCase))
+                        r = "Epica";
+                    if (r.Equals("Legendario", StringComparison.OrdinalIgnoreCase))
+                        r = "Legendaria";
                     // Mapear strings numéricas (producidas por converter leniente)
                     if (r is "0" or "1" or "2" or "3" or "4" or "5" or "6")
                     {

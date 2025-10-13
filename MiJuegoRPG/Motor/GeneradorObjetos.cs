@@ -1,4 +1,4 @@
-﻿namespace MiJuegoRPG.Motor
+namespace MiJuegoRPG.Motor
 {
     using System;
     using System.Collections.Generic;

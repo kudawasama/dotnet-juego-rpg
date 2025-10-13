@@ -26,13 +26,17 @@ namespace MiJuegoRPG.Motor.Menus
                 switch (opcion)
                 {
                     case "1":
-                        if (juego.jugador != null) juego.MostrarEstadoPersonaje(juego.jugador);
-                        else juego.Ui.WriteLine("No hay personaje cargado.");
+                        if (juego.Jugador != null)
+                            juego.MostrarEstadoPersonaje(juego.Jugador);
+                        else
+                            juego.Ui.WriteLine("No hay personaje cargado.");
                         InputService.Pausa();
                         break;
                     case "2":
-                        if (juego.jugador != null) juego.MostrarEstadoPersonaje(juego.jugador, true);
-                        else juego.Ui.WriteLine("No hay personaje cargado.");
+                        if (juego.Jugador != null)
+                            juego.MostrarEstadoPersonaje(juego.Jugador, true);
+                        else
+                            juego.Ui.WriteLine("No hay personaje cargado.");
                         InputService.Pausa();
                         break;
                     case "3":

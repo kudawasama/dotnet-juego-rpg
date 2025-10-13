@@ -14,13 +14,13 @@ namespace MiJuegoRPG.Motor
 
         public void ComenzarCombate()
         {
-            if (juego.jugador == null)
+            if (juego.Jugador == null)
             {
                 Console.WriteLine("No hay personaje para combatir. Creando nuevo personaje...");
-                juego.jugador = CreadorPersonaje.Crear();
+                juego.Jugador = CreadorPersonaje.Crear();
             }
-            var enemigo = GeneradorEnemigos.GenerarEnemigoAleatorio(juego.jugador);
-            GeneradorEnemigos.IniciarCombate(juego.jugador, enemigo);
+            var enemigo = GeneradorEnemigos.GenerarEnemigoAleatorio(juego.Jugador);
+            GeneradorEnemigos.IniciarCombate(juego.Jugador, enemigo);
         }
 
         // Aquí puedes agregar métodos para combate múltiple, jefe, etc.

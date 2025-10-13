@@ -2,7 +2,10 @@ namespace MiJuegoRPG.Interfaces
 {
     public interface IAccionCombate
     {
-        string Nombre { get; }
+        string Nombre
+        {
+            get;
+        }
         // Ejecuta la acción y retorna un resultado estandarizado para impresión/UI y lógica
         ResultadoAccion Ejecutar(ICombatiente ejecutor, ICombatiente objetivo);
         // Requisitos mínimos (mana/recursos) — por ahora no usados, reservados para 17.3

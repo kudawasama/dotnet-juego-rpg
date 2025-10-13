@@ -8,7 +8,7 @@ namespace MiJuegoRPG.Objetos
 {
     public static class GestorMateriales
     {
-    public static string RutaMaterialesJson = MiJuegoRPG.Motor.Servicios.PathProvider.PjDatosPath("materiales.json");
+        public static string RutaMaterialesJson = MiJuegoRPG.Motor.Servicios.PathProvider.PjDatosPath("materiales.json");
         public static List<Material> MaterialesDisponibles = new List<Material>();
 
         public static void GuardarMaterialSiNoExiste(Material material)
@@ -42,18 +42,19 @@ namespace MiJuegoRPG.Objetos
             // Delegar al repositorio si está disponible (transición gradual)
             try
             {
-                var repo = _lazyRepo.Value;
+                var repo = LazyRepo.Value;
                 var dom = repo.ToDomain(nombre);
-                if (dom != null) return dom;
+                if (dom != null)
+                    return dom;
             }
             catch { /* fallback a lista cargada previa */ }
             return MaterialesDisponibles.Find(m => m.Nombre.Equals(nombre, StringComparison.OrdinalIgnoreCase));
         }
 
-        private static readonly Lazy<MiJuegoRPG.Motor.Servicios.Repos.MaterialRepository> _lazyRepo
+        private static readonly Lazy<MiJuegoRPG.Motor.Servicios.Repos.MaterialRepository> LazyRepo
             = new(() => new MiJuegoRPG.Motor.Servicios.Repos.MaterialRepository());
 
-    public static void CargarMateriales(string rutaArchivo)
+        public static void CargarMateriales(string rutaArchivo)
         {
             if (!Path.IsPathRooted(rutaArchivo))
             {
@@ -79,13 +80,12 @@ namespace MiJuegoRPG.Objetos
                         MaterialesDisponibles.Add(new Material(
                             material.Nombre,
                             material.Rareza,
-                            material.Categoria
-                        ));
+                            material.Categoria));
                     }
                     // Sincronizar repositorio (sobrescribir cache actual)
                     try
                     {
-                        var repo = _lazyRepo.Value;
+                        var repo = LazyRepo.Value;
                         repo.SaveAll(materialesJson); // mantiene archivo; repos lee mismo path
                     }
                     catch { /* degradar silencioso */ }
@@ -100,8 +100,14 @@ namespace MiJuegoRPG.Objetos
 
     public class MaterialJson
     {
-        public required string Nombre { get; set; }
+        public required string Nombre
+        {
+            get; set;
+        }
         public string Rareza { get; set; } = "Normal";
-        public required string Categoria { get; set; }
+        public required string Categoria
+        {
+            get; set;
+        }
     }
 }

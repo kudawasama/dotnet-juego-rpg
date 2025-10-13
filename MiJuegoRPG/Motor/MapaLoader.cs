@@ -38,7 +38,8 @@ namespace MiJuegoRPG.Motor
                         if (!sectores.ContainsKey(sector.Id))
                         {
                             sectores.Add(sector.Id, sector);
-                            cargados++; agregado = true;
+                            cargados++;
+                            agregado = true;
                             if (debugIds && (sector.Id == "8_22" || sector.Id == "8_24"))
                                 Logger.Debug($"[MapaLoader][DEBUG] Cargado sector {sector.Id} desde {archivo} (modo objeto)");
                         }
@@ -60,13 +61,16 @@ namespace MiJuegoRPG.Motor
                             {
                                 if (sector != null && !string.IsNullOrWhiteSpace(sector.Id) && !sectores.ContainsKey(sector.Id))
                                 {
-                                    sectores.Add(sector.Id, sector); cargados++; agregado = true;
+                                    sectores.Add(sector.Id, sector);
+                                    cargados++;
+                                    agregado = true;
                                     if (debugIds && (sector.Id == "8_22" || sector.Id == "8_24"))
                                         Logger.Debug($"[MapaLoader][DEBUG] Cargado sector {sector.Id} desde {archivo} (modo lista)");
                                 }
                             }
                         }
-                        if (!agregado) invalidos++;
+                        if (!agregado)
+                            invalidos++;
                     }
                     catch
                     {

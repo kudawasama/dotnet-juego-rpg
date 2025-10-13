@@ -5,27 +5,20 @@ using MiJuegoRPG.Personaje;
 
 namespace MiJuegoRPG.Crafteo
 {
-    public class RecetaCrafteo
-    {
-        public required string Nombre { get; set; }
-        public List<(string nombreMaterial, int cantidad)> Materiales { get; set; } = new();
-        public required Objeto ObjetoResultado { get; set; }
-    }
-
-    
+    // SA1402: RecetaCrafteo se movió a RecetaCrafteo.cs para cumplir con SA1402 (un tipo por archivo)
 
     public class CraftingService
     {
-        private readonly List<RecetaCrafteo> _recetas = new();
+        private readonly List<RecetaCrafteo> recetas = new();
 
         public void AgregarReceta(RecetaCrafteo receta)
         {
-            _recetas.Add(receta);
+            recetas.Add(receta);
         }
 
         public IEnumerable<RecetaCrafteo> ObtenerRecetasDisponibles()
         {
-            return _recetas;
+            return recetas;
         }
 
         public bool PuedeCraftear(Personaje.Personaje jugador, RecetaCrafteo receta)
@@ -52,7 +45,12 @@ namespace MiJuegoRPG.Crafteo
             jugador.Inventario.AgregarObjeto(receta.ObjetoResultado);
             mensaje = $"¡Has creado {receta.ObjetoResultado.Nombre}!";
             // Hook de acciones: registrar crafteo exitoso
-            try { if (jugador != null) MiJuegoRPG.Motor.Servicios.AccionRegistry.Instancia.RegistrarAccion("CraftearObjeto", jugador); } catch { }
+            try
+            {
+                if (jugador != null)
+                    MiJuegoRPG.Motor.Servicios.AccionRegistry.Instancia.RegistrarAccion("CraftearObjeto", jugador);
+            }
+            catch { }
             return true;
         }
     }

@@ -1,12 +1,12 @@
-using System.Collections.Generic;
-using System.Linq;
-using MiJuegoRPG.Core.Combate.Acciones;
-using MiJuegoRPG.Core.Combate.Context;
-using MiJuegoRPG.Core.Combate.Eventos;
-using MiJuegoRPG.Core.Combate.Rng;
-
 namespace MiJuegoRPG.Core.Combate.Timeline
 {
+    using System.Collections.Generic;
+    using System.Linq;
+    using MiJuegoRPG.Core.Combate.Acciones;
+    using MiJuegoRPG.Core.Combate.Context;
+    using MiJuegoRPG.Core.Combate.Eventos;
+    using MiJuegoRPG.Core.Combate.Rng;
+
     public sealed class CombatTimeline
     {
         private readonly List<CombatAction> actions = new();
@@ -26,7 +26,10 @@ namespace MiJuegoRPG.Core.Combate.Timeline
             context = new CombatContext(rngFactory, new CombatEventLog(), () => CurrentTick);
         }
 
-        public int CurrentTick { get; private set; }
+        public int CurrentTick
+        {
+            get; private set;
+        }
 
         public CombatEventLog Log => context.Log;
 
@@ -35,11 +38,6 @@ namespace MiJuegoRPG.Core.Combate.Timeline
             action.Init(CurrentTick, ++sequenceCounter, context.Log);
             actions.Add(action);
             Resort();
-        }
-
-        private void Resort()
-        {
-            actions.Sort((a, b) => a.OrderKey.CompareTo(b.OrderKey));
         }
 
         public void RunUntilFinished(int? maxTicks = null)
@@ -58,6 +56,7 @@ namespace MiJuegoRPG.Core.Combate.Timeline
         public void Tick()
         {
             CurrentTick++;
+
             // Get snapshot sorted
             Resort();
             foreach (var act in actions.Where(a => !a.IsFinished))
@@ -69,6 +68,11 @@ namespace MiJuegoRPG.Core.Combate.Timeline
         public string ComputeDeterminismHash()
         {
             return baseSeed.ToString("X8") + ":" + Log.ComputeDeterminismHash();
+        }
+
+        private void Resort()
+        {
+            actions.Sort((a, b) => a.OrderKey.CompareTo(b.OrderKey));
         }
     }
 }

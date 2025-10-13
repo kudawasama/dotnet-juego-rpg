@@ -39,7 +39,7 @@ namespace MiJuegoRPG.Herramientas
             creados += MigrarLista<CollarData>(baseEquipo, new[] { "Collares.json", "collares.json" }, "collares", i => i.Nombre);
             creados += MigrarLista<PantalonData>(baseEquipo, new[] { "Pantalones.json", "pantalones.json" }, "pantalones", i => i.Nombre);
 
-            Console.WriteLine($"[MigradorEquipo] Archivos por ítem a crear (dry-run={(!write)}) ≈ {creados}");
+            Console.WriteLine($"[MigradorEquipo] Archivos por ítem a crear (dry-run={!write}) ≈ {creados}");
 
             if (!write)
             {
@@ -72,12 +72,14 @@ namespace MiJuegoRPG.Herramientas
         private static int MigrarLista<T>(string baseEquipo, string[] nombres, string carpeta, Func<T, string> nombreSel)
         {
             var ruta = nombres.Select(n => Path.Combine(baseEquipo, n)).FirstOrDefault(File.Exists);
-            if (ruta == null) return 0;
+            if (ruta == null)
+                return 0;
             try
             {
                 var json = File.ReadAllText(ruta);
                 var lista = JsonSerializer.Deserialize<List<T>>(json);
-                if (lista == null) return 0;
+                if (lista == null)
+                    return 0;
                 return lista.Count;
             }
             catch { return 0; }
@@ -87,7 +89,8 @@ namespace MiJuegoRPG.Herramientas
         private static int MigrarListaArmas(string baseEquipo, string[] nombres, string carpeta)
         {
             var ruta = nombres.Select(n => Path.Combine(baseEquipo, n)).FirstOrDefault(File.Exists);
-            if (ruta == null) return 0;
+            if (ruta == null)
+                return 0;
             try
             {
                 using var doc = JsonDocument.Parse(File.ReadAllText(ruta));
@@ -101,7 +104,8 @@ namespace MiJuegoRPG.Herramientas
         private static void CrearDesdeAgregados<T>(string baseEquipo, string[] nombres, string carpeta, Func<T, string> nombreSel, ref int existentes, ref int errores)
         {
             var ruta = nombres.Select(n => Path.Combine(baseEquipo, n)).FirstOrDefault(File.Exists);
-            if (ruta == null) return;
+            if (ruta == null)
+                return;
             List<T>? lista = null;
             try
             {
@@ -114,7 +118,8 @@ namespace MiJuegoRPG.Herramientas
                 errores++;
                 return;
             }
-            if (lista == null || lista.Count == 0) return;
+            if (lista == null || lista.Count == 0)
+                return;
 
             var outDir = Path.Combine(baseEquipo, carpeta);
             Directory.CreateDirectory(outDir);
@@ -124,7 +129,8 @@ namespace MiJuegoRPG.Herramientas
                 try
                 {
                     string nombre = nombreSel(item);
-                    if (string.IsNullOrWhiteSpace(nombre)) nombre = "sin_nombre";
+                    if (string.IsNullOrWhiteSpace(nombre))
+                        nombre = "sin_nombre";
                     var fileName = Slug(nombre) + ".json";
                     string path = Path.Combine(outDir, fileName);
                     path = AsegurarUnico(path);
@@ -143,7 +149,8 @@ namespace MiJuegoRPG.Herramientas
         private static void CrearDesdeAgregadosArmas(string baseEquipo, string[] nombres, string carpeta, ref int existentes, ref int errores)
         {
             var ruta = nombres.Select(n => Path.Combine(baseEquipo, n)).FirstOrDefault(File.Exists);
-            if (ruta == null) return;
+            if (ruta == null)
+                return;
 
             List<ArmaData>? lista = null;
             string raw = File.ReadAllText(ruta);
@@ -159,7 +166,10 @@ namespace MiJuegoRPG.Herramientas
             if (lista == null)
             {
                 // Parseo tolerante desde esquema histórico
-                try { lista = ParseArmasDesdeJson(raw); }
+                try
+                {
+                    lista = ParseArmasDesdeJson(raw);
+                }
                 catch (Exception ex)
                 {
                     Console.WriteLine($"[MigradorEquipo][WARN] armas: parse tolerante falló: {ex.Message}");
@@ -167,7 +177,8 @@ namespace MiJuegoRPG.Herramientas
                     return;
                 }
             }
-            if (lista == null || lista.Count == 0) return;
+            if (lista == null || lista.Count == 0)
+                return;
 
             var outDir = Path.Combine(baseEquipo, carpeta);
             Directory.CreateDirectory(outDir);
@@ -195,7 +206,8 @@ namespace MiJuegoRPG.Herramientas
         {
             var res = new List<ArmaData>();
             using var doc = JsonDocument.Parse(raw);
-            if (doc.RootElement.ValueKind != JsonValueKind.Array) return res;
+            if (doc.RootElement.ValueKind != JsonValueKind.Array)
+                return res;
             foreach (var el in doc.RootElement.EnumerateArray())
             {
                 try
@@ -236,19 +248,26 @@ namespace MiJuegoRPG.Herramientas
         {
             string n = (nombre ?? "").ToLowerInvariant();
             string c = (categoria ?? "Arma").ToLowerInvariant();
-            if (c.Contains("escudo")) return "Escudo";
-            if (n.Contains("arco")) return "Arco";
-            if (n.Contains("báculo") || n.Contains("baculo") || n.Contains("vara")) return "Baston";
-            if (n.Contains("daga")) return "Daga";
-            if (n.Contains("espadón") || n.Contains("espadon") || n.Contains("martillo") || n.Contains("maza")) return "DosManos";
+            if (c.Contains("escudo"))
+                return "Escudo";
+            if (n.Contains("arco"))
+                return "Arco";
+            if (n.Contains("báculo") || n.Contains("baculo") || n.Contains("vara"))
+                return "Baston";
+            if (n.Contains("daga"))
+                return "Daga";
+            if (n.Contains("espadón") || n.Contains("espadon") || n.Contains("martillo") || n.Contains("maza"))
+                return "DosManos";
             return "UnaMano";
         }
 
         // Helpers para lectura tolerante de JsonElement
         private static string GetPropertyOrDefault(this JsonElement el, string name, string def)
         {
-            if (el.ValueKind != JsonValueKind.Object) return def;
-            if (!el.TryGetProperty(name, out var prop)) return def;
+            if (el.ValueKind != JsonValueKind.Object)
+                return def;
+            if (!el.TryGetProperty(name, out var prop))
+                return def;
             return prop.ValueKind switch
             {
                 JsonValueKind.String => prop.GetString() ?? def,
@@ -261,25 +280,35 @@ namespace MiJuegoRPG.Herramientas
 
         private static int GetIntPropertyOrDefault(this JsonElement el, string name, int def)
         {
-            if (el.ValueKind != JsonValueKind.Object) return def;
-            if (!el.TryGetProperty(name, out var prop)) return def;
+            if (el.ValueKind != JsonValueKind.Object)
+                return def;
+            if (!el.TryGetProperty(name, out var prop))
+                return def;
             if (prop.ValueKind == JsonValueKind.Number)
             {
-                if (prop.TryGetInt32(out var i)) return i;
-                try { return (int)Math.Round(prop.GetDouble()); } catch { return def; }
+                if (prop.TryGetInt32(out var i))
+                    return i;
+                try
+                {
+                    return (int)Math.Round(prop.GetDouble());
+                }
+                catch { return def; }
             }
             if (prop.ValueKind == JsonValueKind.String)
             {
                 var s = prop.GetString();
-                if (int.TryParse(s, out var i)) return i;
-                if (double.TryParse(s, out var d)) return (int)Math.Round(d);
+                if (int.TryParse(s, out var i))
+                    return i;
+                if (double.TryParse(s, out var d))
+                    return (int)Math.Round(d);
             }
             return def;
         }
 
         private static string AsegurarUnico(string path)
         {
-            if (!File.Exists(path)) return path;
+            if (!File.Exists(path))
+                return path;
             string dir = Path.GetDirectoryName(path)!;
             string name = Path.GetFileNameWithoutExtension(path);
             string ext = Path.GetExtension(path);
@@ -287,7 +316,8 @@ namespace MiJuegoRPG.Herramientas
             while (true)
             {
                 string p = Path.Combine(dir, $"{name}_{i}{ext}");
-                if (!File.Exists(p)) return p;
+                if (!File.Exists(p))
+                    return p;
                 i++;
             }
         }
@@ -307,7 +337,8 @@ namespace MiJuegoRPG.Herramientas
             s = sb.ToString().Normalize(NormalizationForm.FormC);
             s = Regex.Replace(s, "[^a-z0-9]+", "_");
             s = Regex.Replace(s, "_+", "_").Trim('_');
-            if (string.IsNullOrEmpty(s)) s = "item";
+            if (string.IsNullOrEmpty(s))
+                s = "item";
             return s;
         }
     }

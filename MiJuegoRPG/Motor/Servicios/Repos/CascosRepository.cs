@@ -14,13 +14,14 @@ namespace MiJuegoRPG.Motor.Servicios.Repos
     /// </summary>
     public class CascosRepository
     {
-        private readonly Dictionary<string, CascoData> _cache = new(StringComparer.OrdinalIgnoreCase);
-        private bool _loaded;
+        private readonly Dictionary<string, CascoData> cache = new(StringComparer.OrdinalIgnoreCase);
+        private bool loaded;
 
         private void EnsureLoaded()
         {
-            if (_loaded) return;
-            _loaded = true;
+            if (loaded)
+                return;
+            loaded = true;
             try
             {
                 CargarBase();
@@ -35,27 +36,32 @@ namespace MiJuegoRPG.Motor.Servicios.Repos
         private void CargarBase()
         {
             var dir = PathProvider.CascosDir();
-            if (!Directory.Exists(dir)) return;
+            if (!Directory.Exists(dir))
+                return;
             foreach (var file in Directory.EnumerateFiles(dir, "*.json", SearchOption.AllDirectories))
             {
                 try
                 {
                     var json = File.ReadAllText(file);
-                    if (string.IsNullOrWhiteSpace(json)) continue;
+                    if (string.IsNullOrWhiteSpace(json))
+                        continue;
                     using var doc = JsonDocument.Parse(json);
                     if (doc.RootElement.ValueKind == JsonValueKind.Array)
                     {
                         foreach (var elem in doc.RootElement.EnumerateArray())
                         {
-                            if (elem.ValueKind != JsonValueKind.Object) continue;
+                            if (elem.ValueKind != JsonValueKind.Object)
+                                continue;
                             var data = Parse(elem, file);
-                            if (data != null) AgregarBaseSiNoExiste(data);
+                            if (data != null)
+                                AgregarBaseSiNoExiste(data);
                         }
                     }
                     else if (doc.RootElement.ValueKind == JsonValueKind.Object)
                     {
                         var data = Parse(doc.RootElement, file);
-                        if (data != null) AgregarBaseSiNoExiste(data);
+                        if (data != null)
+                            AgregarBaseSiNoExiste(data);
                     }
                 }
                 catch (Exception exFile)
@@ -74,19 +80,23 @@ namespace MiJuegoRPG.Motor.Servicios.Repos
             };
             foreach (var ruta in candidatos)
             {
-                if (!File.Exists(ruta)) continue;
+                if (!File.Exists(ruta))
+                    continue;
                 try
                 {
                     var json = File.ReadAllText(ruta);
-                    if (string.IsNullOrWhiteSpace(json)) continue;
+                    if (string.IsNullOrWhiteSpace(json))
+                        continue;
                     var opts = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
                     var lista = JsonSerializer.Deserialize<List<CascoData>>(json, opts);
-                    if (lista == null) continue;
+                    if (lista == null)
+                        continue;
                     foreach (var c in lista)
                     {
-                        if (string.IsNullOrWhiteSpace(c.Nombre)) continue;
+                        if (string.IsNullOrWhiteSpace(c.Nombre))
+                            continue;
                         c.Rareza = RarezaNormalizer.Normalizar(c.Rareza);
-                        _cache[c.Nombre] = c; // overlay reemplaza
+                        cache[c.Nombre] = c; // overlay reemplaza
                     }
                 }
                 catch (Exception ex)
@@ -101,7 +111,8 @@ namespace MiJuegoRPG.Motor.Servicios.Repos
             try
             {
                 string? nombre = LeerString(obj, "nombre") ?? LeerString(obj, "Nombre");
-                if (string.IsNullOrWhiteSpace(nombre)) return null;
+                if (string.IsNullOrWhiteSpace(nombre))
+                    return null;
                 var cd = new CascoData
                 {
                     Nombre = nombre.Trim(),
@@ -109,17 +120,27 @@ namespace MiJuegoRPG.Motor.Servicios.Repos
                     Rareza = RarezaNormalizer.Normalizar(LeerString(obj, "rareza") ?? LeerString(obj, "Rareza") ?? "Comun"),
                     SetId = LeerString(obj, "setId") ?? LeerString(obj, "SetId")
                 };
-                if (TryGetInt(obj, out int def, "defensa", "Defensa")) cd.Defensa = def;
-                if (TryGetInt(obj, out int nivel, "nivel", "Nivel")) cd.Nivel = nivel;
-                if (TryGetInt(obj, out int pfix, "perfeccion", "Perfeccion")) cd.Perfeccion = pfix;
-                if (TryGetInt(obj, out int nmin, "nivelmin", "NivelMin")) cd.NivelMin = nmin;
-                if (TryGetInt(obj, out int nmax, "nivelmax", "NivelMax")) cd.NivelMax = nmax;
-                if (TryGetInt(obj, out int dmin, "defensamin", "DefensaMin")) cd.DefensaMin = dmin;
-                if (TryGetInt(obj, out int dmax, "defensamax", "DefensaMax")) cd.DefensaMax = dmax;
-                if (TryGetInt(obj, out int pmin, "perfeccionmin", "PerfeccionMin")) cd.PerfeccionMin = pmin;
-                if (TryGetInt(obj, out int pmax, "perfeccionmax", "PerfeccionMax")) cd.PerfeccionMax = pmax;
+                if (TryGetInt(obj, out int def, "defensa", "Defensa"))
+                    cd.Defensa = def;
+                if (TryGetInt(obj, out int nivel, "nivel", "Nivel"))
+                    cd.Nivel = nivel;
+                if (TryGetInt(obj, out int pfix, "perfeccion", "Perfeccion"))
+                    cd.Perfeccion = pfix;
+                if (TryGetInt(obj, out int nmin, "nivelmin", "NivelMin"))
+                    cd.NivelMin = nmin;
+                if (TryGetInt(obj, out int nmax, "nivelmax", "NivelMax"))
+                    cd.NivelMax = nmax;
+                if (TryGetInt(obj, out int dmin, "defensamin", "DefensaMin"))
+                    cd.DefensaMin = dmin;
+                if (TryGetInt(obj, out int dmax, "defensamax", "DefensaMax"))
+                    cd.DefensaMax = dmax;
+                if (TryGetInt(obj, out int pmin, "perfeccionmin", "PerfeccionMin"))
+                    cd.PerfeccionMin = pmin;
+                if (TryGetInt(obj, out int pmax, "perfeccionmax", "PerfeccionMax"))
+                    cd.PerfeccionMax = pmax;
                 var csv = LeerString(obj, "rarezasPermitidasCsv") ?? LeerString(obj, "RarezasPermitidasCsv");
-                if (!string.IsNullOrWhiteSpace(csv)) cd.RarezasPermitidasCsv = csv;
+                if (!string.IsNullOrWhiteSpace(csv))
+                    cd.RarezasPermitidasCsv = csv;
                 return cd;
             }
             catch (Exception ex)
@@ -142,35 +163,39 @@ namespace MiJuegoRPG.Motor.Servicios.Repos
             {
                 if (obj.TryGetProperty(p, out var v) && v.ValueKind == JsonValueKind.Number && v.TryGetInt32(out var i))
                 {
-                    value = i; return true;
+                    value = i;
+                    return true;
                 }
             }
-            value = 0; return false;
+            value = 0;
+            return false;
         }
 
         private void AgregarBaseSiNoExiste(CascoData data)
         {
-            if (string.IsNullOrWhiteSpace(data.Nombre)) return;
-            if (_cache.ContainsKey(data.Nombre)) return;
-            _cache[data.Nombre] = data;
+            if (string.IsNullOrWhiteSpace(data.Nombre))
+                return;
+            if (cache.ContainsKey(data.Nombre))
+                return;
+            cache[data.Nombre] = data;
         }
 
         public IReadOnlyCollection<CascoData> Todas()
         {
             EnsureLoaded();
-            return _cache.Values as IReadOnlyCollection<CascoData> ?? new List<CascoData>(_cache.Values);
+            return cache.Values as IReadOnlyCollection<CascoData> ?? new List<CascoData>(cache.Values);
         }
 
         public bool TryGet(string nombre, out CascoData? data)
         {
             EnsureLoaded();
-            return _cache.TryGetValue(nombre, out data);
+            return cache.TryGetValue(nombre, out data);
         }
 
         public void Invalidate()
         {
-            _cache.Clear();
-            _loaded = false;
+            cache.Clear();
+            loaded = false;
         }
     }
 }

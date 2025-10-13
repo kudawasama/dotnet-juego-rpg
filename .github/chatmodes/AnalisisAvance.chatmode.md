@@ -30,40 +30,49 @@ Este agente está especializado en analizar la documentación (`Docs`) del proye
 
 ---
 
-## Formato de Respuesta
+## Formato de Respuesta Estandarizado
 
-### 1. Cambios Recientes
+### 📊 Estado General del Proyecto
+- Resumen ejecutivo del estado actual
+- Agente recomendado para acciones específicas
+
+### 🔄 Cambios Recientes
 | Fecha       | Archivo/Componente         | Descripción del Cambio           |
 |-------------|---------------------------|----------------------------------|
 | YYYY-MM-DD  | docs/ejemplo.md           | Breve descripción                |
 
-### 2. Estado Actual y Avance
-- **Resumen:**  
-  (Breve resumen del estado actual)
-
+### 📈 Métricas y Avance
 - **Funcionalidades Implementadas:**  
-  - (Lista)
-
+  - (Lista con porcentajes de completitud)
 - **Funcionalidades Pendientes:**  
-  - (Lista)
+  - (Lista priorizada)
+- **Indicadores clave:** Build, Tests, Warnings, etc.
 
-### 3. Sugerencias de Próximos Pasos
-- (Lista priorizada de acciones sugeridas)
+### 🎯 Prioridades Inmediatas
+1. **[Prioridad Alta]** (Impacto: Alto, Esfuerzo: X)
+   - **Agente recomendado:** `/agente`
+   - Descripción y criterios
 
-### 4. Arquitectura Propuesta
-- **Descripción:**  
-  (Breve descripción de la arquitectura)
-- **Diagrama (opcional):**
-  ```
-  [Componente A] --> [Componente B]
-  ```
+### 🚧 Bloqueadores y Riesgos
+- Bloqueadores críticos identificados
+- Riesgos y mitigaciones propuestas
 
-### 5. Tablas de Seguimiento
+### 🔄 Flujo de Trabajo Recomendado
+1. **Inmediato** → `/agente`: Descripción
+2. **Siguiente** → `/agente`: Descripción  
+3. **Después** → `/agente`: Descripción
 
-#### Tareas
-| Tarea                        | Estado      | Responsable | Fecha Estimada |
-|------------------------------|-------------|-------------|---------------|
-| Implementar X                | En progreso | Nombre      | YYYY-MM-DD    |
+### 📊 Indicadores de Salud
+- **Build**: ✅ PASS / 🔴 FAIL
+- **Tests**: ✅ PASS (X/Y) / 🔴 FAIL
+- **Cobertura**: ✅ >80% / 🟡 60-80% / 🔴 <60%
+- **Warnings**: ✅ <20 / 🟡 20-50 / 🔴 >50
+
+### 💬 Mensajes para copiar
+**Para continuar con [acción]:**
+```
+Cambiar a /agente y ejecutar: "descripción de tarea"
+```
 
 ---
 
@@ -81,17 +90,13 @@ Este agente está especializado en analizar la documentación (`Docs`) del proye
 
 ---
 
-## 🧩 Orquestación
+## 🧩 Interacción con MiJuego
 
-- No ejecutar ni aplicar cambios sin aprobación explícita del **Agente Maestro (`MiJuego`)**.  
-- Este agente **no tiene autoridad de merge** ni de coordinación entre otros agentes.  
-- Toda acción debe indicar su origen (por ejemplo: “Instrucción del Maestro”, “Corrección validada”, “Tarea de mantenimiento”).  
-- Si una tarea excede su ámbito, debe **nominar otro agente ejecutor** o **proponer la creación de uno nuevo** con:
-  - Nombre sugerido  
-  - Alcance  
-  - Responsabilidades  
-  - Criterios de aceptación
-- Este agente actúa bajo supervisión directa del **Agente Maestro**, dentro del sistema de orquestación de *MiJuego*.
+- Este agente ejecuta análisis de progreso asignados por **MiJuego**.  
+- La autorización se asume cuando el usuario cambia al agente.  
+- Devuelve reporte con cambios recientes, estado, próximos pasos y tablas de seguimiento, más mensaje para MiJuego.  
+- Si alguna acción excede su ámbito, sugiere el agente adecuado o la creación de uno nuevo (nombre, alcance, responsabilidades, criterios de aceptación).
+
 
 
 **Fin del ChatMode**

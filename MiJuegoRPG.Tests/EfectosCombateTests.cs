@@ -13,10 +13,24 @@ namespace MiJuegoRPG.Tests
             public int Defensa { get; set; } = 0;
             public int DefensaMagica { get; set; } = 0;
             public bool EstaVivo => Vida > 0;
-            public int AtacarFisico(ICombatiente objetivo) { objetivo.RecibirDanioFisico(1); return 1; }
-            public int AtacarMagico(ICombatiente objetivo) { objetivo.RecibirDanioMagico(1); return 1; }
-            public void RecibirDanioFisico(int d) { Vida = System.Math.Max(0, Vida - d); }
-            public void RecibirDanioMagico(int d) { Vida = System.Math.Max(0, Vida - d); }
+            public int AtacarFisico(ICombatiente objetivo)
+            {
+                objetivo.RecibirDanioFisico(1);
+                return 1;
+            }
+            public int AtacarMagico(ICombatiente objetivo)
+            {
+                objetivo.RecibirDanioMagico(1);
+                return 1;
+            }
+            public void RecibirDanioFisico(int d)
+            {
+                Vida = System.Math.Max(0, Vida - d);
+            }
+            public void RecibirDanioMagico(int d)
+            {
+                Vida = System.Math.Max(0, Vida - d);
+            }
         }
 
         [Fact]
@@ -26,12 +40,16 @@ namespace MiJuegoRPG.Tests
             var veneno = new MiJuegoRPG.Motor.Acciones.EfectoVeneno(danioPorTurno: 3, duracionTurnos: 2);
 
             // Turno 1
-            foreach (var _ in veneno.Tick(objetivo)) { }
+            foreach (var _ in veneno.Tick(objetivo))
+            {
+            }
             Assert.Equal(17, objetivo.Vida);
             Assert.True(veneno.AvanzarTurno());
 
             // Turno 2
-            foreach (var _ in veneno.Tick(objetivo)) { }
+            foreach (var _ in veneno.Tick(objetivo))
+            {
+            }
             Assert.Equal(14, objetivo.Vida);
             Assert.False(veneno.AvanzarTurno());
         }

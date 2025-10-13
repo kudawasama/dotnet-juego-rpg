@@ -32,9 +32,9 @@ namespace MiJuegoRPG.Motor.Menus
                 {
                     case "1":
                         Logger.Enabled = !Logger.Enabled;
-                        if (juego.jugador != null)
+                        if (juego.Jugador != null)
                         {
-                            juego.jugador.PreferenciaLoggerEnabled = Logger.Enabled;
+                            juego.Jugador.PreferenciaLoggerEnabled = Logger.Enabled;
                         }
                         juego.Ui.WriteLine($"Logger ahora {(Logger.Enabled ? "ON" : "OFF")}.");
                         break;
@@ -68,17 +68,25 @@ namespace MiJuegoRPG.Motor.Menus
             var op = InputService.LeerOpcion("Selecciona nivel: ");
             switch (op)
             {
-                case "1": Logger.Level = LogLevel.Error; break;
-                case "2": Logger.Level = LogLevel.Warn; break;
-                case "3": Logger.Level = LogLevel.Info; break;
-                case "4": Logger.Level = LogLevel.Debug; break;
+                case "1":
+                    Logger.Level = LogLevel.Error;
+                    break;
+                case "2":
+                    Logger.Level = LogLevel.Warn;
+                    break;
+                case "3":
+                    Logger.Level = LogLevel.Info;
+                    break;
+                case "4":
+                    Logger.Level = LogLevel.Debug;
+                    break;
                 default:
                     juego.Ui.WriteLine("Selección inválida.");
                     return;
             }
-            if (juego.jugador != null)
+            if (juego.Jugador != null)
             {
-                juego.jugador.PreferenciaLoggerLevel = Logger.Level.ToString();
+                juego.Jugador.PreferenciaLoggerLevel = Logger.Level.ToString();
             }
             juego.Ui.WriteLine($"Nivel de log establecido a {Logger.Level}.");
         }

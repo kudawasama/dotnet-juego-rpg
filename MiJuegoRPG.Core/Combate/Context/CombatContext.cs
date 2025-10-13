@@ -1,8 +1,8 @@
-using MiJuegoRPG.Core.Combate.Eventos;
-using MiJuegoRPG.Core.Combate.Rng;
-
 namespace MiJuegoRPG.Core.Combate.Context
 {
+    using MiJuegoRPG.Core.Combate.Eventos;
+    using MiJuegoRPG.Core.Combate.Rng;
+
     public sealed class CombatContext
     {
         private readonly System.Func<int> currentTickProvider;
@@ -14,8 +14,16 @@ namespace MiJuegoRPG.Core.Combate.Context
             this.currentTickProvider = currentTickProvider;
         }
 
-        public IRngFactory Rng { get; }
-        public CombatEventLog Log { get; }
-    public int CurrentTick => currentTickProvider();
+        public IRngFactory Rng
+        {
+            get;
+        }
+
+        public CombatEventLog Log
+        {
+            get;
+        }
+
+        public int CurrentTick => currentTickProvider();
     }
 }

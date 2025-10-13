@@ -53,9 +53,9 @@ namespace MiJuegoRPG.Tests
         }
 
         [Theory]
-        [InlineData("Comun","Comun")]
-        [InlineData("Raro","Rara")]
-        [InlineData("Epico","Epica")]
+        [InlineData("Comun", "Comun")]
+        [InlineData("Raro", "Rara")]
+        [InlineData("Epico", "Epica")]
         public void Rareza_Normalizada(string input, string esperado)
         {
             var overlayPath = Path.Combine(_pjDatosDir, "cinturones_overlay.json");

@@ -9,10 +9,14 @@ namespace MiJuegoRPG.Habilidades
     public class Hechizo : Habilidad
     {
         // Daño mágico que inflige el hechizo
-        public int DanioMagico { get; set; }
+        public int DanioMagico
+        {
+            get; set;
+        }
 
         // Constructor: define el daño y el costo de maná (por defecto 10)
-        public Hechizo(int danioMagico) : base("Hechizo", 10)
+        public Hechizo(int danioMagico)
+            : base("Hechizo", 10)
         {
             DanioMagico = danioMagico;
         }

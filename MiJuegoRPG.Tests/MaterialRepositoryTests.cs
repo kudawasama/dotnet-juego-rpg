@@ -62,7 +62,8 @@ namespace MiJuegoRPG.Tests
                 // Restaurar overlay si estaba
                 if (backup != null && File.Exists(backup))
                 {
-                    if (File.Exists(ruta)) File.Delete(ruta);
+                    if (File.Exists(ruta))
+                        File.Delete(ruta);
                     File.Move(backup, ruta);
                 }
             }

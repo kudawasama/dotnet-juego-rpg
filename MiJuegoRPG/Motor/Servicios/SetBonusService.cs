@@ -14,25 +14,49 @@ namespace MiJuegoRPG.Motor.Servicios
     {
         public class SetDef
         {
-            public string id { get; set; } = string.Empty;
-            public MatchDef match { get; set; } = new();
-            public List<ThresholdDef> thresholds { get; set; } = new();
+            public string Id { get; set; } = string.Empty;
+            public MatchDef Match { get; set; } = new();
+            public List<ThresholdDef> Thresholds { get; set; } = new();
         }
         public class MatchDef
         {
-            public string? setId { get; set; }
-            public string? nameContains { get; set; }
+            public string? SetId
+            {
+                get; set;
+            }
+            public string? NameContains
+            {
+                get; set;
+            }
         }
         public class ThresholdDef
         {
-            public int piezas { get; set; }
-            public List<BonoDef>? bonos { get; set; }
-            public List<HabilidadDef>? habilidades { get; set; }
+            public int Piezas
+            {
+                get; set;
+            }
+            public List<BonoDef>? Bonos
+            {
+                get; set;
+            }
+            public List<HabilidadDef>? Habilidades
+            {
+                get; set;
+            }
         }
-        public class BonoDef { public string estadistica { get; set; } = string.Empty; public double valor { get; set; } }
-        public class HabilidadDef { public string id { get; set; } = string.Empty; public int nivelMinimo { get; set; } = 1; }
+        public class BonoDef
+        {
+            public string Estadistica { get; set; } = string.Empty; public double Valor
+            {
+                get; set;
+            }
+        }
+        public class HabilidadDef
+        {
+            public string Id { get; set; } = string.Empty; public int NivelMinimo { get; set; } = 1;
+        }
 
-    private readonly List<SetDef> _sets = new();
+        private readonly List<SetDef> sets = new();
         public static SetBonusService Instancia { get; } = new SetBonusService();
 
         private SetBonusService()
@@ -42,11 +66,12 @@ namespace MiJuegoRPG.Motor.Servicios
 
         public void CargarSets()
         {
-            _sets.Clear();
+            sets.Clear();
             try
             {
                 string dir = PathProvider.CombineData(Path.Combine("Equipo", "sets"));
-                if (!Directory.Exists(dir)) return;
+                if (!Directory.Exists(dir))
+                    return;
                 var opts = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
                 foreach (var file in Directory.EnumerateFiles(dir, "*.json", SearchOption.TopDirectoryOnly))
                 {
@@ -54,7 +79,8 @@ namespace MiJuegoRPG.Motor.Servicios
                     {
                         var json = File.ReadAllText(file);
                         var def = JsonSerializer.Deserialize<SetDef>(json, opts);
-                        if (def != null) _sets.Add(def);
+                        if (def != null)
+                            sets.Add(def);
                     }
                     catch (Exception ex)
                     {
@@ -68,47 +94,49 @@ namespace MiJuegoRPG.Motor.Servicios
             }
         }
 
-        public (Dictionary<string,double> bonos, List<(string id,int nivel)> habilidades) CalcularBonosYHabilidades(IEnumerable<Objeto> equipados)
+        public (Dictionary<string, double> bonos, List<(string id, int nivel)> habilidades) CalcularBonosYHabilidades(IEnumerable<Objeto> equipados)
         {
             var bonos = new Dictionary<string, double>(StringComparer.OrdinalIgnoreCase);
             var habs = new List<(string id, int nivel)>();
             var lista = equipados.ToList();
-            foreach (var set in _sets)
+            foreach (var set in sets)
             {
                 // Contar piezas que matchean este set
                 int count = 0;
                 foreach (var obj in lista)
                 {
                     bool ok = false;
-                    if (!string.IsNullOrWhiteSpace(set.match.setId) && !string.IsNullOrWhiteSpace(obj.SetId))
+                    if (!string.IsNullOrWhiteSpace(set.Match.SetId) && !string.IsNullOrWhiteSpace(obj.SetId))
                     {
-                        ok = string.Equals(obj.SetId, set.match.setId, StringComparison.OrdinalIgnoreCase);
+                        ok = string.Equals(obj.SetId, set.Match.SetId, StringComparison.OrdinalIgnoreCase);
                     }
-                    else if (!string.IsNullOrWhiteSpace(set.match.nameContains))
+                    else if (!string.IsNullOrWhiteSpace(set.Match.NameContains))
                     {
-                        ok = obj.Nombre?.IndexOf(set.match.nameContains, StringComparison.OrdinalIgnoreCase) >= 0;
+                        ok = obj.Nombre?.IndexOf(set.Match.NameContains, StringComparison.OrdinalIgnoreCase) >= 0;
                     }
-                    if (ok) count++;
+                    if (ok)
+                        count++;
                 }
-                if (count <= 0) continue;
-                foreach (var th in set.thresholds.OrderBy(t => t.piezas))
+                if (count <= 0)
+                    continue;
+                foreach (var th in set.Thresholds.OrderBy(t => t.Piezas))
                 {
-                    if (count >= th.piezas)
+                    if (count >= th.Piezas)
                     {
-                        if (th.bonos != null)
+                        if (th.Bonos != null)
                         {
-                            foreach (var b in th.bonos)
+                            foreach (var b in th.Bonos)
                             {
-                                bonos.TryGetValue(b.estadistica, out var v);
-                                bonos[b.estadistica] = v + b.valor;
+                                bonos.TryGetValue(b.Estadistica, out var v);
+                                bonos[b.Estadistica] = v + b.Valor;
                             }
                         }
-                        if (th.habilidades != null)
+                        if (th.Habilidades != null)
                         {
-                            foreach (var h in th.habilidades)
+                            foreach (var h in th.Habilidades)
                             {
-                                if (!string.IsNullOrWhiteSpace(h.id))
-                                    habs.Add((h.id, Math.Max(1, h.nivelMinimo)));
+                                if (!string.IsNullOrWhiteSpace(h.Id))
+                                    habs.Add((h.Id, Math.Max(1, h.NivelMinimo)));
                             }
                         }
                     }

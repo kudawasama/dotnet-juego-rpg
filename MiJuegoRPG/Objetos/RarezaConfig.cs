@@ -15,7 +15,10 @@ namespace MiJuegoRPG.Objetos
         /// Gets the global singleton instance of the rarity configuration.
         /// Debe inicializarse al cargar el juego (por ejemplo, en el loader principal).
         /// </summary>
-        public static RarezaConfig? Instancia { get; private set; }
+        public static RarezaConfig? Instancia
+        {
+            get; private set;
+        }
 
         public Dictionary<string, double> Pesos { get; private set; } = new(StringComparer.OrdinalIgnoreCase);
 

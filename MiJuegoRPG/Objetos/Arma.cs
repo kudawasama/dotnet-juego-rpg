@@ -4,17 +4,35 @@ namespace MiJuegoRPG.Objetos
 {
     public class Arma : MiJuegoRPG.Objetos.Objeto, MiJuegoRPG.Interfaces.IBonificadorEstadistica
     {
-        public int Perfeccion { get; set; }
+        public int Perfeccion
+        {
+            get; set;
+        }
         public string TipoObjeto { get; set; } = "Arma";
-        public int DañoFisico { get; set; }
-        public int DañoMagico { get; set; }
-        public int Nivel { get; set; }
-        public Dictionary<string, double>? BonificadorAtributos { get; set; }
+        public int DañoFisico
+        {
+            get; set;
+        }
+        public int DañoMagico
+        {
+            get; set;
+        }
+        public int Nivel
+        {
+            get; set;
+        }
+        public Dictionary<string, double>? BonificadorAtributos
+        {
+            get; set;
+        }
 
         /// <summary>
-        /// Multiplicadores de rareza dinámicos (se recomienda obtenerlos desde RarezaConfig)
+        /// Gets or sets multiplicadores de rareza dinámicos (se recomienda obtenerlos desde RarezaConfig).
         /// </summary>
-        public static Dictionary<string, double> MultiplicadoresRareza { get; set; } = new Dictionary<string, double>
+        public static Dictionary<string, double> MultiplicadoresRareza
+        {
+            get; set;
+        } = new Dictionary<string, double>
         {
             { "Rota", 0.05 },
             { "Pobre", 0.20 },
@@ -25,7 +43,8 @@ namespace MiJuegoRPG.Objetos
             { "Ornamentada", 1.0 }
         };
 
-        public Arma(string nombre, int dañoBase, int nivel = 1, string rareza = "Normal", string categoria = "UnaMano") : base(nombre, rareza, categoria)
+        public Arma(string nombre, int dañoBase, int nivel = 1, string rareza = "Normal", string categoria = "UnaMano")
+            : base(nombre, rareza, categoria)
         {
             Nivel = nivel;
             DañoFisico = CalcularDaño(dañoBase, nivel, rareza);
@@ -33,7 +52,8 @@ namespace MiJuegoRPG.Objetos
             Perfeccion = 50;
         }
 
-        public Arma() : base("", "Normal", "UnaMano") { }
+        public Arma()
+            : base("", "Normal", "UnaMano") { }
         // Constructor extendido para permitir setear perfección
         public Arma(string nombre, int dañoBase, int nivel, string rareza, string categoria, int perfeccion, int bonificadorAtributos)
             : base(nombre, rareza, categoria)

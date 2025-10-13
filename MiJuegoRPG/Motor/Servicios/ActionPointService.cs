@@ -12,7 +12,8 @@ namespace MiJuegoRPG.Motor.Servicios
     {
         public static int ComputePA(Personaje.Personaje p, CombatConfig cfg)
         {
-            if (p == null) return cfg.BasePA;
+            if (p == null)
+                return cfg.BasePA;
             int basePA = cfg.BasePA;
             int fromAgi = (int)(p.Atributos.Agilidad / cfg.AgilityDivisor);
             int fromDex = (int)(p.Atributos.Destreza / cfg.DexterityDivisor);
@@ -24,8 +25,10 @@ namespace MiJuegoRPG.Motor.Servicios
             int debuffs = 0;    // Fase 1: idem
 
             int raw = basePA + fromAgi + fromDex + fromLvl + equipBonus + buffs - debuffs;
-            if (raw < cfg.PAMin) raw = cfg.PAMin;
-            if (raw > cfg.PAMax) raw = cfg.PAMax;
+            if (raw < cfg.PAMin)
+                raw = cfg.PAMin;
+            if (raw > cfg.PAMax)
+                raw = cfg.PAMax;
             return raw;
         }
     }

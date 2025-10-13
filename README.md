@@ -12,7 +12,7 @@ Centro de documentación y enlaces rápidos del proyecto. Para la guía completa
 
 Cómo compilar y probar (PowerShell):
 
-```
+```md
 dotnet build
 dotnet test --nologo
 ```
@@ -20,7 +20,6 @@ dotnet test --nologo
 Ejecutar el juego (desde carpeta `MiJuegoRPG/`):
 
 ## Uso del Agente (Copilot / Reglas Internas)
-
 
 Fuente única de reglas: `copilot/agent.md`.
 
@@ -52,15 +51,14 @@ Planilla Sugerida:
 ```csharp
 // @AgenteCombate: validar interacción crítico vs penetración antes de tunear
 // @AgenteDatos: revisar duplicados en overlay
-```
-
+```md
 4. Tras aplicar cambios relevantes a núcleo / datos: actualizar Bitácora y Roadmap.
 
 ## CI
 
 Workflow básico (build + test) en `.github/workflows/ci.yml`. El badge se añadirá al estabilizar la rama principal.
 
-```
+```md
 dotnet run --project MiJuegoRPG.csproj
 ```
 

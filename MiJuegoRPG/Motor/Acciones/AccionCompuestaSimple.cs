@@ -9,23 +9,23 @@ namespace MiJuegoRPG.Motor.Acciones
     /// </summary>
     public class AccionCompuestaSimple : IAccionCombate
     {
-        private readonly Func<ICombatiente, ICombatiente, ResultadoAccion> _ejecutar;
-        private readonly string _nombre;
-        private readonly int _costo;
-        private readonly int _cooldown;
+        private readonly Func<ICombatiente, ICombatiente, ResultadoAccion> ejecutar;
+        private readonly string nombre;
+        private readonly int costo;
+        private readonly int cooldown;
 
         public AccionCompuestaSimple(string nombre, int costoMana, int cooldown, Func<ICombatiente, ICombatiente, ResultadoAccion> ejecutar)
         {
-            _nombre = nombre;
-            _costo = costoMana;
-            _cooldown = cooldown;
-            _ejecutar = ejecutar;
+            this.nombre = nombre;
+            costo = costoMana;
+            this.cooldown = cooldown;
+            this.ejecutar = ejecutar;
         }
 
-        public string Nombre => _nombre;
-        public int CostoMana => _costo;
-        public int CooldownTurnos => _cooldown;
+        public string Nombre => nombre;
+        public int CostoMana => costo;
+        public int CooldownTurnos => cooldown;
 
-        public ResultadoAccion Ejecutar(ICombatiente ejecutor, ICombatiente objetivo) => _ejecutar(ejecutor, objetivo);
+        public ResultadoAccion Ejecutar(ICombatiente ejecutor, ICombatiente objetivo) => ejecutar(ejecutor, objetivo);
     }
 }

@@ -14,8 +14,18 @@ namespace MiJuegoRPG.Tests
         public bool EstaVivo => Vida > 0;
         public int AtacarFisico(ICombatiente objetivo) => 0;
         public int AtacarMagico(ICombatiente objetivo) => 0;
-        public void RecibirDanioFisico(int d) { Vida -= d; if (Vida < 0) Vida = 0; }
-        public void RecibirDanioMagico(int d) { Vida -= d; if (Vida < 0) Vida = 0; }
+        public void RecibirDanioFisico(int d)
+        {
+            Vida -= d;
+            if (Vida < 0)
+                Vida = 0;
+        }
+        public void RecibirDanioMagico(int d)
+        {
+            Vida -= d;
+            if (Vida < 0)
+                Vida = 0;
+        }
     }
 
     public class CritScalingFactorIntegrationTests
@@ -55,7 +65,8 @@ namespace MiJuegoRPG.Tests
                 FactorPenetracionCritico = 1.0
             };
 
-            var rng = RandomService.Instancia; rng.SetSeed(123);
+            var rng = RandomService.Instancia;
+            rng.SetSeed(123);
             var res = DamagePipeline.Calcular(in req, rng);
 
             Assert.True(res.FueCritico);

@@ -11,7 +11,8 @@ namespace MiJuegoRPG.Motor.Servicios
     {
         public static string Normalizar(string? input)
         {
-            if (string.IsNullOrWhiteSpace(input)) return "Comun"; // fallback seguro
+            if (string.IsNullOrWhiteSpace(input))
+                return "Comun"; // fallback seguro
             var r = QuitarAcentos(input.Trim());
             var lower = r.ToLowerInvariant().Replace(" ", "");
             return lower switch

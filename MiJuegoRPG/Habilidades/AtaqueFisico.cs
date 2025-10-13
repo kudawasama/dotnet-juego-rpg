@@ -1,12 +1,18 @@
-
 namespace MiJuegoRPG.Habilidades
 {
     public class AtaqueFisico : Habilidad
     {
-    public int DanioFisico { get; set; }
-    public int CostoMana { get; set; }
+        public int DanioFisico
+        {
+            get; set;
+        }
+        public int CostoMana
+        {
+            get; set;
+        }
 
-        public AtaqueFisico(int danioFisico) : base("Ataque Físico", 5)
+        public AtaqueFisico(int danioFisico)
+            : base("Ataque Físico", 5)
         {
             DanioFisico = danioFisico;
             CostoMana = 5; // Puedes ajustar el costo por defecto

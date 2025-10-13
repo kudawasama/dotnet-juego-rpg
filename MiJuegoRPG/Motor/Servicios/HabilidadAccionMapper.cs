@@ -13,7 +13,7 @@ namespace MiJuegoRPG.Motor.Servicios
     /// </summary>
     public static class HabilidadAccionMapper
     {
-        private static readonly Dictionary<string, Func<IAccionCombate>> baseMap = new(StringComparer.OrdinalIgnoreCase)
+        private static readonly Dictionary<string, Func<IAccionCombate>> BaseMap = new(StringComparer.OrdinalIgnoreCase)
         {
             // Ataque físico
             ["ataque_fisico"] = () => new MiJuegoRPG.Motor.Acciones.AtaqueFisicoAccion(),
@@ -37,6 +37,7 @@ namespace MiJuegoRPG.Motor.Servicios
         /// Crea una acción de combate para la habilidad indicada.
         /// Usa Id y Nombre (normalizados) para resolver el mapping.
         /// </summary>
+        /// <returns></returns>
         public static IAccionCombate? CrearAccionPara(string habilidadId, MiJuegoRPG.Personaje.HabilidadProgreso progreso)
         {
             // 1) Preferir AccionId explícito en el catálogo, si existe
@@ -47,7 +48,7 @@ namespace MiJuegoRPG.Motor.Servicios
                 if (data != null && !string.IsNullOrWhiteSpace(data.AccionId))
                 {
                     var accId = data.AccionId.Trim();
-                    if (baseMap.TryGetValue(accId, out var factoryExp))
+                    if (BaseMap.TryGetValue(accId, out var factoryExp))
                     {
                         var accionBase = factoryExp();
                         return AplicarCostosDesdeCatalogo(accionBase, data, progreso);
@@ -60,7 +61,7 @@ namespace MiJuegoRPG.Motor.Servicios
             var claves = NombresPosibles(habilidadId, progreso?.Nombre);
             foreach (var k in claves)
             {
-                if (baseMap.TryGetValue(k, out var factory))
+                if (BaseMap.TryGetValue(k, out var factory))
                 {
                     var accionBase = factory();
                     return AplicarCostosDesdeCatalogo(accionBase, null, progreso!);
@@ -73,6 +74,7 @@ namespace MiJuegoRPG.Motor.Servicios
         /// Devuelve el AccionId explícito definido en el catálogo para una habilidad (si existe),
         /// normalizado. Si no existe, retorna cadena vacía.
         /// </summary>
+        /// <returns></returns>
         public static string ResolverAccionIdPara(string habilidadId)
         {
             try
@@ -109,8 +111,7 @@ namespace MiJuegoRPG.Motor.Servicios
                         nombre: accionBase.Nombre,
                         costoMana: costo ?? accionBase.CostoMana,
                         cooldown: cd ?? accionBase.CooldownTurnos,
-                        ejecutar: (ejecutor, objetivo) => accionBase.Ejecutar(ejecutor, objetivo)
-                    );
+                        ejecutar: (ejecutor, objetivo) => accionBase.Ejecutar(ejecutor, objetivo));
                 }
                 return accionBase;
             }
@@ -127,12 +128,14 @@ namespace MiJuegoRPG.Motor.Servicios
             void Add(string s)
             {
                 s = Norm(s);
-                if (!string.IsNullOrEmpty(s)) set.Add(s);
+                if (!string.IsNullOrEmpty(s))
+                    set.Add(s);
                 set.Add(s.Replace("_", "").Replace("-", " "));
                 set.Add(s.Replace("_", "").Replace("-", ""));
             }
             Add(id);
-            if (!string.IsNullOrWhiteSpace(nombre)) Add(nombre);
+            if (!string.IsNullOrWhiteSpace(nombre))
+                Add(nombre);
             return set;
         }
     }

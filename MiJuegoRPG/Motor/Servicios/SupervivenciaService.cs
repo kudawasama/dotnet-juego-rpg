@@ -12,8 +12,8 @@ namespace MiJuegoRPG.Motor.Servicios
     /// </summary>
     public class SupervivenciaService
     {
-        private SupervivenciaConfig _config = new();
-        public SupervivenciaConfig Config => _config;
+        private SupervivenciaConfig config = new();
+        public SupervivenciaConfig Config => config;
 
         public void CargarConfig()
         {
@@ -32,38 +32,42 @@ namespace MiJuegoRPG.Motor.Servicios
             };
             var cfg = JsonSerializer.Deserialize<SupervivenciaConfig>(json, opts);
             if (cfg != null)
-                _config = cfg;
+                config = cfg;
         }
 
         public MultiplicadoresContexto ObtenerMultiplicadores(string contexto)
         {
-            if (string.IsNullOrWhiteSpace(contexto)) return new MultiplicadoresContexto();
-            return _config.MultiplicadoresPorContexto.TryGetValue(contexto, out var v) ? v : new MultiplicadoresContexto();
+            if (string.IsNullOrWhiteSpace(contexto))
+                return new MultiplicadoresContexto();
+            return config.MultiplicadoresPorContexto.TryGetValue(contexto, out var v) ? v : new MultiplicadoresContexto();
         }
 
         public ReglasBioma ObtenerReglasBioma(string bioma)
         {
-            if (string.IsNullOrWhiteSpace(bioma)) return new ReglasBioma();
-            return _config.ReglasPorBioma.TryGetValue(bioma, out var v) ? v : new ReglasBioma();
+            if (string.IsNullOrWhiteSpace(bioma))
+                return new ReglasBioma();
+            return config.ReglasPorBioma.TryGetValue(bioma, out var v) ? v : new ReglasBioma();
         }
 
         public (double umbralHambreWarn, double umbralSedWarn, double umbralFatigaWarn) ObtenerUmbralesAdvertencia()
         {
-            var u = _config.Umbrales.Advertencia;
+            var u = config.Umbrales.Advertencia;
             return (u.Hambre, u.Sed, u.Fatiga);
         }
 
         public (double umbralHambreCrit, double umbralSedCrit, double umbralFatigaCrit) ObtenerUmbralesCriticos()
         {
-            var u = _config.Umbrales.Critico;
+            var u = config.Umbrales.Critico;
             return (u.Hambre, u.Sed, u.Fatiga);
         }
 
         // Helpers UI/Runtime: etiquetas por umbrales y estado de temperatura
         public string EtiquetaDesdeUmbrales(double valor, double warn, double crit)
         {
-            if (valor >= crit) return "CRÍTICO";
-            if (valor >= warn) return "ADVERTENCIA";
+            if (valor >= crit)
+                return "CRÍTICO";
+            if (valor >= warn)
+                return "ADVERTENCIA";
             return "OK";
         }
 
@@ -74,18 +78,21 @@ namespace MiJuegoRPG.Motor.Servicios
             return (
                 EtiquetaDesdeUmbrales(hambre, wH, cH),
                 EtiquetaDesdeUmbrales(sed, wS, cS),
-                EtiquetaDesdeUmbrales(fatiga, wF, cF)
-            );
+                EtiquetaDesdeUmbrales(fatiga, wF, cF));
         }
 
         public string EstadoTemperatura(double t)
         {
-            var adv = _config.Umbrales.Advertencia;
-            var cri = _config.Umbrales.Critico;
-            if (t <= cri.Frio) return "HIPOTERMIA";
-            if (t < adv.Frio) return "FRÍO";
-            if (t >= cri.Calor) return "GOLPE DE CALOR";
-            if (t > adv.Calor) return "CALOR";
+            var adv = config.Umbrales.Advertencia;
+            var cri = config.Umbrales.Critico;
+            if (t <= cri.Frio)
+                return "HIPOTERMIA";
+            if (t < adv.Frio)
+                return "FRÍO";
+            if (t >= cri.Calor)
+                return "GOLPE DE CALOR";
+            if (t > adv.Calor)
+                return "CALOR";
             return "CONFORT";
         }
 
@@ -93,8 +100,9 @@ namespace MiJuegoRPG.Motor.Servicios
         // Combina etiquetas H/S/F: si alguna está en CRÍTICO usa el peor (crítico), si no, si alguna en ADVERTENCIA, usa advertencia; de lo contrario 1.0
         private double FactorDesdeEtiquetas(string etH, string etS, string etF, Func<PjDatos.PenalizacionNivel, double?> selector)
         {
-            var pen = _config.Penalizaciones;
-            if (pen == null) return 1.0;
+            var pen = config.Penalizaciones;
+            if (pen == null)
+                return 1.0;
             bool anyCrit = etH == "CRÍTICO" || etS == "CRÍTICO" || etF == "CRÍTICO";
             bool anyWarn = etH == "ADVERTENCIA" || etS == "ADVERTENCIA" || etF == "ADVERTENCIA";
             if (anyCrit)

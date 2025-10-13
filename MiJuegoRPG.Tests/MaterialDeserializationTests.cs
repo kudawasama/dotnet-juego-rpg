@@ -6,7 +6,7 @@ namespace MiJuegoRPG.Tests
 {
     public class MaterialDeserializationTests
     {
-        private T RoundTrip<T>(string json) where T: class
+        private T RoundTrip<T>(string json) where T : class
         {
             var opts = new JsonSerializerOptions();
             opts.Converters.Add(new ObjetoJsonConverter());

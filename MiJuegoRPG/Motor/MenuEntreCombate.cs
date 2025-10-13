@@ -42,7 +42,7 @@ namespace MiJuegoRPG.Motor
                     juego.CargarPersonaje();
                     break;
                 case "3":
-                    juego.motorCombate.ComenzarCombate();
+                    juego.MotorCombate.ComenzarCombate();
                     break;
                 case "4":
                     menusJuego.MostrarMenuPrincipalFijo();

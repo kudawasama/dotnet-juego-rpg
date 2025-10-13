@@ -8,7 +8,7 @@ namespace MiJuegoRPG.Objetos
 {
     public static class GestorPociones
     {
-    public static string RutaPocionesJson = MiJuegoRPG.Motor.Servicios.PathProvider.PjDatosPath("pociones.json");
+        public static string RutaPocionesJson = MiJuegoRPG.Motor.Servicios.PathProvider.PjDatosPath("pociones.json");
         public static List<Pocion> PocionesDisponibles = new List<Pocion>();
 
         public static void GuardarPocionSiNoExiste(Pocion pocion)
@@ -78,8 +78,7 @@ namespace MiJuegoRPG.Objetos
                             pocion.Nombre,
                             pocion.Curacion,
                             pocion.Rareza,
-                            pocion.Categoria
-                        ));
+                            pocion.Categoria));
                     }
                 }
             }
@@ -92,9 +91,18 @@ namespace MiJuegoRPG.Objetos
 
     public class PocionJson
     {
-        public required string Nombre { get; set; }
-        public int Curacion { get; set; }
+        public required string Nombre
+        {
+            get; set;
+        }
+        public int Curacion
+        {
+            get; set;
+        }
         public string Rareza { get; set; } = "Normal";
-        public required string Categoria { get; set; }
+        public required string Categoria
+        {
+            get; set;
+        }
     }
 }

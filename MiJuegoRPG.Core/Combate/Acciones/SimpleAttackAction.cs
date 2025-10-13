@@ -1,9 +1,9 @@
-using MiJuegoRPG.Core.Combate.Context;
-using MiJuegoRPG.Core.Combate.Enums;
-using MiJuegoRPG.Core.Combate.Rng;
-
 namespace MiJuegoRPG.Core.Combate.Acciones
 {
+    using MiJuegoRPG.Core.Combate.Context;
+    using MiJuegoRPG.Core.Combate.Enums;
+    using MiJuegoRPG.Core.Combate.Rng;
+
     public sealed class SimpleAttackAction : CombatAction
     {
         private readonly int castTicks;
@@ -18,9 +18,10 @@ namespace MiJuegoRPG.Core.Combate.Acciones
             this.baseDamage = baseDamage;
         }
 
-    // Mantener valores placeholder similares al diseño original (prioridad media y velocidad base)
-    protected override byte PriorityTier => 5;
-    protected override int SpeedScore => 100; // TODO: derivar de atributos del actor
+        // Mantener valores placeholder similares al diseño original (prioridad media y velocidad base)
+        protected override byte PriorityTier => 5;
+
+        protected override int SpeedScore => 100; // TODO: derivar de atributos del actor
 
         protected override int PhaseDurationTicks(ActionPhase phase)
         {

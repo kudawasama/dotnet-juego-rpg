@@ -4,10 +4,19 @@ namespace MiJuegoRPG.Objetos
 {
     public class Casco : Objeto, MiJuegoRPG.Interfaces.IBonificadorEstadistica
     {
-        public int Perfeccion { get; set; }
+        public int Perfeccion
+        {
+            get; set;
+        }
         public string TipoObjeto { get; set; } = "Casco";
-        public int Defensa { get; set; }
-        public int Nivel { get; set; }
+        public int Defensa
+        {
+            get; set;
+        }
+        public int Nivel
+        {
+            get; set;
+        }
 
         public Casco(string nombre, int defensaBase, int nivel = 1, string rareza = "Normal", string categoria = "Cabeza", int perfeccion = 50)
             : base(nombre, rareza, categoria)
@@ -17,7 +26,8 @@ namespace MiJuegoRPG.Objetos
             Perfeccion = perfeccion;
         }
 
-    public Casco() : base("", "Normal", "Cabeza") { }
+        public Casco()
+            : base("", "Normal", "Cabeza") { }
 
         /// <summary>
         /// Calcula la defensa del casco escalando por nivel y rareza dinámica.
@@ -45,7 +55,8 @@ namespace MiJuegoRPG.Objetos
         // Implementación de bonificador de estadística
         public double ObtenerBonificador(string estadistica)
         {
-            if (string.IsNullOrWhiteSpace(estadistica)) return 0;
+            if (string.IsNullOrWhiteSpace(estadistica))
+                return 0;
             if (estadistica.Equals("Defensa", StringComparison.OrdinalIgnoreCase) ||
                 estadistica.Equals("DefensaFisica", StringComparison.OrdinalIgnoreCase) ||
                 estadistica.Equals("Defensa Física", StringComparison.OrdinalIgnoreCase))

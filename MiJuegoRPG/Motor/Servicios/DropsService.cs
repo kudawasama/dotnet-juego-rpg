@@ -9,13 +9,13 @@ namespace MiJuegoRPG.Motor.Servicios
     /// <summary>
     /// Persistencia ligera para drops únicos (UniqueOnce) por partida.
     /// Guarda/lee un conjunto de claves en PjDatos/drops_unicos.json.
-    /// Clave: e:{enemigoIdOrNombre}|i:{itemName}
+    /// Clave: e:{enemigoIdOrNombre}|i:{itemName}.
     /// </summary>
     public static class DropsService
     {
-        private static readonly object _lock = new object();
-        private static HashSet<string> _uniqueDrops = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-        private static bool _cargado = false;
+        private static readonly object Lock = new object();
+        private static HashSet<string> uniqueDrops = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        private static bool cargado = false;
         private static string RutaArchivo => PathProvider.PjDatosPath("drops_unicos.json");
 
         public static string ClaveUnique(string enemigoIdOrNombre, string itemName)
@@ -27,9 +27,10 @@ namespace MiJuegoRPG.Motor.Servicios
 
         public static void Cargar()
         {
-            lock (_lock)
+            lock (Lock)
             {
-                if (_cargado) return;
+                if (cargado)
+                    return;
                 try
                 {
                     var ruta = RutaArchivo;
@@ -37,28 +38,29 @@ namespace MiJuegoRPG.Motor.Servicios
                     {
                         var json = File.ReadAllText(ruta);
                         var arr = JsonSerializer.Deserialize<List<string>>(json) ?? new List<string>();
-                        _uniqueDrops = new HashSet<string>(arr.Where(s => !string.IsNullOrWhiteSpace(s)), StringComparer.OrdinalIgnoreCase);
+                        uniqueDrops = new HashSet<string>(arr.Where(s => !string.IsNullOrWhiteSpace(s)), StringComparer.OrdinalIgnoreCase);
                     }
-                    _cargado = true;
+                    cargado = true;
                 }
                 catch (Exception ex)
                 {
                     Logger.Warn($"[DropsService] No se pudo cargar drops únicos: {ex.Message}");
-                    _cargado = true; // evitar reintentos continuos
+                    cargado = true; // evitar reintentos continuos
                 }
             }
         }
 
         public static void Guardar()
         {
-            lock (_lock)
+            lock (Lock)
             {
                 try
                 {
                     var ruta = RutaArchivo;
                     var dir = Path.GetDirectoryName(ruta);
-                    if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir)) Directory.CreateDirectory(dir);
-                    var arr = _uniqueDrops.ToList();
+                    if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir))
+                        Directory.CreateDirectory(dir);
+                    var arr = uniqueDrops.ToList();
                     var json = JsonSerializer.Serialize(arr, new JsonSerializerOptions { WriteIndented = true });
                     File.WriteAllText(ruta, json);
                 }
@@ -72,23 +74,26 @@ namespace MiJuegoRPG.Motor.Servicios
         public static bool Marcado(string clave)
         {
             Cargar();
-            lock (_lock)
+            lock (Lock)
             {
-                return _uniqueDrops.Contains(clave);
+                return uniqueDrops.Contains(clave);
             }
         }
 
         /// <summary>
         /// Marca la clave si no existe. Devuelve true si se añadió (no existía), false si ya estaba marcada.
         /// </summary>
+        /// <returns></returns>
         public static bool MarcarSiNoExiste(string clave)
         {
-            if (string.IsNullOrWhiteSpace(clave)) return false;
+            if (string.IsNullOrWhiteSpace(clave))
+                return false;
             Cargar();
-            lock (_lock)
+            lock (Lock)
             {
-                if (_uniqueDrops.Contains(clave)) return false;
-                _uniqueDrops.Add(clave);
+                if (uniqueDrops.Contains(clave))
+                    return false;
+                uniqueDrops.Add(clave);
                 return true;
             }
         }
@@ -97,18 +102,18 @@ namespace MiJuegoRPG.Motor.Servicios
         public static List<string> ExportarKeys()
         {
             Cargar();
-            lock (_lock)
+            lock (Lock)
             {
-                return _uniqueDrops.ToList();
+                return uniqueDrops.ToList();
             }
         }
 
         public static void ImportarKeys(IEnumerable<string> claves)
         {
-            lock (_lock)
+            lock (Lock)
             {
-                _uniqueDrops = new HashSet<string>(claves?.Where(c => !string.IsNullOrWhiteSpace(c)) ?? Enumerable.Empty<string>(), StringComparer.OrdinalIgnoreCase);
-                _cargado = true;
+                uniqueDrops = new HashSet<string>(claves?.Where(c => !string.IsNullOrWhiteSpace(c)) ?? Enumerable.Empty<string>(), StringComparer.OrdinalIgnoreCase);
+                cargado = true;
             }
         }
 
@@ -116,30 +121,34 @@ namespace MiJuegoRPG.Motor.Servicios
         public static int Count()
         {
             Cargar();
-            lock (_lock)
+            lock (Lock)
             {
-                return _uniqueDrops.Count;
+                return uniqueDrops.Count;
             }
         }
 
         public static IReadOnlyCollection<string> KeysSnapshot()
         {
             Cargar();
-            lock (_lock)
+            lock (Lock)
             {
-                return _uniqueDrops.ToList().AsReadOnly();
+                return uniqueDrops.ToList().AsReadOnly();
             }
         }
 
         public static int ClearAll()
         {
             Cargar();
-            lock (_lock)
+            lock (Lock)
             {
-                int n = _uniqueDrops.Count;
-                _uniqueDrops.Clear();
+                int n = uniqueDrops.Count;
+                uniqueDrops.Clear();
                 // Persistimos inmediatamente para reflejar limpieza
-                try { Guardar(); } catch { }
+                try
+                {
+                    Guardar();
+                }
+                catch { }
                 return n;
             }
         }

@@ -1,18 +1,7 @@
-using System.Collections.Generic;
-using MiJuegoRPG.Core.Combate.Enums;
-
 namespace MiJuegoRPG.Core.Combate.Rng
 {
-    public interface IRng
-    {
-        int NextInt(int maxExclusive);
-        double NextDouble();
-    }
-
-    public interface IRngFactory
-    {
-        IRng GetStream(RngStreamId id);
-    }
+    using System.Collections.Generic;
+    using MiJuegoRPG.Core.Combate.Enums;
 
     internal sealed class SplitRngFactory : IRngFactory
     {
@@ -47,6 +36,10 @@ namespace MiJuegoRPG.Core.Combate.Rng
                 }
             }
 
+            public int NextInt(int maxExclusive) => (int)(Next() % (uint)maxExclusive);
+
+            public double NextDouble() => Next() / (double)uint.MaxValue;
+
             private uint Next()
             {
                 uint x = state;
@@ -56,9 +49,6 @@ namespace MiJuegoRPG.Core.Combate.Rng
                 state = x;
                 return x;
             }
-
-            public int NextInt(int maxExclusive) => (int)(Next() % (uint)maxExclusive);
-            public double NextDouble() => Next() / (double)uint.MaxValue;
         }
     }
 }

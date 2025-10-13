@@ -14,15 +14,37 @@ namespace MiJuegoRPG.Motor
         private class DummyTarget : ICombatiente
         {
             public string Nombre { get; set; } = "Dummy";
-            public int Vida { get; set; }
-            public int VidaMaxima { get; set; }
-            public int Defensa { get; set; }
-            public int DefensaMagica { get; set; }
+            public int Vida
+            {
+                get; set;
+            }
+            public int VidaMaxima
+            {
+                get; set;
+            }
+            public int Defensa
+            {
+                get; set;
+            }
+            public int DefensaMagica
+            {
+                get; set;
+            }
             public bool EstaVivo => Vida > 0;
             public int AtacarFisico(ICombatiente o) => 0;
             public int AtacarMagico(ICombatiente o) => 0;
-            public void RecibirDanioFisico(int d) { Vida -= Math.Max(1, d); if (Vida < 0) Vida = 0; }
-            public void RecibirDanioMagico(int d) { Vida -= Math.Max(1, d); if (Vida < 0) Vida = 0; }
+            public void RecibirDanioFisico(int d)
+            {
+                Vida -= Math.Max(1, d);
+                if (Vida < 0)
+                    Vida = 0;
+            }
+            public void RecibirDanioMagico(int d)
+            {
+                Vida -= Math.Max(1, d);
+                if (Vida < 0)
+                    Vida = 0;
+            }
         }
 
         /// <summary>
@@ -32,13 +54,18 @@ namespace MiJuegoRPG.Motor
         public static void Run(int n, double baseDamage = 100, int defensa = 50, double mitig = 0.10,
             double pen = -1, double critChance = -1, double critMult = -1, bool legacyConCritico = true, double critScalingF = -1)
         {
-            if (n <= 0) n = 100;
+            if (n <= 0)
+                n = 100;
             var rng = RandomService.Instancia;
             var cfg = CombatConfig.LoadOrDefault();
-            if (critMult <= 0) critMult = cfg.CritMultiplier;
-            if (critScalingF < 0) critScalingF = cfg.CritScalingFactor;
-            if (pen < 0) pen = 0.20; // caso sintético estable
-            if (critChance < 0) critChance = 0.40;
+            if (critMult <= 0)
+                critMult = cfg.CritMultiplier;
+            if (critScalingF < 0)
+                critScalingF = cfg.CritScalingFactor;
+            if (pen < 0)
+                pen = 0.20; // caso sintético estable
+            if (critChance < 0)
+                critChance = 0.40;
             int legacyTotal = 0;
             int pipelineTotal = 0;
             int crits = 0;
@@ -48,9 +75,11 @@ namespace MiJuegoRPG.Motor
             {
                 // LEGACY (simplificado según flujo actual sin multiplicador crítico):
                 double defEff = defensa * (1.0 - pen);
-                if (defEff < 0) defEff = 0;
+                if (defEff < 0)
+                    defEff = 0;
                 double afterDef = baseDamage - defEff;
-                if (afterDef < 1) afterDef = 1;
+                if (afterDef < 1)
+                    afterDef = 1;
                 double legacy = afterDef * (1.0 - mitig);
                 if (legacyConCritico)
                 {
@@ -59,14 +88,17 @@ namespace MiJuegoRPG.Motor
                     double f = Math.Clamp(critScalingF, 0.0, 1.0);
                     if (rng.NextDouble() < critChance)
                     {
-                        legacy *= (1.0 + (mult - 1.0) * f);
+                        legacy *= 1.0 + ((mult - 1.0) * f);
                     }
                 }
-                if (legacy < 1) legacy = 1;
+                if (legacy < 1)
+                    legacy = 1;
                 int legacyInt = (int)Math.Round(legacy, MidpointRounding.AwayFromZero);
                 legacyTotal += legacyInt;
-                if (legacyInt < minLegacy) minLegacy = legacyInt;
-                if (legacyInt > maxLegacy) maxLegacy = legacyInt;
+                if (legacyInt < minLegacy)
+                    minLegacy = legacyInt;
+                if (legacyInt > maxLegacy)
+                    maxLegacy = legacyInt;
 
                 // PIPELINE
                 double effectiveCritChance = critChance;
@@ -97,9 +129,12 @@ namespace MiJuegoRPG.Motor
                 };
                 var res = DamagePipeline.Calcular(in req, rng);
                 pipelineTotal += res.FinalDamage;
-                if (res.FueCritico) crits++;
-                if (res.FinalDamage < minPipe) minPipe = res.FinalDamage;
-                if (res.FinalDamage > maxPipe) maxPipe = res.FinalDamage;
+                if (res.FueCritico)
+                    crits++;
+                if (res.FinalDamage < minPipe)
+                    minPipe = res.FinalDamage;
+                if (res.FinalDamage > maxPipe)
+                    maxPipe = res.FinalDamage;
             }
 
             double avgLegacy = legacyTotal / (double)n;
@@ -120,7 +155,7 @@ namespace MiJuegoRPG.Motor
             // Threshold PASS/FAIL (por defecto 5%). Permite override via env: SHADOW_BENCH_THRESHOLD=7.5
             double thresholdPct = 5.0;
             var env = Environment.GetEnvironmentVariable("SHADOW_BENCH_THRESHOLD");
-            if (!string.IsNullOrWhiteSpace(env) && double.TryParse(env.Replace('%',' ').Trim(), out var t) && t > 0 && t < 100)
+            if (!string.IsNullOrWhiteSpace(env) && double.TryParse(env.Replace('%', ' ').Trim(), out var t) && t > 0 && t < 100)
                 thresholdPct = t;
             bool pass = Math.Abs(diffPct) <= thresholdPct;
             Console.WriteLine($"Threshold: ±{thresholdPct:0.0}% → {(pass ? "PASS" : "FAIL")}");
@@ -130,7 +165,10 @@ namespace MiJuegoRPG.Motor
             }
         }
 
-        public struct SweepResult { public double F; public double PenCrit; public double AvgLegacy; public double AvgPipeline; public double DiffPct; public double CritRate; }
+        public struct SweepResult
+        {
+            public double F; public double PenCrit; public double AvgLegacy; public double AvgPipeline; public double DiffPct; public double CritRate;
+        }
 
         public static void Sweep(int n, double baseDamage, int defensa, double mitig, double pen, double critChance, double critMult,
             double[] factors, double[] penCritFactors)
@@ -152,14 +190,16 @@ namespace MiJuegoRPG.Motor
                     for (int i = 0; i < n; i++)
                     {
                         double defEff = defensa * (1.0 - pen);
-                        if (defEff < 0) defEff = 0;
+                        if (defEff < 0)
+                            defEff = 0;
                         double afterDef = baseDamage - defEff;
-                        if (afterDef < 1) afterDef = 1;
+                        if (afterDef < 1)
+                            afterDef = 1;
                         double legacy = afterDef * (1.0 - mitig);
                         // Legacy con crítico normalizado (apples-to-apples)
                         if (rng.NextDouble() < critChance)
                         {
-                            legacy *= (1.0 + (critMult - 1.0) * f);
+                            legacy *= 1.0 + ((critMult - 1.0) * f);
                         }
                         int legacyInt = (int)Math.Round(legacy, MidpointRounding.AwayFromZero);
                         legacyTotal += legacyInt;
@@ -192,7 +232,8 @@ namespace MiJuegoRPG.Motor
                         };
                         var res = DamagePipeline.Calcular(in req, rng);
                         pipelineTotal += res.FinalDamage;
-                        if (res.FueCritico) crits++;
+                        if (res.FueCritico)
+                            crits++;
                     }
                     double avgLegacy = legacyTotal / (double)n;
                     double avgPipeline = pipelineTotal / (double)n;

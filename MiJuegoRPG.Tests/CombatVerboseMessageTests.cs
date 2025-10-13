@@ -29,17 +29,21 @@ namespace MiJuegoRPG.Tests
         public void RecibirDanioFisico(int danioFisico)
         {
             int real = danioFisico - Defensa;
-            if (real < 1) real = 1;
+            if (real < 1)
+                real = 1;
             Vida -= real;
-            if (Vida < 0) Vida = 0;
+            if (Vida < 0)
+                Vida = 0;
         }
 
         public void RecibirDanioMagico(int danioMagico)
         {
             int real = danioMagico - DefensaMagica;
-            if (real < 1) real = 1;
+            if (real < 1)
+                real = 1;
             Vida -= real;
-            if (Vida < 0) Vida = 0;
+            if (Vida < 0)
+                Vida = 0;
         }
     }
 
@@ -66,8 +70,7 @@ namespace MiJuegoRPG.Tests
                     defensaMagicaBase: 3,
                     nivel: 1,
                     experienciaRecompensa: 0,
-                    oroRecompensa: 0
-                );
+                    oroRecompensa: 0);
                 objetivo.MitigacionFisicaPorcentaje = 0.10; // 10% para asegurar presencia de la sección
 
                 // Act
@@ -112,8 +115,7 @@ namespace MiJuegoRPG.Tests
                     defensaMagicaBase: 7,
                     nivel: 1,
                     experienciaRecompensa: 0,
-                    oroRecompensa: 0
-                );
+                    oroRecompensa: 0);
                 objetivo.MitigacionMagicaPorcentaje = 0.10; // 10%
                 objetivo.EstablecerMitigacionElemental("magia", 0.30); // Resistencia 30%
                 objetivo.EstablecerVulnerabilidadElemental("magia", 1.20); // Vulnerabilidad +20%

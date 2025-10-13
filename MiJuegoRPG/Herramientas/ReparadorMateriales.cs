@@ -12,11 +12,26 @@ namespace MiJuegoRPG.Herramientas
 {
     public class ReparacionMaterialesResultado
     {
-        public int SectoresEscaneados { get; set; }
-        public int SectoresModificados { get; set; }
-        public int NodosAfectados { get; set; }
-        public int MaterialesEliminados { get; set; }
-        public int ListasNullNormalizadas { get; set; }
+        public int SectoresEscaneados
+        {
+            get; set;
+        }
+        public int SectoresModificados
+        {
+            get; set;
+        }
+        public int NodosAfectados
+        {
+            get; set;
+        }
+        public int MaterialesEliminados
+        {
+            get; set;
+        }
+        public int ListasNullNormalizadas
+        {
+            get; set;
+        }
         public string ReportePath { get; set; } = string.Empty;
     }
 
@@ -24,10 +39,11 @@ namespace MiJuegoRPG.Herramientas
     {
         /// <summary>
         /// Repara materiales inválidos en nodos de recolección de todos los sectores.
-        /// Regla: elimina materiales nulos, con Nombre vacío/espacios o Cantidad <= 0. Si lista de materiales es null, la normaliza a [].
+        /// Regla: elimina materiales nulos, con Nombre vacío/espacios o Cantidad. <= 0. Si lista de materiales es null, la normaliza a [].
         /// </summary>
         /// <param name="aplicarCambios">Si true, escribe los JSON reparados; si false, solo genera reporte (dry-run).</param>
         /// <param name="rutaReporte">Ruta del archivo de reporte de cambios. Si es directorio, se crea un archivo dentro. Si es vacío, usa PjDatos/validacion.</param>
+        /// <returns></returns>
         public static ReparacionMaterialesResultado Reparar(bool aplicarCambios, string? rutaReporte = null)
         {
             var resultado = new ReparacionMaterialesResultado();
@@ -57,7 +73,8 @@ namespace MiJuegoRPG.Herramientas
                         continue;
                     }
                     var sector = JsonSerializer.Deserialize<SectorData>(json, opcionesLectura);
-                    if (sector == null) continue;
+                    if (sector == null)
+                        continue;
 
                     bool modSector = false;
                     int nodosAfectadosEnSector = 0;
@@ -70,7 +87,8 @@ namespace MiJuegoRPG.Herramientas
                         foreach (var nodo in nodos)
                         {
                             bool modNodo = false;
-                            if (nodo == null) continue;
+                            if (nodo == null)
+                                continue;
                             if (nodo.Materiales == null)
                             {
                                 nodo.Materiales = new List<MaterialCantidad>();
@@ -86,7 +104,7 @@ namespace MiJuegoRPG.Herramientas
                                 int despues = nodo.Materiales.Count;
                                 if (despues < antes)
                                 {
-                                    materialesEliminadosEnSector += (antes - despues);
+                                    materialesEliminadosEnSector += antes - despues;
                                     modNodo = true;
                                 }
                             }
@@ -160,7 +178,8 @@ namespace MiJuegoRPG.Herramientas
             try
             {
                 var dir = Path.GetDirectoryName(rutaReporte);
-                if (!string.IsNullOrEmpty(dir)) Directory.CreateDirectory(dir);
+                if (!string.IsNullOrEmpty(dir))
+                    Directory.CreateDirectory(dir);
             }
             catch { }
             return rutaReporte!;

@@ -8,7 +8,7 @@ namespace MiJuegoRPG.Motor
     public class MotorEventos
     {
         private Juego juego;
-    // Random local eliminado: usar RandomService centralizado
+        // Random local eliminado: usar RandomService centralizado
         public MotorEventos(Juego juego)
         {
             this.juego = juego;
@@ -16,7 +16,7 @@ namespace MiJuegoRPG.Motor
 
         public void ExplorarSector()
         {
-            var sectorActual = juego.mapa.UbicacionActual;
+            var sectorActual = juego.Mapa.UbicacionActual;
             Console.WriteLine($"Sectores disponibles en {sectorActual.Nombre}:");
             var opciones = new List<string>(sectorActual.Eventos);
             Console.WriteLine("Elige una opción:");
@@ -33,20 +33,20 @@ namespace MiJuegoRPG.Motor
                     if (resultado < 40)
                     {
                         Console.WriteLine("¡Te has encontrado con un enemigo!");
-                        if (juego.jugador == null)
+                        if (juego.Jugador == null)
                         {
                             Console.WriteLine("No hay personaje cargado. Creando nuevo personaje...");
-                            juego.jugador = CreadorPersonaje.Crear();
+                            juego.Jugador = CreadorPersonaje.Crear();
                         }
-                        var enemigo = GeneradorEnemigos.GenerarEnemigoAleatorio(juego.jugador);
-                        GeneradorEnemigos.IniciarCombate(juego.jugador, enemigo);
+                        var enemigo = GeneradorEnemigos.GenerarEnemigoAleatorio(juego.Jugador);
+                        GeneradorEnemigos.IniciarCombate(juego.Jugador, enemigo);
                     }
                     else if (resultado < 70)
                     {
                         Console.WriteLine("¡Has encontrado un objeto!");
-                        if (juego.jugador != null)
+                        if (juego.Jugador != null)
                         {
-                            juego.jugador.Inventario.AgregarObjeto(new Pocion("Objeto misterioso", 1));
+                            juego.Jugador.Inventario.AgregarObjeto(new Pocion("Objeto misterioso", 1));
                         }
                     }
                     else
@@ -57,17 +57,18 @@ namespace MiJuegoRPG.Motor
                 else if (eventoElegido == "Recolectar" || eventoElegido == "Minar" || eventoElegido == "Talar")
                 {
                     accionExploracion = true;
-                    var tipo = eventoElegido switch {
+                    var tipo = eventoElegido switch
+                    {
                         "Recolectar" => MiJuegoRPG.Dominio.TipoRecoleccion.Recolectar,
                         "Minar" => MiJuegoRPG.Dominio.TipoRecoleccion.Minar,
                         "Talar" => MiJuegoRPG.Dominio.TipoRecoleccion.Talar,
                         _ => MiJuegoRPG.Dominio.TipoRecoleccion.Recolectar
                     };
-                    juego.recoleccionService.EjecutarAccion(tipo, new NodoRecoleccion { Nombre = eventoElegido, Tipo = eventoElegido });
+                    juego.RecoleccionService.EjecutarAccion(tipo, new NodoRecoleccion { Nombre = eventoElegido, Tipo = eventoElegido });
                 }
                 else if (eventoElegido == "Escuela de Entrenamiento")
                 {
-                    juego.motorEntrenamiento.Entrenar();
+                    juego.MotorEntrenamiento.Entrenar();
                 }
                 else if (eventoElegido == "Tienda")
                 {
@@ -101,15 +102,15 @@ namespace MiJuegoRPG.Motor
                 if (monstruo)
                 {
                     Console.WriteLine("¡Un monstruo aparece!");
-                    juego.motorCombate.ComenzarCombate();
+                    juego.MotorCombate.ComenzarCombate();
                     juego.ProgresionPorActividad("combate");
                 }
                 if (objeto)
                 {
                     Console.WriteLine("Encuentras un objeto especial: Poción curativa.");
-                    if (juego.jugador != null)
+                    if (juego.Jugador != null)
                     {
-                        juego.jugador.Inventario.AgregarObjeto(new Pocion("Poción Curativa", 20));
+                        juego.Jugador.Inventario.AgregarObjeto(new Pocion("Poción Curativa", 20));
                         juego.ProgresionPorActividad("exploracion");
                     }
                 }
@@ -130,6 +131,6 @@ namespace MiJuegoRPG.Motor
             }
         }
 
-    // Método RealizarAccionRecoleccion eliminado: ahora gestionado por RecoleccionService
+        // Método RealizarAccionRecoleccion eliminado: ahora gestionado por RecoleccionService
     }
 }

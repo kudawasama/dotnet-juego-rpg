@@ -11,11 +11,11 @@ namespace MiJuegoRPG.Motor.Servicios
     public class SupervivenciaRuntimeService
     {
         public bool FeatureEnabled { get; set; } = false; // bandera global segura
-        private readonly SupervivenciaService _cfg;
+        private readonly SupervivenciaService cfg;
 
         public SupervivenciaRuntimeService(SupervivenciaService cfg)
         {
-            _cfg = cfg;
+            this.cfg = cfg;
         }
 
         /// <summary>
@@ -26,26 +26,27 @@ namespace MiJuegoRPG.Motor.Servicios
         /// </summary>
         public void ApplyTick(Personaje.Personaje pj, string contexto, string bioma, int minutos)
         {
-            if (!FeatureEnabled || pj == null || minutos <= 0) return;
+            if (!FeatureEnabled || pj == null || minutos <= 0)
+                return;
 
-            var cfg = _cfg.Config;
+            var cfg = this.cfg.Config;
             var tasas = cfg.Tasas;
-            var multCtx = _cfg.ObtenerMultiplicadores(contexto);
-            var reglas = _cfg.ObtenerReglasBioma(bioma);
+            var multCtx = this.cfg.ObtenerMultiplicadores(contexto);
+            var reglas = this.cfg.ObtenerReglasBioma(bioma);
 
             double horas = minutos / 60.0;
             // Consumos base por hora ajustados por contexto
             double dHambre = tasas.HambrePorHora * multCtx.Hambre * horas;
-            double dSed    = tasas.SedPorHora    * multCtx.Sed    * horas;
+            double dSed = tasas.SedPorHora * multCtx.Sed * horas;
             double dFatiga = tasas.FatigaPorHora * multCtx.Fatiga * horas;
 
             // Ajustes por bioma (multiplicadores específicos)
             dHambre *= reglas.HambreMultiplier <= 0 ? 1.0 : reglas.HambreMultiplier;
-            dSed    *= reglas.SedMultiplier    <= 0 ? 1.0 : reglas.SedMultiplier;
+            dSed *= reglas.SedMultiplier <= 0 ? 1.0 : reglas.SedMultiplier;
             dFatiga *= reglas.FatigaMultiplier <= 0 ? 1.0 : reglas.FatigaMultiplier;
 
             pj.Hambre += dHambre;
-            pj.Sed    += dSed;
+            pj.Sed += dSed;
             pj.Fatiga += dFatiga;
 
             // Temperatura: aproximar hacia TempDia/TempNoche según hora del mundo si estuviera disponible.
@@ -54,14 +55,14 @@ namespace MiJuegoRPG.Motor.Servicios
             if (targetTemp == 0 && reglas.TempDia == 0 && reglas.TempNoche == 0)
                 targetTemp = pj.TempActual; // sin datos, no mover
             double rate = Math.Max(0, cfg.Tasas.TempRecuperacionPorHora) * horas;
-            pj.TempActual = pj.TempActual + (targetTemp - pj.TempActual) * Math.Min(1.0, rate);
+            pj.TempActual = pj.TempActual + ((targetTemp - pj.TempActual) * Math.Min(1.0, rate));
 
             pj.ClampEstadosSupervivencia();
 
             // Avisos por transición de umbral (OK/ADVERTENCIA/CRÍTICO)
             try
             {
-                var (etH, etS, etF) = _cfg.EtiquetasHSF(pj.Hambre, pj.Sed, pj.Fatiga);
+                var (etH, etS, etF) = this.cfg.EtiquetasHSF(pj.Hambre, pj.Sed, pj.Fatiga);
                 if (!string.Equals(etH, pj.UltHambreEstado, StringComparison.Ordinal))
                 {
                     BusEventos.Instancia.Publicar(new EventoSupervivenciaUmbralCruzado("Hambre", pj.UltHambreEstado, etH, pj.Hambre));

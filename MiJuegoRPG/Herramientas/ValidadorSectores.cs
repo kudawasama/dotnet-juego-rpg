@@ -8,7 +8,6 @@ using MiJuegoRPG.PjDatos;
 namespace MiJuegoRPG.Herramientas
 {
     // Nota: usamos PjDatos.SectorData real del juego para validar con el mismo contrato.
-
     public static class ValidadorSectores
     {
         public static void ValidarSectores(string rutaBase)
@@ -74,11 +73,14 @@ namespace MiJuegoRPG.Herramientas
                 {
                     var cur = q.Dequeue();
                     var s = sectores[cur];
-                    if (s.Conexiones == null) continue;
+                    if (s.Conexiones == null)
+                        continue;
                     foreach (var nxt in s.Conexiones)
                     {
-                        if (!sectores.ContainsKey(nxt)) continue;
-                        if (visitados.Add(nxt)) q.Enqueue(nxt);
+                        if (!sectores.ContainsKey(nxt))
+                            continue;
+                        if (visitados.Add(nxt))
+                            q.Enqueue(nxt);
                     }
                 }
 

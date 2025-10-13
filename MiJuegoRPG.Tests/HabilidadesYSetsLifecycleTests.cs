@@ -32,7 +32,7 @@ namespace MiJuegoRPG.Tests
             {
                 HabilidadesOtorgadas = new System.Collections.Generic.List<HabilidadOtorgadaRef>
                 {
-                    new HabilidadOtorgadaRef{ Id = HabilidadDummy, NivelMinimo = 1 }
+                    new HabilidadOtorgadaRef { Id = HabilidadDummy, NivelMinimo = 1 }
                 }
             };
 
@@ -63,15 +63,18 @@ namespace MiJuegoRPG.Tests
             var collar = new Collar { Nombre = "Collar DIVINO GM GOD", BonificacionDefensa = 0, BonificacionEnergia = 0, SetId = "GM" };
 
             // Equipar progresivamente y validar umbrales 2,4,6
-            pj.Inventario.Equipo.Casco = casco; pj.Inventario.Equipo.Armadura = armadura;
+            pj.Inventario.Equipo.Casco = casco;
+            pj.Inventario.Equipo.Armadura = armadura;
             pj.Inventario.SincronizarHabilidadesYBonosSet(pj);
             Assert.True(pj.BonosTemporalesSet.TryGetValue("Defensa", out var def2) && def2 >= 5000);
 
-            pj.Inventario.Equipo.Pantalon = pantalon; pj.Inventario.Equipo.Zapatos = botas;
+            pj.Inventario.Equipo.Pantalon = pantalon;
+            pj.Inventario.Equipo.Zapatos = botas;
             pj.Inventario.SincronizarHabilidadesYBonosSet(pj);
             Assert.True(pj.BonosTemporalesSet.TryGetValue("Ataque", out var atk4) && atk4 >= 5000);
 
-            pj.Inventario.Equipo.Cinturon = cinturon; pj.Inventario.Equipo.Collar = collar;
+            pj.Inventario.Equipo.Cinturon = cinturon;
+            pj.Inventario.Equipo.Collar = collar;
             pj.Inventario.SincronizarHabilidadesYBonosSet(pj);
             Assert.True(pj.BonosTemporalesSet.TryGetValue("Mana", out var mana6) && mana6 >= 20000);
             Assert.True(pj.BonosTemporalesSet.TryGetValue("Energia", out var ener6) && ener6 >= 20000);
@@ -115,7 +118,8 @@ namespace MiJuegoRPG.Tests
             var baselineTemporales = pj.HabilidadesTemporalesEquipo.ToHashSet(StringComparer.OrdinalIgnoreCase);
 
             // 2 piezas
-            pj.Inventario.Equipo.Casco = casco; pj.Inventario.Equipo.Armadura = armadura;
+            pj.Inventario.Equipo.Casco = casco;
+            pj.Inventario.Equipo.Armadura = armadura;
             pj.Inventario.SincronizarHabilidadesYBonosSet(pj);
             var (_, habs2) = servicio.CalcularBonosYHabilidades(pj.ObtenerObjetosEquipados());
             foreach (var (hid, _) in habs2)
@@ -125,7 +129,8 @@ namespace MiJuegoRPG.Tests
             }
 
             // 4 piezas
-            pj.Inventario.Equipo.Pantalon = pantalon; pj.Inventario.Equipo.Zapatos = botas;
+            pj.Inventario.Equipo.Pantalon = pantalon;
+            pj.Inventario.Equipo.Zapatos = botas;
             pj.Inventario.SincronizarHabilidadesYBonosSet(pj);
             var (_, habs4) = servicio.CalcularBonosYHabilidades(pj.ObtenerObjetosEquipados());
             foreach (var (hid, _) in habs4)
@@ -135,7 +140,8 @@ namespace MiJuegoRPG.Tests
             }
 
             // 6 piezas
-            pj.Inventario.Equipo.Cinturon = cinturon; pj.Inventario.Equipo.Collar = collar;
+            pj.Inventario.Equipo.Cinturon = cinturon;
+            pj.Inventario.Equipo.Collar = collar;
             pj.Inventario.SincronizarHabilidadesYBonosSet(pj);
             var (_, habs6) = servicio.CalcularBonosYHabilidades(pj.ObtenerObjetosEquipados());
             foreach (var (hid, _) in habs6)
@@ -167,7 +173,9 @@ namespace MiJuegoRPG.Tests
             Assert.NotNull(todas);
 
             // Configurar atributos necesarios para que GolpeFuerte sea elegible
-            pj.AtributosBase.Fuerza = 10; pj.AtributosBase.Agilidad = 10; pj.AtributosBase.Destreza = 10;
+            pj.AtributosBase.Fuerza = 10;
+            pj.AtributosBase.Agilidad = 10;
+            pj.AtributosBase.Destreza = 10;
             pj.Nivel = 10; // suficiente para condiciones básicas si hay
 
             var elegibles = HabilidadCatalogService.ElegiblesPara(pj).Select(h => h.Id).ToList();
@@ -184,7 +192,8 @@ namespace MiJuegoRPG.Tests
                 var prog = HabilidadCatalogService.AProgreso(hdata);
                 pj.AprenderHabilidad(prog);
                 // Simular uso hasta cumplir primera evolución si la condición es alcanzable en test
-                for (int i = 0; i < 60; i++) pj.UsarHabilidad("GolpeFuerte");
+                for (int i = 0; i < 60; i++)
+                    pj.UsarHabilidad("GolpeFuerte");
                 // Verificar la instancia real del personaje (no la referencia local)
                 var progPj = pj.Habilidades["GolpeFuerte"];
                 // Validar progreso: la habilidad debe haber subido al menos un nivel tras 60 usos.

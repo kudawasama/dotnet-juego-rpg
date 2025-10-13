@@ -5,9 +5,18 @@ namespace MiJuegoRPG.Objetos
     public class Botas : Objeto, MiJuegoRPG.Interfaces.IBonificadorEstadistica
     {
         public string TipoObjeto { get; set; } = "Botas";
-        public int Defensa { get; set; }
-        public int Nivel { get; set; }
-        public int Perfeccion { get; set; }
+        public int Defensa
+        {
+            get; set;
+        }
+        public int Nivel
+        {
+            get; set;
+        }
+        public int Perfeccion
+        {
+            get; set;
+        }
 
         public Botas(string nombre, int defensa, int nivel = 1, string rareza = "Normal", string categoria = "Botas", int perfeccion = 50)
             : base(nombre, rareza, categoria)
@@ -17,7 +26,8 @@ namespace MiJuegoRPG.Objetos
             Perfeccion = perfeccion;
         }
 
-    public Botas() : base("", "Normal", "Botas") { }
+        public Botas()
+            : base("", "Normal", "Botas") { }
 
         private int CalcularDefensa(int defensaBase, int perfeccion)
         {
@@ -33,9 +43,11 @@ namespace MiJuegoRPG.Objetos
         /// Bonificador de estadísticas aportado por las botas.
         /// Suma Defensa a "Defensa", "DefensaFisica" o "Defensa Física" (case-insensitive).
         /// </summary>
+        /// <returns></returns>
         public double ObtenerBonificador(string estadistica)
         {
-            if (string.IsNullOrWhiteSpace(estadistica)) return 0;
+            if (string.IsNullOrWhiteSpace(estadistica))
+                return 0;
             if (estadistica.Equals("Defensa", StringComparison.OrdinalIgnoreCase) ||
                 estadistica.Equals("DefensaFisica", StringComparison.OrdinalIgnoreCase) ||
                 estadistica.Equals("Defensa Física", StringComparison.OrdinalIgnoreCase))

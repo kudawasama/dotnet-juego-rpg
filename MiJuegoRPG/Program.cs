@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Text.Json;
 using MiJuegoRPG.Herramientas;
@@ -75,15 +75,20 @@ internal class Program
                         switch (val)
                         {
                             case "debug":
-                                MiJuegoRPG.Motor.Servicios.Logger.Level = MiJuegoRPG.Motor.Servicios.LogLevel.Debug; break;
+                                MiJuegoRPG.Motor.Servicios.Logger.Level = MiJuegoRPG.Motor.Servicios.LogLevel.Debug;
+                                break;
                             case "info":
-                                MiJuegoRPG.Motor.Servicios.Logger.Level = MiJuegoRPG.Motor.Servicios.LogLevel.Info; break;
+                                MiJuegoRPG.Motor.Servicios.Logger.Level = MiJuegoRPG.Motor.Servicios.LogLevel.Info;
+                                break;
                             case "warn":
-                                MiJuegoRPG.Motor.Servicios.Logger.Level = MiJuegoRPG.Motor.Servicios.LogLevel.Warn; break;
+                                MiJuegoRPG.Motor.Servicios.Logger.Level = MiJuegoRPG.Motor.Servicios.LogLevel.Warn;
+                                break;
                             case "error":
-                                MiJuegoRPG.Motor.Servicios.Logger.Level = MiJuegoRPG.Motor.Servicios.LogLevel.Error; break;
+                                MiJuegoRPG.Motor.Servicios.Logger.Level = MiJuegoRPG.Motor.Servicios.LogLevel.Error;
+                                break;
                             case "off":
-                                MiJuegoRPG.Motor.Servicios.Logger.Enabled = false; break;
+                                MiJuegoRPG.Motor.Servicios.Logger.Enabled = false;
+                                break;
                         }
                     }
                     else if (a.StartsWith("--validar-datos", StringComparison.OrdinalIgnoreCase))
@@ -372,7 +377,7 @@ internal class Program
             {
                 case "2":
                     juego.CargarPersonaje();
-                    if (juego.jugador == null)
+                    if (juego.Jugador == null)
                     {
                         ui.WriteLine("No se pudo cargar el personaje. Se creará uno nuevo.");
                         juego.CrearPersonaje();
@@ -393,7 +398,7 @@ internal class Program
             juego.Iniciar();
 
             // Preguntar si quiere guardar solo si el personaje fue creado o cargado correctamente
-            if (juego.jugador != null)
+            if (juego.Jugador != null)
             {
                 var respuesta = MiJuegoRPG.Motor.InputService.LeerOpcion("\n¿Deseas guardar tu personaje? (s/n): ") ?? string.Empty;
                 if (respuesta.Equals("s", StringComparison.OrdinalIgnoreCase) || respuesta.Equals("si", StringComparison.OrdinalIgnoreCase))

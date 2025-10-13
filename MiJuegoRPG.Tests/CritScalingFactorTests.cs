@@ -12,10 +12,26 @@ namespace MiJuegoRPG.Tests
         public int Defensa { get; set; } = 0;
         public int DefensaMagica { get; set; } = 0;
         public bool EstaVivo => Vida > 0;
-        public int AtacarFisico(ICombatiente objetivo) { return 0; }
-        public int AtacarMagico(ICombatiente objetivo) { return 0; }
-        public void RecibirDanioFisico(int d) { Vida -= d; if (Vida < 0) Vida = 0; }
-        public void RecibirDanioMagico(int d) { Vida -= d; if (Vida < 0) Vida = 0; }
+        public int AtacarFisico(ICombatiente objetivo)
+        {
+            return 0;
+        }
+        public int AtacarMagico(ICombatiente objetivo)
+        {
+            return 0;
+        }
+        public void RecibirDanioFisico(int d)
+        {
+            Vida -= d;
+            if (Vida < 0)
+                Vida = 0;
+        }
+        public void RecibirDanioMagico(int d)
+        {
+            Vida -= d;
+            if (Vida < 0)
+                Vida = 0;
+        }
     }
 
     public class CritScalingFactorTests
@@ -49,7 +65,8 @@ namespace MiJuegoRPG.Tests
                 FactorPenetracionCritico = 1.0
             };
 
-            var rng = RandomService.Instancia; rng.SetSeed(12345);
+            var rng = RandomService.Instancia;
+            rng.SetSeed(12345);
             var res = DamagePipeline.Calcular(in req, rng);
 
             Assert.True(res.FueCritico);
@@ -85,7 +102,8 @@ namespace MiJuegoRPG.Tests
                 FactorPenetracionCritico = 1.0
             };
 
-            var rng = RandomService.Instancia; rng.SetSeed(999);
+            var rng = RandomService.Instancia;
+            rng.SetSeed(999);
             var res = DamagePipeline.Calcular(in req, rng);
             Assert.True(res.FueCritico);
             Assert.Equal(112, res.FinalDamage); // 80 * 1.4
@@ -122,7 +140,8 @@ namespace MiJuegoRPG.Tests
                 FactorPenetracionCritico = 0.5
             };
 
-            var rng = RandomService.Instancia; rng.SetSeed(42);
+            var rng = RandomService.Instancia;
+            rng.SetSeed(42);
             var res = DamagePipeline.Calcular(in req, rng);
             Assert.True(res.FueCritico);
             Assert.Equal(88, res.FinalDamage);

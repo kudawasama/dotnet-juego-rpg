@@ -1,0 +1,45 @@
+# .editorconfig (solo para MiJuegoRPG.Tests)
+# Aplica únicamente a los archivos de este proyecto de pruebas.
+[*.cs]
+
+# Usings y orden
+dotnet_diagnostic.SA1200.severity = none
+dotnet_diagnostic.SA1208.severity = none
+dotnet_diagnostic.SA1210.severity = none
+
+# Líneas en blanco / fin de archivo
+dotnet_diagnostic.SA1516.severity = none
+dotnet_diagnostic.SA1513.severity = none
+dotnet_diagnostic.SA1515.severity = none
+dotnet_diagnostic.SA1518.severity = none
+
+# Estilo de llaves / multilínea / varias sentencias
+dotnet_diagnostic.SA1500.severity = none
+dotnet_diagnostic.SA1501.severity = none
+dotnet_diagnostic.SA1502.severity = none
+dotnet_diagnostic.SA1503.severity = none
+dotnet_diagnostic.SA1116.severity = none
+dotnet_diagnostic.SA1111.severity = none
+dotnet_diagnostic.SA1107.severity = none
+dotnet_diagnostic.SA1128.severity = none
+dotnet_diagnostic.SA1127.severity = none
+
+# Comas/operadores/espaciado/tabs
+dotnet_diagnostic.SA1413.severity = none
+dotnet_diagnostic.SA1001.severity = none
+dotnet_diagnostic.SA1003.severity = none
+dotnet_diagnostic.SA1024.severity = none
+dotnet_diagnostic.SA1027.severity = none
+
+# Archivo vs tipo / un solo tipo por archivo (tests)
+dotnet_diagnostic.SA1649.severity = none
+dotnet_diagnostic.SA1402.severity = none
+
+# Bajar ruido, no ocultar del todo
+dotnet_diagnostic.SA1400.severity = suggestion
+dotnet_diagnostic.SA1201.severity = suggestion
+dotnet_diagnostic.SA1202.severity = suggestion
+dotnet_diagnostic.SA1312.severity = suggestion
+dotnet_diagnostic.SA1313.severity = suggestion
+dotnet_diagnostic.SA1316.severity = suggestion
+dotnet_diagnostic.SA1309.severity = suggestion

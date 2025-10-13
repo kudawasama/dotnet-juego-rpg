@@ -13,7 +13,7 @@ namespace MiJuegoRPG.Tests
         {
             // Arrange
             RandomService.Instancia.SetSeed(12345);
-            var nombre = "Tester_Persistencia_" + Guid.NewGuid().ToString("N").Substring(0,6);
+            var nombre = "Tester_Persistencia_" + Guid.NewGuid().ToString("N").Substring(0, 6);
             var pj = new PersonajeEnt(nombre);
 
             // Registrar algunas acciones (aunque no desbloqueen nada concreto según data real)
@@ -35,7 +35,7 @@ namespace MiJuegoRPG.Tests
 
             // Simular nueva instancia de personaje y restaurar manual (como hace GuardadoService.Cargar)
             var pj2 = new PersonajeEnt(nombre);
-            var mapa = System.Text.Json.JsonSerializer.Deserialize<System.Collections.Generic.Dictionary<string, System.Collections.Generic.Dictionary<string,int>>>(json);
+            var mapa = System.Text.Json.JsonSerializer.Deserialize<System.Collections.Generic.Dictionary<string, System.Collections.Generic.Dictionary<string, int>>>(json);
             pj2.ProgresoAccionesPorHabilidad = mapa ?? new();
 
             // Assert

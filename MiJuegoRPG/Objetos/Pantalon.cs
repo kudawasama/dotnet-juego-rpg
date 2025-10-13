@@ -5,9 +5,18 @@ namespace MiJuegoRPG.Objetos
     public class Pantalon : Objeto, MiJuegoRPG.Interfaces.IBonificadorEstadistica
     {
         public string TipoObjeto { get; set; } = "Pantalon";
-        public int Defensa { get; set; }
-        public int Nivel { get; set; }
-        public int Perfeccion { get; set; }
+        public int Defensa
+        {
+            get; set;
+        }
+        public int Nivel
+        {
+            get; set;
+        }
+        public int Perfeccion
+        {
+            get; set;
+        }
 
         public Pantalon(string nombre, int defensa, int nivel = 1, string rareza = "Normal", string categoria = "Pantalon", int perfeccion = 50)
             : base(nombre, rareza, categoria)
@@ -17,7 +26,8 @@ namespace MiJuegoRPG.Objetos
             Perfeccion = perfeccion;
         }
 
-    public Pantalon() : base("", "Normal", "Pantalon") { }
+        public Pantalon()
+            : base("", "Normal", "Pantalon") { }
 
         private int CalcularDefensa(int defensaBase, int perfeccion)
         {
@@ -33,9 +43,11 @@ namespace MiJuegoRPG.Objetos
         /// Bonificador de estadísticas aportado por el pantalón.
         /// Aporta Defensa física con claves comunes.
         /// </summary>
+        /// <returns></returns>
         public double ObtenerBonificador(string estadistica)
         {
-            if (string.IsNullOrWhiteSpace(estadistica)) return 0;
+            if (string.IsNullOrWhiteSpace(estadistica))
+                return 0;
             if (estadistica.Equals("Defensa", StringComparison.OrdinalIgnoreCase) ||
                 estadistica.Equals("DefensaFisica", StringComparison.OrdinalIgnoreCase) ||
                 estadistica.Equals("Defensa Física", StringComparison.OrdinalIgnoreCase))

@@ -49,7 +49,7 @@ namespace MiJuegoRPG.Tests
             Assert.Equal("Superior", acc.Rareza);
             // Perfección: originalmente se esperaba [52..55], pero el generador puede expandir a límite de rareza 'Superior'.
             // Ajuste: permitir hasta 60 (rango típico de Superior) manteniendo el mínimo.
-                Assert.InRange(acc.Perfeccion, 52, 60);
+            Assert.InRange(acc.Perfeccion, 52, 60);
         }
 
         /// <summary>

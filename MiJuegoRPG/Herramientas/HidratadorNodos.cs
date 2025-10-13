@@ -12,7 +12,7 @@ namespace MiJuegoRPG.Herramientas
     /// - Preserva sectores que ya tienen "nodosRecoleccion" no vacío
     /// - Limita el número de nodos escritos por sector (max)
     /// - Copia nombre/tipo/requiere/materiales (como objetos {Nombre,Cantidad})/cooldown base desde plantillas del bioma
-    /// - No escribe campos runtime (UltimoUso)
+    /// - No escribe campos runtime (UltimoUso).
     /// </summary>
     public static class HidratadorNodos
     {
@@ -27,10 +27,12 @@ namespace MiJuegoRPG.Herramientas
                 try
                 {
                     var json = File.ReadAllText(file);
-                    if (string.IsNullOrWhiteSpace(json)) continue;
+                    if (string.IsNullOrWhiteSpace(json))
+                        continue;
                     // Trabajamos sobre un diccionario para preservar campos desconocidos
                     var raw = JsonSerializer.Deserialize<Dictionary<string, object>>(json, options);
-                    if (raw == null) continue;
+                    if (raw == null)
+                        continue;
 
                     // Si es ciudad, no debe tener nodos de recolección: limpiar si existieran y continuar
                     string tipo = ExtraerString(raw, "tipo");
@@ -54,12 +56,15 @@ namespace MiJuegoRPG.Herramientas
 
                     // Determinar bioma
                     string bioma = ExtraerString(raw, "bioma");
-                    if (string.IsNullOrWhiteSpace(bioma)) continue; // sin bioma, no generamos
-                    if (!TablaBiomas.Biomas.TryGetValue(bioma, out var b)) continue; // bioma no definido
+                    if (string.IsNullOrWhiteSpace(bioma))
+                        continue; // sin bioma, no generamos
+                    if (!TablaBiomas.Biomas.TryGetValue(bioma, out var b))
+                        continue; // bioma no definido
 
                     // Generar muestra: comunes + posibilidad de 1 raro
                     var lista = new List<NodoRecoleccion>();
-                    if (b.NodosComunes != null) lista.AddRange(b.NodosComunes);
+                    if (b.NodosComunes != null)
+                        lista.AddRange(b.NodosComunes);
                     if (b.NodosRaros != null && b.NodosRaros.Count > 0)
                     {
                         // Añadir al menos un raro de forma opcional (20%) para darle sabor
@@ -67,7 +72,8 @@ namespace MiJuegoRPG.Herramientas
                         if (rnd.NextDouble() < 0.2)
                             lista.Add(b.NodosRaros[rnd.Next(0, b.NodosRaros.Count)]);
                     }
-                    if (lista.Count == 0) continue;
+                    if (lista.Count == 0)
+                        continue;
 
                     // Limitar y proyectar a una forma serializable simple
                     var proyectados = lista

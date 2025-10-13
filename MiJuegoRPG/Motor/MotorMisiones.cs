@@ -123,7 +123,17 @@ namespace MiJuegoRPG.Motor
                             var op = MiJuegoRPG.Motor.InputService.LeerOpcion("");
                             if (!string.IsNullOrWhiteSpace(op) && (op.Equals("o", StringComparison.OrdinalIgnoreCase) || op.Equals("observar", StringComparison.OrdinalIgnoreCase)))
                             {
-                                try { if (juego.jugador != null) MiJuegoRPG.Motor.Servicios.AccionRegistry.Instancia.RegistrarAccion("ObservarNPC", juego.jugador, new { npcId = npc.Id }); } catch { }
+                                try
+                                {
+                                    if (juego.Jugador != null)
+                                    {
+                                        MiJuegoRPG.Motor.Servicios.AccionRegistry.Instancia.RegistrarAccion("ObservarNPC", juego.Jugador, new
+                                        {
+                                            npcId = npc.Id
+                                        });
+                                    }
+                                }
+                                catch { }
                                 juego.Ui.WriteLine($"Observas detenidamente a {npc.Nombre}.");
                             }
                         }
@@ -147,7 +157,7 @@ namespace MiJuegoRPG.Motor
         {
             // Console.Clear();
             juego.Ui.WriteLine("=== Misiones activas ===");
-            if (juego.jugador == null || juego.jugador.Inventario == null)
+            if (juego.Jugador == null || juego.Jugador.Inventario == null)
             {
                 juego.Ui.WriteLine("No hay personaje cargado.");
                 InputService.Pausa();

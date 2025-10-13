@@ -3,8 +3,8 @@ using MiJuegoRPG.Enemigos;
 using MiJuegoRPG.Motor;
 using MiJuegoRPG.Motor.Servicios;
 using MiJuegoRPG.Objetos;
-using PJ = MiJuegoRPG.Personaje;
 using Xunit;
+using PJ = MiJuegoRPG.Personaje;
 
 namespace MiJuegoRPG.Tests
 {
@@ -48,7 +48,11 @@ namespace MiJuegoRPG.Tests
             // Assert 2: sigue habiendo 1 en total
             int total = 0;
             foreach (var oc in pj.Inventario.NuevosObjetos)
-                if (oc.Objeto.Nombre == material.Nombre) total += oc.Cantidad;
+            {
+                if (oc.Objeto.Nombre == material.Nombre)
+                    total += oc.Cantidad;
+            }
+
             Assert.Equal(1, total);
         }
 

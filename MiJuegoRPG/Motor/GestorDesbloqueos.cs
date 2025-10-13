@@ -64,7 +64,8 @@ namespace MiJuegoRPG.Motor
                         {
                             cumple = pj.CumpleRequisito(clave, valor);
                         }
-                        if (!cumple) break;
+                        if (!cumple)
+                            break;
                     }
                     if (cumple)
                     {

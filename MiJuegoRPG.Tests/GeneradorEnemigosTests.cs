@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using MiJuegoRPG.Motor;
 using MiJuegoRPG.Motor.Servicios;
-using PJ = MiJuegoRPG.Personaje;
 using Xunit;
+using PJ = MiJuegoRPG.Personaje;
 
 namespace MiJuegoRPG.Tests
 {

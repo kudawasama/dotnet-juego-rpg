@@ -1,7 +1,7 @@
-using System.Collections.Generic;
-
 namespace MiJuegoRPG.Core.Combate.Eventos
 {
+    using System.Collections.Generic;
+
     public sealed class CombatEventLog
     {
         private readonly List<CombatEvent> events = new(256);
@@ -25,6 +25,7 @@ namespace MiJuegoRPG.Core.Combate.Eventos
                     h = (h * 31) + e.V1;
                     h = (h * 31) + e.V2;
                 }
+
                 return h;
             }
         }

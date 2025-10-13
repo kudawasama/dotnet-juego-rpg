@@ -61,7 +61,8 @@ namespace MiJuegoRPG.Motor.Servicios
             int db = Math.Max(0, req.BaseDamage);
             if (db <= 0)
             {
-                res.FinalDamage = 0; return res;
+                res.FinalDamage = 0;
+                return res;
             }
 
             // 2. Hit / Evasión
@@ -80,12 +81,14 @@ namespace MiJuegoRPG.Motor.Servicios
             // 3. Penetración sobre defensa efectiva
             int defensaBase = req.EsMagico ? req.Objetivo.DefensaMagica : req.Objetivo.Defensa;
             double defEff = defensaBase * (1.0 - Math.Clamp(req.Penetracion, 0.0, 1.0));
-            if (defEff < 0) defEff = 0;
+            if (defEff < 0)
+                defEff = 0;
             res.DefensaEfectiva = defEff;
 
             // 4. Resta defensa
             double afterDef = db - defEff;
-            if (afterDef < 1) afterDef = 1; // mínimo si impactó
+            if (afterDef < 1)
+                afterDef = 1; // mínimo si impactó
             res.AfterDefensa = (int)Math.Round(afterDef, MidpointRounding.AwayFromZero);
 
             // 5. Mitigación porcentual
@@ -103,9 +106,11 @@ namespace MiJuegoRPG.Motor.Servicios
                     double penReducida = Math.Clamp(req.Penetracion * Math.Clamp(req.FactorPenetracionCritico, 0.0, 1.0), 0.0, 1.0);
                     int defensaBaseCrit = req.EsMagico ? req.Objetivo.DefensaMagica : req.Objetivo.Defensa;
                     double defEffCrit = defensaBaseCrit * (1.0 - penReducida);
-                    if (defEffCrit < 0) defEffCrit = 0;
+                    if (defEffCrit < 0)
+                        defEffCrit = 0;
                     double afterDefCrit = db - defEffCrit;
-                    if (afterDefCrit < 1) afterDefCrit = 1;
+                    if (afterDefCrit < 1)
+                        afterDefCrit = 1;
                     double afterMitCrit = afterDefCrit * (1.0 - Math.Clamp(req.MitigacionPorcentual, 0.0, 0.99));
                     afterMit = afterMitCrit; // reemplaza la base previa antes de crítico
                 }
@@ -113,7 +118,7 @@ namespace MiJuegoRPG.Motor.Servicios
                 double mult = Math.Max(1.0, req.CritMultiplier);
                 double f = Math.Clamp(req.CritScalingFactor <= 0 ? 1.0 : req.CritScalingFactor, 0.0, 1.0);
                 // Daño crítico = afterMit * (1 + (mult-1)*f)
-                afterMit *= (1.0 + (mult - 1.0) * f);
+                afterMit *= 1.0 + ((mult - 1.0) * f);
             }
 
             // 7. Vulnerabilidad / Elemental
@@ -124,7 +129,8 @@ namespace MiJuegoRPG.Motor.Servicios
 
             // 8. Redondeo y mínimo final
             int final = (int)Math.Round(afterMit, MidpointRounding.AwayFromZero);
-            if (final < 1) final = 1;
+            if (final < 1)
+                final = 1;
             res.FinalDamage = final;
             return res;
         }

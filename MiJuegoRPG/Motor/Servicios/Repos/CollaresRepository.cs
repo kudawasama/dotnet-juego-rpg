@@ -11,41 +11,51 @@ namespace MiJuegoRPG.Motor.Servicios.Repos
     /// </summary>
     public class CollaresRepository
     {
-        private readonly Dictionary<string, CollarData> _cache = new(StringComparer.OrdinalIgnoreCase);
-        private bool _loaded;
+        private readonly Dictionary<string, CollarData> cache = new(StringComparer.OrdinalIgnoreCase);
+        private bool loaded;
 
         private void EnsureLoaded()
         {
-            if (_loaded) return;
-            _loaded = true;
-            try { CargarBase(); AplicarOverlay(); }
+            if (loaded)
+                return;
+            loaded = true;
+            try
+            {
+                CargarBase();
+                AplicarOverlay();
+            }
             catch (Exception ex) { Logger.Warn($"[CollaresRepository] Error carga inicial: {ex.Message}"); }
         }
 
         private void CargarBase()
         {
             var dir = PathProvider.CollaresDir();
-            if (!Directory.Exists(dir)) return;
+            if (!Directory.Exists(dir))
+                return;
             foreach (var file in Directory.EnumerateFiles(dir, "*.json", SearchOption.AllDirectories))
             {
                 try
                 {
                     var json = File.ReadAllText(file);
-                    if (string.IsNullOrWhiteSpace(json)) continue;
+                    if (string.IsNullOrWhiteSpace(json))
+                        continue;
                     using var doc = JsonDocument.Parse(json);
                     if (doc.RootElement.ValueKind == JsonValueKind.Array)
                     {
                         foreach (var el in doc.RootElement.EnumerateArray())
                         {
-                            if (el.ValueKind != JsonValueKind.Object) continue;
+                            if (el.ValueKind != JsonValueKind.Object)
+                                continue;
                             var data = Parse(el, file);
-                            if (data != null) AgregarBaseSiNoExiste(data);
+                            if (data != null)
+                                AgregarBaseSiNoExiste(data);
                         }
                     }
                     else if (doc.RootElement.ValueKind == JsonValueKind.Object)
                     {
                         var data = Parse(doc.RootElement, file);
-                        if (data != null) AgregarBaseSiNoExiste(data);
+                        if (data != null)
+                            AgregarBaseSiNoExiste(data);
                     }
                 }
                 catch (Exception exFile)
@@ -60,18 +70,22 @@ namespace MiJuegoRPG.Motor.Servicios.Repos
             string[] candidatos = { PathProvider.PjDatosPath("collares_overlay.json"), PathProvider.PjDatosPath("collares.json") };
             foreach (var ruta in candidatos)
             {
-                if (!File.Exists(ruta)) continue;
+                if (!File.Exists(ruta))
+                    continue;
                 try
                 {
                     var json = File.ReadAllText(ruta);
-                    if (string.IsNullOrWhiteSpace(json)) continue;
+                    if (string.IsNullOrWhiteSpace(json))
+                        continue;
                     var lista = JsonSerializer.Deserialize<List<CollarData>>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-                    if (lista == null) continue;
+                    if (lista == null)
+                        continue;
                     foreach (var c in lista)
                     {
-                        if (string.IsNullOrWhiteSpace(c.Nombre)) continue;
+                        if (string.IsNullOrWhiteSpace(c.Nombre))
+                            continue;
                         c.Rareza = RarezaNormalizer.Normalizar(c.Rareza);
-                        _cache[c.Nombre] = c;
+                        cache[c.Nombre] = c;
                     }
                 }
                 catch (Exception ex)
@@ -86,7 +100,8 @@ namespace MiJuegoRPG.Motor.Servicios.Repos
             try
             {
                 string? nombre = LeerString(obj, "nombre") ?? LeerString(obj, "Nombre");
-                if (string.IsNullOrWhiteSpace(nombre)) return null;
+                if (string.IsNullOrWhiteSpace(nombre))
+                    return null;
                 var data = new CollarData
                 {
                     Nombre = nombre.Trim(),
@@ -94,20 +109,33 @@ namespace MiJuegoRPG.Motor.Servicios.Repos
                     Rareza = RarezaNormalizer.Normalizar(LeerString(obj, "rareza") ?? LeerString(obj, "Rareza") ?? "Comun"),
                     SetId = LeerString(obj, "setId") ?? LeerString(obj, "SetId")
                 };
-                if (TryGetInt(obj, out int def, "bonificaciondefensa", "BonificacionDefensa")) data.BonificacionDefensa = def;
-                if (TryGetInt(obj, out int ener, "bonificacionenergia", "BonificacionEnergia")) data.BonificacionEnergia = ener;
-                if (TryGetInt(obj, out int nivel, "nivel", "Nivel")) data.Nivel = nivel;
-                if (TryGetInt(obj, out int pfix, "perfeccion", "Perfeccion")) data.Perfeccion = pfix;
-                if (TryGetInt(obj, out int nmin, "nivelmin", "NivelMin")) data.NivelMin = nmin;
-                if (TryGetInt(obj, out int nmax, "nivelmax", "NivelMax")) data.NivelMax = nmax;
-                if (TryGetInt(obj, out int dmin, "bonificaciondefensamin", "BonificacionDefensaMin")) data.BonificacionDefensaMin = dmin;
-                if (TryGetInt(obj, out int dmax, "bonificaciondefensamax", "BonificacionDefensaMax")) data.BonificacionDefensaMax = dmax;
-                if (TryGetInt(obj, out int emin, "bonificacionenergiamin", "BonificacionEnergiaMin")) data.BonificacionEnergiaMin = emin;
-                if (TryGetInt(obj, out int emax, "bonificacionenergiamax", "BonificacionEnergiaMax")) data.BonificacionEnergiaMax = emax;
-                if (TryGetInt(obj, out int pmin, "perfeccionmin", "PerfeccionMin")) data.PerfeccionMin = pmin;
-                if (TryGetInt(obj, out int pmax, "perfeccionmax", "PerfeccionMax")) data.PerfeccionMax = pmax;
+                if (TryGetInt(obj, out int def, "bonificaciondefensa", "BonificacionDefensa"))
+                    data.BonificacionDefensa = def;
+                if (TryGetInt(obj, out int ener, "bonificacionenergia", "BonificacionEnergia"))
+                    data.BonificacionEnergia = ener;
+                if (TryGetInt(obj, out int nivel, "nivel", "Nivel"))
+                    data.Nivel = nivel;
+                if (TryGetInt(obj, out int pfix, "perfeccion", "Perfeccion"))
+                    data.Perfeccion = pfix;
+                if (TryGetInt(obj, out int nmin, "nivelmin", "NivelMin"))
+                    data.NivelMin = nmin;
+                if (TryGetInt(obj, out int nmax, "nivelmax", "NivelMax"))
+                    data.NivelMax = nmax;
+                if (TryGetInt(obj, out int dmin, "bonificaciondefensamin", "BonificacionDefensaMin"))
+                    data.BonificacionDefensaMin = dmin;
+                if (TryGetInt(obj, out int dmax, "bonificaciondefensamax", "BonificacionDefensaMax"))
+                    data.BonificacionDefensaMax = dmax;
+                if (TryGetInt(obj, out int emin, "bonificacionenergiamin", "BonificacionEnergiaMin"))
+                    data.BonificacionEnergiaMin = emin;
+                if (TryGetInt(obj, out int emax, "bonificacionenergiamax", "BonificacionEnergiaMax"))
+                    data.BonificacionEnergiaMax = emax;
+                if (TryGetInt(obj, out int pmin, "perfeccionmin", "PerfeccionMin"))
+                    data.PerfeccionMin = pmin;
+                if (TryGetInt(obj, out int pmax, "perfeccionmax", "PerfeccionMax"))
+                    data.PerfeccionMax = pmax;
                 var csv = LeerString(obj, "rarezasPermitidasCsv") ?? LeerString(obj, "RarezasPermitidasCsv");
-                if (!string.IsNullOrWhiteSpace(csv)) data.RarezasPermitidasCsv = csv;
+                if (!string.IsNullOrWhiteSpace(csv))
+                    data.RarezasPermitidasCsv = csv;
                 return data;
             }
             catch (Exception ex)
@@ -119,7 +147,8 @@ namespace MiJuegoRPG.Motor.Servicios.Repos
 
         private static string? LeerString(JsonElement obj, string prop)
         {
-            if (obj.TryGetProperty(prop, out var v) && v.ValueKind == JsonValueKind.String) return v.GetString();
+            if (obj.TryGetProperty(prop, out var v) && v.ValueKind == JsonValueKind.String)
+                return v.GetString();
             return null;
         }
 
@@ -127,34 +156,41 @@ namespace MiJuegoRPG.Motor.Servicios.Repos
         {
             foreach (var p in props)
             {
-                if (obj.TryGetProperty(p, out var v) && v.ValueKind == JsonValueKind.Number && v.TryGetInt32(out var i)) { value = i; return true; }
+                if (obj.TryGetProperty(p, out var v) && v.ValueKind == JsonValueKind.Number && v.TryGetInt32(out var i))
+                {
+                    value = i;
+                    return true;
+                }
             }
-            value = 0; return false;
+            value = 0;
+            return false;
         }
 
         private void AgregarBaseSiNoExiste(CollarData data)
         {
-            if (string.IsNullOrWhiteSpace(data.Nombre)) return;
-            if (_cache.ContainsKey(data.Nombre)) return;
-            _cache[data.Nombre] = data;
+            if (string.IsNullOrWhiteSpace(data.Nombre))
+                return;
+            if (cache.ContainsKey(data.Nombre))
+                return;
+            cache[data.Nombre] = data;
         }
 
         public IReadOnlyCollection<CollarData> Todas()
         {
             EnsureLoaded();
-            return _cache.Values as IReadOnlyCollection<CollarData> ?? new List<CollarData>(_cache.Values);
+            return cache.Values as IReadOnlyCollection<CollarData> ?? new List<CollarData>(cache.Values);
         }
 
         public bool TryGet(string nombre, out CollarData? data)
         {
             EnsureLoaded();
-            return _cache.TryGetValue(nombre, out data);
+            return cache.TryGetValue(nombre, out data);
         }
 
         public void Invalidate()
         {
-            _cache.Clear();
-            _loaded = false;
+            cache.Clear();
+            loaded = false;
         }
     }
 }
