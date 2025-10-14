@@ -12,5 +12,7 @@ namespace MiJuegoRPG.Interfaces
         int CostoMana => 0;
         // Cooldown en turnos para volver a usar la acción (0 = sin cooldown)
         int CooldownTurnos => 0;
+        // Coste en Puntos de Acción (1 por defecto para mantener compatibilidad)
+        int CostoPA => 1;
     }
 }

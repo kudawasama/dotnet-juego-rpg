@@ -282,7 +282,7 @@ namespace MiJuegoRPG.Motor
                                         juego.Ui.WriteLine(motivoAcep);
                                         return;
                                     }
-                                    juego.Jugador.MisionesActivas.Add(new MiJuegoRPG.Personaje.Personaje.MisionConId
+                                    juego.Jugador.MisionesActivas.Add(new MiJuegoRPG.Personaje.MisionConId
                                     {
                                         Id = misionSeleccionada.Id,
                                         Nombre = misionSeleccionada.Nombre,

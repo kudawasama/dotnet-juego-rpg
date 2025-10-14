@@ -41,13 +41,31 @@ namespace MiJuegoRPG.Motor
             MostrarEstadoCombate();
             Ui.WriteLine("----------------------------------------\n");
 
+            // Cargar configuración de combate para detectar modo PA
+            var combatConfig = CombatConfig.LoadOrDefault();
+
             bool turnoJugador = true;
             int turno = 0;
             while (jugador.EstaVivo && enemigos.Any(e => e.EstaVivo) && (MaxIteraciones == null || turno < MaxIteraciones))
             {
                 if (turnoJugador)
                 {
-                    UIStyle.SubHeader(Ui, $"Turno de {jugador.Nombre}");
+                    if (combatConfig.ModoAcciones && jugador is MiJuegoRPG.Personaje.Personaje personajeJugador)
+                    {
+                        // Sistema PA: múltiples acciones por turno
+                        var puntosAccion = ActionPointService.ComputePA(personajeJugador, combatConfig);
+                        UIStyle.SubHeader(Ui, $"Turno de {jugador.Nombre} - PA: {puntosAccion}");
+
+                        while (puntosAccion > 0 && jugador.EstaVivo && enemigos.Any(e => e.EstaVivo))
+                        {
+                            bool terminarTurno = ProcesarAccionJugadorPA(ref puntosAccion);
+                            if (terminarTurno) break; // Jugador huye o termina turno
+                        }
+                    }
+                    else
+                    {
+                        // Sistema legacy: una acción por turno
+                        UIStyle.SubHeader(Ui, $"Turno de {jugador.Nombre}");
                     Ui.WriteLine("1. Atacar");
                     Ui.WriteLine("2. Usar poción (si tienes)");
                     Ui.WriteLine("3. Huir");
@@ -298,8 +316,8 @@ namespace MiJuegoRPG.Motor
                             Ui.WriteLine("Acción inválida, pierdes el turno.");
                             break;
                     }
+                    } // Cierre del bloque else (sistema legacy)
                 }
-                else
                 {
                     // Cada enemigo vivo ataca al jugador
                     foreach (var enemigo in enemigos.Where(e => e.EstaVivo))
@@ -449,6 +467,222 @@ namespace MiJuegoRPG.Motor
             RegistrarEfectos(res);
             actionRules.AplicarCooldown(actor, accion);
             return true;
+        }
+
+        /// <summary>
+        /// Procesa una acción del jugador en modo PA. Devuelve true si debe terminar el turno (huir).
+        /// </summary>
+        private bool ProcesarAccionJugadorPA(ref int puntosAccion)
+        {
+            if (puntosAccion <= 0) return true;
+
+            Ui.WriteLine($"PA restantes: {puntosAccion}");
+            Ui.WriteLine("1. Atacar (1 PA)");
+            Ui.WriteLine("2. Usar poción (1 PA)");
+            Ui.WriteLine("3. Huir");
+            Ui.WriteLine("4. Habilidad (varía)");
+            Ui.WriteLine("0. Terminar turno");
+
+            var accion = InputService.LeerOpcion("Elige una acción: ");
+
+            switch (accion)
+            {
+                case "1": // Atacar
+                    return ProcesarAtaquePA(ref puntosAccion);
+                case "2": // Usar poción
+                    return ProcesarPocionPA(ref puntosAccion);
+                case "3": // Huir
+                    return ProcesarHuidaPA();
+                case "4": // Habilidad
+                    return ProcesarHabilidadPA(ref puntosAccion);
+                case "0": // Terminar turno
+                    return true;
+                default:
+                    Ui.WriteLine("Opción inválida.");
+                    return false;
+            }
+        }
+
+        private bool ProcesarAtaquePA(ref int puntosAccion)
+        {
+            var enemigosVivos = enemigos.Where(e => e.EstaVivo).ToList();
+            var objetivo = SeleccionarEnemigo(enemigosVivos);
+            if (objetivo != null)
+            {
+                var accionFisica = new MiJuegoRPG.Motor.Acciones.AtaqueFisicoAccion();
+                var costoPA = 1; // Por defecto, las acciones cuestan 1 PA
+                if (puntosAccion >= costoPA)
+                {
+                    var res = accionFisica.Ejecutar(jugador, objetivo);
+                    foreach (var m in res.Mensajes)
+                        Ui.WriteLine(m);
+                    RegistrarEfectos(res);
+                    puntosAccion -= costoPA;
+                    RegistrarAccionEnHook("Golpear");
+                }
+                else
+                {
+                    Ui.WriteLine($"No tienes suficientes PA (necesitas {costoPA}, tienes {puntosAccion}).");
+                }
+            }
+            return false;
+        }
+
+        private bool ProcesarPocionPA(ref int puntosAccion)
+        {
+            if (jugador is MiJuegoRPG.Personaje.Personaje pj)
+            {
+                var pociones = pj.Inventario.NuevosObjetos
+                    .Where(o => o.Objeto is MiJuegoRPG.Objetos.Pocion && o.Cantidad > 0)
+                    .ToList();
+                if (pociones.Count == 0)
+                {
+                    Ui.WriteLine("No tienes pociones disponibles.");
+                    return false;
+                }
+
+                UIStyle.Hint(Ui, "Elige una poción para usar:");
+                for (int i = 0; i < pociones.Count; i++)
+                {
+                    var p = (MiJuegoRPG.Objetos.Pocion)pociones[i].Objeto;
+                    Ui.WriteLine($"{i + 1}. {p.Nombre} (+{p.Curacion} HP) x{pociones[i].Cantidad}");
+                }
+
+                var selP = InputService.LeerOpcion("Ingresa el número de la poción: ");
+                if (int.TryParse(selP, out int idxP) && idxP > 0 && idxP <= pociones.Count)
+                {
+                    var pocion = (MiJuegoRPG.Objetos.Pocion)pociones[idxP - 1].Objeto;
+                    if (Ui.Confirm($"¿Usar {pocion.Nombre} para curar {pocion.Curacion} HP? (s/n): "))
+                    {
+                        var usar = new MiJuegoRPG.Motor.Acciones.UsarPocionAccion(idxP - 1);
+                        var costoPA = 1;
+                        if (puntosAccion >= costoPA)
+                        {
+                            if (TryEjecutarAccion(jugador, jugador, usar, out var msg))
+                            {
+                                puntosAccion -= costoPA;
+                            }
+                            else if (!string.IsNullOrEmpty(msg))
+                            {
+                                Ui.WriteLine(msg);
+                            }
+                        }
+                        else
+                        {
+                            Ui.WriteLine($"No tienes suficientes PA (necesitas {costoPA}, tienes {puntosAccion}).");
+                        }
+                    }
+                    else
+                    {
+                        Ui.WriteLine("Acción cancelada.");
+                    }
+                }
+                else
+                {
+                    Ui.WriteLine("Selección inválida.");
+                }
+            }
+            return false;
+        }
+
+        private bool ProcesarHuidaPA()
+        {
+            Ui.WriteLine($"{jugador.Nombre} intenta huir...");
+            if (MiJuegoRPG.Motor.Servicios.RandomService.Instancia.Next(100) < 60)
+            {
+                Ui.WriteLine($"{jugador.Nombre} logra huir del combate.");
+                return true;
+            }
+            else
+            {
+                Ui.WriteLine($"{jugador.Nombre} no pudo escapar.");
+                return false;
+            }
+        }
+
+        private bool ProcesarHabilidadPA(ref int puntosAccion)
+        {
+            var enemigosVivos = enemigos.Where(e => e.EstaVivo).ToList();
+            var objetivo = SeleccionarEnemigo(enemigosVivos);
+            if (objetivo != null)
+            {
+                Ui.WriteLine("Habilidades disponibles:");
+                Ui.WriteLine("1. Físico");
+                Ui.WriteLine("2. Mágico");
+                Ui.WriteLine("3. Veneno (demo)");
+
+                var selHab = InputService.LeerOpcion("Elige habilidad: ");
+                IAccionCombate? habilidad = null;
+
+                switch (selHab)
+                {
+                    case "1":
+                        habilidad = new MiJuegoRPG.Motor.Acciones.AtaqueFisicoAccion();
+                        break;
+                    case "2":
+                        habilidad = new MiJuegoRPG.Motor.Acciones.AtaqueMagicoAccion();
+                        break;
+                    case "3":
+                        habilidad = new MiJuegoRPG.Motor.Acciones.AplicarVenenoAccion();
+                        break;
+                    default:
+                        Ui.WriteLine("Habilidad inválida.");
+                        return false;
+                }
+
+                if (habilidad != null)
+                {
+                    var costoPA = 1; // Por defecto, todas las habilidades cuestan 1 PA
+                    if (puntosAccion >= costoPA)
+                    {
+                        if (TryEjecutarAccion(jugador, objetivo, habilidad, out var msg))
+                        {
+                            puntosAccion -= costoPA;
+                        }
+                        else if (!string.IsNullOrEmpty(msg))
+                        {
+                            Ui.WriteLine(msg);
+                        }
+                    }
+                    else
+                    {
+                        Ui.WriteLine($"No tienes suficientes PA (necesitas {costoPA}, tienes {puntosAccion}).");
+                    }
+                }
+            }
+            return false;
+        }
+
+        private ICombatiente? SeleccionarEnemigo(List<ICombatiente> enemigosVivos)
+        {
+            if (enemigosVivos.Count == 0) return null;
+            if (enemigosVivos.Count == 1) return enemigosVivos[0];
+
+            UIStyle.Hint(Ui, "Elige enemigo a atacar:");
+            for (int i = 0; i < enemigosVivos.Count; i++)
+                Ui.WriteLine($"{i + 1}. {enemigosVivos[i].Nombre} ({enemigosVivos[i].Vida}/{enemigosVivos[i].VidaMaxima} HP)");
+
+            var sel = InputService.LeerOpcion("Elige enemigo: ");
+            if (int.TryParse(sel, out int idx) && idx > 0 && idx <= enemigosVivos.Count)
+            {
+                return enemigosVivos[idx - 1];
+            }
+            Ui.WriteLine("Selección inválida.");
+            return null;
+        }
+
+        private void RegistrarAccionEnHook(string accion)
+        {
+            if (jugador is MiJuegoRPG.Personaje.Personaje pj)
+            {
+                try
+                {
+                    MiJuegoRPG.Motor.Servicios.AccionRegistry.Instancia.RegistrarAccion(accion, pj);
+                    if (accion == "Golpear")
+                        MiJuegoRPG.Motor.Servicios.AccionRegistry.Instancia.RegistrarAccion("CorrerGolpear", pj);
+                }
+                catch { }
+            }
         }
 
         // (Cooldowns) Lógica movida a ActionRulesService

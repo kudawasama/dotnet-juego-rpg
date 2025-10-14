@@ -1,6 +1,5 @@
 // Importamos las librerías necesarias
 using MiJuegoRPG.Personaje;
-using MiJuegoRPG.Objetos;
 using MiJuegoRPG.Habilidades;
 using System.Collections.Generic;
 

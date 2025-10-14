@@ -77,6 +77,7 @@ namespace MiJuegoRPG.Tests
             // Definir overlay con rareza distinta para un material base conocido
             File.WriteAllText(ruta, "[ { \"Nombre\": \"Mineral de Hierro\", \"Rareza\": \"Legendario\", \"Categoria\": \"test\" } ]");
             var repo = new MaterialRepository();
+            repo.Invalidate(); // Limpiar cualquier caché previo
             var hierro = repo.GetByNombre("Mineral de Hierro");
             Assert.NotNull(hierro);
             Assert.Equal("Legendaria", hierro!.Rareza); // normalizador

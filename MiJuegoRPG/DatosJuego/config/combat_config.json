@@ -9,7 +9,7 @@
   "CritCap": 0.5,
   "PenetracionMax": 0.9,
   "MinHit": 0.05,
-  "ModoAcciones": false,
+  "ModoAcciones": true,
   "UseNewDamagePipelineShadow": false,
   "UseNewDamagePipelineLive": false,
   "ReducePenetracionEnCritico": true,
