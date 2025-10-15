@@ -2,6 +2,58 @@
 
 # Bitácora de Cambios (Consolidada)
 
+## 2025-10-15 — Tests: Suite de Validadores Acciones de Mundo MVP (A–E)
+
+### Contexto
+
+- Se diseñó la suite completa de tests unitarios e integración para el MVP de Acciones de Mundo siguiendo patrón TDD.
+- 5 archivos de pruebas + 1 README documentando estructura y convenciones.
+
+#### Archivos creados
+
+| Archivo | Propósito | Tests |
+|---------|-----------|-------|
+| `ZonePolicyServiceTests.cs` | Validar carga de políticas por zona | 6 tests (Ciudad bloqueado, Ruta permitido, fallback) |
+| `ActionWorldCatalogServiceTests.cs` | Validar catálogo de acciones | 6 tests (defaults, requisitos, acción inexistente) |
+| `DelitosServiceTests.cs` | Validar aplicación de delitos | 6 tests (consecuencias, acumulación, RNG determinista) |
+| `WorldActionExecutorTests.cs` | Validar ejecución de acciones | 7 tests (Energía, tiempo, cooldowns, bloqueos) |
+| `AccionesMundoIntegrationTests.cs` | Validar flujos end-to-end | 5 tests (robar Ruta éxito/detección, Ciudad bloqueado, requisitos, cooldown) |
+| `README.md` | Documentación de suite | Estructura, convenciones AAA, cobertura objetivo |
+
+#### Decisiones técnicas
+
+- Determinismo: `RandomService.SetSeed` para escenarios con probabilidades (detección, multas).
+- Paralelización: `[Collection("Sequential")]` en todos los tests para evitar interferencias.
+- Documentación: XML comments en cada test explicando Given-When-Then.
+- Cobertura objetivo: ≥80% de servicios de Acciones de Mundo.
+- Patrón AAA estricto: Arrange-Act-Assert con comentarios claros.
+
+#### Impacto funcional
+
+- Sin cambios de runtime: solo tests diseñados (servicios reales pendientes de implementar).
+- 30 tests totales diseñados; compilación pendiente de DTOs/servicios.
+
+#### Validación (Quality Gates)
+
+- Build: PENDIENTE (tests no compilan hasta implementar servicios)
+- Lint/Análisis: PASS (solo warnings menores MD en README)
+- Tests: PENDIENTE (ejecución tras implementar servicios)
+
+#### Requisitos cubiertos
+
+- "Diseñar suite de validadores para Acciones de Mundo MVP" → Hecho (tareas A–E completadas).
+- "80% cobertura, RNG inyectado, no romper suite actual (131/131)" → Criterios documentados en README.
+
+#### Próximos pasos
+
+- Implementar servicios: `ZonePolicyService`, `ActionWorldCatalogService`, `DelitosService`, `WorldActionExecutor`.
+- Crear DTOs: `ActionWorldDef`, `ZonePolicyResult`, `WorldActionResult`, `MundoContext`.
+- Añadir campos al `Personaje`: `CooldownsAccionesMundo`.
+- Ejecutar `dotnet test` y confirmar 131 + 30 nuevos tests PASS.
+- Verificar cobertura con `dotnet test --collect:"XPlat Code Coverage"`.
+
+---
+
 ## 2025-10-15 — Documentación: Acciones de Mundo (Energía + Tiempo)
 
 ### Contexto
