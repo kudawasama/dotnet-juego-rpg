@@ -163,4 +163,68 @@ public sealed class DamageResult
 
 ---
 
+## Acciones de Mundo (Energía + Tiempo)
+
+Objetivo: habilitar acciones fuera de combate (mundo abierto) usando una economía separada de Energía y Tiempo de Acción, manteniendo PA exclusivo de combate. Esto permite progresión natural (más Energía/regeneración con nivel/atributos) y gameplay emergente social/supervivencia.
+
+- Economías separadas:
+  - Combate: Puntos de Acción (PA) → encadenamiento táctico por turno.
+  - Mundo: Energía + Tiempo de Acción → tareas físicas/sociales/mágicas y supervivencia.
+
+- Fases deterministas (por acción o lote):
+  1) Intent: validar requisitos (stats, reputación, entorno) y políticas de zona; reservar Energía/tiempo.
+  2) Lock: snapshot de estado base para resolución reproducible.
+  3) Resolve: ejecutar efectos según reglas y RNG inyectable.
+  4) Commit: consumir Energía/tiempo, aplicar cooldowns y emitir eventos.
+  5) EventLog: registro reproducible (Unity-ready) para replay/telemetría.
+
+- Políticas de zona y consecuencias:
+  - Reglas por tipo de zona (p. ej., ciudad prohíbe magia/robo).
+  - Intentos prohibidos no aplican efecto principal, pero generan consecuencias (−reputación, multas, alerta de guardias).
+
+- Ejemplos de acciones:
+  - Talar (físico/supervivencia): consume Energía y tiempo, produce materiales.
+  - Robar (social/sigilo): éxito/fallo afecta reputación y puede detonar detección.
+  - Espiar NPC (sigilo/percepción): otorga información/misiones; riesgo social.
+  - Alimentarse/Beber/Descansar: integran hambre/sed/fatiga.
+  - Magia en ciudad (prohibida): bloquear efecto (no quema la casa) pero aplicar −reputación y evento guardias.
+
+- Feature flag: `acciones_mundo.enabled` (OFF por defecto). Activable por configuración para despliegue progresivo.
+
+
+## Patrón de Cache en Repositorios y Aislamiento de Tests
+
+### Contexto
+
+Algunos repositorios de datos (por ejemplo, `MaterialRepository`) implementan un patrón de cache interno para mejorar el rendimiento, cargando los datos desde disco solo una vez y reutilizándolos en memoria durante la vida útil de la aplicación.
+
+### Riesgo en entorno de pruebas
+
+Este enfoque puede causar problemas en tests unitarios o de integración, ya que el cache persiste entre ejecuciones de tests, impidiendo que los cambios en archivos de datos (como overlays o archivos temporales) se reflejen correctamente en nuevas instancias del repositorio.
+
+### Solución aplicada
+
+- Se recomienda exponer un método `Invalidate()` en los repositorios con cache, que limpie el estado interno y fuerce la recarga de datos desde disco en la siguiente operación.
+- Los tests que dependan de la recarga de datos deben invocar explícitamente `repo.Invalidate()` antes de ejecutar la lógica bajo prueba.
+- Alternativamente, considerar patrones de setup/teardown en los tests para garantizar aislamiento total.
+
+### Ejemplo de uso en test
+
+```csharp
+// Arrange
+var repo = new MaterialRepository(...);
+repo.Invalidate(); // Limpia el cache antes de cada test
+// Act
+var material = repo.Obtener("Hierro");
+// Assert
+Assert.Equal("Legendaria", material.Rareza);
+```
+
+### Recomendaciones
+
+- Documentar en cada repositorio si utiliza cache y cómo invalidarlo.
+- Mantener los tests deterministas y aislados, evitando dependencias de estado compartido.
+- Revisar periódicamente si otros repositorios requieren el mismo patrón.
+
+---
 Notas para implementación: mantener este documento sincronizado con `Docs/Arquitectura_y_Funcionamiento.md` y `Docs/Roadmap.md`. Cambios de visión major requieren entrada en Bitácora y, si aplica, migrador de datos.

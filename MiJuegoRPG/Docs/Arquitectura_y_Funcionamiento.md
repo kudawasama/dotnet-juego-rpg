@@ -928,3 +928,76 @@ Nota: las firmas exactas pueden variar en el código; este apéndice busca fijar
 ---
 
 Anexo vivo: cualquier cambio en código o balance debe anotarse aquí y en `Roadmap.md` (Bitácora + sección relevante) para mantener sincronización entre equipos/PCs.
+
+## Acciones de Mundo (Energía + Tiempo) — MVP y contratos
+
+Estado: Diseño documentado y activación por flag propuesta. Implementación pendiente. Ver visión: `Docs/Vision_de_Juego.md` (sección “Acciones de Mundo (Energía + Tiempo)”).
+
+Objetivo: permitir acciones fuera de combate (espiar, robar, dialogar, comer, recolectar en sector, lanzar hechizos en ciudad con consecuencias) usando una economía separada de PA: Energía + Tiempo (minutos de mundo), con políticas por zona y reputación integrada. Determinismo, logs para replay y compatibilidad con progresión lenta.
+
+Componentes (contratos propuestos)
+
+- WorldActionService (servicio): valida y ejecuta acciones de mundo.
+  - Métodos:
+    - CanExecute(WorldActionContext ctx, WorldActionDef def) -> WorldActionValidation
+    - Execute(WorldActionContext ctx, WorldActionDef def) -> WorldActionResult
+- ZonePolicyService (servicio): evalúa políticas por sector/zona.
+  - Evalua(accionId, sector, reputacion, hora, faccion) -> ZonePolicyDecision
+  - Devuelve: permitido, bloqueado, permitido-con-riesgo (delito/alerta/penalización de reputación/cooldown);
+- WorldEventLog (servicio): registra eventos deterministas para replay/QA (incluye seed, entradas compactas y resultado canónico).
+  - Append(WorldEvent e); ComputeHash() para verificación determinista.
+- WorldActionDef (DTO de datos):
+  - id (snake_case), tipo (mundo|social|recoleccion|campamento), coste_energia, coste_tiempo_min, cooldown_min, requisitos{}, consecuencias{}, tags[]
+- WorldActionContext (runtime):
+  - pj, sector_actual, hora_actual, reputaciones, inventario, rng, toggles, feature_flags
+- WorldActionResult (DTO):
+  - exito(bool), mensajes[], energia_consumida, tiempo_avanza_min, reputacion_delta?, alerta_generada?, items_modificados[], cooldown_aplicado_min
+
+Flujo (determinista)
+
+1) Resolver definición de la acción (catálogo JSON; ver Resumen de Datos §28). Si no existe → error usuario.
+2) Construir WorldActionContext con snapshot del estado (pj/sector/hora/reputación/inventario/seed).
+3) Validación: WorldActionService.CanExecute →
+   - Requisitos de PJ (atributos, clase, reputación mínima, misión, herramienta) y del sector (politicas, horario).
+   - Policies: ZonePolicyService.Evalua (ciudad/parte_ciudad/ruta/interior) → Allowed/Blocked/Risky.
+   - Recursos: Energía disponible y tiempo aceptable (no exceder límites, p.ej. toque de queda hipotético futuro).
+4) Ejecución (si Allowed/Risky):
+   - Consumir Energía y avanzar tiempo (minutos) en el reloj de mundo.
+   - Aplicar efectos/resultado: cambios de inventario, reputación, cooldowns de acción/zona, probabilidad de detección (si Risky), registrar delito si aplica.
+   - Escribir en WorldEventLog el evento con semilla y resultado (para replay/Unity).
+5) Resultados a UI: mensajes breves (y detallados con toggle), estado actualizado persistido vía GuardadoService.
+
+Economía y tiempo
+
+- Energía (recurso out-of-combat): valores y costes en `DatosJuego/energia.json` (ya existente; ver §5.1 Coste de Energía). Máx 100; +1 cada N minutos de mundo; posadas recuperan % decreciente por descansos en el día (documentado en §5.1).
+- Tiempo: cada acción define `coste_tiempo_min`; se avanza el reloj y se disparan efectos de supervivencia/encuentros cuando corresponda.
+
+Políticas por zona (ZonePolicyService)
+
+- Fuente de datos propuesta: `DatosJuego/config/zonas_politicas.json` (pendiente de creación). Claves por tipo de sector (`Ciudad`, `ParteCiudad`, `Ruta`, `Mazmorra`) y reglas por acción:
+  - ejemplo: `robar_intento`: Ciudad → Allowed=false (delito leve, -rep_guardia), ParteCiudad → Risky (10–30% detección), Ruta → Allowed.
+- Resolución: reglas específicas de sector sobrescriben las de tipo general.
+
+Catálogos de acciones y delitos (datos)
+
+- `DatosJuego/acciones/acciones_mundo.json` (pendiente): lista de acciones con campos mínimos: id, descripcion, tipo, coste_energia, coste_tiempo_min, cooldown_min, requisitos{}, consecuencias{}, tags[].
+- `DatosJuego/config/delitos.json` (pendiente): catálogo de delitos para mapeo de consecuencias (p. ej., `robo_intento`: { reputacion_faccion: -5, multa_oro: 10..30, alerta_ciudad: true }).
+
+Feature flags y activación
+
+- Toggle en runtime y CLI propuestos: `--acciones-mundo` o `GameplayToggles.AccionesMundoEnabled` (OFF por defecto).
+- Config de gating opcional: `DatosJuego/config/acciones_mundo.json` (pendiente) con `{ "enabled": false }` para activación gradual per-build.
+
+Integraciones clave
+
+- Progression/EnergiaService: cálculo de coste (ver §5.1) y regeneraciones.
+- ReputacionService: aplicar reputación global/facción según consecuencias.
+- EncuentrosService: al avanzar tiempo, chequear eventos y cooldowns.
+- GuardadoService: cooldowns de acciones, flags de delitos únicos, log de mundo (opcional) y estado de energía/tiempo.
+
+Pruebas recomendadas (MVP)
+
+- Validación básica: acción con coste_energia > energía actual → CanExecute = false (mensaje).
+- Política de zona: `robar_intento` en Ciudad → Blocked; en ParteCiudad → Risky genera detección determinista con seed.
+- Consumo de recursos y tiempo: tras ejecutar acción, energía disminuye y `hora_actual` avanza minutos definidos.
+- Consecuencias: reputación se reduce según `delitos.json` y se aplica cooldown_min.
