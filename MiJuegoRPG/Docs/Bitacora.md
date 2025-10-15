@@ -1,5 +1,76 @@
 
+
 # Bitácora de Cambios (Consolidada)
+
+## 2025-10-15 — Documentación: Acciones de Mundo (Energía + Tiempo)
+
+### Contexto
+
+- Se formalizó el diseño de “Acciones de Mundo” (fuera de combate) con economía de Energía + Tiempo, gobernadas por políticas de zona y con consecuencias reputacionales/legal.
+
+#### Cambios clave
+
+- Arquitectura: añadida sección “Acciones de Mundo (Energía + Tiempo) — MVP y contratos” con servicios, DTOs y flujo.
+- Resumen de Datos: agregadas secciones 28–30 con propuestas de catálogos `acciones_mundo.json`, `config/zonas_politicas.json` y `config/delitos.json`.
+- Guía de Ejemplos: nueva sección con dos flujos (robar en Ciudad bloqueado, robar en Ruta con riesgo) y notas.
+- README Docs: índice y nota de feature flag para Acciones de Mundo.
+- Roadmap: nueva fila “Acciones de Mundo — MVP” marcada En curso (diseño/arquitectura hechos; datos propuestos; engine/tests pendientes).
+
+#### Impacto funcional
+
+- Sin cambios de runtime: es documentación y preparación de datos. La feature quedará detrás de un flag (OFF) cuando se implemente.
+
+#### Validación (Quality Gates)
+
+- Build: PASS (sin cambios de código).
+- Lint/Análisis: PASS (MD básico; enlaces relativos verificados en Docs/).
+- Tests: PASS (sin cambios; suite previa 131/131).
+
+#### Próximos pasos
+
+- Implementar motor MVP detrás de flag; añadir tests xUnit deterministas (energía/tiempo/políticas/delitos).
+- Completar sincronización de ejemplos y README raíz con instrucciones de activación del flag cuando exista.
+
+---
+
+## 2025-10-14 — 🐞 CIERRE BUG: Overlay y cache en MaterialRepository
+
+### Contexto
+- Se detectó que el test `MaterialRepository_Overlay_Sobrescribe_Base` fallaba porque el cache interno del repositorio persistía entre tests, impidiendo que los overlays creados en disco se reflejaran correctamente.
+
+#### Cambios clave
+- Se agregó una llamada a `repo.Invalidate()` antes de ejecutar el test, forzando la recarga de datos desde disco y permitiendo que el overlay sobrescriba el material base.
+- Se verificó que la normalización de rareza funciona correctamente ("Legendario" → "Legendaria").
+- Se ejecutaron todos los tests (131/131) y pasaron correctamente.
+
+#### Archivos afectados (resumen)
+| Archivo | Tipo | Motivo del cambio |
+|---|---|---|
+| MaterialRepositoryTests.cs | test | Se agregó invalidación de cache antes del test de overlay |
+| MaterialRepository.cs | código | Confirmada la causa raíz y documentado el patrón de cache |
+
+#### Decisiones técnicas
+- Se optó por invalidar el cache manualmente en los tests para mantener el rendimiento en runtime y el aislamiento en pruebas.
+- Se documentó el patrón en `Vision_de_Juego.md` para futuras referencias.
+
+#### Impacto funcional
+- El sistema de overlays ahora es determinista y confiable en entorno de pruebas.
+- No se afecta el rendimiento ni la lógica en producción.
+
+#### Validación (Quality Gates)
+- Build: PASS (sin errores de compilación)
+- Lint/Análisis: PASS (solo advertencias StyleCop no críticas)
+- Tests: PASS (131/131)
+
+#### Requisitos cubiertos
+- Overlay de materiales debe sobrescribir base en tests y runtime.
+- Los tests deben ser deterministas y reflejar el estado real de los datos.
+
+#### Próximos pasos
+- Considerar agregar setup/teardown automático en otros tests de repositorios con cache.
+- Documentar el patrón en todos los repositorios relevantes.
+
+---
 
 ## 2025-01-11 — 🎯 OPERACIÓN STYLECOP: Sincronización masiva exitosa (4,915 → 310 warnings)
 

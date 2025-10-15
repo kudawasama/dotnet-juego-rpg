@@ -9,6 +9,7 @@ Este índice centraliza la documentación del proyecto y sirve como punto de ent
 - [Timeline de combate determinista](./Combate_Timeline.md)
 - [Configuración de progresión](./progression_config.md)
 - [Guía de ejemplos (para principiantes)](./Guia_Ejemplos.md)
+ - [Acciones de Mundo (visión/arquitectura)](./Arquitectura_y_Funcionamiento.md#acciones-de-mundo-energía--tiempo--mvp-y-contratos)
 
 ## Guía rápida
 
@@ -119,6 +120,12 @@ dotnet run --project MiJuegoRPG/MiJuegoRPG.csproj -- --help
 dotnet run --project MiJuegoRPG/MiJuegoRPG.csproj -- --log-off
 dotnet run --project MiJuegoRPG/MiJuegoRPG.csproj -- --log-level=info
 ```
+
+Acciones de Mundo (feature flag)
+
+- El motor de Acciones de Mundo se introducirá detrás de un flag y permanecerá OFF por defecto durante el MVP.
+- Documentación de diseño/contratos: ver sección “Acciones de Mundo (Energía + Tiempo) — MVP” en Arquitectura.
+- Datos propuestos (catálogos/políticas): ver `Docs/Resumen_Datos.md` secciones 28–30.
 
 Notas:
 

@@ -90,6 +90,75 @@ Uso previsto:
 Última actualización snapshot: 2025-10-01.
 
 ---
+## 28. Acciones de Mundo (acciones_mundo.json) — Propuesta de catálogo
+
+Estado: No existe aún en datos; se documenta el esquema sugerido para alinear implementación.
+
+Ruta propuesta: `MiJuegoRPG/DatosJuego/acciones/acciones_mundo.json`
+
+Esquema mínimo por entrada (snake_case):
+
+```json
+{
+	"id": "robar_intento",
+	"descripcion": "Intentar hurtar a un transeúnte o puesto",
+	"tipo": "social",
+	"coste_energia": 8,
+	"coste_tiempo_min": 3,
+	"cooldown_min": 60,
+	"requisitos": { "clase": ["ladron"], "atributos": { "destreza": ">=15" } },
+	"consecuencias": { "delito": "robo_intento", "prob_deteccion": 0.25 },
+	"tags": ["ciudad", "riesgo"]
+}
+```
+
+Notas:
+
+- Ausencia de campos implica defaults neutros: `coste_energia=1`, `coste_tiempo_min=1`, `cooldown_min=0`, sin requisitos ni consecuencias.
+- `tipo`: mundo|social|recoleccion|campamento.
+- `consecuencias.delito` referencia `config/delitos.json`.
+
+## 29. Políticas de Zona (zonas_politicas.json) — Propuesta
+
+Estado: No existe aún; definir para gobernar Acciones de Mundo por tipo/sector.
+
+Ruta propuesta: `MiJuegoRPG/DatosJuego/config/zonas_politicas.json`
+
+Ejemplo:
+
+```json
+{
+	"Ciudad": {
+		"robar_intento": { "permitido": false, "delito": "robo_intento", "reputacion_faccion": { "guardia": -5 } },
+		"lanzar_hechizo": { "permitido": true, "risky": true, "prob_deteccion": 0.15 }
+	},
+	"ParteCiudad": {
+		"robar_intento": { "permitido": true, "risky": true, "prob_deteccion": 0.25 }
+	},
+	"Ruta": {
+		"robar_intento": { "permitido": true }
+	}
+}
+```
+
+Resolución: el sector concreto puede sobrescribir la política del tipo general (`SectorId` → reglas específicas) si se requiere un caso especial.
+
+## 30. Delitos (config/delitos.json) — Propuesta
+
+Estado: No existe aún; catálogo de consecuencias legales/sociales.
+
+Ruta propuesta: `MiJuegoRPG/DatosJuego/config/delitos.json`
+
+Ejemplo:
+
+```json
+{
+	"robo_intento": { "reputacion_faccion": { "guardia": -5 }, "multa_oro": [10, 30], "alerta_ciudad": true },
+	"hechiceria_en_ciudad": { "reputacion_global": -2, "alerta_ciudad": true }
+}
+```
+
+Uso: referenciado desde `acciones_mundo.json` y `zonas_politicas.json` para aplicar efectos consistentes.
 
 ## 6. NPCs (npcs/npc.json)
 

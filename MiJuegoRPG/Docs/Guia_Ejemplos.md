@@ -92,4 +92,26 @@ if (eventoGlobal == "Invasión goblin")
 - El juego mapea habilidades aprendidas a acciones de combate automáticamente (`HabilidadAccionMapper`).
 - En combate, usa la opción "Habilidad" para ver las que son usables con su coste/CD; al usarlas, ganan EXP y pueden evolucionar si cumplen condiciones.
 
-Última actualización: 2025-09-22
+## Acciones de Mundo (Energía + Tiempo)
+
+Fuera de combate, ciertas acciones consumen Energía y Tiempo y pueden estar condicionadas por políticas de la zona (ciudad, parte de ciudad, ruta).
+
+Ejemplo 1: Intentar robar en Ciudad (bloqueado por política)
+
+- Acción: robar_intento
+- Zona: Ciudad (centro)
+- Resultado esperado: Política lo marca como no permitido; no consume recursos; muestra aviso y, si existiera configuración de “riesgo” en ese sector, podría disparar consecuencias si el diseño lo permite. Por defecto: bloqueado sin efectos.
+
+Ejemplo 2: Intentar robar en Ruta (permitido, con riesgo)
+
+- Acción: robar_intento
+- Zona: Ruta
+- Costes: Energía 8; Tiempo 3 min
+- Resultado: Se evalúa detección (ej. 25%). Si es detectado, aplica consecuencias del delito (reputación con guardia -5, posible multa); si no, éxito silencioso con posibles recompensas o progresión.
+
+Notas rápidas
+
+- Las políticas por zona gobiernan si una acción está permitida, si es arriesgada y cuáles son sus consecuencias por defecto.
+- Los catálogos y políticas propuestos están documentados en Docs/Resumen_Datos.md (secciones 28–30) y el flujo/contratos en Docs/Arquitectura_y_Funcionamiento.md.
+
+Última actualización: 2025-10-15

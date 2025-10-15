@@ -35,10 +35,13 @@
 
 ## Resumen Normalizado (Tabla)
 
+
 Feature | Estado | Última actualización | Notas
 --- | --- | --- | ---
 Soporte rarezas dinámicas | Hecho | 2025-09-30 | Generador migrado a strings + RarezaConfig central; enum legado solo para compat.
+Overlay materiales (cache/aislamiento tests) | Hecho | 2025-10-14 | Bug de cache resuelto, overlay ahora sobrescribe correctamente en tests y runtime. Documentado el patrón de invalidación.
 Sistema de Acciones (Fase 1) | Hecho | 2025-09-29 | Registro acciones, persistencia y hooks combate/NPC/mundo; falta UI hints (7.b.5).
+Acciones de Mundo (Energía + Tiempo) — MVP | En curso | 2025-10-15 | Diseño y Arquitectura documentados; Data (catálogos/políticas) propuestos en Resumen_Datos (28–30); Engine/Tests pendientes (flag OFF por defecto).
 Pipeline de Daño (MVP) | Regresión temporal | 2025-10-02 | Rollback a resolver mínimo (archivo corrupto). Reinstalar pasos y contrato `IDamageStep` tras estabilizar 2 tests verbosos.
 DamagePipeline modo sombra | Regresión temporal | 2025-10-02 | Desactivado (comparador removido). Rehabilitar cuando verbose tests verdes y drift re-validado (<±5%).
 DamagePipeline modo live (activación gradual) | Regresión temporal | 2025-10-02 | Flag suspendido; se requiere nueva calibración (crit/penetración) tras reintroducción shadow.
