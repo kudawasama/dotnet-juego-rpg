@@ -69,6 +69,7 @@ Este chatmode se enfoca exclusivamente en la organización, coordinación y aná
 | /correccionError | Detección y resolución de bugs | ✅ Activo |
 | /analisisAvance | Seguimiento de progreso y métricas | ✅ Activo |
 | /CoordinacionAgentes | Organización y coordinación de agentes | ✅ Activo |
+| /implementacionServicios | Implementación de lógica real de servicios y DTOs | ✅ Activo |
 
 ---
 

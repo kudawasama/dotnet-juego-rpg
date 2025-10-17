@@ -35,7 +35,6 @@
 
 ## Resumen Normalizado (Tabla)
 
-
 Feature | Estado | Última actualización | Notas
 --- | --- | --- | ---
 Soporte rarezas dinámicas | Hecho | 2025-09-30 | Generador migrado a strings + RarezaConfig central; enum legado solo para compat.
@@ -43,7 +42,7 @@ Overlay materiales (cache/aislamiento tests) | Hecho | 2025-10-14 | Bug de cache
 Sistema de Acciones (Fase 1) | Hecho | 2025-09-29 | Registro acciones, persistencia y hooks combate/NPC/mundo; falta UI hints (7.b.5).
 Acciones de Mundo (Energía + Tiempo) — Diseño/Docs | Hecho | 2025-10-15 | Visión, Arquitectura, Resumen_Datos (catálogos 28–30), Guía_Ejemplos, Roadmap/Bitácora sincronizados.
 Acciones de Mundo (Energía + Tiempo) — Tests MVP | Hecho | 2025-10-15 | Suite completa diseñada (A–E): 30 tests unitarios+integración, deterministas, cobertura ≥80%. Pendiente: implementar servicios/DTOs.
-Acciones de Mundo (Energía + Tiempo) — Engine MVP | Pendiente | 2025-10-15 | Implementar servicios (ZonePolicy, Catalog, Delitos, Executor), DTOs, campos Personaje. Feature flag OFF por defecto.
+Acciones de Mundo (Energía + Tiempo) — Engine MVP | En curso | 2025-10-16 | Servicios y DTOs implementados (MVP). Tests: 154/159 PASS, 5 FAIL por ajustes de defaults/IDs/reputación. Ver Bitácora 2025-10-16.
 Pipeline de Daño (MVP) | Regresión temporal | 2025-10-02 | Rollback a resolver mínimo (archivo corrupto). Reinstalar pasos y contrato `IDamageStep` tras estabilizar 2 tests verbosos.
 DamagePipeline modo sombra | Regresión temporal | 2025-10-02 | Desactivado (comparador removido). Rehabilitar cuando verbose tests verdes y drift re-validado (<±5%).
 DamagePipeline modo live (activación gradual) | Regresión temporal | 2025-10-02 | Flag suspendido; se requiere nueva calibración (crit/penetración) tras reintroducción shadow.

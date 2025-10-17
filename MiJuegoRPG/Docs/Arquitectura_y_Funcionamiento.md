@@ -150,6 +150,32 @@ Nota: Nuevo `DamagePipeline` disponible en modo sombra (flag `--damage-shadow`) 
 
 ## 1. Visión general del sistema
 
+### Acciones de Mundo (Energía + Tiempo) — MVP (2025-10-16)
+
+Pipeline (orden fijo):
+
+1) Política de Zona → `ZonePolicyService.ObtenerPolitica(zona, accionId)` lee `DatosJuego/config/zonas_politicas.json` y devuelve `{ Permitido, Risky, DelitoId }`.
+2) Catálogo de Acción → `ActionWorldCatalogService.ObtenerAccion(accionId)` carga `DatosJuego/config/acciones_mundo.json` y provee `Energia`, `Tiempo`, `Cooldown` y `Requisitos` (clase/atributos).
+3) Requisitos → validación de clase y atributos en `WorldActionExecutor`.
+4) Cooldown → chequeo y aplicación del cooldown de la acción.
+5) Recursos → consumo de `Energia` y aumento de `MinutosMundo` según `Tiempo`.
+6) Detección (opcional) → si `Risky`, se evalúa `RandomService.NextDouble() < 0.25` (25%).
+7) Consecuencias → si hay `DelitoId` y fue detectado, `DelitosService.AplicarDelito` lee `DatosJuego/config/delitos.json`, aplica multa y reputación por facción.
+
+Contratos mínimos:
+
+- `WorldActionExecutor.EjecutarAccion(accionId, Personaje, zona, MundoContext)` → `ResultadoAccionMundo { Exito, FueDetectado, Mensaje }`.
+- `ActionWorldDef` (DTO) con `JsonPropertyName` en camelCase para: `id`, `energia`, `tiempo`, `cooldown`, `requisitos { clase[], atributos{} }`, `consecuencias` (opcional).
+
+Determinismo:
+
+- `RandomService.SetSeed(int)` asegura reproducibilidad en detección y multas. Seeds de referencia en pruebas: 1 (detecta), 999 (no detecta).
+
+Notas y pendientes:
+
+- Unificar el punto de aplicación de cooldown (antes de recursos) en todas las variantes del ejecutor.
+- Alinear defaults de `energia/tiempo/cooldown` y el mapeo de `id` con `acciones_mundo.json` real para que las pruebas pasen.
+
 ### Modularidad de materiales y drops de enemigos (2025-09-23)
 
 ### Sistema de Puntos de Acción (PA) – Fase 1 (2025-09-30)
@@ -357,23 +383,23 @@ Objetivo: todas las habilidades del juego comparten la misma fuente de verdad (J
 Piezas clave
 
 - Loader: `Habilidades/HabilidadLoader.cs` carga archivos en formato objeto o lista, con `PropertyNameCaseInsensitive`, y normaliza campos. Soporta:
-  
+
   - `AtributosNecesarios` y `CostoMana`.
-  
+
   - `Evoluciones` con `Condiciones` (por ejemplo, `NvHabilidad`, `NvJugador`, `Misiones` o etiquetas de logro futuras).
 - Catálogo: `HabilidadCatalogService` expone:
-  
+
   - `Todas`: habilidades disponibles en datos.
-  
+
   - `ElegiblesPara(Personaje)`: filtra por condiciones básicas (nivel, misión, atributos mínimos) — extensible.
-  
+
   - `AProgreso(HabilidadData)`: crea la instancia runtime `Personaje.HabilidadProgreso` con evoluciones y requisitos.
 - Runtime Personaje:
-  
+
   - `Personaje.Habilidades: Dictionary<string,HabilidadProgreso>` — habilidades aprendidas/activas.
-  
+
   - `Personaje.UsarHabilidad(id)`: incrementa experiencia, verifica costes/atributos y llama a `RevisarEvolucionHabilidad` para desbloquear evoluciones cuando cumplan sus condiciones.
-  
+
   - `Personaje.SubirNivel()`: intenta auto-desbloquear habilidades elegibles del catálogo (no intrusivo).
 
 Habilidades otorgadas por equipo/sets (temporales)
@@ -391,11 +417,11 @@ Habilidades jugables en combate (mapper)
 Contratos mínimos
 
 - `HabilidadCatalogService`:
-  
+
   - `IReadOnlyList<HabilidadData> Todas { get; }`
-  
+
   - `IEnumerable<HabilidadData> ElegiblesPara(Personaje pj)`
-  
+
   - `HabilidadProgreso AProgreso(HabilidadData data)`
 - `Inventario.SincronizarHabilidadesYBonosSet(Personaje pj)` — llamado tras equipar/desequipar para mantener consistencia de habilidades y sets.
 
@@ -626,30 +652,30 @@ Extensiones futuras: BonusEquipo (campo `BonusPA` en objetos), Buffs/Debuffs (ef
 
 #### 6.2.4 Pipeline de Daño (Orden Inmutable)
 
-1) BaseDamage (tipo Físico/Mágico/Elemental)  
-2) Hit / Evasión (si falla: daño=0, FueEvadido=true, fin)  
-3) Penetración (DEF * (1-PEN))  
-4) Resta de Defensa (min 1 si impacta)  
-5) Mitigación porcentual (afterDef * (1-MIT))  
-6) Crítico (afterMit * CritMultiplierEscalado)  
-7) Vulnerabilidades/Elementos (afterCrit * VulnFactor)  
-8) Redondeo (AwayFromZero) + Mínimo (≥1 si impactó)  
+1) BaseDamage (tipo Físico/Mágico/Elemental)
+2) Hit / Evasión (si falla: daño=0, FueEvadido=true, fin)
+3) Penetración (DEF * (1-PEN))
+4) Resta de Defensa (min 1 si impacta)
+5) Mitigación porcentual (afterDef * (1-MIT))
+6) Crítico (afterMit * CritMultiplierEscalado)
+7) Vulnerabilidades/Elementos (afterCrit * VulnFactor)
+8) Redondeo (AwayFromZero) + Mínimo (≥1 si impactó)
 
-Fórmulas clave:  
-defensaEfectiva = max(0, DEF *(1 - PEN))  
-afterDef = max(1, DB - defensaEfectiva)  
-afterMit = afterDef* (1 - MIT)  
-final = round(afterMit *(isCrit ? CritMultEscalado : 1)* VulnFactor)  
+Fórmulas clave:
+defensaEfectiva = max(0, DEF *(1 - PEN))
+afterDef = max(1, DB - defensaEfectiva)
+afterMit = afterDef* (1 - MIT)
+final = round(afterMit *(isCrit ? CritMultEscalado : 1)* VulnFactor)
 final = max(1, final)
 
-CritMultEscalado = 1 + (CritMultBase - 1) *CritScalingFactor (balance fino).  
+CritMultEscalado = 1 + (CritMultBase - 1) *CritScalingFactor (balance fino).
 Penetración en crítico puede reducirse: PENcrit = PEN* FactorPenetracionCritico (si `ReducePenetracionEnCritico`).
 
 #### 6.2.5 Precisión / Evasión / Crítico
 
-HitChance = clamp(BasePrecision + PrecisionStats - EvasionObjetivo, MinHit, 1.0).  
-BasePrecision recomendada 0.90; MinHit 0.05.  
-CritChance = clamp(CritStats + CritBuffs, 0, CritCap).  
+HitChance = clamp(BasePrecision + PrecisionStats - EvasionObjetivo, MinHit, 1.0).
+BasePrecision recomendada 0.90; MinHit 0.05.
+CritChance = clamp(CritStats + CritBuffs, 0, CritCap).
 Curva DR opcional: chanceDR = stat / (stat + K) con cap superior.
 
 #### 6.2.6 Penetración y Mitigación
@@ -658,7 +684,7 @@ PEN sumada de fuentes y clamp [0, PenetracionMax]. Aplica antes de resta de defe
 
 #### 6.2.7 Reacciones Inmediatas
 
-ReactionSlots = 1 + floor((Destreza + Agilidad)/100).  
+ReactionSlots = 1 + floor((Destreza + Agilidad)/100).
 Uso: durante ejecución de una acción que marque ventana de interrupción (`ventanaInterrupcion.frames > 0`), un defensor puede disparar acción reactiva (ej. `ContraataqueRapido`) si tiene slot libre. Fase 1: modelado de slots; la ejecución real se activará en Fase 2.
 
 #### 6.2.8 Esquema Extendido `acciones_catalogo.json`
@@ -708,16 +734,16 @@ AvanzarCooldowns(pj); RegenerarMana(pj); TickEfectos()
 
 #### 6.2.10 Tests Sugeridos (Resumen Ejecutable)
 
-1. PA_Calculo_BasicoYRapido (valores de ejemplo).  
-2. Daño_Pipeline_Secuencia (verifica pasos intermedios con seed).  
-3. Critico_Escalado_Factor (comprueba CritScalingFactor).  
-4. Macro_Expansion (CorrerGolpear produce dos acciones).  
-5. Reaccion_SlotConsumido (placeholder futuro).  
-6. Accion_Coste_NoConsumeSiCooldown (fail gating).  
-7. Distancia_Transicion (Correr modifica distancia).  
-8. Fallback_CamposAusentes (acciones sin costePA usan 1).  
-9. Mitigacion_Orden (Penetración antes de defensa; MIT antes de crítico).  
-10. Vulnerabilidad_PostCritico (aplicación final).  
+1. PA_Calculo_BasicoYRapido (valores de ejemplo).
+2. Daño_Pipeline_Secuencia (verifica pasos intermedios con seed).
+3. Critico_Escalado_Factor (comprueba CritScalingFactor).
+4. Macro_Expansion (CorrerGolpear produce dos acciones).
+5. Reaccion_SlotConsumido (placeholder futuro).
+6. Accion_Coste_NoConsumeSiCooldown (fail gating).
+7. Distancia_Transicion (Correr modifica distancia).
+8. Fallback_CamposAusentes (acciones sin costePA usan 1).
+9. Mitigacion_Orden (Penetración antes de defensa; MIT antes de crítico).
+10. Vulnerabilidad_PostCritico (aplicación final).
 
 #### 6.2.11 Balance Inicial (Parámetros Recomendados)
 
@@ -732,20 +758,20 @@ BasePA=2 PAMax=6 CritMultiplierBase=1.5 CritScalingFactor=0.65 CritCap=0.50 Pene
 
 #### 6.2.13 Estrategia de Integración Incremental
 
-1) Implementar soporte `CostoPA` mínimo y loop PA solo jugador (flag).  
-2) Añadir diccionario temporal de costes (sin tocar JSON aún).  
-3) Introducir macro expansión simple.  
-4) Agregar tracking de distancia (enum + campo en contexto de combate).  
-5) Activar reacciones (placeholder: contador slot).  
-6) Migrar costes al JSON extendido.  
+1) Implementar soporte `CostoPA` mínimo y loop PA solo jugador (flag).
+2) Añadir diccionario temporal de costes (sin tocar JSON aún).
+3) Introducir macro expansión simple.
+4) Agregar tracking de distancia (enum + campo en contexto de combate).
+5) Activar reacciones (placeholder: contador slot).
+6) Migrar costes al JSON extendido.
 7) IA multi‑acción y pesos de personalidad.
 
 #### 6.2.14 Criterios de “Listo para Fase 2”
 
-- Loop PA ON produce mismos resultados de daño promedio (±5%) que legacy en benchmark de 100 turnos (seed fija).  
-- Test suite §6.2.10 en verde.  
-- Documentación sincronizada (Bitácora + Roadmap).  
-- Flag OFF: comportamiento idéntico al anterior (prueba regresión).  
+- Loop PA ON produce mismos resultados de daño promedio (±5%) que legacy en benchmark de 100 turnos (seed fija).
+- Test suite §6.2.10 en verde.
+- Documentación sincronizada (Bitácora + Roadmap).
+- Flag OFF: comportamiento idéntico al anterior (prueba regresión).
 
 Última actualización: 2025-10-01.
 

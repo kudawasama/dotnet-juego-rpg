@@ -9,7 +9,7 @@ Este índice centraliza la documentación del proyecto y sirve como punto de ent
 - [Timeline de combate determinista](./Combate_Timeline.md)
 - [Configuración de progresión](./progression_config.md)
 - [Guía de ejemplos (para principiantes)](./Guia_Ejemplos.md)
- - [Acciones de Mundo (visión/arquitectura)](./Arquitectura_y_Funcionamiento.md#acciones-de-mundo-energía--tiempo--mvp-y-contratos)
+- [Acciones de Mundo (visión/arquitectura)](./Arquitectura_y_Funcionamiento.md#acciones-de-mundo-energía--tiempo--mvp-y-contratos)
 
 ## Guía rápida
 

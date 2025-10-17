@@ -1,0 +1,25 @@
+{
+  "zonas": {
+    "Ciudad": {
+      "robar_intento": {
+        "permitido": false,
+        "delitoId": "robo_intento",
+        "risky": false
+      }
+    },
+    "ParteCiudad": {
+      "robar_intento": {
+        "permitido": true,
+        "delitoId": "robo_intento",
+        "risky": true
+      }
+    },
+    "Ruta": {
+      "robar_intento": {
+        "permitido": true,
+        "delitoId": "robo_intento",
+        "risky": true
+      }
+    }
+  }
+}

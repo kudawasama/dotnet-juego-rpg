@@ -37,14 +37,14 @@ Observaciones:
 Total listadas: 24
 
 Líneas principales y progresión (ejemplos):
-  
+
 - Herrero Bairan: BAI-HER-001 → BAI-HER-002 → BAI-HER-003 (progresión de forja, defensa de ciudad).
 - Recolección Bairan: Cadena de misiones de gather (`BAI-REC-*` + especial `BAI-ESP-*` desbloqueada por requisitos compuestos).
 - Inicio Bairan: BAI-INI-001 (entrega armas iniciales al alcanzar nivel 2).
 - Herrero Winston / Cocina Zircon / Magia Aethel / Guardia Morholt / Agricultura Laito / Minería Rok / Comercio Raven: líneas temáticas independientes con recompensas de acceso o mejora de stats específicos.
 
 Distribución de recompensas (tendencias):
-  
+
 - ExpNivel: micro-incrementos (0.004–0.03) salvo misión de inicio (0.5) para acelerar arranque controlado.
 - ExpAtributos: orientadas a temática (Herrero → Fuerza/Resistencia; Cocina → Resistencia/Suerte; Magia → Inteligencia/Sabiduría; Comercio → Carisma/Inteligencia).
 - Recompensas cualitativas: acceso a tienda especial, expansión inventario, objetos legendarios, permisos y tiendas secretas (gate de progreso horizontal).
@@ -62,13 +62,13 @@ Ejemplo (Herrero): `Mineral_de_Hierro.json`
 ```
 
 Patrones:
-  
+
 - Nombres normalizados snake-case en `id`, nombres legibles en `nombre`.
 - `rareza` en minúsculas (conversión tolerante en runtime).
 - `especialidad` alinea con la carpeta padre (validación semántica simple posible).
 
 Uso previsto:
-  
+
 - Crafteo futuro (recetas hacen referencia por `id`).
 - Misiones (strings en requisitos; migración recomendada a identificadores formales con cantidad para evitar ambigüedades: propuesto `{ "Item": "mineral_de_hierro", "Cantidad": 5 }`).
 - Comercio y economía (valores base ajustables por rareza y demanda futura).
@@ -90,6 +90,7 @@ Uso previsto:
 Última actualización snapshot: 2025-10-01.
 
 ---
+
 ## 28. Acciones de Mundo (acciones_mundo.json) — Propuesta de catálogo
 
 Estado: No existe aún en datos; se documenta el esquema sugerido para alinear implementación.
@@ -98,6 +99,7 @@ Ruta propuesta: `MiJuegoRPG/DatosJuego/acciones/acciones_mundo.json`
 
 Esquema mínimo por entrada (snake_case):
 
+<!-- markdownlint-disable MD010 -->
 ```json
 {
 	"id": "robar_intento",
@@ -111,6 +113,7 @@ Esquema mínimo por entrada (snake_case):
 	"tags": ["ciudad", "riesgo"]
 }
 ```
+<!-- markdownlint-enable MD010 -->
 
 Notas:
 
@@ -126,6 +129,7 @@ Ruta propuesta: `MiJuegoRPG/DatosJuego/config/zonas_politicas.json`
 
 Ejemplo:
 
+<!-- markdownlint-disable MD010 -->
 ```json
 {
 	"Ciudad": {
@@ -140,6 +144,7 @@ Ejemplo:
 	}
 }
 ```
+<!-- markdownlint-enable MD010 -->
 
 Resolución: el sector concreto puede sobrescribir la política del tipo general (`SectorId` → reglas específicas) si se requiere un caso especial.
 
@@ -151,12 +156,14 @@ Ruta propuesta: `MiJuegoRPG/DatosJuego/config/delitos.json`
 
 Ejemplo:
 
+<!-- markdownlint-disable MD010 -->
 ```json
 {
 	"robo_intento": { "reputacion_faccion": { "guardia": -5 }, "multa_oro": [10, 30], "alerta_ciudad": true },
 	"hechiceria_en_ciudad": { "reputacion_global": -2, "alerta_ciudad": true }
 }
 ```
+<!-- markdownlint-enable MD010 -->
 
 Uso: referenciado desde `acciones_mundo.json` y `zonas_politicas.json` para aplicar efectos consistentes.
 
@@ -167,7 +174,7 @@ Total NPCs listados: 9
 Roles clave: Mercader, Herrero, Cocinero, Maga, Guardia, Agricultora, Minero, Comerciante, Guía inicial.
 
 Uso en sistemas:
-  
+
 - Gating de misiones (referencia Id misión en `Misiones[]`).
 - Comercio especializado (futuro: catálogos dinámicos por reputación).
 - Entrada de tutorial (Guía: entrega armas iniciales + misiones de inicio/comercio).
@@ -179,11 +186,11 @@ Riesgos detectados: Falta campo formal para reputación/facción (actual implíc
 Total definidas: 28 (profesiones, físicas, mágicas, mixtas, divinas, únicas).
 
 Estructura clave por entrada:
-  
+
 - Nombre, Categoria, Rareza (escala subjetiva de desbloqueo), Oculta, ClasesPrevias, NivelMinimo, AtributosRequeridos, EstadisticasRequeridas, MisionesRequeridas, ReputacionMinima, AtributosGanados (+ posibles penalizadores negativos), MisionUnica/ObjetoUnico opcionales.
 
 Observaciones:
-  
+
 - Curva de progresión jerárquica (Aprendiz → Clase básica → Especialización Rara/Epica → Legendaria/Divina/Única).
 - Uso de atributos negativos para compensar clases avanzadas; mantener consistencia (evitar invertir estilo de juego del jugador de forma irreversible).
 - Faltan identificadores estables (usar slug derivado de nombre para internacionalización futura).
@@ -193,7 +200,7 @@ Observaciones:
 Total acciones catalogadas: ~80 (contabilizadas por IDs presentes).
 
 Clasificación sugerida (no en datos aún):
-  
+
 - Combate: AtaqueFisico, AtaqueMagico, BloquearAtaque, CurarAliado, AturdirEnemigo, DefenderAliado, HuirCombate.
 - Movimiento/Mixto: Correr, CorrerGolpear, ViajarSector.
 - Progresión/Habilidad: SubirNivel, AprenderHabilidad.
@@ -230,7 +237,7 @@ Próxima evolución: archivo `mapa_sectorizado.txt` (no encontrado) o JSON con p
 ## 13. Materiales (Materiales/**/*)
 
 Muestra de búsqueda indica >400 archivos (duplicados o variaciones por especialidad). Algunas rutas repetidas (Mat_Cocina vs Mat_Cazador con mismo recurso funcional). Necesario normalizar taxonomía:
-  
+
 - Especialidades base esperadas: herrero, herbolario, sastre, curtidor, ingeniero, alquimista, cazador, cocina (sinonimizar ‘cocinero’).
 - Duplicaciones: items como Escama_Ignea presentes en múltiples especialidades (decidir si multi-uso o duplicado accidental).
 
@@ -239,7 +246,7 @@ Acción recomendada: generar índice maestro (script) que cubra: `id`, especiali
 ## 14. Validaciones y Consistencias Recomendadas
 
 Checklist inicial para un `DataValidatorService` extendido:
-  
+
 1. Rarezas: normalizar a minúsculas; advertir valores fuera de catálogo configurado.
 2. Armas: `Perfeccion` fuera de rango definido → log (no abortar).
 3. Clases: nombres duplicados / faltan slugs → sugerir slug.
@@ -357,7 +364,7 @@ Existe estructura generador (`GeneradorSectores.cs`), subcarpetas biomas y secto
 ## 27. Consolidación de Pendientes Globales
 
 Nueva lista complementaria a la sección 15 (no duplicar, profundiza):
-  
+
 - Definir catálogo maestro de rarezas usado por TODAS las categorías (objetos, clases, eventos, pociones).
 - Migrar nombres con acentos a formato slug consistente para referencias cruzadas.
 - Script de detección de duplicados (pociones, materiales multi-carpeta, habilidades agregadas vs per-file).

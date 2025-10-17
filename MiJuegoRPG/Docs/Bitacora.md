@@ -1,10 +1,73 @@
-
-
 # Bitácora de Cambios (Consolidada)
+
+## 2025-10-16 — Acciones de Mundo: implementación MVP, JSON y determinismo
+
+### Contexto
+
+- Se implementó el MVP de “Acciones de Mundo” (fuera de combate) con consumo de Energía + Tiempo, gobernado por políticas de zona y con posibles consecuencias legales (delitos). Se ajustaron DTOs y mapeos JSON, y se estandarizó el determinismo vía RandomService.
+
+#### Cambios clave
+
+- Servicios añadidos/ajustados (stub funcional):
+  - `Motor/Servicios/Stub/ZonePolicyService.cs`: carga `config/zonas_politicas.json` y resuelve si la acción está permitida y si es arriesgada (Risky) con `DelitoId` asociado.
+  - `Motor/Servicios/Stub/ActionWorldCatalogService.cs`: carga `config/acciones_mundo.json` y expone `ObtenerAccion(id)` con defaults seguros.
+  - `Motor/Servicios/Stub/DelitosService.cs`: carga `config/delitos.json` y aplica multas y penalizaciones de reputación por facción.
+  - `Motor/Servicios/Stub/WorldActionExecutor.cs`: orquesta el pipeline: política → requisitos → cooldown → energía/tiempo → detección → consecuencias.
+- DTOs con nombres JSON normalizados (camelCase) mediante `JsonPropertyName`.
+- Determinismo de detección: `NextDouble() < 0.25` (25%); semillas de prueba documentadas.
+
+#### Archivos afectados (resumen)
+
+| Archivo | Tipo | Motivo del cambio |
+|---|---|---|
+| `MiJuegoRPG/Motor/Servicios/Stub/WorldActionExecutor.cs` | código | Ejecutor MVP con pipeline completo y detección determinista. |
+| `MiJuegoRPG/Motor/Servicios/Stub/DelitosService.cs` | código | Aplicación de multas y reputación por facción; carga desde JSON. |
+| `MiJuegoRPG/Motor/Servicios/Stub/ActionWorldCatalogService.cs` | código | Carga y exposición de acciones de mundo. |
+| `MiJuegoRPG/Motor/Servicios/Stub/ZonePolicyService.cs` | código | Resolución de políticas por zona/acción. |
+| `MiJuegoRPG/DatosJuego/config/acciones_mundo.json` | datos | Catálogo de acciones (formato camelCase). |
+| `MiJuegoRPG/DatosJuego/config/delitos.json` | datos | Definiciones de delitos, multas y reputación. |
+| `MiJuegoRPG/DatosJuego/config/zonas_politicas.json` | datos | Políticas por tipo de zona y delitos asociados. |
+| `MiJuegoRPG.Tests/AccionesMundoTests/*.cs` | tests | Suite de unidad e integración para el módulo. |
+
+#### Decisiones técnicas
+
+- JSON camelCase + `System.Text.Json` con `JsonPropertyName` para evitar valores por defecto silenciosos.
+- Orden del pipeline explícito y documentado; cooldown aplicado antes de consumir recursos en la variante básica y tras consumir en la variante con política (ajuste pendiente de unificar).
+- Semillas de prueba para detección: 1 (detecta), 999 (no detecta), verificadas empíricamente con `NextDouble`.
+
+#### Impacto funcional
+
+- Acciones de mundo disponibles como orquestación básica (MVP). En zonas con `Risky=true`, existe 25% de probabilidad de detección y aplicación de delito configurado.
+- Ajustes de reputación por facción cuando corresponde; multas en oro dentro de rangos definidos.
+
+#### Validación (Quality Gates)
+
+- Build: PASS (solución compila correctamente)
+- Lint/Análisis: PENDIENTE (no se ejecutó en esta iteración)
+- Tests: FAIL (154/159 PASS; 5 FAIL)
+  - Fallos observados (resumen):
+    - Catálogo no retorna `Id` esperado para `robar_intento` (valor null).
+    - Defaults de coste/tiempo no coinciden con expectativas (1 vs 3 minutos).
+    - Listado no contiene acciones documentadas según filtro de prueba.
+    - Delito hechicería en ciudad: reputación global/por facción no alinea con aserción (-2 esperado vs -0/-?).
+
+#### Requisitos cubiertos
+
+- Implementación de servicios MVP y DTOs + determinismo RNG → Hecho (parcial; ajustes pendientes según tests).
+- Suite de pruebas Acciones de Mundo → Ejecutada; 5 fallos sirven de guía para correcciones.
+
+#### Próximos pasos
+
+- Unificar orden de cooldown (siempre antes de consumir recursos) en `WorldActionExecutor` para ambas rutas.
+- Revisar `ActionWorldCatalogService` para mapear correctamente `Id/tipo`, `energia/tiempo/cooldown` y defaults; validar contra `acciones_mundo.json` real.
+- Ajustar `DelitosService` para el caso de reputación global vs por facción según `delitos.json` y expectativas del test; añadir inicialización segura de claves.
+- Re-ejecutar pruebas (`dotnet test`) y actualizar documentación (Bitácora + Roadmap) a “Hecho” cuando 0 fallos.
+
+---
 
 ## 2025-10-15 — Tests: Suite de Validadores Acciones de Mundo MVP (A–E)
 
-### Contexto
+### Contexto Tests
 
 - Se diseñó la suite completa de tests unitarios e integración para el MVP de Acciones de Mundo siguiendo patrón TDD.
 - 5 archivos de pruebas + 1 README documentando estructura y convenciones.
@@ -20,7 +83,7 @@
 | `AccionesMundoIntegrationTests.cs` | Validar flujos end-to-end | 5 tests (robar Ruta éxito/detección, Ciudad bloqueado, requisitos, cooldown) |
 | `README.md` | Documentación de suite | Estructura, convenciones AAA, cobertura objetivo |
 
-#### Decisiones técnicas
+#### Decisiones técnicas Tests
 
 - Determinismo: `RandomService.SetSeed` para escenarios con probabilidades (detección, multas).
 - Paralelización: `[Collection("Sequential")]` en todos los tests para evitar interferencias.
@@ -28,23 +91,23 @@
 - Cobertura objetivo: ≥80% de servicios de Acciones de Mundo.
 - Patrón AAA estricto: Arrange-Act-Assert con comentarios claros.
 
-#### Impacto funcional
+#### Impacto funcional Tests
 
 - Sin cambios de runtime: solo tests diseñados (servicios reales pendientes de implementar).
 - 30 tests totales diseñados; compilación pendiente de DTOs/servicios.
 
-#### Validación (Quality Gates)
+#### Validación (Quality Gates) Tests
 
 - Build: PENDIENTE (tests no compilan hasta implementar servicios)
 - Lint/Análisis: PASS (solo warnings menores MD en README)
 - Tests: PENDIENTE (ejecución tras implementar servicios)
 
-#### Requisitos cubiertos
+#### Requisitos cubiertos Tests
 
 - "Diseñar suite de validadores para Acciones de Mundo MVP" → Hecho (tareas A–E completadas).
 - "80% cobertura, RNG inyectado, no romper suite actual (131/131)" → Criterios documentados en README.
 
-#### Próximos pasos
+#### Próximos pasos Tests
 
 - Implementar servicios: `ZonePolicyService`, `ActionWorldCatalogService`, `DelitosService`, `WorldActionExecutor`.
 - Crear DTOs: `ActionWorldDef`, `ZonePolicyResult`, `WorldActionResult`, `MundoContext`.
@@ -56,11 +119,11 @@
 
 ## 2025-10-15 — Documentación: Acciones de Mundo (Energía + Tiempo)
 
-### Contexto
+### Contexto Acciones de Mundo (Energía + Tiempo)
 
 - Se formalizó el diseño de “Acciones de Mundo” (fuera de combate) con economía de Energía + Tiempo, gobernadas por políticas de zona y con consecuencias reputacionales/legal.
 
-#### Cambios clave
+#### Cambios clave Acciones de Mundo (Energía + Tiempo)
 
 - Arquitectura: añadida sección “Acciones de Mundo (Energía + Tiempo) — MVP y contratos” con servicios, DTOs y flujo.
 - Resumen de Datos: agregadas secciones 28–30 con propuestas de catálogos `acciones_mundo.json`, `config/zonas_politicas.json` y `config/delitos.json`.
@@ -68,17 +131,17 @@
 - README Docs: índice y nota de feature flag para Acciones de Mundo.
 - Roadmap: nueva fila “Acciones de Mundo — MVP” marcada En curso (diseño/arquitectura hechos; datos propuestos; engine/tests pendientes).
 
-#### Impacto funcional
+#### Impacto funcional Acciones de Mundo (Energía + Tiempo)
 
 - Sin cambios de runtime: es documentación y preparación de datos. La feature quedará detrás de un flag (OFF) cuando se implemente.
 
-#### Validación (Quality Gates)
+#### Validación (Quality Gates) Acciones de Mundo (Energía + Tiempo)
 
 - Build: PASS (sin cambios de código).
 - Lint/Análisis: PASS (MD básico; enlaces relativos verificados en Docs/).
 - Tests: PASS (sin cambios; suite previa 131/131).
 
-#### Próximos pasos
+#### Próximos pasos Acciones de Mundo (Energía + Tiempo)
 
 - Implementar motor MVP detrás de flag; añadir tests xUnit deterministas (energía/tiempo/políticas/delitos).
 - Completar sincronización de ejemplos y README raíz con instrucciones de activación del flag cuando exista.
@@ -87,38 +150,46 @@
 
 ## 2025-10-14 — 🐞 CIERRE BUG: Overlay y cache en MaterialRepository
 
-### Contexto
+### Contexto CIERRE BUG
+
 - Se detectó que el test `MaterialRepository_Overlay_Sobrescribe_Base` fallaba porque el cache interno del repositorio persistía entre tests, impidiendo que los overlays creados en disco se reflejaran correctamente.
 
-#### Cambios clave
+#### Cambios clave CIERRE BUG
+
 - Se agregó una llamada a `repo.Invalidate()` antes de ejecutar el test, forzando la recarga de datos desde disco y permitiendo que el overlay sobrescriba el material base.
 - Se verificó que la normalización de rareza funciona correctamente ("Legendario" → "Legendaria").
 - Se ejecutaron todos los tests (131/131) y pasaron correctamente.
 
-#### Archivos afectados (resumen)
+#### Archivos afectados (resumen) CIERRE BUG
+
 | Archivo | Tipo | Motivo del cambio |
 |---|---|---|
 | MaterialRepositoryTests.cs | test | Se agregó invalidación de cache antes del test de overlay |
 | MaterialRepository.cs | código | Confirmada la causa raíz y documentado el patrón de cache |
 
-#### Decisiones técnicas
+#### Decisiones técnicas CIERRE BUG
+
 - Se optó por invalidar el cache manualmente en los tests para mantener el rendimiento en runtime y el aislamiento en pruebas.
 - Se documentó el patrón en `Vision_de_Juego.md` para futuras referencias.
 
-#### Impacto funcional
+#### Impacto funcional CIERRE BUG
+
 - El sistema de overlays ahora es determinista y confiable en entorno de pruebas.
 - No se afecta el rendimiento ni la lógica en producción.
 
-#### Validación (Quality Gates)
+#### Validación (Quality Gates) CIERRE BUG
+
 - Build: PASS (sin errores de compilación)
 - Lint/Análisis: PASS (solo advertencias StyleCop no críticas)
 - Tests: PASS (131/131)
 
-#### Requisitos cubiertos
+#### Requisitos cubiertos CIERRE BUG
+
 - Overlay de materiales debe sobrescribir base en tests y runtime.
 - Los tests deben ser deterministas y reflejar el estado real de los datos.
 
-#### Próximos pasos
+#### Próximos pasos CIERRE BUG
+
 - Considerar agregar setup/teardown automático en otros tests de repositorios con cache.
 - Documentar el patrón en todos los repositorios relevantes.
 
@@ -334,9 +405,9 @@ TIEMPO OPERACIÓN: ~3 minutos total
 
 - Build: PASS (solución completa) — sin errores; advertencias principalmente concentradas en `MiJuegoRPG/PjDatos/*` (limpieza planificada por lotes).
 - Tests: PASS — 131/131 en la suite actual.
-- Lint/Análisis: PASS parcial — reducción de advertencias en Core; pendientes en `PjDatos/*` (SA1515/SA1518/SA1402/SA1028, entre otras).
+- Lint/Análisis: PASS parcial —reducción de advertencias en Core; pendientes en `PjDatos/*` (SA1515/SA1518/SA1402/SA1028, entre otras).
 
-### Requisitos cubiertos
+### Requisitos cubiertos Limpieza StyleCop
 
 - “Reducir advertencias StyleCop en Core sin cambios funcionales” → Hecho (CE-LOT1/LOT2/LOT3 aplicados).
 - “Resolver infracciones específicas (SA1649 RNG, SA1201 CombatEvent)” → Hecho.
@@ -542,13 +613,13 @@ Contexto: se decide reemplazar el esquema por turnos por un sistema de acciones 
 
 Contexto: reducir avisos StyleCop de alto impacto sin alterar gameplay, dejando Program.cs limpio de reglas estructurales y corrigiendo warnings puntuales en el smoke test.
 
-### Cambios clave
+### Cambios clave Limpieza StyleCop
 
 - Se movió `GameplayToggles` a un archivo propio `MiJuegoRPG/GameplayToggles.cs` para cumplir SA1402/SA1649 (un tipo por archivo y nombre de archivo coherente).
 - `Program.cs`: se envolvió un `continue` en llaves para cumplir SA1503/SA1501 (no omitir llaves / no una sola línea).
 - `SmokeRunner.cs`: eliminación de espacios en blanco finales (SA1028) en dos líneas reportadas (33 y 68).
 
-### Archivos afectados (resumen)
+### Archivos afectados (resumen) Limpieza StyleCop
 
 | Archivo | Tipo | Motivo del cambio |
 |---|---|---|
@@ -556,18 +627,18 @@ Contexto: reducir avisos StyleCop de alto impacto sin alterar gameplay, dejando 
 | `MiJuegoRPG/Program.cs` | código | Ajuste de estilo: agregar llaves al `if` con `continue` (SA1503/SA1501). |
 | `MiJuegoRPG/Motor/Servicios/SmokeRunner.cs` | código | Remover trailing whitespace (SA1028) en líneas puntuales. |
 
-### Decisiones técnicas
+### Decisiones técnicas Limpieza StyleCop
 
 - Resolver SA1402/SA1649 de raíz separando tipos por archivo, evitando hacks de supresión y sin riesgo funcional.
 - Mantener los cambios de `Program.cs` acotados a estilo (llaves) para no tocar lógica.
 - Limpiar trailing whitespace reportado por StyleCop en `SmokeRunner` para mantener la suite limpia.
 
-### Impacto funcional
+### Impacto funcional Limpieza StyleCop
 
 - Sin cambios de comportamiento en juego ni en CLI. La ruta `--smoke-combate` permanece determinista y funcional.
 - Mejora de mantenibilidad: `GameplayToggles` ahora está centralizado en un archivo dedicado.
 
-### Validación (Quality Gates)
+### Validación (Quality Gates) Limpieza StyleCop
 
 - Build: PASS (dotnet build) — sin errores; persisten advertencias en otras áreas no tocadas.
 - Lint/Análisis: PASS parcial — resueltos SA1402/SA1649/SA1503 en Program y SA1028 en SmokeRunner; warnings restantes del repositorio se mantienen pendientes.
@@ -577,7 +648,7 @@ Contexto: reducir avisos StyleCop de alto impacto sin alterar gameplay, dejando 
 
 - “Corregir errores de estilo en Program y elementos asociados sin alterar gameplay” → Hecho. Evidencia: Build/Test PASS; no hay cambios de lógica.
 
-### Próximos pasos
+### Próximos pasos Limpieza StyleCop
 
 - Opcional: mover `using` dentro del namespace en `Program.cs` si SA1200 está en uso y preferible.
 - Barrido incremental de StyleCop en carpetas de Tests para SA1107/SA1502/SA1413, priorizando cambios de bajo riesgo.
@@ -686,6 +757,16 @@ Se añadió flag `--shadow-sweep` que recorre combinaciones F∈{0.60,0.65,0.70}
 ## 2025-10-01 — Parametrización CritScalingFactor y modo live experimental
 
 Se incorporó `CritScalingFactor` (default 0.65) a `CombatConfig` y se actualizó el shadow run para usarlo. Añadido flag `--damage-live` que habilita el pipeline nuevo en producción experimental (sin shadow redundante). Impacto: permite transición controlada tras alcanzar desviación aceptable (~ -2.9% con F=0.65, PenCrit=0.80) y futuros ajustes vía JSON sin recompilar.
+
+## 2025-10-17 — Shadow benchmark tras ajuste F=0.55 / PenMax=0.75
+
+Se ejecutó `--shadow-benchmark` (100 muestras) con la configuración actualizada (`CritScalingFactor` 0.55, `PenetracionMax` 0.75). Resultados: Legacy Avg 58.20, Pipeline Avg 56.00, Diff -2.20 (-3.8%), CritRate 25%, rangos Legacy 54–64 y Pipeline 54–62. El umbral automático de ±5% marcó PASS.
+
+Comparado con el baseline histórico (≈ -3.5% cuando F era 0.65 y PenMax 0.90), la desviación se movió solo -0.3 pp adicionales, manteniéndose dentro del rango aceptado. Se recomienda monitorear corridas extendidas (≥500 muestras) y registrar cualquier drift antes de retocar parámetros adicionales.
+
+### 2025-10-17 — Corrida extendida 500 muestras
+
+`--shadow-benchmark=500` con la misma configuración arrojó: Legacy Avg 58.06, Pipeline Avg 56.24, Diff -1.82 (-3.1%), CritRate 28%, rangos Legacy 54–64 / Pipeline 54–62. La desviación converge hacia el baseline histórico (-3.1% vs -3.5%), confirmando estabilidad bajo carga mayor. No se requieren cambios adicionales; mantener monitoreo periódico.
 
 ## 2025-10-01 — Diseño Combate por Acciones (PA) Fase 1 preparado
 

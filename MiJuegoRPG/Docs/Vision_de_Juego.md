@@ -191,7 +191,6 @@ Objetivo: habilitar acciones fuera de combate (mundo abierto) usando una econom�
 
 - Feature flag: `acciones_mundo.enabled` (OFF por defecto). Activable por configuración para despliegue progresivo.
 
-
 ## Patrón de Cache en Repositorios y Aislamiento de Tests
 
 ### Contexto

@@ -1,1 +1,17 @@
-[ { "Nombre": "Mineral de Hierro", "Rareza": "Legendario", "Categoria": "test" } ]
+[
+  {
+    "Nombre": "Mineral de Hierro",
+    "Rareza": "Legendario",
+    "Categoria": "test"
+  },
+  {
+    "Nombre": "Piel de Serpiente",
+    "Rareza": "Normal",
+    "Categoria": "Material"
+  },
+  {
+    "Nombre": "Veneno de Serpiente",
+    "Rareza": "Normal",
+    "Categoria": "Material"
+  }
+]

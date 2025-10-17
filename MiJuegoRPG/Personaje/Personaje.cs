@@ -498,6 +498,9 @@ namespace MiJuegoRPG.Personaje
         public int Reputacion { get; set; } = 0; // usada por ReputacionMinima genérica
         public Dictionary<string, int> ReputacionesFaccion { get; set; } = new();
 
+        // Cooldowns para acciones de mundo (en minutos de juego)
+        public Dictionary<string, int> CooldownsAccionesMundo { get; set; } = new();
+
         // Preferencias por partida (QoL): verbosidad del logger
         public bool PreferenciaLoggerEnabled { get; set; } = true;
         public string PreferenciaLoggerLevel { get; set; } = "Info"; // "Error"|"Warn"|"Info"|"Debug"

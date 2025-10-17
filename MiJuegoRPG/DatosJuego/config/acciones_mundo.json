@@ -1,0 +1,21 @@
+{
+  "acciones": {
+    "robar_intento": {
+      "tipo": "criminal",
+      "energia": 8,
+      "tiempo": 3,
+      "cooldown": 60,
+      "requisitos": {
+        "clase": ["Ladron"],
+        "atributos": {
+          "destreza": 15
+        }
+      }
+    },
+    "dialogar": {
+      "tipo": "social",
+      "requisitos": {},
+      "consecuencias": { "DelitoId": "dialogar" }
+    }
+  }
+}

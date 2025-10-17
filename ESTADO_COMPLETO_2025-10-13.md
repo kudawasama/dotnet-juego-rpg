@@ -5,22 +5,13 @@
 **Proyecto:** dotnet-juego-rpg
 **Branch:** chore/infra-agente-inicial
 **Última sesión:** 2025-10-13
-**Estado general:** ✅ **ESTABLE Y AVANZADO**
 
-### 🎯 **LOGROS PRINCIPALES DE HOY**
+### ✅ <**SA1402 SUPERCLEANUP COMPLETADO (HITO HISTÓRICO)**>
 
-#### ✅ **SA1402 SUPERCLEANUP COMPLETADO (HITO HISTÓRICO)**
 - **SupervivenciaConfig.cs:** 13 clases → **1 clase** (92% reducción)
-- **Archivos nuevos creados:** 6 archivos separados perfectamente
-- **Estado project-wide:** **0 violaciones SA1402** restantes
-- **Build/Tests:** ✅ **131/131 estables** durante todo el proceso
 
 #### ✅ **ANÁLISIS COMBATE COMPLETADO**
-- **Sistema identificado:** Pipeline avanzado con desbalance +19.5% vs legacy
-- **Puntos críticos:** CritScalingFactor, PenetracionMax necesitan ajuste
-- **Configuración:** combat_config.json documentado y analizado
 
-#### ✅ **DOCUMENTACIÓN ACTUALIZADA**
 - **Bitácora.md:** Hito SA1402 documentado completamente
 - **Roadmap.md:** Nuevos milestones post-SA1402 definidos
 - **Estado técnico:** Base sólida para desarrollo acelerado
@@ -30,7 +21,8 @@
 ## 🏢 **ARQUITECTURA ACTUAL**
 
 ### 📁 **Estructura del Proyecto**
-```
+
+```text
 dotnet-juego-rpg/
 ├── MiJuegoRPG/               # Proyecto principal .NET 6
 │   ├── DatosJuego/           # JSON data (biomas, enemigos, etc.)
@@ -40,68 +32,132 @@ dotnet-juego-rpg/
 │   ├── PjDatos/              # Clases de datos (recientemente modularizado)
 │   ├── Objetos/              # Sistema de items/equipment
 │   └── Interfaces/           # Contratos y abstracciones
-└── MiJuegoRPG.Tests/         # Suite de pruebas (131 tests)
-```
-
-### 🔧 **Tecnologías**
-- **.NET:** 6.0 (compatible Unity 2022 LTS)
-- **Testing:** xUnit + FluentAssertions
+- **.NET:** 6.0
 - **JSON:** System.Text.Json para datos
 - **StyleCop:** Configuración profesional implementada
 - **CI/CD:** Preparado para desarrollo iterativo
 
 ---
 
-## 📊 **ESTADO TÉCNICO DETALLADO**
-
-### ✅ **Sistemas Implementados**
 
 #### **🎮 Core del Juego**
 - **Estado:** ✅ Funcional y estable
 - **Funcionalidades:** Mapa, sectores, progresión básica
 - **Base de datos:** juego.db + JSON para configuración
 
-#### **⚔️ Sistema de Combate**
-- **Estado:** ✅ Avanzado con pipeline determinista
-- **Pipeline:** Base → Hit/Evasión → Penetración → Defensa → Crítico
-- **Configuración:** combat_config.json con parámetros ajustables
-- **Problema conocido:** Desbalance +19.5% pipeline vs legacy
+#### **🧪 Sistema de Testing — Resumen**
 
+- **Estado:** ✅ Robusto
+- **Configuración:** combat_config.json con parámetros ajustables
+
+#### **🔄 Combate por Acciones (PA) — Resumen**
+
+- **Estado:** 🔄 Planificado
 #### **👤 Sistema de Personajes**
-- **Estado:** ✅ Completo
-- **Estadísticas:** 40+ stats incluidos precision, crit, penetración
-- **Progresión:** Niveles, atributos, habilidades
-- **Inventario:** Sistema completo con equipment
+ 
+ - **Progresión:** Niveles, atributos, habilidades
+ - **Pendiente:** Ajustar CritScalingFactor, PenetracionMax
+
+#### **🎯 Balance Refinamiento — Resumen**
+
+- **Estado:** 🔄 Identificado
+
+ - **Pendiente:** Ajustar CritScalingFactor, PenetracionMax
 
 #### **📦 Sistema de Objetos**
-- **Estado:** ✅ Funcional
-- **Categorías:** Armas, armaduras, materiales, pociones
-- **Rareza:** Sistema dinámico implementado
-- **Datos:** armas.json, armaduras.json, etc.
 
-#### **🧪 Sistema de Testing**
+### 🆕 **Nuevos Archivos SA1402**
+
+- `MiJuegoRPG/PjDatos/TasasConfig.cs`
+```bash
+git clone https://github.com/kudawasama/dotnet-juego-rpg
+cd dotnet-juego-rpg
+
+```md
+### ✏️ **Archivos Modificados**
+
+
+```bash
+# Verificar estado
+```
+
+### 🔑 **Archivos de Configuración**
+
+ 1. **Balance Combate**
+
+- `MiJuegoRPG/DatosJuego/config/combat_config.json`
+
+ 1. **Progresión Avanzada**
+    - **Categorías:** Armas, armaduras, materiales, pociones
+
+```bash
+ 1. **Expansión Contenido**
+    - **Datos:** armas.json, armaduras.json, etc.
+dotnet test
+```
+
+### 🔥 **Prioridad ALTA (Inmediato)**
+
+1. **Balance Combate**
+
+### 📊 **Prioridad MEDIA (Semana siguiente)**
+
+1. **Progresión Avanzada**
+   - **Categorías:** Armas, armaduras, materiales, pociones
+
+1. **Expansión Contenido**
+   - **Datos:** armas.json, armaduras.json, etc.
+
+#### **🧪 Sistema de Testing — Detalle**
+
 - **Estado:** ✅ Robusto
 - **Cobertura:** 131/131 tests pasando
 - **Tipos:** Unitarios, integración, balance combate
 - **Determinismo:** RNG controlado para reproducibilidad
 
+```bash
+# Ejecutar benchmark actual
+dotnet run --project MiJuegoRPG -- --test-shadow-benchmark
+
+# Ajustar configuración
+# Editar: MiJuegoRPG/DatosJuego/config/combat_config.json
+# CritScalingFactor: 0.65 → 0.55
+# PenetracionMax: 0.9 → 0.75
+```
+
 ### 🚧 **Sistemas en Desarrollo**
 
-#### **🔄 Combate por Acciones (PA)**
+#### **🔄 Combate por Acciones (PA) — En desarrollo**
+
 - **Estado:** 🔄 Planificado
 - **Objetivo:** Sistema de puntos de acción para múltiples acciones/turno
 - **Flag:** ModoAcciones = false (desactivado)
 
-#### **🎯 Balance Refinamiento**
+#### **🎯 Balance Refinamiento — En desarrollo**
+
 - **Estado:** 🔄 Identificado
+
+```bash
+# Revisar configuración actual
+cat MiJuegoRPG/DatosJuego/progression.json
+
+# Ejecutar tests específicos
+dotnet test --filter "Category=Combat"
+```
+
 - **Pendiente:** Ajustar CritScalingFactor, PenetracionMax
 - **Objetivo:** Pipeline ±5% de legacy para activación
 
 ---
 
+```md
+/combate → "Implementar ajustes balance: CritScalingFactor 0.55, PenetracionMax 0.75, ejecutar shadow benchmark"
+```
+
 ## 📁 **ARCHIVOS CRÍTICOS MODIFICADOS HOY**
 
 ### 🆕 **Nuevos Archivos SA1402**
+
 - `MiJuegoRPG/PjDatos/TasasConfig.cs`
 - `MiJuegoRPG/PjDatos/MultiplicadoresContexto.cs`
 - `MiJuegoRPG/PjDatos/UmbralesConfig.cs`
@@ -110,11 +166,13 @@ dotnet-juego-rpg/
 - `MiJuegoRPG/PjDatos/BonoRefugio.cs`
 
 ### ✏️ **Archivos Modificados**
+
 - `MiJuegoRPG/PjDatos/SupervivenciaConfig.cs` (13→1 clases)
 - `MiJuegoRPG/Docs/Bitacora.md` (hito SA1402 documentado)
 - `MiJuegoRPG/Docs/Roadmap.md` (nuevos milestones)
 
-### 🔑 **Archivos de Configuración**
+### 🔑 <**Archivos de Configuración**>
+
 - `MiJuegoRPG/DatosJuego/config/combat_config.json`
 - `.editorconfig` (StyleCop configurado)
 - `MiJuegoRPG.Tests/.editorconfig` (sincronizado)
@@ -123,25 +181,28 @@ dotnet-juego-rpg/
 
 ## 🎯 **PRÓXIMOS PASOS RECOMENDADOS**
 
-### 🔥 **Prioridad ALTA (Inmediato)**
+### 🔥 <**Prioridad ALTA (Inmediato)**>
+
 1. **Balance Combate**
    - Ajustar CritScalingFactor: 0.65 → 0.55
    - Reducir PenetracionMax: 0.9 → 0.75
    - Ejecutar shadow benchmark hasta ±5%
 
-### 📊 **Prioridad MEDIA (Semana siguiente)**
-2. **Progresión Avanzada**
+### 📊 <**Prioridad MEDIA (Semana siguiente)**>
+
+1. **Progresión Avanzada**
    - Integrar stats combate en progression.json
    - Implementar curvas diminishing returns
    - Añadir caps dinámicos por nivel
 
-3. **Expansión Contenido**
+1. **Expansión Contenido**
    - Nuevos biomas y enemigos
    - Items con stats avanzados
    - Questlines complejas
 
 ### 🔧 **Prioridad BAJA (Futuro)**
-4. **Sistemas Avanzados**
+
+1. **Sistemas Avanzados**
    - Activar pipeline de daño live
    - Sistema de puntos de acción
    - Migración preparatoria Unity
@@ -151,11 +212,13 @@ dotnet-juego-rpg/
 ## 🧠 **MODELO DE AGENTES IMPLEMENTADO**
 
 ### 🎯 **Agente Maestro (MiJuego)**
+
 - **Función:** Coordinación y planificación
 - **Restricción:** NO ejecuta cambios directamente
 - **Responsabilidad:** Derivar a agentes especializados
 
 ### ⚔️ **Agentes Especializados Activos**
+
 - `/combate` - Balance y mecánicas de combate
 - `/datos` - Estructuras y JSON del juego
 - `/tests` - Testing y validación
@@ -169,6 +232,7 @@ dotnet-juego-rpg/
 ## 📝 **COMANDOS DE RECUPERACIÓN**
 
 ### 🚀 **Para retomar desarrollo**
+
 ```bash
 # Clonar repositorio
 git clone https://github.com/kudawasama/dotnet-juego-rpg
@@ -183,6 +247,7 @@ dotnet test
 ```
 
 ### 🔧 **Para continuar balance combate**
+
 ```bash
 # Ejecutar benchmark actual
 dotnet run --project MiJuegoRPG -- --test-shadow-benchmark
@@ -194,6 +259,7 @@ dotnet run --project MiJuegoRPG -- --test-shadow-benchmark
 ```
 
 ### 📊 **Para análisis de progresión**
+
 ```bash
 # Revisar configuración actual
 cat MiJuegoRPG/DatosJuego/progression.json
@@ -207,17 +273,20 @@ dotnet test --filter "Category=Combat"
 ## 🔗 **RECURSOS IMPORTANTES**
 
 ### 📚 **Documentación Clave**
+
 - `MiJuegoRPG/Docs/Bitacora.md` - Historia completa cambios
 - `MiJuegoRPG/Docs/Roadmap.md` - Estado features y prioridades
 - `MiJuegoRPG/Docs/Combate_Timeline.md` - Pipeline combate técnico
 - `MiJuegoRPG/Docs/progression_config.md` - Configuración progresión
 
 ### ⚙️ **Configuraciones**
+
 - `.editorconfig` - Reglas StyleCop y formato
 - `MiJuegoRPG/DatosJuego/config/combat_config.json` - Parámetros combate
 - `MiJuegoRPG/DatosJuego/progression.json` - Curvas progresión
 
 ### 🧪 **Tests Críticos**
+
 - `DamagePipelineOrderTests.cs` - Orden pipeline daño
 - `CritScalingFactorTests.cs` - Balance críticos
 - `GeneradorObjetosTests.cs` - Sistema items
@@ -227,16 +296,19 @@ dotnet test --filter "Category=Combat"
 ## ⚠️ **ADVERTENCIAS Y NOTAS**
 
 ### 🚨 **No Activar Sin Verificar**
+
 - **Pipeline daño live:** UseNewDamagePipelineLive = false
 - **Modo acciones:** ModoAcciones = false
 - **Shadow benchmark:** Verificar ±5% antes de activar
 
 ### 🔍 **Monitorear**
+
 - Tests deben mantenerse 131/131 PASS
 - Build debe ser limpio sin warnings críticos
 - No modificar archivos Core sin tests
 
 ### 💾 **Backup Crítico**
+
 - Branch actual: chore/infra-agente-inicial
 - Commit SA1402: Asegurar push antes de cambios mayores
 - Configuraciones: Mantener combat_config.json sincronizado
@@ -250,6 +322,7 @@ dotnet test --filter "Category=Combat"
 **Preparado para:** 🚀 **Desarrollo acelerado** de features RPG
 
 **Próxima sesión recomendada:**
+
 1. Ajustar balance combate (CritScalingFactor)
 2. Integrar progresión avanzada (stats por nivel)
 3. Expandir contenido (nuevos biomas/enemigos)

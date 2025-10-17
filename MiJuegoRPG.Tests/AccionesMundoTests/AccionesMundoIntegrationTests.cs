@@ -2,7 +2,7 @@
 // Copyright (c) Kudawasama. All rights reserved.
 // </copyright>
 
-namespace MiJuegoRPG.Tests.AccionesMundoTests
+namespace MiJuegoRPG.Tests
 {
     using Xunit;
     using MiJuegoRPG.Motor.Servicios;
@@ -27,7 +27,7 @@ namespace MiJuegoRPG.Tests.AccionesMundoTests
         {
             // Arrange - Inyectar servicios
             var rng = new RandomService();
-            rng.SetSeed(999); // Semilla que garantiza NO detección (< 0.25)
+            rng.SetSeed(999); // Semilla que garantiza NO detección
             var policyService = new ZonePolicyService();
             policyService.CargarPoliticas();
             var catalogService = new ActionWorldCatalogService();
@@ -67,7 +67,7 @@ namespace MiJuegoRPG.Tests.AccionesMundoTests
         {
             // Arrange
             var rng = new RandomService();
-            rng.SetSeed(123); // Semilla que garantiza detección (>= 0.25)
+            rng.SetSeed(1); // Semilla que garantiza detección
             var policyService = new ZonePolicyService();
             policyService.CargarPoliticas();
             var catalogService = new ActionWorldCatalogService();

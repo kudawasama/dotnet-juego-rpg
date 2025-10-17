@@ -6,13 +6,20 @@ namespace MiJuegoRPG.Motor.Servicios
     // Permite inyectar una semilla futura para pruebas deterministas.
     public sealed class RandomService
     {
-        private static readonly Lazy<RandomService> instancia = new(() => new RandomService());
+        private static readonly Lazy<RandomService> instancia = new(() => new RandomService(true));
         public static RandomService Instancia => instancia.Value;
 
         private Random random;
         private readonly object @lock = new();
 
-        private RandomService()
+        // Constructor público para tests
+        public RandomService()
+        {
+            random = new Random();
+        }
+
+        // Constructor para singleton (interno)
+        private RandomService(bool singleton)
         {
             random = new Random();
         }

@@ -6,7 +6,7 @@ Esta guía reúne ejemplos prácticos de uso del juego para aprender más rápid
 
 Ejemplo de menú de ciudad y opciones disponibles:
 
-```
+```text
 === Ciudad Principal ===
 1. Tienda
 2. Escuela de Entrenamiento

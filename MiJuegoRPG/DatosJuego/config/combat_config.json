@@ -7,7 +7,7 @@
   "LevelDivisor": 10,
   "CritMultiplier": 1.35,
   "CritCap": 0.5,
-  "PenetracionMax": 0.9,
+  "PenetracionMax": 0.75,
   "MinHit": 0.05,
   "ModoAcciones": true,
   "UseNewDamagePipelineShadow": false,
@@ -17,5 +17,5 @@
   "UseCritDiminishingReturns": true,
   "CritChanceHardCap": 0.6,
   "CritDiminishingK": 50.0,
-  "CritScalingFactor": 0.65
+  "CritScalingFactor": 0.55
 }

@@ -2,7 +2,7 @@
 // Copyright (c) Kudawasama. All rights reserved.
 // </copyright>
 
-namespace MiJuegoRPG.Tests.AccionesMundoTests
+namespace MiJuegoRPG.Tests
 {
     using Xunit;
     using MiJuegoRPG.Motor.Servicios;
