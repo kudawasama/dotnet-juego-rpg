@@ -1,0 +1,27 @@
+﻿{
+  "id": "anillo_GM",
+  "nombre": "Anillo GM Divino",
+  "tipo": "accesorio",
+  "categoria": "anillo",
+  "descripcion": "El anillo más poderoso del mundo, reservado para los Game Masters. Otorga poderes divinos y habilidades incomparables.",
+  "atributos": {
+    "fuerza": 9999,
+    "defensa": 9999,
+    "magia": 9999,
+    "velocidad": 9999,
+    "salud": 99999
+  },
+  "habilidades": [
+    {
+      "nombre": "Control Divino",
+      "descripcion": "Permite modificar cualquier aspecto del juego y otorga inmunidad total."
+    },
+    {
+      "nombre": "Creación Absoluta",
+      "descripcion": "Permite crear objetos, enemigos y eventos sin restricciones."
+    }
+  ],
+  "rareza": "divino",
+  "nivel_requerido": 1,
+  "exclusivo": "GM"
+}

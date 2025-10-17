@@ -9,28 +9,55 @@ namespace MiJuegoRPG.Personaje
 {
     public class Personaje : ICombatiente, IEvadible
     {
-    // Atributos base del personaje (faltaba propiedad pública explícita para uso en servicios)
-    public AtributosBase AtributosBase { get; set; } = new AtributosBase();
-    // Alias para compatibilidad con código existente que usa 'Atributos'
-    public AtributosBase Atributos => AtributosBase;
+        // Atributos base del personaje (faltaba propiedad pública explícita para uso en servicios)
+        public AtributosBase AtributosBase { get; set; } = new AtributosBase();
+        // Alias para compatibilidad con código existente que usa 'Atributos'
+        public AtributosBase Atributos => AtributosBase;
 
-    // Propiedades básicas (algunas eran referenciadas pero no estaban definidas en este archivo)
-    public string Nombre { get; set; } = string.Empty;
-    public string Titulo { get; set; } = string.Empty;
-    public int Vida { get; set; }
-    public int VidaMaxima { get; set; }
-    // Alias de compatibilidad con código antiguo que usaba VidaActual
-    public int VidaActual { get => Vida; set => Vida = value; }
-    public Inventario Inventario { get; set; } = new Inventario();
-    public Clase? Clase { get; set; }
-    // Compatibilidad: algunos scripts referencian ClaseDesbloqueada
-    public string? ClaseDesbloqueada { get; set; }
+        // Propiedades básicas (algunas eran referenciadas pero no estaban definidas en este archivo)
+        public string Nombre { get; set; } = string.Empty;
+        public string Titulo { get; set; } = string.Empty;
+        public int Vida
+        {
+            get; set;
+        }
+        public int VidaMaxima
+        {
+            get; set;
+        }
+        // Alias de compatibilidad con código antiguo que usaba VidaActual
+        public int VidaActual
+        {
+            get => Vida; set => Vida = value;
+        }
+        public Inventario Inventario { get; set; } = new Inventario();
+        public Clase? Clase
+        {
+            get; set;
+        }
+        // Compatibilidad: algunos scripts referencian ClaseDesbloqueada
+        public string? ClaseDesbloqueada
+        {
+            get; set;
+        }
         // IDs de desbloqueos ya notificados (para avisos automáticos)
         public HashSet<string> DesbloqueosNotificados { get; set; } = new HashSet<string>();
 
+        /// <summary>
+        /// Gets bonos temporales aplicados por combinaciones de equipo (p. ej., set GM 2/4/6 piezas).
+        /// Claves insensibles a mayúsculas, usar nombres de estadísticas comunes: "Defensa", "Ataque", "Mana", "Energia".
+        /// </summary>
+        public Dictionary<string, double> BonosTemporalesSet { get; } = new Dictionary<string, double>(StringComparer.OrdinalIgnoreCase);
+
+        /// <summary>
+        /// Gets conjunto de IDs de habilidades que están activas temporalmente por equipo/set.
+        /// Se usa para poder retirarlas al desequipar/sincronizar.
+        /// </summary>
+        public HashSet<string> HabilidadesTemporalesEquipo { get; } = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
 
         // Completar misión y procesar recompensas
-    public void CompletarMision(string misionId)
+        public void CompletarMision(string misionId)
         {
             var mision = MisionesActivas.FirstOrDefault(m => m.Id == misionId);
             if (mision != null)
@@ -119,7 +146,11 @@ namespace MiJuegoRPG.Personaje
                 MisionesCompletadas.Add(mision);
                 MisionesActivas.Remove(mision);
                 Console.WriteLine($"¡Misión completada: {mision.Nombre}!");
-                try { MiJuegoRPG.Motor.Servicios.BusEventos.Instancia.Publicar(new MiJuegoRPG.Motor.Servicios.EventoMisionCompletada(mision.Id, mision.Nombre)); } catch { }
+                try
+                {
+                    MiJuegoRPG.Motor.Servicios.BusEventos.Instancia.Publicar(new MiJuegoRPG.Motor.Servicios.EventoMisionCompletada(mision.Id, mision.Nombre));
+                }
+                catch { }
 
                 // Revisar desbloqueos automáticos después de completar misión
                 MiJuegoRPG.Motor.GestorDesbloqueos.VerificarDesbloqueos(this);
@@ -133,15 +164,27 @@ namespace MiJuegoRPG.Personaje
         public int EnergiaActual { get; set; } = 100;
         public int EnergiaMaxima { get; set; } = 100;
         public int DescansosHoy { get; set; } = 0;
-        public DateTime UltimaFechaDescanso { get; set; }
-        public DateTime UltimaRecuperacionPasiva { get; set; }
+        public DateTime UltimaFechaDescanso
+        {
+            get; set;
+        }
+        public DateTime UltimaRecuperacionPasiva
+        {
+            get; set;
+        }
         public int UltimoDiaDescanso { get; set; } = 0;
 
-    // Ubicacion Actual (obsoleto, usar UbicacionActualId para persistencia de sector)
-    public MiJuegoRPG.Motor.Ubicacion? UbicacionActual { get; set; }
+        // Ubicacion Actual (obsoleto, usar UbicacionActualId para persistencia de sector)
+        public MiJuegoRPG.Motor.Ubicacion? UbicacionActual
+        {
+            get; set;
+        }
 
-    // Nuevo: ID del sector actual para persistencia y carga
-    public string? UbicacionActualId { get; set; }
+        // Nuevo: ID del sector actual para persistencia y carga
+        public string? UbicacionActualId
+        {
+            get; set;
+        }
 
         // Métodos de bonificadores y objetos equipados
         public double ObtenerBonificadorAtributo(string atributo)
@@ -182,6 +225,18 @@ namespace MiJuegoRPG.Personaje
                     total += boni.ObtenerBonificador(estadistica);
                 }
             }
+            // Bonos por set (si existen) para esta estadística
+            if (!string.IsNullOrWhiteSpace(estadistica))
+            {
+                if (BonosTemporalesSet.TryGetValue(estadistica, out var extra))
+                    total += extra;
+                // Alias comunes
+                if (estadistica.Equals("Defensa Física", StringComparison.OrdinalIgnoreCase))
+                {
+                    if (BonosTemporalesSet.TryGetValue("Defensa", out var extraDef))
+                        total += extraDef;
+                }
+            }
             return total;
         }
 
@@ -204,15 +259,24 @@ namespace MiJuegoRPG.Personaje
         {
             var lista = new List<Objetos.Objeto>();
             var eq = Inventario.Equipo;
-            if (eq.Arma != null) lista.Add(eq.Arma);
-            if (eq.Casco != null) lista.Add(eq.Casco);
-            if (eq.Armadura != null) lista.Add(eq.Armadura);
-            if (eq.Pantalon != null) lista.Add(eq.Pantalon);
-            if (eq.Zapatos != null) lista.Add(eq.Zapatos);
-            if (eq.Collar != null) lista.Add(eq.Collar);
-            if (eq.Cinturon != null) lista.Add(eq.Cinturon);
-            if (eq.Accesorio1 != null) lista.Add(eq.Accesorio1);
-            if (eq.Accesorio2 != null) lista.Add(eq.Accesorio2);
+            if (eq.Arma != null)
+                lista.Add(eq.Arma);
+            if (eq.Casco != null)
+                lista.Add(eq.Casco);
+            if (eq.Armadura != null)
+                lista.Add(eq.Armadura);
+            if (eq.Pantalon != null)
+                lista.Add(eq.Pantalon);
+            if (eq.Zapatos != null)
+                lista.Add(eq.Zapatos);
+            if (eq.Collar != null)
+                lista.Add(eq.Collar);
+            if (eq.Cinturon != null)
+                lista.Add(eq.Cinturon);
+            if (eq.Accesorio1 != null)
+                lista.Add(eq.Accesorio1);
+            if (eq.Accesorio2 != null)
+                lista.Add(eq.Accesorio2);
             return lista;
         }
         // Índices de dificultad por atributo
@@ -224,7 +288,7 @@ namespace MiJuegoRPG.Personaje
             { "suerte", 12.0 },       // Extremadamente difícil, atributo raro
             { "defensa", 5.5 },       // Tanques y defensivos
             { "vitalidad", 9.0 },     // Muy difícil, solo tanques y guerreros la suben rápido
-            { "agilidad", 4.5 }       // Exploradores y pícaros la suben más fácil
+            { "agilidad", 4.5 } // Exploradores y pícaros la suben más fácil
         };
         public Estadisticas Estadisticas { get; set; } = new Estadisticas();
         // Propiedades del personaje
@@ -232,99 +296,179 @@ namespace MiJuegoRPG.Personaje
         public List<MisionConId> MisionesActivas { get; set; } = new List<MisionConId>();
         public List<MisionConId> MisionesCompletadas { get; set; } = new List<MisionConId>();
         // Sistema dinámico de clases y actividad
-        public Dictionary<string,int> ContadoresActividad { get; set; } = new();
+        public Dictionary<string, int> ContadoresActividad { get; set; } = new();
         public HashSet<string> ClasesDesbloqueadas { get; set; } = new();
         public void RegistrarActividad(string clave, int inc = 1)
         {
-            if (string.IsNullOrWhiteSpace(clave)) return;
+            if (string.IsNullOrWhiteSpace(clave))
+                return;
             ContadoresActividad.TryGetValue(clave, out var v);
             ContadoresActividad[clave] = v + inc;
         }
         // Contadores persistentes de muertes: claves "global:tipo" y "bioma:<bioma>:tipo"
-        public Dictionary<string,int> KillCounters { get; set; } = new();
+        public Dictionary<string, int> KillCounters { get; set; } = new();
         public void IncrementarKill(string tipo, string? bioma = null)
         {
-            if (string.IsNullOrWhiteSpace(tipo)) return;
+            if (string.IsNullOrWhiteSpace(tipo))
+                return;
             tipo = tipo.Trim().ToLowerInvariant();
             // Global
             var keyG = $"global:{tipo}";
-            KillCounters.TryGetValue(keyG, out var g); KillCounters[keyG] = g + 1;
+            KillCounters.TryGetValue(keyG, out var g);
+            KillCounters[keyG] = g + 1;
             // Por bioma si aplica
             if (!string.IsNullOrWhiteSpace(bioma))
             {
                 var keyB = $"bioma:{bioma.Trim().ToLowerInvariant()}:{tipo}";
-                KillCounters.TryGetValue(keyB, out var b); KillCounters[keyB] = b + 1;
+                KillCounters.TryGetValue(keyB, out var b);
+                KillCounters[keyB] = b + 1;
             }
         }
         public int GetKills(string tipo, string? bioma = null)
         {
-            if (string.IsNullOrWhiteSpace(tipo)) return 0;
+            if (string.IsNullOrWhiteSpace(tipo))
+                return 0;
             tipo = tipo.Trim().ToLowerInvariant();
             int total = 0;
             var keyG = $"global:{tipo}";
-            if (KillCounters.TryGetValue(keyG, out var g)) total += g;
+            if (KillCounters.TryGetValue(keyG, out var g))
+                total += g;
             if (!string.IsNullOrWhiteSpace(bioma))
             {
                 var keyB = $"bioma:{bioma.Trim().ToLowerInvariant()}:{tipo}";
-                if (KillCounters.TryGetValue(keyB, out var b)) total += b;
+                if (KillCounters.TryGetValue(keyB, out var b))
+                    total += b;
             }
             return total;
         }
         public bool TieneClase(string nombre) => ClasesDesbloqueadas.Contains(nombre) || (Clase != null && Clase.Nombre == nombre);
         public bool DesbloquearClase(string nombre)
         {
-            if (TieneClase(nombre)) return false;
+            if (TieneClase(nombre))
+                return false;
             ClasesDesbloqueadas.Add(nombre);
-            try { MiJuegoRPG.Motor.AvisosAventura.MostrarAviso("Clase Desbloqueada", nombre, $"Has obtenido la clase {nombre}!"); } catch { Console.WriteLine($"[CLASE] Desbloqueada: {nombre}"); }
+            try
+            {
+                MiJuegoRPG.Motor.AvisosAventura.MostrarAviso("Clase Desbloqueada", nombre, $"Has obtenido la clase {nombre}!");
+            }
+            catch { Console.WriteLine($"[CLASE] Desbloqueada: {nombre}"); }
             return true;
         }
-        // Clase auxiliar para misiones con Id y condiciones
-        public class MisionConId
-        {
-            public string Id { get; set; } = string.Empty;
-            public string Nombre { get; set; } = string.Empty;
-            public string Descripcion { get; set; } = string.Empty;
-            public string UbicacionNPC { get; set; } = string.Empty;
-            public List<string> Requisitos { get; set; } = new List<string>();
-            public List<string> Recompensas { get; set; } = new List<string>();
-            public int ExpNivel { get; set; } = 0;
-            public Dictionary<string, int> ExpAtributos { get; set; } = new Dictionary<string, int>();
-            public string Estado { get; set; } = string.Empty;
-            public string SiguienteMisionId { get; set; } = string.Empty;
-            public List<string> Condiciones { get; set; } = new List<string>();
-        }
+        // SA1402: MisionConId se movió a MisionConId.cs para cumplir con SA1402 (un tipo por archivo)
         // Experiencia unificada por atributo (nuevo sistema 3.1)
         public Dictionary<MiJuegoRPG.Dominio.Atributo, ExpAtributo> ExperienciaAtributos { get; set; } = new Dictionary<MiJuegoRPG.Dominio.Atributo, ExpAtributo>();
 
-    // Campos legacy de experiencia (mantener temporalmente para compatibilidad con guardados antiguos)
-    // LEGACY: Marcados con JsonIgnore para no volver a persistirlos en nuevas partidas.
-    [JsonIgnore][Obsolete("Usar ExperienciaAtributos")] public double ExpFuerza { get; set; }
-    [JsonIgnore][Obsolete("Usar ExperienciaAtributos")] public double ExpMagia { get; set; }
-    [JsonIgnore][Obsolete("Usar ExperienciaAtributos")] public double ExpAgilidad { get; set; }
-    [JsonIgnore][Obsolete("Usar ExperienciaAtributos")] public double ExpInteligencia { get; set; }
-    [JsonIgnore][Obsolete("Usar ExperienciaAtributos")] public double ExpResistencia { get; set; }
-    [JsonIgnore][Obsolete("Usar ExperienciaAtributos")] public double ExpDefensa { get; set; }
-    [JsonIgnore][Obsolete("Usar ExperienciaAtributos")] public double ExpVitalidad { get; set; }
-    [JsonIgnore][Obsolete("Usar ExperienciaAtributos")] public double ExpSuerte { get; set; }
-    [JsonIgnore][Obsolete("Usar ExperienciaAtributos")] public double ExpDestreza { get; set; }
-    [JsonIgnore][Obsolete("Usar ExperienciaAtributos")] public double ExpPercepcion { get; set; }
+        // Campos legacy de experiencia (mantener temporalmente para compatibilidad con guardados antiguos)
+        // LEGACY: Marcados con JsonIgnore para no volver a persistirlos en nuevas partidas.
+        [JsonIgnore]
+        [Obsolete("Usar ExperienciaAtributos")]
+        public double ExpFuerza
+        {
+            get; set;
+        }
+        [JsonIgnore]
+        [Obsolete("Usar ExperienciaAtributos")]
+        public double ExpMagia
+        {
+            get; set;
+        }
+        [JsonIgnore]
+        [Obsolete("Usar ExperienciaAtributos")]
+        public double ExpAgilidad
+        {
+            get; set;
+        }
+        [JsonIgnore]
+        [Obsolete("Usar ExperienciaAtributos")]
+        public double ExpInteligencia
+        {
+            get; set;
+        }
+        [JsonIgnore]
+        [Obsolete("Usar ExperienciaAtributos")]
+        public double ExpResistencia
+        {
+            get; set;
+        }
+        [JsonIgnore]
+        [Obsolete("Usar ExperienciaAtributos")]
+        public double ExpDefensa
+        {
+            get; set;
+        }
+        [JsonIgnore]
+        [Obsolete("Usar ExperienciaAtributos")]
+        public double ExpVitalidad
+        {
+            get; set;
+        }
+        [JsonIgnore]
+        [Obsolete("Usar ExperienciaAtributos")]
+        public double ExpSuerte
+        {
+            get; set;
+        }
+        [JsonIgnore]
+        [Obsolete("Usar ExperienciaAtributos")]
+        public double ExpDestreza
+        {
+            get; set;
+        }
+        [JsonIgnore]
+        [Obsolete("Usar ExperienciaAtributos")]
+        public double ExpPercepcion
+        {
+            get; set;
+        }
 
-    [JsonIgnore][Obsolete("Usar ExperienciaAtributos")] public double FuerzaExpRequerida { get; set; } = 1.0;
-    [JsonIgnore][Obsolete("Usar ExperienciaAtributos")] public double MagiaExpRequerida { get; set; } = 1.0;
-    [JsonIgnore][Obsolete("Usar ExperienciaAtributos")] public double AgilidadExpRequerida { get; set; } = 1.0;
-    [JsonIgnore][Obsolete("Usar ExperienciaAtributos")] public double InteligenciaExpRequerida { get; set; } = 1.0;
-    [JsonIgnore][Obsolete("Usar ExperienciaAtributos")] public double ResistenciaExpRequerida { get; set; } = 1.0;
-    [JsonIgnore][Obsolete("Usar ExperienciaAtributos")] public double DefensaExpRequerida { get; set; } = 1.0;
-    [JsonIgnore][Obsolete("Usar ExperienciaAtributos")] public double VitalidadExpRequerida { get; set; } = 1.0;
-    [JsonIgnore][Obsolete("Usar ExperienciaAtributos")] public double SuerteExpRequerida { get; set; } = 1.0;
-    [JsonIgnore][Obsolete("Usar ExperienciaAtributos")] public double DestrezaExpRequerida { get; set; } = 1.0;
-    [JsonIgnore][Obsolete("Usar ExperienciaAtributos")] public double PercepcionExpRequerida { get; set; } = 1.0;
+        [JsonIgnore]
+        [Obsolete("Usar ExperienciaAtributos")]
+        public double FuerzaExpRequerida { get; set; } = 1.0;
+        [JsonIgnore]
+        [Obsolete("Usar ExperienciaAtributos")]
+        public double MagiaExpRequerida { get; set; } = 1.0;
+        [JsonIgnore]
+        [Obsolete("Usar ExperienciaAtributos")]
+        public double AgilidadExpRequerida { get; set; } = 1.0;
+        [JsonIgnore]
+        [Obsolete("Usar ExperienciaAtributos")]
+        public double InteligenciaExpRequerida { get; set; } = 1.0;
+        [JsonIgnore]
+        [Obsolete("Usar ExperienciaAtributos")]
+        public double ResistenciaExpRequerida { get; set; } = 1.0;
+        [JsonIgnore]
+        [Obsolete("Usar ExperienciaAtributos")]
+        public double DefensaExpRequerida { get; set; } = 1.0;
+        [JsonIgnore]
+        [Obsolete("Usar ExperienciaAtributos")]
+        public double VitalidadExpRequerida { get; set; } = 1.0;
+        [JsonIgnore]
+        [Obsolete("Usar ExperienciaAtributos")]
+        public double SuerteExpRequerida { get; set; } = 1.0;
+        [JsonIgnore]
+        [Obsolete("Usar ExperienciaAtributos")]
+        public double DestrezaExpRequerida { get; set; } = 1.0;
+        [JsonIgnore]
+        [Obsolete("Usar ExperienciaAtributos")]
+        public double PercepcionExpRequerida { get; set; } = 1.0;
 
         // Sistema de Experiencia
-        public int Nivel { get; set; }
-        public int Experiencia { get; set; }
-        public int ExperienciaSiguienteNivel { get; set; }
-        public int Oro { get; set; }
+        public int Nivel
+        {
+            get; set;
+        }
+        public int Experiencia
+        {
+            get; set;
+        }
+        public int ExperienciaSiguienteNivel
+        {
+            get; set;
+        }
+        public int Oro
+        {
+            get; set;
+        }
 
         // Estados de supervivencia (27.x)
         // Valores normalizados 0..1 para Hambre, Sed y Fatiga. TempActual en °C (aprox.).
@@ -343,13 +487,19 @@ namespace MiJuegoRPG.Personaje
         }
 
         // Estados previos de etiqueta (no persistentes) para avisos de transición de umbral
-        [JsonIgnore] public string UltHambreEstado { get; set; } = "OK";
-        [JsonIgnore] public string UltSedEstado { get; set; } = "OK";
-        [JsonIgnore] public string UltFatigaEstado { get; set; } = "OK";
+        [JsonIgnore]
+        public string UltHambreEstado { get; set; } = "OK";
+        [JsonIgnore]
+        public string UltSedEstado { get; set; } = "OK";
+        [JsonIgnore]
+        public string UltFatigaEstado { get; set; } = "OK";
 
-    // Reputación global básica y reputaciones por facción (extensible)
-    public int Reputacion { get; set; } = 0; // usada por ReputacionMinima genérica
-    public Dictionary<string,int> ReputacionesFaccion { get; set; } = new();
+        // Reputación global básica y reputaciones por facción (extensible)
+        public int Reputacion { get; set; } = 0; // usada por ReputacionMinima genérica
+        public Dictionary<string, int> ReputacionesFaccion { get; set; } = new();
+
+        // Cooldowns para acciones de mundo (en minutos de juego)
+        public Dictionary<string, int> CooldownsAccionesMundo { get; set; } = new();
 
         // Preferencias por partida (QoL): verbosidad del logger
         public bool PreferenciaLoggerEnabled { get; set; } = true;
@@ -413,7 +563,8 @@ namespace MiJuegoRPG.Personaje
             }
             double danioReal = Math.Max(1, danio - defensaTotal);
             Vida -= (int)danioReal;
-            if (Vida < 0) Vida = 0;
+            if (Vida < 0)
+                Vida = 0;
             MiJuegoRPG.Motor.Servicios.Logger.Debug($"{Nombre} recibió {danioReal} de daño físico. Vida restante: {Vida}");
         }
 
@@ -434,7 +585,8 @@ namespace MiJuegoRPG.Personaje
             }
             double danioReal = Math.Max(1, danio - defensaMagicaTotal);
             Vida -= (int)danioReal;
-            if (Vida < 0) Vida = 0;
+            if (Vida < 0)
+                Vida = 0;
             MiJuegoRPG.Motor.Servicios.Logger.Debug($"{Nombre} recibió {danioReal} de daño mágico. Vida restante: {Vida}");
         }
 
@@ -446,13 +598,14 @@ namespace MiJuegoRPG.Personaje
             // Permitir bonificadores por estadística "Evasion" en equipo
             baseEv += ObtenerBonificadorEstadistica("Evasion");
             // Pequeño ajuste si el ataque es mágico (generalmente más difícil de evadir)
-            if (esAtaqueMagico) baseEv *= 0.8;
+            if (esAtaqueMagico)
+                baseEv *= 0.8;
 
             // Penalización por estados de Supervivencia (27.4): sólo si hay servicio y config cargada
             try
             {
                 var juego = MiJuegoRPG.Motor.Juego.ObtenerInstanciaActual();
-                var sup = juego?.supervivenciaService;
+                var sup = juego?.SupervivenciaService;
                 if (sup != null)
                 {
                     var (etH, etS, etF) = sup.EtiquetasHSF(Hambre, Sed, Fatiga);
@@ -467,34 +620,14 @@ namespace MiJuegoRPG.Personaje
             return rng.NextDouble() < baseEv;
         }
 
-        // Habilidades aprendidas y progreso
+        // Habilidades aprendidas y progreso (usa modelo en Personaje/HabilidadProgreso.cs)
         public Dictionary<string, HabilidadProgreso> Habilidades { get; set; } = new Dictionary<string, HabilidadProgreso>();
 
-        // Clase auxiliar para el progreso de habilidades
-        public class HabilidadProgreso
-        {
-            public string Id { get; set; } = string.Empty;
-            public string Nombre { get; set; } = string.Empty;
-            public int Exp { get; set; }
-            public int Nivel { get; set; }
-            public List<EvolucionHabilidad> Evoluciones { get; set; } = new List<EvolucionHabilidad>();
-            public HashSet<string> EvolucionesDesbloqueadas { get; set; } = new HashSet<string>();
-            public Dictionary<string, int>? AtributosNecesarios { get; set; } // <-- Agregado para requisitos de atributos
-        }
-
-        public class EvolucionHabilidad
-        {
-            public string Id { get; set; } = string.Empty;
-            public string Nombre { get; set; } = string.Empty;
-            public string Beneficio { get; set; } = string.Empty;
-            public List<CondicionEvolucion> Condiciones { get; set; } = new List<CondicionEvolucion>();
-        }
-
-        public class CondicionEvolucion
-        {
-            public string Tipo { get; set; } = string.Empty;
-            public int Cantidad { get; set; }
-        }
+        /// <summary>
+        /// Gets or sets progreso acumulado por habilidad y acción para desbloqueos ocultos.
+        /// Estructura: { habilidadId: { accionId: cantidad } }.
+        /// </summary>
+        public Dictionary<string, Dictionary<string, int>> ProgresoAccionesPorHabilidad { get; set; } = new Dictionary<string, Dictionary<string, int>>();
 
         public void UsarHabilidad(string habilidadId)
         {
@@ -526,16 +659,22 @@ namespace MiJuegoRPG.Personaje
 
         public void RevisarEvolucionHabilidad(string habilidadId)
         {
-            if (!Habilidades.TryGetValue(habilidadId, out var progreso)) return;
+            if (!Habilidades.TryGetValue(habilidadId, out var progreso))
+                return;
             var evoluciones = progreso.Evoluciones;
             foreach (var evo in evoluciones)
             {
                 bool cumple = true;
                 foreach (var cond in evo.Condiciones)
                 {
-                    if (cond.Tipo == "NvHabilidad" && progreso.Exp < cond.Cantidad) cumple = false;
-                    if (cond.Tipo == "NvJugador" && Nivel < cond.Cantidad) cumple = false;
-                    if (cond.Tipo == "Ataque" && AtributosBase.Fuerza < cond.Cantidad) cumple = false;
+                    var tipo = (cond.Tipo ?? string.Empty).Trim();
+                    if (tipo.Equals("NvHabilidad", StringComparison.OrdinalIgnoreCase) && progreso.Exp < cond.Cantidad)
+                        cumple = false;
+                    else if (tipo.Equals("NvJugador", StringComparison.OrdinalIgnoreCase) && Nivel < cond.Cantidad)
+                        cumple = false;
+                    else if (tipo.Equals("Ataque", StringComparison.OrdinalIgnoreCase) && AtributosBase.Fuerza < cond.Cantidad)
+                        cumple = false;
+                    // Extensiones posibles: Inteligencia, Destreza, etc.
                 }
                 if (cumple && !progreso.EvolucionesDesbloqueadas.Contains(evo.Id))
                 {
@@ -561,10 +700,15 @@ namespace MiJuegoRPG.Personaje
                 Habilidades.Add(habilidad.Id, habilidad);
                 Console.WriteLine($"Aprendiste la habilidad {habilidad.Nombre}");
                 // Avisos automáticos al aprender habilidad
+                try
+                {
+                    MiJuegoRPG.Motor.AvisosAventura.MostrarAviso("Habilidad Desbloqueada", habilidad.Nombre, "Has aprendido una nueva habilidad.");
+                }
+                catch { }
                 MiJuegoRPG.Motor.GestorDesbloqueos.VerificarDesbloqueos(this);
             }
         }
-        
+
         public void CambiarClase(Clase nuevaClase) // Cuando cambies la clase, llama a los avisos automáticos
         {
             Clase = nuevaClase;
@@ -594,14 +738,16 @@ namespace MiJuegoRPG.Personaje
             MigrarExperienciaLegacy();
         }
 
-        private bool _migracionLegacyHecha = false;
+        private bool migracionLegacyHecha = false;
+
         /// <summary>
         /// Migra valores de experiencia legacy (ExpFuerza, etc.) al diccionario unificado si existen.
         /// Se ejecuta una sola vez; deja los campos legacy intactos para compatibilidad de lectura pero ya no se usan.
         /// </summary>
         private void MigrarExperienciaLegacy()
         {
-            if (_migracionLegacyHecha) return;
+            if (migracionLegacyHecha)
+                return;
             bool habiaDatos = false;
             void Copiar(MiJuegoRPG.Dominio.Atributo atr, double exp, double req)
             {
@@ -609,7 +755,8 @@ namespace MiJuegoRPG.Personaje
                 {
                     var data = ExperienciaAtributos[atr];
                     data.Progreso = exp;
-                    if (req > 0) data.Requerida = req;
+                    if (req > 0)
+                        data.Requerida = req;
                     habiaDatos = true;
                 }
             }
@@ -627,7 +774,7 @@ namespace MiJuegoRPG.Personaje
 #pragma warning restore CS0618
             if (habiaDatos)
                 Console.WriteLine("[Migración] Experiencia legacy migrada al nuevo sistema.");
-            _migracionLegacyHecha = true;
+            migracionLegacyHecha = true;
         }
 
         private int CalcularExperienciaNecesaria(int nivel) // Método para calcular la experiencia necesaria para el siguiente nivel
@@ -635,8 +782,8 @@ namespace MiJuegoRPG.Personaje
             return nivel * nivel * 200;
         }
 
-        
-    // Método Entrenar eliminado (migrado a ProgressionService). Mantener referencia si se necesitara compatibilidad retro.
+
+        // Método Entrenar eliminado (migrado a ProgressionService). Mantener referencia si se necesitara compatibilidad retro.
 
 
         public void GanarExperiencia(int cantidad) // Método para ganar experiencia
@@ -665,10 +812,25 @@ namespace MiJuegoRPG.Personaje
             Console.WriteLine($"¡Has subido al nivel {Nivel}! Vida máxima ahora: {VidaMaxima}");
             // Revisar desbloqueos automáticos después de subir de nivel
             MiJuegoRPG.Motor.GestorDesbloqueos.VerificarDesbloqueos(this);
-            try { MiJuegoRPG.Motor.Servicios.BusEventos.Instancia.Publicar(new MiJuegoRPG.Motor.Servicios.EventoNivelSubido(Nivel)); } catch { }
+            // Intentar desbloquear habilidades elegibles básicas
+            try
+            {
+                foreach (var h in MiJuegoRPG.Habilidades.HabilidadCatalogService.ElegiblesPara(this))
+                {
+                    var prog = MiJuegoRPG.Habilidades.HabilidadCatalogService.AProgreso(h);
+                    if (!Habilidades.ContainsKey(prog.Id))
+                        AprenderHabilidad(prog);
+                }
+            }
+            catch { /* tolerante: sin datos de habilidades no bloquea nivel */ }
+            try
+            {
+                MiJuegoRPG.Motor.Servicios.BusEventos.Instancia.Publicar(new MiJuegoRPG.Motor.Servicios.EventoNivelSubido(Nivel));
+            }
+            catch { }
         }
 
-        
+
         public bool PuedeAccederMision(Mision mision) // Verifica si el personaje puede acceder a una misión según condiciones y progreso
         {
             // Si la misión ya está activa o completada, no mostrarla como accesible
@@ -695,7 +857,7 @@ namespace MiJuegoRPG.Personaje
             return true;
         }
 
-        
+
         public bool CumpleRequisito(string clave, object valor) // Verifica si el personaje cumple un requisito específico (para rutas, misiones, etc.)
         {
             var requisito = clave.ToLower();
@@ -710,14 +872,34 @@ namespace MiJuegoRPG.Personaje
                 // Agrega más casos según los requisitos que uses en el juego
                 _ => false,
             };
-
         }
 
-        // Propiedades de maná
-        public int ManaActual { get; set; }
-        public int ManaMaxima => (int)Estadisticas.Mana;   
+        // Propiedades de maná (con bonos de equipo)
+        public int ManaActual
+        {
+            get; set;
+        }
+        public int ManaMaxima
+        {
+            get
+            {
+                double baseMana = Estadisticas?.Mana ?? 0;
+                double bonoMana = ObtenerBonificadorEstadistica("Mana") + ObtenerBonificadorEstadistica("Energía");
+                return (int)Math.Max(0, Math.Round(baseMana + bonoMana));
+            }
+        }
+        // Energía con bonos calculados (la base sigue siendo el campo existente EnergiaMaxima)
+        public int EnergiaMaximaConBonos
+        {
+            get
+            {
+                double baseE = this.EnergiaMaxima; // usa propiedad existente definida arriba
+                double bonoE = ObtenerBonificadorEstadistica("Energia");
+                return (int)Math.Max(0, Math.Round(baseE + bonoE));
+            }
+        }
 
-        
+
 
         public bool GastarMana(int cantidad) // Método para gastar maná
         {
@@ -729,12 +911,12 @@ namespace MiJuegoRPG.Personaje
             return false;
         }
 
-            public void RecuperarMana(int cantidad) // Método para recuperar maná
-            {
-                ManaActual = Math.Min(ManaActual + cantidad, ManaMaxima);
-            }
+        public void RecuperarMana(int cantidad) // Método para recuperar maná
+        {
+            ManaActual = Math.Min(ManaActual + cantidad, ManaMaxima);
+        }
 
-                // Verifica si el personaje cumple los requisitos de atributos para una habilidad
+        // Verifica si el personaje cumple los requisitos de atributos para una habilidad
         public bool CumpleRequisitosHabilidad(Dictionary<string, int> atributosNecesarios)
         {
             foreach (var req in atributosNecesarios)
@@ -745,21 +927,50 @@ namespace MiJuegoRPG.Personaje
                 int valorActual = 0;
                 switch (clave)
                 {
-                    case "fuerza": valorActual = (int)AtributosBase.Fuerza; break;
-                    case "inteligencia": valorActual = (int)AtributosBase.Inteligencia; break;
-                    case "destreza": valorActual = (int)AtributosBase.Destreza; break;
-                    case "suerte": valorActual = (int)AtributosBase.Suerte; break;
-                    case "defensa": valorActual = (int)AtributosBase.Defensa; break;
-                    case "vitalidad": valorActual = (int)AtributosBase.Vitalidad; break;
-                    case "agilidad": valorActual = (int)AtributosBase.Agilidad; break;
-                    case "resistencia": valorActual = (int)AtributosBase.Resistencia; break;
-                    case "percepcion": valorActual = (int)AtributosBase.Percepcion; break;
-                    case "sabiduria": valorActual = (int)AtributosBase.Sabiduría; break;
-                    case "fe": valorActual = (int)AtributosBase.Fe; break;
-                    case "carisma": valorActual = (int)AtributosBase.Carisma; break;
-                    case "liderazgo": valorActual = (int)AtributosBase.Liderazgo; break;
-                    case "persuasion": valorActual = (int)AtributosBase.Persuasion; break;
-                    default: continue; // Si el atributo no existe, lo ignora
+                    case "fuerza":
+                        valorActual = (int)AtributosBase.Fuerza;
+                        break;
+                    case "inteligencia":
+                        valorActual = (int)AtributosBase.Inteligencia;
+                        break;
+                    case "destreza":
+                        valorActual = (int)AtributosBase.Destreza;
+                        break;
+                    case "suerte":
+                        valorActual = (int)AtributosBase.Suerte;
+                        break;
+                    case "defensa":
+                        valorActual = (int)AtributosBase.Defensa;
+                        break;
+                    case "vitalidad":
+                        valorActual = (int)AtributosBase.Vitalidad;
+                        break;
+                    case "agilidad":
+                        valorActual = (int)AtributosBase.Agilidad;
+                        break;
+                    case "resistencia":
+                        valorActual = (int)AtributosBase.Resistencia;
+                        break;
+                    case "percepcion":
+                        valorActual = (int)AtributosBase.Percepcion;
+                        break;
+                    case "sabiduria":
+                        valorActual = (int)AtributosBase.Sabiduría;
+                        break;
+                    case "fe":
+                        valorActual = (int)AtributosBase.Fe;
+                        break;
+                    case "carisma":
+                        valorActual = (int)AtributosBase.Carisma;
+                        break;
+                    case "liderazgo":
+                        valorActual = (int)AtributosBase.Liderazgo;
+                        break;
+                    case "persuasion":
+                        valorActual = (int)AtributosBase.Persuasion;
+                        break;
+                    default:
+                        continue; // Si el atributo no existe, lo ignora
                 }
                 if (valorActual < valorNecesario)
                 {
@@ -769,6 +980,5 @@ namespace MiJuegoRPG.Personaje
             }
             return true;
         }
-
     }
 }

@@ -30,17 +30,21 @@ namespace MiJuegoRPG.Tests
         public void RecibirDanioFisico(int danioFisico)
         {
             int real = danioFisico - Defensa;
-            if (real < 1) real = 1;
+            if (real < 1)
+                real = 1;
             Vida -= real;
-            if (Vida < 0) Vida = 0;
+            if (Vida < 0)
+                Vida = 0;
         }
 
         public void RecibirDanioMagico(int danioMagico)
         {
             int real = danioMagico - DefensaMagica;
-            if (real < 1) real = 1;
+            if (real < 1)
+                real = 1;
             Vida -= real;
-            if (Vida < 0) Vida = 0;
+            if (Vida < 0)
+                Vida = 0;
         }
     }
 
@@ -55,10 +59,24 @@ namespace MiJuegoRPG.Tests
         public bool EstaVivo => Vida > 0;
 
         public bool IntentarEvadir(bool esAtaqueMagico) => true; // siempre evade
-        public int AtacarFisico(ICombatiente objetivo) { objetivo.RecibirDanioFisico(1); return 1; }
-        public int AtacarMagico(ICombatiente objetivo) { objetivo.RecibirDanioMagico(1); return 1; }
-        public void RecibirDanioFisico(int danioFisico) { Vida = System.Math.Max(0, Vida - danioFisico); }
-        public void RecibirDanioMagico(int danioMagico) { Vida = System.Math.Max(0, Vida - danioMagico); }
+        public int AtacarFisico(ICombatiente objetivo)
+        {
+            objetivo.RecibirDanioFisico(1);
+            return 1;
+        }
+        public int AtacarMagico(ICombatiente objetivo)
+        {
+            objetivo.RecibirDanioMagico(1);
+            return 1;
+        }
+        public void RecibirDanioFisico(int danioFisico)
+        {
+            Vida = System.Math.Max(0, Vida - danioFisico);
+        }
+        public void RecibirDanioMagico(int danioMagico)
+        {
+            Vida = System.Math.Max(0, Vida - danioMagico);
+        }
     }
 
     public class AccionesCombateTests

@@ -8,7 +8,7 @@ namespace MiJuegoRPG.Objetos
 {
     public static class GestorMateriales
     {
-    public static string RutaMaterialesJson = MiJuegoRPG.Motor.Servicios.PathProvider.PjDatosPath("materiales.json");
+        public static string RutaMaterialesJson = MiJuegoRPG.Motor.Servicios.PathProvider.PjDatosPath("materiales.json");
         public static List<Material> MaterialesDisponibles = new List<Material>();
 
         public static void GuardarMaterialSiNoExiste(Material material)
@@ -39,19 +39,35 @@ namespace MiJuegoRPG.Objetos
 
         public static Material? BuscarMaterialPorNombre(string nombre)
         {
+            // Delegar al repositorio si está disponible (transición gradual)
+            try
+            {
+                var repo = LazyRepo.Value;
+                var dom = repo.ToDomain(nombre);
+                if (dom != null)
+                    return dom;
+            }
+            catch { /* fallback a lista cargada previa */ }
             return MaterialesDisponibles.Find(m => m.Nombre.Equals(nombre, StringComparison.OrdinalIgnoreCase));
         }
+
+        private static readonly Lazy<MiJuegoRPG.Motor.Servicios.Repos.MaterialRepository> LazyRepo
+            = new(() => new MiJuegoRPG.Motor.Servicios.Repos.MaterialRepository());
 
         public static void CargarMateriales(string rutaArchivo)
         {
             if (!Path.IsPathRooted(rutaArchivo))
             {
-                var dir = Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory);
-                string rutaBase = dir?.Parent?.Parent != null ? dir.Parent.Parent.FullName : AppDomain.CurrentDomain.BaseDirectory;
-                rutaArchivo = Path.Combine(rutaBase, "MiJuegoRPG", "PjDatos", rutaArchivo);
+                rutaArchivo = MiJuegoRPG.Motor.Servicios.PathProvider.PjDatosPath(rutaArchivo);
             }
             try
             {
+                if (!File.Exists(rutaArchivo))
+                {
+                    // Fallback razonable: usar PjDatos/materiales.json tal cual (ya resuelto) o silencio
+                    Console.WriteLine($"Error al cargar materiales: No existe el archivo '{rutaArchivo}'");
+                    return;
+                }
                 string jsonString = File.ReadAllText(rutaArchivo);
                 var options = new JsonSerializerOptions();
                 options.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
@@ -64,9 +80,15 @@ namespace MiJuegoRPG.Objetos
                         MaterialesDisponibles.Add(new Material(
                             material.Nombre,
                             material.Rareza,
-                            material.Categoria
-                        ));
+                            material.Categoria));
                     }
+                    // Sincronizar repositorio (sobrescribir cache actual)
+                    try
+                    {
+                        var repo = LazyRepo.Value;
+                        repo.SaveAll(materialesJson); // mantiene archivo; repos lee mismo path
+                    }
+                    catch { /* degradar silencioso */ }
                 }
             }
             catch (Exception ex)
@@ -78,8 +100,14 @@ namespace MiJuegoRPG.Objetos
 
     public class MaterialJson
     {
-        public required string Nombre { get; set; }
-        public Rareza Rareza { get; set; }
-        public required string Categoria { get; set; }
+        public required string Nombre
+        {
+            get; set;
+        }
+        public string Rareza { get; set; } = "Normal";
+        public required string Categoria
+        {
+            get; set;
+        }
     }
 }

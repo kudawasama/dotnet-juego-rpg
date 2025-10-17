@@ -1,0 +1,33 @@
+﻿{
+  "Nombre": "B\u00E1culo de Hielo",
+  "Da\u00F1o": 17,
+  "Da\u00F1oMin": 15,
+  "Da\u00F1oMax": 19,
+  "NivelRequerido": 4,
+  "NivelMin": 4,
+  "NivelMax": 6,
+  "Valor": 0,
+  "ValorVenta": 12,
+  "Tipo": "Baston",
+  "Rareza": "Normal",
+  "RarezasPermitidasCsv": "Superior, Rara, Legendaria",
+  "Perfeccion": 50,
+  "PerfeccionMin": 60,
+  "PerfeccionMax": 95,
+  "CriticoProbabilidad": 0.06,
+  "CriticoMultiplicador": 1.6,
+  "Penetracion": 0.05,
+  "Precision": 0.02,
+  "VelocidadAtaque": 1.0,
+  "BonificadoresAtributos": { "Inteligencia": 3 },
+  "BonificadoresEstadisticas": { },
+  "Efectos": [
+    { "Tipo": "OnHit", "Nombre": "Escarcha", "Probabilidad": 0.20, "Potencia": 1, "DuracionTurnos": 1 }
+  ],
+  "HabilidadesOtorgadas": [],
+  "Requisitos": { "Inteligencia": 6, "Nivel": 4 },
+  "Peso": 1.3,
+  "Durabilidad": 70,
+  "Descripcion": "Canaliza el frío para entorpecer a sus enemigos.",
+  "Tags": ["baston", "hielo"]
+}

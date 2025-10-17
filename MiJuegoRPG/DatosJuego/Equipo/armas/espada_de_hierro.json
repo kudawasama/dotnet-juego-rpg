@@ -1,0 +1,33 @@
+﻿{
+  "Nombre": "Espada de Hierro",
+  "Da\u00F1o": 12,
+  "Da\u00F1oMin": 10,
+  "Da\u00F1oMax": 14,
+  "NivelRequerido": 2,
+  "NivelMin": 2,
+  "NivelMax": 4,
+  "Valor": 0,
+  "ValorVenta": 5,
+  "Tipo": "UnaMano",
+  "Rareza": "Normal",
+  "RarezasPermitidasCsv": "Pobre, Normal, Superior",
+  "Perfeccion": 50,
+  "PerfeccionMin": 10,
+  "PerfeccionMax": 100,
+  "CriticoProbabilidad": 0.07,
+  "CriticoMultiplicador": 1.6,
+  "Penetracion": 0.05,
+  "Precision": 0.02,
+  "VelocidadAtaque": 1.0,
+  "BonificadoresAtributos": { "Fuerza": 1 },
+  "BonificadoresEstadisticas": { "Defensa": 0 },
+  "Efectos": [
+    { "Tipo": "OnHit", "Nombre": "Sangrado", "Probabilidad": 0.05, "Potencia": 1, "DuracionTurnos": 2 }
+  ],
+  "HabilidadesOtorgadas": [],
+  "Requisitos": { "Fuerza": 4, "Nivel": 2 },
+  "Peso": 2.4,
+  "Durabilidad": 60,
+  "Descripcion": "Espada de hierro forjada; fiable y equilibrada.",
+  "Tags": ["espada", "hierro", "una_mano"]
+}

@@ -1,0 +1,18 @@
+{
+  "delitos": {
+    "robo_intento": {
+      "reputacionPenalty": -5,
+      "multaMin": 10,
+      "multaMax": 30,
+      "faccionAfectada": "guardia",
+      "activaAlerta": true
+    },
+    "hechiceria_en_ciudad": {
+      "reputacionPenalty": -2,
+      "multaMin": 5,
+      "multaMax": 15,
+      "faccionAfectada": "ciudad",
+      "activaAlerta": false
+    }
+  }
+}

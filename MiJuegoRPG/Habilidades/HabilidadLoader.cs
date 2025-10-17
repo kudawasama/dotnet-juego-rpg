@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace MiJuegoRPG.Habilidades
 {
@@ -9,37 +11,67 @@ namespace MiJuegoRPG.Habilidades
         public static List<HabilidadData> CargarTodas(string carpeta)
         {
             var habilidades = new List<HabilidadData>();
-            var archivos = Directory.GetFiles(carpeta, "*.json");
+            var archivos = Directory.GetFiles(carpeta, "*.json", SearchOption.AllDirectories);
             foreach (var archivo in archivos)
             {
                 var json = File.ReadAllText(archivo);
-                var lista = JsonSerializer.Deserialize<List<HabilidadData>>(json);
+                // Permitir que un archivo contenga lista o un único objeto (se normaliza a lista)
+                List<HabilidadData>? lista = null;
+                try
+                {
+                    lista = JsonSerializer.Deserialize<List<HabilidadData>>(json, JsonOptions());
+                }
+                catch
+                {
+                    try
+                    {
+                        var single = JsonSerializer.Deserialize<HabilidadData>(json, JsonOptions());
+                        if (single != null)
+                            lista = new List<HabilidadData> { single };
+                    }
+                    catch { /* tolerante: archivo inválido, se ignora */ }
+                }
                 if (lista != null)
-                    habilidades.AddRange(lista);
+                {
+                    // Normalizar IDs duplicadas y whitespace
+                    foreach (var h in lista)
+                    {
+                        if (h == null)
+                            continue;
+                        h.Id = h.Id?.Trim() ?? string.Empty;
+                        h.Nombre = string.IsNullOrWhiteSpace(h.Nombre) ? h.Id : h.Nombre.Trim();
+                        h.Tipo = h.Tipo?.Trim() ?? string.Empty;
+                        h.Categoria = h.Categoria?.Trim() ?? string.Empty;
+                        h.Descripcion = h.Descripcion?.Trim() ?? string.Empty;
+                        h.AccionId = h.AccionId?.Trim();
+                        // Limpieza de evoluciones nulas
+                        if (h.Evoluciones == null)
+                            h.Evoluciones = new List<EvolucionData>();
+                        foreach (var evo in h.Evoluciones)
+                        {
+                            if (evo == null)
+                                continue;
+                            evo.Id = evo.Id?.Trim() ?? string.Empty;
+                            evo.Nombre = string.IsNullOrWhiteSpace(evo.Nombre) ? evo.Id : evo.Nombre.Trim();
+                            if (evo.Condiciones == null)
+                                evo.Condiciones = new List<CondicionData>();
+                        }
+                    }
+                    habilidades.AddRange(lista.Where(x => x != null));
+                }
             }
             return habilidades;
         }
-    }
 
-    public class HabilidadData
-    {
-    public string Id { get; set; } = string.Empty;
-    public string Nombre { get; set; } = string.Empty;
-    public string Tipo { get; set; } = string.Empty;
-    public string Categoria { get; set; } = string.Empty;
-    public string Descripcion { get; set; } = string.Empty;
-    public Dictionary<string, int> AtributosNecesarios { get; set; } = new Dictionary<string, int>();
-    public List<CondicionData> Condiciones { get; set; } = new List<CondicionData>();
-    public string Beneficio { get; set; } = string.Empty;
-    public List<string> Mejoras { get; set; } = new List<string>();
-    public bool Oculta { get; set; } = false;
-    }
-
-    public class CondicionData
-    {
-    public string Tipo { get; set; } = string.Empty;
-    public string Accion { get; set; } = string.Empty;
-    public int? Cantidad { get; set; } = null;
-    public string Restriccion { get; set; } = string.Empty;
+        private static JsonSerializerOptions JsonOptions()
+        {
+            return new JsonSerializerOptions
+            {
+                ReadCommentHandling = JsonCommentHandling.Skip,
+                AllowTrailingCommas = true,
+                PropertyNameCaseInsensitive = true,
+                NumberHandling = JsonNumberHandling.AllowReadingFromString
+            };
+        }
     }
 }

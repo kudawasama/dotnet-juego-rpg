@@ -14,7 +14,7 @@ namespace MiJuegoRPG.Motor
 {
     public static class GeneradorEnemigos
     {
-    // Random centralizado a través de RandomService
+        // Random centralizado a través de RandomService
         private static List<EnemigoData>? enemigosDisponibles;
         // Flag para tests: si es true, no se persisten drops en JSONs de objetos
         public static bool DesactivarPersistenciaDrops { get; set; } = false;
@@ -69,7 +69,8 @@ namespace MiJuegoRPG.Motor
                                 continue;
                             }
                             var json = File.ReadAllText(file);
-                            if (string.IsNullOrWhiteSpace(json)) continue;
+                            if (string.IsNullOrWhiteSpace(json))
+                                continue;
                             algunArchivo = true;
 
                             using var doc = JsonDocument.Parse(json);
@@ -132,7 +133,7 @@ namespace MiJuegoRPG.Motor
             }
             CargarEnemigos(rutaArchivo);
         }
-        
+
         // Ignora archivos ubicados directamente en la carpeta 'nivel_*' dentro de 'enemigos/por_bioma/<bioma>/'
         // Acepta únicamente archivos dentro de subcarpetas por categoría.
         private static bool DebeIgnorarseArchivoEnemigoPorConvencion(string filePath)
@@ -145,7 +146,8 @@ namespace MiJuegoRPG.Motor
                     return false;
 
                 var fileDir = Path.GetDirectoryName(filePath);
-                if (string.IsNullOrEmpty(fileDir)) return false;
+                if (string.IsNullOrEmpty(fileDir))
+                    return false;
                 var dirInfo = new DirectoryInfo(fileDir);
                 // Si el directorio inmediato es 'nivel_*', entonces el archivo está en la raíz del nivel
                 if (dirInfo.Name.StartsWith("nivel_", StringComparison.OrdinalIgnoreCase))
@@ -157,7 +159,7 @@ namespace MiJuegoRPG.Motor
             }
             catch { return false; }
         }
-        
+
         // Método para generar un enemigo aleatorio basado en el JSON.
         public static Enemigo GenerarEnemigoAleatorio(MiJuegoRPG.Personaje.Personaje jugador)
         {
@@ -187,8 +189,8 @@ namespace MiJuegoRPG.Motor
                 // Coincidencia por nombre o por tags (si existen)
                 var filtrados = enemigosApropiados.Where(e =>
                     tipos.Any(t => e.Nombre.ToLowerInvariant().Contains(t))
-                    || (e.Tags != null && e.Tags.Any(tag => tipos.Contains(tag.ToLowerInvariant())))
-                ).ToList();
+                    || (e.Tags != null && e.Tags.Any(tag => tipos.Contains(tag.ToLowerInvariant()))))
+                .ToList();
                 if (filtrados.Count > 0)
                 {
                     enemigosApropiados = filtrados;
@@ -198,7 +200,7 @@ namespace MiJuegoRPG.Motor
                     Logger.Warn($"Filtro de tipos '{filtroTipos}' no coincidió, usando lista sin filtrar.");
                 }
             }
-            
+
             if (!enemigosApropiados.Any())
             {
                 Logger.Warn("No se encontraron enemigos apropiados. Generando Goblin por defecto.");
@@ -217,7 +219,8 @@ namespace MiJuegoRPG.Motor
                 {
                     habiaConChance = true;
                     var p = Math.Clamp(e.SpawnChance.Value, 0.0, 1.0);
-                    if (rng.NextDouble() < p) candidatos.Add(e);
+                    if (rng.NextDouble() < p)
+                        candidatos.Add(e);
                 }
                 else
                 {
@@ -227,9 +230,11 @@ namespace MiJuegoRPG.Motor
             if (candidatos.Count == 0)
             {
                 // Si todos fallaron el roll y había SpawnChance definidos, relajar: usar la lista original para no quedarse sin enemigo
-                if (habiaConChance) candidatos = enemigosApropiados;
+                if (habiaConChance)
+                    candidatos = enemigosApropiados;
                 // Si no había SpawnChance, ya estaría vacío por otra razón (pero no debería), caer a lista original
-                if (candidatos.Count == 0) candidatos = enemigosApropiados;
+                if (candidatos.Count == 0)
+                    candidatos = enemigosApropiados;
             }
 
             // Selección ponderada por SpawnWeight (default 1). Si todos tienen peso <=0, hacer uniforme.
@@ -248,7 +253,11 @@ namespace MiJuegoRPG.Motor
                 foreach (var e in candidatos)
                 {
                     acc += Math.Max(0, e.SpawnWeight ?? 1);
-                    if (r <= acc) { enemigoData = e; break; }
+                    if (r <= acc)
+                    {
+                        enemigoData = e;
+                        break;
+                    }
                 }
             }
 
@@ -267,8 +276,7 @@ namespace MiJuegoRPG.Motor
                 enemigoData.DefensaMagicaBase,
                 enemigoData.Nivel,
                 enemigoData.ExperienciaRecompensa,
-                enemigoData.OroRecompensa
-            );
+                enemigoData.OroRecompensa);
             enemigo.IdData = string.IsNullOrWhiteSpace(enemigoData.Id) ? enemigoData.Nombre : enemigoData.Id!;
             if (arma != null)
             {
@@ -279,7 +287,8 @@ namespace MiJuegoRPG.Motor
             if (!string.IsNullOrWhiteSpace(filtroTipos))
             {
                 var prim = filtroTipos.Split('|', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).FirstOrDefault();
-                if (!string.IsNullOrWhiteSpace(prim)) tagBase = prim.ToLowerInvariant();
+                if (!string.IsNullOrWhiteSpace(prim))
+                    tagBase = prim.ToLowerInvariant();
             }
             // Aplicar tags adicionales desde data si existen
             if (enemigoData.Tags != null && enemigoData.Tags.Count > 0)
@@ -388,54 +397,56 @@ namespace MiJuegoRPG.Motor
                     int hardCap = 5; // se recorta luego según rareza en Enemigo.DarRecompensas
                     cmax = Math.Min(cmax, hardCap);
                     enemigo.RangoCantidadDrop[nombre] = (cmin, cmax);
-                    if (drop.UniqueOnce) enemigo.DropsUniqueOnce.Add(nombre);
+                    if (drop.UniqueOnce)
+                        enemigo.DropsUniqueOnce.Add(nombre);
 
                     switch (tipo)
                     {
                         case "material":
-                        {
-                            var mat = Objetos.GestorMateriales.BuscarMaterialPorNombre(nombre);
-                            if (mat == null)
                             {
-                                // Crear stub si no existe
-                                var rzStr = string.IsNullOrWhiteSpace(drop.Rareza) ? "Normal" : drop.Rareza;
-                                if (!Enum.TryParse<Objetos.Rareza>(rzStr, true, out var rzObj)) rzObj = Objetos.Rareza.Normal;
-                                mat = new Objetos.Material(nombre, rzObj, "Material");
-                                if (!DesactivarPersistenciaDrops)
-                                    Objetos.GestorMateriales.GuardarMaterialSiNoExiste(mat);
+                                var mat = Objetos.GestorMateriales.BuscarMaterialPorNombre(nombre);
+                                if (mat == null)
+                                {
+                                    // Crear stub si no existe
+                                    var rzStr = string.IsNullOrWhiteSpace(drop.Rareza) ? "Normal" : drop.Rareza;
+                                    // Normalización simple; se mantiene string sin enum
+                                    var rzObjStr = MiJuegoRPG.Objetos.RarezaHelper.Normalizar(rzStr);
+                                    mat = new Objetos.Material(nombre, rzObjStr, "Material");
+                                    if (!DesactivarPersistenciaDrops)
+                                        Objetos.GestorMateriales.GuardarMaterialSiNoExiste(mat);
+                                }
+                                enemigo.ProbabilidadesDrop[nombre] = chance;
+                                enemigo.ObjetosDrop.Add(mat);
+                                break;
                             }
-                            enemigo.ProbabilidadesDrop[nombre] = chance;
-                            enemigo.ObjetosDrop.Add(mat);
-                            break;
-                        }
                         case "arma":
-                        {
-                            var armaDrop = Objetos.GestorArmas.BuscarArmaPorNombre(nombre);
-                            if (armaDrop != null)
                             {
-                                enemigo.ProbabilidadesDrop[nombre] = chance;
-                                enemigo.ObjetosDrop.Add(armaDrop);
+                                var armaDrop = Objetos.GestorArmas.BuscarArmaPorNombre(nombre);
+                                if (armaDrop != null)
+                                {
+                                    enemigo.ProbabilidadesDrop[nombre] = chance;
+                                    enemigo.ObjetosDrop.Add(armaDrop);
+                                }
+                                else
+                                {
+                                    Logger.Warn($"[GeneradorEnemigos] Drop arma no encontrada '{nombre}' para {enemigo.Nombre}");
+                                }
+                                break;
                             }
-                            else
-                            {
-                                Logger.Warn($"[GeneradorEnemigos] Drop arma no encontrada '{nombre}' para {enemigo.Nombre}");
-                            }
-                            break;
-                        }
                         case "pocion":
-                        {
-                            var poc = Objetos.GestorPociones.BuscarPocionPorNombre(nombre);
-                            if (poc != null)
                             {
-                                enemigo.ProbabilidadesDrop[nombre] = chance;
-                                enemigo.ObjetosDrop.Add(poc);
+                                var poc = Objetos.GestorPociones.BuscarPocionPorNombre(nombre);
+                                if (poc != null)
+                                {
+                                    enemigo.ProbabilidadesDrop[nombre] = chance;
+                                    enemigo.ObjetosDrop.Add(poc);
+                                }
+                                else
+                                {
+                                    Logger.Warn($"[GeneradorEnemigos] Drop poción no encontrada '{nombre}' para {enemigo.Nombre}");
+                                }
+                                break;
                             }
-                            else
-                            {
-                                Logger.Warn($"[GeneradorEnemigos] Drop poción no encontrada '{nombre}' para {enemigo.Nombre}");
-                            }
-                            break;
-                        }
                         default:
                             Logger.Warn($"[GeneradorEnemigos] Tipo de drop no soportado '{drop.Tipo}' en {enemigo.Nombre}");
                             break;
@@ -462,32 +473,31 @@ namespace MiJuegoRPG.Motor
             // Ejemplo de drops básicos según tipo de enemigo
             if (enemigo.Nombre.ToLower().Contains("goblin"))
             {
-                var armaDrop = new MiJuegoRPG.Objetos.Arma("Espada Oxidada", 5, nivel: 1, rareza: MiJuegoRPG.Objetos.Rareza.Normal, categoria: "UnaMano");
+                var armaDrop = new MiJuegoRPG.Objetos.Arma("Espada Oxidada", 5, nivel: 1, rareza: "Normal", categoria: "UnaMano");
                 enemigo.ObjetosDrop.Add(armaDrop);
                 if (!DesactivarPersistenciaDrops)
                     MiJuegoRPG.Objetos.GestorArmas.GuardarArmaSiNoExiste(armaDrop);
 
-                var pocionDrop = new MiJuegoRPG.Objetos.Pocion("Poción Pequeña", 10, MiJuegoRPG.Objetos.Rareza.Pobre);
+                var pocionDrop = new MiJuegoRPG.Objetos.Pocion("Poción Pequeña", 10, "Pobre");
                 enemigo.ObjetosDrop.Add(pocionDrop);
                 if (!DesactivarPersistenciaDrops)
                     MiJuegoRPG.Objetos.GestorPociones.GuardarPocionSiNoExiste(pocionDrop);
             }
             else if (enemigo.Nombre.ToLower().Contains("slime"))
             {
-                var materialDrop = new MiJuegoRPG.Objetos.Material("Gelatina", MiJuegoRPG.Objetos.Rareza.Rota);
+                var materialDrop = new MiJuegoRPG.Objetos.Material("Gelatina", "Rota");
                 enemigo.ObjetosDrop.Add(materialDrop);
                 if (!DesactivarPersistenciaDrops)
                     MiJuegoRPG.Objetos.GestorMateriales.GuardarMaterialSiNoExiste(materialDrop);
             }
             else if (enemigo.Nombre.ToLower().Contains("golem"))
             {
-                var armaDrop = new MiJuegoRPG.Objetos.Arma("Martillo Pesado", 20, nivel: enemigo.Nivel, rareza: MiJuegoRPG.Objetos.Rareza.Rara, categoria: "DosManos");
+                var armaDrop = new MiJuegoRPG.Objetos.Arma("Martillo Pesado", 20, nivel: enemigo.Nivel, rareza: "Rara", categoria: "DosManos");
                 enemigo.ObjetosDrop.Add(armaDrop);
                 if (!DesactivarPersistenciaDrops)
                     MiJuegoRPG.Objetos.GestorArmas.GuardarArmaSiNoExiste(armaDrop);
             }
             // Puedes agregar más lógica para otros tipos de enemigos
-
             return enemigo;
         }
 
@@ -506,8 +516,10 @@ namespace MiJuegoRPG.Motor
                 ui?.WriteLine("1. Continuar...");
                 ui?.WriteLine("2. Volver al menú anterior");
                 var opcion = MiJuegoRPG.Motor.InputService.LeerOpcion("Elige una opción: ");
-                if (opcion == "1") break;
-                if (opcion == "2") {
+                if (opcion == "1")
+                    break;
+                if (opcion == "2")
+                {
                     // Volver al menú de ubicación principal moderno
                     var juego = MiJuegoRPG.Motor.Juego.ObtenerInstanciaActual();
                     if (juego != null)
@@ -543,8 +555,7 @@ namespace MiJuegoRPG.Motor
                     enemigoData.DefensaMagicaBase,
                     enemigoData.Nivel,
                     enemigoData.ExperienciaRecompensa,
-                    enemigoData.OroRecompensa
-                );
+                    enemigoData.OroRecompensa);
                 if (arma != null)
                 {
                     enemigo.ArmaEquipada = arma;

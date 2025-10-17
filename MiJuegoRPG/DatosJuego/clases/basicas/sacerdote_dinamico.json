@@ -1,0 +1,15 @@
+{
+  "Nombre": "Sacerdote",
+  "Categoria": "Magica",
+  "Rareza": "Comun",
+  "Oculta": true,
+  "ClasesPrevias": ["Aprendiz de Sacerdote"],
+  "NivelMinimo": 10,
+  "AtributosRequeridos": { "Fe": 12 },
+  "EstadisticasRequeridas": { "PoderMagico": 3 },
+  "MisionesRequeridas": ["Oración Sagrada"],
+  "AtributosGanados": { "Fe": 2, "Sabiduria": 2, "Fuerza": -1, "Vitalidad": -1 },
+  "ActividadRequerida": { "Combate.HechizosSoporte": 30 },
+  "Tier": 1,
+  "Rama": "Magia"
+}

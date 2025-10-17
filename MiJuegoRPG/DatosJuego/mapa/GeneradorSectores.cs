@@ -23,9 +23,9 @@ namespace Herramientas
                     {
                         nombre = $"Región {fila}_{columna}",
                         bioma = "Indefinido",
-                        nodosRecoleccion = new string[] {},
-                        enemigos = new string[] {},
-                        eventos = new string[] {}
+                        nodosRecoleccion = new string[] { },
+                        enemigos = new string[] { },
+                        eventos = new string[] { }
                     };
                     string json = JsonSerializer.Serialize(region, new JsonSerializerOptions { WriteIndented = true });
                     File.WriteAllText(rutaArchivo, json);

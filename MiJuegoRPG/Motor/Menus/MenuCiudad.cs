@@ -15,14 +15,14 @@ namespace MiJuegoRPG.Motor.Menus
         public void MostrarMenuCiudad(ref bool salir)
         {
             // Recuperación pasiva de energía antes de mostrar menú (solo al entrar al menú, no después de descansar)
-            if (juego.jugador != null)
-                juego.energiaService.RecuperacionPasiva(juego.jugador!);
+            if (juego.Jugador != null)
+                juego.EnergiaService.RecuperacionPasiva(juego.Jugador!);
 
             string opcion = "";
             while (!salir)
             {
                 UIStyle.Header(juego.Ui, "Menú de Ciudad");
-                UIStyle.SubHeader(juego.Ui, $"Ubicación: {juego.mapa.UbicacionActual.Nombre}");
+                UIStyle.SubHeader(juego.Ui, $"Ubicación: {juego.Mapa.UbicacionActual.Nombre}");
                 UIStyle.Hint(juego.Ui, juego.FormatoRelojMundo);
                 // Indicador compacto de supervivencia (hambre/sed/fatiga/temp)
                 UIStyle.SurvivalCompact(juego.Ui, juego);
@@ -36,30 +36,36 @@ namespace MiJuegoRPG.Motor.Menus
                 opcion = InputService.LeerOpcion();
                 switch (opcion)
                 {
-                    case "1": juego.MostrarTienda(); break;
-                    case "2": juego.motorEntrenamiento.Entrenar(); break;
-                    case "3": juego.menuPrincipal.MostrarMenuMisionesNPC(); break;
+                    case "1":
+                        juego.MostrarTienda();
+                        break;
+                    case "2":
+                        juego.MotorEntrenamiento.Entrenar();
+                        break;
+                    case "3":
+                        juego.MenuPrincipal.MostrarMenuMisionesNPC();
+                        break;
                     case "4":
-                        if (juego.jugador != null)
+                        if (juego.Jugador != null)
                         {
-                            if (juego.jugador.UltimoDiaDescanso != Juego.DiaActual)
+                            if (juego.Jugador.UltimoDiaDescanso != Juego.DiaActual)
                             {
-                                juego.jugador.DescansosHoy = 0;
-                                juego.jugador.UltimoDiaDescanso = Juego.DiaActual;
+                                juego.Jugador.DescansosHoy = 0;
+                                juego.Jugador.UltimoDiaDescanso = Juego.DiaActual;
                             }
-                            juego.jugador.DescansosHoy++;
+                            juego.Jugador.DescansosHoy++;
 
                             // Lógica de reducción: por ejemplo, cada descanso recupera menos energía
-                            int maxEnergia = juego.jugador.EnergiaMaxima;
-                            int reduccion = (juego.jugador.DescansosHoy - 1) * 10; // 10 menos por cada descanso extra
+                            int maxEnergia = juego.Jugador.EnergiaMaxima;
+                            int reduccion = (juego.Jugador.DescansosHoy - 1) * 10; // 10 menos por cada descanso extra
                             int energiaRecuperada = Math.Max(maxEnergia - reduccion, 0);
-                            juego.jugador.EnergiaActual = Math.Min(juego.jugador.EnergiaActual + energiaRecuperada, maxEnergia);
-                            juego.jugador.Vida = juego.jugador.VidaMaxima;
+                            juego.Jugador.EnergiaActual = Math.Min(juego.Jugador.EnergiaActual + energiaRecuperada, maxEnergia);
+                            juego.Jugador.Vida = juego.Jugador.VidaMaxima;
                             // Recuperación de maná fuera de combate (lenta, parametrizada)
                             var rules = new ActionRulesService();
-                            var manaRec = rules.RegenerarManaFueraCombate(juego.jugador);
+                            var manaRec = rules.RegenerarManaFueraCombate(juego.Jugador);
 
-                            juego.Ui.WriteLine($"DEBUG: Energía tras descansar: {juego.jugador.EnergiaActual}/{juego.jugador.EnergiaMaxima}");
+                            juego.Ui.WriteLine($"DEBUG: Energía tras descansar: {juego.Jugador.EnergiaActual}/{juego.Jugador.EnergiaMaxima}");
                             if (energiaRecuperada == 0)
                                 juego.Ui.WriteLine("Ya no puedes recuperar más energía descansando hoy.");
                             else
@@ -75,8 +81,11 @@ namespace MiJuegoRPG.Motor.Menus
                     case "5":
                         juego.MostrarMenuRutas();
                         return;
-                    case "9": juego.MostrarMenuFijo(ref salir); break;
-                    case "0": return;
+                    case "9":
+                        juego.MostrarMenuFijo(ref salir);
+                        break;
+                    case "0":
+                        return;
                     default:
                         juego.Ui.WriteLine("Opción no válida.");
                         InputService.Pausa();

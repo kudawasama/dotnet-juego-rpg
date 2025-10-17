@@ -14,7 +14,6 @@ namespace MiJuegoRPG.Objetos
     // Nivel máximo: 20
     // Rareza: Rota < Pobre < Normal < Superior < Rara < Legendaria < Ornamentada
     // Categoria: UnaMano, DosManos, Daga, Baston, Arco, Escudo, Otro
-
     public static class GestorArmas
     {
         public static string RutaArmasJson = MiJuegoRPG.Motor.Servicios.PathProvider.EquipoPath("armas.json");
@@ -100,13 +99,34 @@ namespace MiJuegoRPG.Objetos
 
     public class ArmaJson
     {
-        public required string Nombre { get; set; }
-        public int DañoFisico { get; set; }
-        public int DañoMagico { get; set; }
-        public int NivelRequerido { get; set; }
-        public Rareza Rareza { get; set; }
-        public required string Categoria { get; set; }
-        public int Perfeccion { get; set; }
-        public Dictionary<string, double>? BonificadorAtributos { get; set; }
+        public required string Nombre
+        {
+            get; set;
+        }
+        public int DañoFisico
+        {
+            get; set;
+        }
+        public int DañoMagico
+        {
+            get; set;
+        }
+        public int NivelRequerido
+        {
+            get; set;
+        }
+        public string Rareza { get; set; } = "Normal";
+        public required string Categoria
+        {
+            get; set;
+        }
+        public int Perfeccion
+        {
+            get; set;
+        }
+        public Dictionary<string, double>? BonificadorAtributos
+        {
+            get; set;
+        }
     }
 }

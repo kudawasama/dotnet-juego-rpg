@@ -1,0 +1,13 @@
+{
+  "Nombre": "Administrador",
+  "Categoria": "Profesión",
+  "Rareza": "Rara",
+  "Oculta": true,
+  "ClasesPrevias": ["Mercader"],
+  "NivelMinimo": 20,
+  "AtributosRequeridos": {"Carisma": 6, "Inteligencia": 6},
+  "EstadisticasRequeridas": {},
+  "MisionesRequeridas": ["Gestionar 5 comercios"],
+  "ReputacionMinima": 10,
+  "AtributosGanados": {"Carisma": 3, "Inteligencia": 2}
+}

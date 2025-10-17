@@ -9,11 +9,11 @@ namespace MiJuegoRPG.Motor.Acciones
         public string Nombre => "Usar Poción";
         public int CostoMana => 0;
 
-        private readonly int _indiceInventario; // índice de la poción en una lista prefiltrada (externa)
+        private readonly int indiceInventario; // índice de la poción en una lista prefiltrada (externa)
 
         public UsarPocionAccion(int indiceInventario)
         {
-            _indiceInventario = indiceInventario;
+            this.indiceInventario = indiceInventario;
         }
 
         public ResultadoAccion Ejecutar(ICombatiente ejecutor, ICombatiente objetivo)
@@ -41,12 +41,12 @@ namespace MiJuegoRPG.Motor.Acciones
             var pociones = pj.Inventario.NuevosObjetos
                 .Where(o => o.Objeto is MiJuegoRPG.Objetos.Pocion && o.Cantidad > 0)
                 .ToList();
-            if (pociones.Count == 0 || _indiceInventario < 0 || _indiceInventario >= pociones.Count)
+            if (pociones.Count == 0 || indiceInventario < 0 || indiceInventario >= pociones.Count)
             {
                 res.Mensajes.Add("No tienes pociones disponibles.");
                 return res;
             }
-            var entry = pociones[_indiceInventario];
+            var entry = pociones[indiceInventario];
             var pocion = (MiJuegoRPG.Objetos.Pocion)entry.Objeto;
             int vidaAntes = pj.Vida;
             int curacion = Math.Max(0, Math.Min(pocion.Curacion, pj.VidaMaxima - pj.Vida));

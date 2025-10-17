@@ -35,7 +35,7 @@ namespace MiJuegoRPG.Tests
 
             // Ejecutar el mismo tiempo en dos contextos distintos
             rt.ApplyTick(pj1, "Explorar", "bosque", 60);
-            rt.ApplyTick(pj2, "Descanso",  "bosque", 60);
+            rt.ApplyTick(pj2, "Descanso", "bosque", 60);
 
             // Suponiendo que Descanso tiene multiplicadores <= 1 en config, debería consumir menos
             Assert.True(pj1.Hambre >= pj2.Hambre);

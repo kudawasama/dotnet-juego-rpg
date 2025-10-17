@@ -1,0 +1,8 @@
+{
+  "id": "savia_magica",
+  "nombre": "Savia Mágica",
+  "descripcion": "Savia recolectada de árboles mágicos, base para pociones avanzadas.",
+  "rareza": "raro",
+  "categoria": "liquido",
+  "especialidad": "alquimista"
+}

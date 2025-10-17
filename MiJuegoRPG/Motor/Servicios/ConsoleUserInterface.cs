@@ -19,7 +19,8 @@ namespace MiJuegoRPG.Motor.Servicios
             {
                 Write(prompt);
                 var s = ReadLine();
-                if (int.TryParse(s, out int n)) return n;
+                if (int.TryParse(s, out int n))
+                    return n;
                 WriteLine("Por favor, ingresa un número válido.");
             }
         }
@@ -31,15 +32,18 @@ namespace MiJuegoRPG.Motor.Servicios
         }
         public void SetColor(ConsoleColor? foreground = null, ConsoleColor? background = null)
         {
-            if (foreground.HasValue) Console.ForegroundColor = foreground.Value;
-            if (background.HasValue) Console.BackgroundColor = background.Value;
+            if (foreground.HasValue)
+                Console.ForegroundColor = foreground.Value;
+            if (background.HasValue)
+                Console.BackgroundColor = background.Value;
         }
         public void ResetColor() => Console.ResetColor();
         public void Pause(string message = "Presiona cualquier tecla para continuar...")
         {
             WriteLine(message);
             Console.ReadKey(true);
-            while (Console.KeyAvailable) Console.ReadKey(true);
+            while (Console.KeyAvailable)
+                Console.ReadKey(true);
         }
     }
 }

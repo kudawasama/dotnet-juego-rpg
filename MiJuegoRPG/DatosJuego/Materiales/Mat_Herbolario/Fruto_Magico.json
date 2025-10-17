@@ -1,0 +1,8 @@
+{
+  "id": "fruto_magico",
+  "nombre": "Fruto Mágico",
+  "descripcion": "Fruto raro con propiedades mágicas, usado en pociones avanzadas.",
+  "rareza": "raro",
+  "categoria": "fruto",
+  "especialidad": "herbolario"
+}

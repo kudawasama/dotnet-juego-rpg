@@ -27,11 +27,17 @@ namespace MiJuegoRPG.Tests
         }
         public void RecibirDanioFisico(int d)
         {
-            int real = d - Defensa; if (real < 1) real = 1; Vida = System.Math.Max(0, Vida - real);
+            int real = d - Defensa;
+            if (real < 1)
+                real = 1;
+            Vida = System.Math.Max(0, Vida - real);
         }
         public void RecibirDanioMagico(int d)
         {
-            int real = d - DefensaMagica; if (real < 1) real = 1; Vida = System.Math.Max(0, Vida - real);
+            int real = d - DefensaMagica;
+            if (real < 1)
+                real = 1;
+            Vida = System.Math.Max(0, Vida - real);
         }
     }
 

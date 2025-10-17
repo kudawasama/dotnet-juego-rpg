@@ -13,23 +13,24 @@ namespace MiJuegoRPG.Motor
         private bool configCargada = false;
 
         private record EnergiaConfig(
-            Dictionary<string,int>? BasePorTipo,
-            Dictionary<string,double>? ModHerramienta,
-            Dictionary<string,double>? ModBioma,
-            Dictionary<string,string>? AtributoRelevantePorTipo,
+            Dictionary<string, int>? BasePorTipo,
+            Dictionary<string, double>? ModHerramienta,
+            Dictionary<string, double>? ModBioma,
+            Dictionary<string, string>? AtributoRelevantePorTipo,
             int UmbralAtributo,
             double FactorReduccionAtributo,
             int CostoMinimo,
             int CostoMaximo,
-            Dictionary<string,double>? ModClase // Nuevo: modificadores específicos por nombre de clase/profesión
-            )
+            Dictionary<string, double>? ModClase) // Nuevo: modificadores específicos por nombre de clase/profesión
         {
-            public EnergiaConfig(): this(new(), new(), new(), new(), 25, 0.4, 3, 25, new()) {}
+            public EnergiaConfig()
+                : this(new(), new(), new(), new(), 25, 0.4, 3, 25, new()) { }
         }
 
         public void CargarConfig()
         {
-            if (configCargada) return;
+            if (configCargada)
+                return;
             try
             {
                 var ruta = MiJuegoRPG.Motor.Servicios.PathProvider.CombineData("energia.json");
@@ -37,7 +38,8 @@ namespace MiJuegoRPG.Motor
                 {
                     var json = System.IO.File.ReadAllText(ruta);
                     var cfg = System.Text.Json.JsonSerializer.Deserialize<EnergiaConfig>(json);
-                    if (cfg != null) config = cfg;
+                    if (cfg != null)
+                        config = cfg;
                 }
                 configCargada = true;
             }
@@ -46,7 +48,8 @@ namespace MiJuegoRPG.Motor
 
         public void InicializarEnergia(Personaje.Personaje pj)
         {
-            if (pj == null) return;
+            if (pj == null)
+                return;
 
             pj.EnergiaMaxima = EnergiaMaximaDefault;
             pj.EnergiaActual = EnergiaMaximaDefault;
@@ -56,13 +59,13 @@ namespace MiJuegoRPG.Motor
         }
 
         public void MostrarEnergia(Personaje.Personaje jugador)
-            {
-                var ui = Juego.ObtenerInstanciaActual()?.Ui;
-                if (ui != null)
-                    ui.WriteLine($"Energía actual: {jugador.EnergiaActual}/{jugador.EnergiaMaxima}");
-                else
-                    Console.WriteLine($"Energía actual: {jugador.EnergiaActual}/{jugador.EnergiaMaxima}");
-            }
+        {
+            var ui = Juego.ObtenerInstanciaActual()?.Ui;
+            if (ui != null)
+                ui.WriteLine($"Energía actual: {jugador.EnergiaActual}/{jugador.EnergiaMaxima}");
+            else
+                Console.WriteLine($"Energía actual: {jugador.EnergiaActual}/{jugador.EnergiaMaxima}");
+        }
 
 
         public int CalcularCostoAccion(Personaje.Personaje pj, string tipoAccion, string? bioma, string? herramientaInferida, MiJuegoRPG.Dominio.Atributo? atrRelevante = null, double? valorAtributo = null)
@@ -71,12 +74,15 @@ namespace MiJuegoRPG.Motor
             // Base
             int baseTipo = config.BasePorTipo != null && config.BasePorTipo.TryGetValue(tipoAccion, out var b) ? b : costoFijoLegacy;
             double modHerr = 0.0;
-            if (!string.IsNullOrWhiteSpace(herramientaInferida) && config.ModHerramienta != null && config.ModHerramienta.TryGetValue(herramientaInferida, out var mh)) modHerr = mh;
+            if (!string.IsNullOrWhiteSpace(herramientaInferida) && config.ModHerramienta != null && config.ModHerramienta.TryGetValue(herramientaInferida, out var mh))
+                modHerr = mh;
             double modBioma = 0.0;
-            if (!string.IsNullOrWhiteSpace(bioma) && config.ModBioma != null && config.ModBioma.TryGetValue(bioma, out var mb)) modBioma = mb;
+            if (!string.IsNullOrWhiteSpace(bioma) && config.ModBioma != null && config.ModBioma.TryGetValue(bioma, out var mb))
+                modBioma = mb;
             // Atributo relevante
             string? atrStr = null;
-            if (config.AtributoRelevantePorTipo != null && config.AtributoRelevantePorTipo.TryGetValue(tipoAccion, out var a)) atrStr = a;
+            if (config.AtributoRelevantePorTipo != null && config.AtributoRelevantePorTipo.TryGetValue(tipoAccion, out var a))
+                atrStr = a;
             double modAtr = 0.0;
             if (atrStr != null)
             {
@@ -103,24 +109,30 @@ namespace MiJuegoRPG.Motor
             try
             {
                 var juegoRef = Juego.Instancia ?? Juego.ObtenerInstanciaActual();
-                if (pj != null && juegoRef?.claseService != null)
+                if (pj != null && juegoRef?.ClaseService != null)
                 {
-                    foreach (var bono in juegoRef.claseService.Bonificadores(pj))
+                    foreach (var bono in juegoRef.ClaseService.Bonificadores(pj))
                     {
-                        if (bono.Key.Equals("Energia.ModClase", StringComparison.OrdinalIgnoreCase)) modClase += bono.Value;
-                        else if (bono.Key.Equals($"Energia.ModAccion.{tipoAccion}", StringComparison.OrdinalIgnoreCase)) modClase += bono.Value;
+                        if (bono.Key.Equals("Energia.ModClase", StringComparison.OrdinalIgnoreCase))
+                            modClase += bono.Value;
+                        else if (bono.Key.Equals($"Energia.ModAccion.{tipoAccion}", StringComparison.OrdinalIgnoreCase))
+                            modClase += bono.Value;
                     }
                 }
-            } catch { }
+            }
+            catch { }
             double costo = baseTipo * (1 + modHerr + modBioma + modAtr + modClase);
-            if (costo < config.CostoMinimo) costo = config.CostoMinimo;
-            if (costo > config.CostoMaximo) costo = config.CostoMaximo;
+            if (costo < config.CostoMinimo)
+                costo = config.CostoMinimo;
+            if (costo > config.CostoMaximo)
+                costo = config.CostoMaximo;
             return (int)Math.Round(costo);
         }
 
         private static double ObtenerValorAtributo(Personaje.Personaje pj, MiJuegoRPG.Dominio.Atributo atr)
         {
-            if (pj == null) return 0;
+            if (pj == null)
+                return 0;
             var a = pj.AtributosBase;
             return atr switch
             {
@@ -139,27 +151,33 @@ namespace MiJuegoRPG.Motor
 
         public bool GastarEnergiaRecoleccion(Personaje.Personaje pj, string tipoAccion, string? bioma, string? herramientaInferida)
         {
-            if (pj == null) return false;
+            if (pj == null)
+                return false;
             int costo = CalcularCostoAccion(pj, tipoAccion, bioma, herramientaInferida);
             if (pj.EnergiaActual < costo)
             {
                 var ui = Juego.ObtenerInstanciaActual()?.Ui;
-                if (ui != null) ui.WriteLine($"No tienes suficiente energía. Requiere {costo} y tienes {pj.EnergiaActual}.");
-                else Console.WriteLine($"No tienes suficiente energía. Requiere {costo} y tienes {pj.EnergiaActual}.");
+                if (ui != null)
+                    ui.WriteLine($"No tienes suficiente energía. Requiere {costo} y tienes {pj.EnergiaActual}.");
+                else
+                    Console.WriteLine($"No tienes suficiente energía. Requiere {costo} y tienes {pj.EnergiaActual}.");
                 return false;
             }
             pj.EnergiaActual -= costo;
             {
                 var ui = Juego.ObtenerInstanciaActual()?.Ui;
-                if (ui != null) ui.WriteLine($"Energía gastada: {costo}. Queda {pj.EnergiaActual}/{pj.EnergiaMaxima}.");
-                else Console.WriteLine($"Energía gastada: {costo}. Queda {pj.EnergiaActual}/{pj.EnergiaMaxima}.");
+                if (ui != null)
+                    ui.WriteLine($"Energía gastada: {costo}. Queda {pj.EnergiaActual}/{pj.EnergiaMaxima}.");
+                else
+                    Console.WriteLine($"Energía gastada: {costo}. Queda {pj.EnergiaActual}/{pj.EnergiaMaxima}.");
             }
             return true;
         }
 
         public void RecuperarEnergiaDescanso(Personaje.Personaje pj)
         {
-            if (pj == null) return;
+            if (pj == null)
+                return;
 
             // Reiniciar contador si ha cambiado el día
             if (pj.UltimaFechaDescanso.Date < DateTime.Now.Date)
@@ -170,7 +188,8 @@ namespace MiJuegoRPG.Motor
 
             // Cálculo de porcentaje según número de descansos
             int porcentaje = 100 - (pj.DescansosHoy * 10);
-            if (porcentaje < MinRecuperacion) porcentaje = MinRecuperacion;
+            if (porcentaje < MinRecuperacion)
+                porcentaje = MinRecuperacion;
 
             int energiaARecuperar = (pj.EnergiaMaxima * porcentaje) / 100;
 
@@ -179,7 +198,6 @@ namespace MiJuegoRPG.Motor
                 pj.EnergiaActual = pj.EnergiaMaxima;
 
             pj.DescansosHoy++;
-
             {
                 var ui = Juego.ObtenerInstanciaActual()?.Ui;
                 if (ui != null)
@@ -197,7 +215,8 @@ namespace MiJuegoRPG.Motor
 
         public void RecuperacionPasiva(Personaje.Personaje pj)
         {
-            if (pj == null) return;
+            if (pj == null)
+                return;
 
             TimeSpan tiempoTranscurrido = DateTime.Now - pj.UltimaRecuperacionPasiva;
             int minutos = (int)tiempoTranscurrido.TotalMinutes;
@@ -211,11 +230,12 @@ namespace MiJuegoRPG.Motor
                     pj.EnergiaActual = pj.EnergiaMaxima;
 
                 pj.UltimaRecuperacionPasiva = DateTime.Now;
-
                 {
                     var ui = Juego.ObtenerInstanciaActual()?.Ui;
-                    if (ui != null) ui.WriteLine($"Recuperaste {puntosARecuperar} puntos de energía de manera pasiva.");
-                    else Console.WriteLine($"Recuperaste {puntosARecuperar} puntos de energía de manera pasiva.");
+                    if (ui != null)
+                        ui.WriteLine($"Recuperaste {puntosARecuperar} puntos de energía de manera pasiva.");
+                    else
+                        Console.WriteLine($"Recuperaste {puntosARecuperar} puntos de energía de manera pasiva.");
                 }
             }
         }

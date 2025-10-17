@@ -1,0 +1,33 @@
+﻿{
+  "Nombre": "Daga de la Suerte",
+  "Da\u00F1o": 3,
+  "Da\u00F1oMin": 2,
+  "Da\u00F1oMax": 4,
+  "NivelRequerido": 1,
+  "NivelMin": 1,
+  "NivelMax": 2,
+  "Valor": 0,
+  "ValorVenta": 2,
+  "Tipo": "Daga",
+  "Rareza": "Normal",
+  "RarezasPermitidasCsv": "Rota, Pobre, Normal",
+  "Perfeccion": 50,
+  "PerfeccionMin": 20,
+  "PerfeccionMax": 60,
+  "CriticoProbabilidad": 0.12,
+  "CriticoMultiplicador": 1.4,
+  "Penetracion": 0.02,
+  "Precision": 0.02,
+  "VelocidadAtaque": 1.2,
+  "BonificadoresAtributos": { "Destreza": 1 },
+  "BonificadoresEstadisticas": { },
+  "Efectos": [
+    { "Tipo": "Aura", "Nombre": "Suerte", "Probabilidad": 1.0, "Potencia": 1, "DuracionTurnos": 0 }
+  ],
+  "HabilidadesOtorgadas": [],
+  "Requisitos": { "Nivel": 1 },
+  "Peso": 0.7,
+  "Durabilidad": 35,
+  "Descripcion": "Una daga con extraña fortuna para golpes críticos.",
+  "Tags": ["daga", "suerte"]
+}

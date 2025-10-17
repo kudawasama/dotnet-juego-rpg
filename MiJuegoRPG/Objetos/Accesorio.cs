@@ -5,12 +5,24 @@ namespace MiJuegoRPG.Objetos
     public class Accesorio : Objeto
     {
         public string TipoObjeto { get; set; } = "Accesorio";
-        public int BonificacionAtaque { get; set; }
-        public int BonificacionDefensa { get; set; }
-        public int Nivel { get; set; }
-        public int Perfeccion { get; set; }
+        public int BonificacionAtaque
+        {
+            get; set;
+        }
+        public int BonificacionDefensa
+        {
+            get; set;
+        }
+        public int Nivel
+        {
+            get; set;
+        }
+        public int Perfeccion
+        {
+            get; set;
+        }
 
-        public Accesorio(string nombre, int bonifAtaque, int bonifDefensa, int nivel = 1, Rareza rareza = Rareza.Normal, string categoria = "Accesorio", int perfeccion = 50)
+        public Accesorio(string nombre, int bonifAtaque, int bonifDefensa, int nivel = 1, string rareza = "Normal", string categoria = "Accesorio", int perfeccion = 50)
             : base(nombre, rareza, categoria)
         {
             Nivel = nivel;
@@ -19,7 +31,8 @@ namespace MiJuegoRPG.Objetos
             Perfeccion = perfeccion;
         }
 
-        public Accesorio() : base("", Rareza.Normal, "Accesorio") { }
+        public Accesorio()
+            : base("", "Normal", "Accesorio") { }
 
         private int CalcularBonificacion(int baseValor, int perfeccion)
         {

@@ -8,13 +8,13 @@ namespace MiJuegoRPG.Motor.Acciones
         public int CostoMana => 3;
         public int CooldownTurnos => 3;
 
-        private readonly int _danioPorTurno;
-        private readonly int _duracion;
+        private readonly int danioPorTurno;
+        private readonly int duracion;
 
         public AplicarVenenoAccion(int danioPorTurno = 4, int duracion = 3)
         {
-            _danioPorTurno = danioPorTurno;
-            _duracion = duracion;
+            this.danioPorTurno = danioPorTurno;
+            this.duracion = duracion;
         }
 
         public ResultadoAccion Ejecutar(ICombatiente ejecutor, ICombatiente objetivo)
@@ -50,9 +50,9 @@ namespace MiJuegoRPG.Motor.Acciones
                 return res;
             }
 
-            var efecto = new EfectoVeneno(_danioPorTurno, _duracion, magico: true);
+            var efecto = new EfectoVeneno(danioPorTurno, duracion, magico: true);
             res.EfectosAplicados.Add(efecto);
-            res.Mensajes.Add($"{ejecutor.Nombre} aplica Veneno a {objetivo.Nombre} por {_duracion} turnos.");
+            res.Mensajes.Add($"{ejecutor.Nombre} aplica Veneno a {objetivo.Nombre} por {duracion} turnos.");
             return res;
         }
     }

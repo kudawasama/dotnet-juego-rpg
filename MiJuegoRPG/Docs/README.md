@@ -5,8 +5,11 @@ Este índice centraliza la documentación del proyecto y sirve como punto de ent
 - [Roadmap (plan y estado)](./Roadmap.md)
 - [Bitácora (historial por sesión)](./Bitacora.md)
 - [Arquitectura y funcionamiento](./Arquitectura_y_Funcionamiento.md)
+- [Visión de juego (North Star)](./Vision_de_Juego.md)
+- [Timeline de combate determinista](./Combate_Timeline.md)
 - [Configuración de progresión](./progression_config.md)
 - [Guía de ejemplos (para principiantes)](./Guia_Ejemplos.md)
+- [Acciones de Mundo (visión/arquitectura)](./Arquitectura_y_Funcionamiento.md#acciones-de-mundo-energía--tiempo--mvp-y-contratos)
 
 ## Guía rápida
 
@@ -33,6 +36,7 @@ También puedes usar las tareas de VS Code del workspace:
 - Build: "Build .NET project" → `dotnet build`
 - Tests: "Compilar y ejecutar pruebas" → `dotnet test --nologo`
 - Ejecutar juego: "Compilar y ejecutar juego para probar nombres de sectores"
+- Ejecutar TestGeneradorObjetos: "Ejecutar TestGeneradorObjetos" → `dotnet run --project MiJuegoRPG.csproj --no-build`
 
 ## Referencia de CLI y herramientas
 
@@ -117,6 +121,12 @@ dotnet run --project MiJuegoRPG/MiJuegoRPG.csproj -- --log-off
 dotnet run --project MiJuegoRPG/MiJuegoRPG.csproj -- --log-level=info
 ```
 
+Acciones de Mundo (feature flag)
+
+- El motor de Acciones de Mundo se introducirá detrás de un flag y permanecerá OFF por defecto durante el MVP.
+- Documentación de diseño/contratos: ver sección “Acciones de Mundo (Energía + Tiempo) — MVP” en Arquitectura.
+- Datos propuestos (catálogos/políticas): ver `Docs/Resumen_Datos.md` secciones 28–30.
+
 Notas:
 
 - Los reportes se guardan por defecto bajo `PjDatos/validacion/` si no se especifica ruta.
@@ -129,20 +139,30 @@ Este índice es la fuente única de verdad (SSOT) para estudiar el proyecto. Los
 
 - Flujo del juego y navegación: ver [Flujo.txt](../../Flujo.txt)
 
-	- Menú Principal → [link directo](../../Flujo.txt#menu-principal-del-juego-juegoiniciar)
-	- Menú de Rutas → [link directo](../../Flujo.txt#menu-de-rutas-juegomostrarmenurutas)
-	- Menú de Ciudad → [link directo](../../Flujo.txt#menu-de-ciudad-menuciudad)
-	- Menú Fuera de Ciudad → [link directo](../../Flujo.txt#menu-fuera-de-ciudad-menufueraciudad)
-	- Menú de Combate → [link directo](../../Flujo.txt#menu-de-combate-base-actual)
+- Menú Principal → [link directo](../../Flujo.txt#menu-principal-del-juego-juegoiniciar)
+- Menú de Rutas → [link directo](../../Flujo.txt#menu-de-rutas-juegomostrarmenurutas)
+- Menú de Ciudad → [link directo](../../Flujo.txt#menu-de-ciudad-menuciudad)
+- Menú Fuera de Ciudad → [link directo](../../Flujo.txt#menu-fuera-de-ciudad-menufueraciudad)
+- Menú de Combate → [link directo](../../Flujo.txt#menu-de-combate-base-actual)
 - Arquitectura (contratos, servicios, pipelines): [Arquitectura_y_Funcionamiento.md](./Arquitectura_y_Funcionamiento.md)
 
-	- Pipeline de combate → [orden de etapas](./Arquitectura_y_Funcionamiento.md#4-combate-pipeline-y-estados)
-	- Servicios base → [Random/Progression/Energía/Supervivencia](./Arquitectura_y_Funcionamiento.md#1-visión-general-del-sistema)
-	- Contratos de combate → [Interfaces y DTOs](./Arquitectura_y_Funcionamiento.md#15-apéndice-de-contratos-interfaces-y-dtos)
+- Pipeline de combate → [orden de etapas](./Arquitectura_y_Funcionamiento.md#4-combate-pipeline-y-estados)
+- Servicios base → [Random/Progression/Energía/Supervivencia](./Arquitectura_y_Funcionamiento.md#1-visión-general-del-sistema)
+- Contratos de combate → [Interfaces y DTOs](./Arquitectura_y_Funcionamiento.md#15-apéndice-de-contratos-interfaces-y-dtos)
 - Progresión (parámetros y fórmulas): [progression_config.md](./progression_config.md)
 - Roadmap (plan/estado): [Roadmap.md](./Roadmap.md)
 - Bitácora (historial cronológico): [Bitacora.md](./Bitacora.md)
 - Ejemplos prácticos (principiantes): [Guia_Ejemplos.md](./Guia_Ejemplos.md)
+
+### Organización de datos de habilidades
+
+- Carpeta: `MiJuegoRPG/DatosJuego/habilidades/**`
+- Formatos soportados por el loader:
+- Lista agregada (array) con múltiples habilidades.
+- Un archivo por habilidad (objeto) en subcarpetas temáticas (p. ej., `Hab_Fisicas/GolpeFuerte.json`).
+- Recomendado: per-file para facilitar edición y revisión.
+
+Última actualización: 2025-09-22
 
 Política de no duplicación:
 

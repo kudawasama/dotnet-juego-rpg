@@ -1,0 +1,14 @@
+{
+  "Nombre": "Mercader",
+  "Categoria": "Profesión",
+  "Rareza": "Comun",
+  "Oculta": false,
+  "ClasesPrevias": [],
+  "NivelMinimo": 15,
+  "AtributosRequeridos": { "Carisma": 5, "Suerte": 3 },
+  "MisionesRequeridas": ["Vender tu primer objeto"],
+  "AtributosGanados": { "Carisma": 3, "Suerte": 2 },
+  "ActividadRequerida": { "Comercio.Ventas": 10 },
+  "Tier": 1,
+  "Rama": "Oficio"
+}

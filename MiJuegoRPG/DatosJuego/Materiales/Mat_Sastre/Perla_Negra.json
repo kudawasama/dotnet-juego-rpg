@@ -1,0 +1,8 @@
+{
+  "id": "perla_negra",
+  "nombre": "Perla Negra",
+  "descripcion": "Perla negra de gran valor, muy apreciada en joyería.",
+  "rareza": "raro",
+  "categoria": "perla",
+  "especialidad": "joyero"
+}

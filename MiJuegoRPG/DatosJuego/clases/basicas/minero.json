@@ -1,0 +1,13 @@
+{
+  "Nombre": "Minero",
+  "Categoria": "Profesión",
+  "Rareza": "Comun",
+  "Oculta": false,
+  "ClasesPrevias": [],
+  "NivelMinimo": 3,
+  "AtributosRequeridos": {"Fuerza": 4, "Vitalidad": 3},
+  "EstadisticasRequeridas": {},
+  "MisionesRequeridas": ["Extraer 10 minerales"],
+  "ReputacionMinima": 0,
+  "AtributosGanados": {"Fuerza": 2, "Vitalidad": 1}
+}

@@ -1,0 +1,33 @@
+﻿{
+  "Nombre": "Daga Envenenada",
+  "Da\u00F1o": 9,
+  "Da\u00F1oMin": 8,
+  "Da\u00F1oMax": 11,
+  "NivelRequerido": 2,
+  "NivelMin": 2,
+  "NivelMax": 4,
+  "Valor": 0,
+  "ValorVenta": 5,
+  "Tipo": "Daga",
+  "Rareza": "Normal",
+  "RarezasPermitidasCsv": "Normal, Superior, Rara",
+  "Perfeccion": 50,
+  "PerfeccionMin": 45,
+  "PerfeccionMax": 75,
+  "CriticoProbabilidad": 0.08,
+  "CriticoMultiplicador": 1.5,
+  "Penetracion": 0.03,
+  "Precision": 0.03,
+  "VelocidadAtaque": 1.1,
+  "BonificadoresAtributos": { "Destreza": 1 },
+  "BonificadoresEstadisticas": { },
+  "Efectos": [
+    { "Tipo": "OnHit", "Nombre": "Veneno", "Probabilidad": 0.25, "Potencia": 2, "DuracionTurnos": 2 }
+  ],
+  "HabilidadesOtorgadas": [],
+  "Requisitos": { "Destreza": 4, "Nivel": 2 },
+  "Peso": 0.9,
+  "Durabilidad": 50,
+  "Descripcion": "Empapada en toxinas; castiga con daño en el tiempo.",
+  "Tags": ["daga", "veneno"]
+}

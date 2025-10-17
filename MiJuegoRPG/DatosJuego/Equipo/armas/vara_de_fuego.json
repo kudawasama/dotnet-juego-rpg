@@ -1,0 +1,33 @@
+﻿{
+  "Nombre": "Vara de Fuego",
+  "Da\u00F1o": 15,
+  "Da\u00F1oMin": 13,
+  "Da\u00F1oMax": 17,
+  "NivelRequerido": 3,
+  "NivelMin": 3,
+  "NivelMax": 5,
+  "Valor": 0,
+  "ValorVenta": 9,
+  "Tipo": "Baston",
+  "Rareza": "Normal",
+  "RarezasPermitidasCsv": "Superior, Rara, Legendaria",
+  "Perfeccion": 50,
+  "PerfeccionMin": 55,
+  "PerfeccionMax": 90,
+  "CriticoProbabilidad": 0.06,
+  "CriticoMultiplicador": 1.6,
+  "Penetracion": 0.04,
+  "Precision": 0.02,
+  "VelocidadAtaque": 1.0,
+  "BonificadoresAtributos": { "Inteligencia": 2 },
+  "BonificadoresEstadisticas": { },
+  "Efectos": [
+    { "Tipo": "OnHit", "Nombre": "Quemadura", "Probabilidad": 0.25, "Potencia": 2, "DuracionTurnos": 2 }
+  ],
+  "HabilidadesOtorgadas": [],
+  "Requisitos": { "Inteligencia": 5, "Nivel": 3 },
+  "Peso": 1.2,
+  "Durabilidad": 65,
+  "Descripcion": "Arde con un calor constante que chamusca al contacto.",
+  "Tags": ["baston", "fuego"]
+}

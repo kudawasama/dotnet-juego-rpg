@@ -55,11 +55,14 @@ namespace MiJuegoRPG.Herramientas
 
             Func<int, int, string?> idEn = (r, c) =>
             {
-                if (r < 0 || c < 0 || r >= filas || c >= cols) return null;
+                if (r < 0 || c < 0 || r >= filas || c >= cols)
+                    return null;
                 var val = grid[r][c];
-                if (string.IsNullOrWhiteSpace(val)) return null;
+                if (string.IsNullOrWhiteSpace(val))
+                    return null;
                 // Admite guiones o marcadores no válidos; solo aceptar \d_\d
-                if (!IdRegex.IsMatch(val)) return null;
+                if (!IdRegex.IsMatch(val))
+                    return null;
                 return val;
             };
 
@@ -69,21 +72,25 @@ namespace MiJuegoRPG.Herramientas
                 for (int c = 0; c < cols; c++)
                 {
                     var id = idEn(r, c);
-                    if (id == null) continue;
-                    if (!adyacencias.ContainsKey(id)) adyacencias[id] = new HashSet<string>();
+                    if (id == null)
+                        continue;
+                    if (!adyacencias.ContainsKey(id))
+                        adyacencias[id] = new HashSet<string>();
 
                     var vecinos = new List<string?>
                     {
                         idEn(r - 1, c), // Norte
                         idEn(r + 1, c), // Sur
                         idEn(r, c - 1), // Oeste
-                        idEn(r, c + 1)  // Este
+                        idEn(r, c + 1) // Este
                     };
                     foreach (var v in vecinos)
                     {
-                        if (v == null || v == id) continue;
+                        if (v == null || v == id)
+                            continue;
                         adyacencias[id].Add(v);
-                        if (!adyacencias.ContainsKey(v)) adyacencias[v] = new HashSet<string>();
+                        if (!adyacencias.ContainsKey(v))
+                            adyacencias[v] = new HashSet<string>();
                         adyacencias[v].Add(id);
                     }
                 }
@@ -102,13 +109,15 @@ namespace MiJuegoRPG.Herramientas
                     {
                         // Intentar inferir por nombre de archivo
                         var nombre = Path.GetFileNameWithoutExtension(file);
-                        if (!IdRegex.IsMatch(nombre)) continue;
+                        if (!IdRegex.IsMatch(nombre))
+                            continue;
                         ActualizarConexionesArchivo(file, nombre, adyacencias, json);
                         modificados++;
                         continue;
                     }
                     var id = idProp.GetString() ?? string.Empty;
-                    if (string.IsNullOrWhiteSpace(id) || !IdRegex.IsMatch(id)) continue;
+                    if (string.IsNullOrWhiteSpace(id) || !IdRegex.IsMatch(id))
+                        continue;
                     ActualizarConexionesArchivo(file, id, adyacencias, json);
                     modificados++;
                 }
@@ -142,7 +151,8 @@ namespace MiJuegoRPG.Herramientas
                     if (raw.TryGetValue("Id", out var idVal) && idVal is JsonElement idEl && idEl.ValueKind == JsonValueKind.String)
                     {
                         var idStr = idEl.GetString();
-                        if (!string.IsNullOrWhiteSpace(idStr)) id = idStr!;
+                        if (!string.IsNullOrWhiteSpace(idStr))
+                            id = idStr!;
                     }
                     var hs = new HashSet<string>();
                     if (raw.TryGetValue("Conexiones", out var connVal) && connVal is JsonElement el && el.ValueKind == JsonValueKind.Array)
@@ -152,7 +162,8 @@ namespace MiJuegoRPG.Herramientas
                             if (item.ValueKind == JsonValueKind.String)
                             {
                                 var s = item.GetString();
-                                if (!string.IsNullOrWhiteSpace(s)) hs.Add(s!);
+                                if (!string.IsNullOrWhiteSpace(s))
+                                    hs.Add(s!);
                             }
                         }
                     }
@@ -212,7 +223,8 @@ namespace MiJuegoRPG.Herramientas
                     if (item.ValueKind == JsonValueKind.String)
                     {
                         var s = item.GetString();
-                        if (!string.IsNullOrWhiteSpace(s)) existentes.Add(s!);
+                        if (!string.IsNullOrWhiteSpace(s))
+                            existentes.Add(s!);
                     }
                 }
             }
@@ -220,7 +232,8 @@ namespace MiJuegoRPG.Herramientas
             // Unir con adyacencias
             if (adyacencias.TryGetValue(id, out var adys))
             {
-                foreach (var a in adys) existentes.Add(a);
+                foreach (var a in adys)
+                    existentes.Add(a);
             }
 
             data["Conexiones"] = existentes.OrderBy(x => x).ToArray();

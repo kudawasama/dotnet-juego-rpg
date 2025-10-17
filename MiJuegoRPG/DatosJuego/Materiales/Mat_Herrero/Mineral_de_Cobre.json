@@ -1,0 +1,8 @@
+{
+  "id": "mineral_de_cobre",
+  "nombre": "Mineral de Cobre",
+  "descripcion": "Mineral común, base para aleaciones y objetos simples.",
+  "rareza": "comun",
+  "categoria": "mineral",
+  "especialidad": "herrero"
+}

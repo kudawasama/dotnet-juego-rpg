@@ -1,0 +1,10 @@
+{
+  "id": "GM",
+  "nombre": "Conjunto Game Master",
+  "match": { "setId": "GM" },
+  "thresholds": [
+    { "piezas": 2, "bonos": [ { "estadistica": "Defensa", "valor": 5000 } ] },
+    { "piezas": 4, "bonos": [ { "estadistica": "Ataque", "valor": 5000 } ], "habilidades": [ { "id": "descarga_arcana", "nivelMinimo": 1 } ] },
+    { "piezas": 6, "bonos": [ { "estadistica": "Mana", "valor": 20000 }, { "estadistica": "Energia", "valor": 20000 } ] }
+  ]
+}

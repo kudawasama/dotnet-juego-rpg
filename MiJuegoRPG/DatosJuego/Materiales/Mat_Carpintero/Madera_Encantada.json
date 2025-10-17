@@ -1,0 +1,8 @@
+{
+  "id": "madera_encantada",
+  "nombre": "Madera Encantada",
+  "descripcion": "Madera obtenida de árboles mágicos, ideal para objetos especiales.",
+  "rareza": "raro",
+  "categoria": "madera",
+  "especialidad": "carpintero"
+}

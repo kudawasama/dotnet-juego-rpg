@@ -1,0 +1,10 @@
+{
+  "Rota": [10, 20],
+  "Pobre": [20, 49],
+  "Normal": [50, 55],
+  "Superior": [56, 60],
+  "Rara": [61, 70],
+  "Epica": [71, 79],
+  "Legendaria": [80, 90],
+  "Ornamentada": [91, 100]
+}

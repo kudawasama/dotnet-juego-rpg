@@ -1,0 +1,33 @@
+﻿{
+  "Nombre": "Arco Simple",
+  "Da\u00F1o": 7,
+  "Da\u00F1oMin": 5,
+  "Da\u00F1oMax": 9,
+  "NivelRequerido": 1,
+  "NivelMin": 1,
+  "NivelMax": 2,
+  "Valor": 0,
+  "ValorVenta": 3,
+  "Tipo": "Arco",
+  "Rareza": "Normal",
+  "RarezasPermitidasCsv": "Pobre, Normal, Superior",
+  "Perfeccion": 50,
+  "PerfeccionMin": 10,
+  "PerfeccionMax": 100,
+  "CriticoProbabilidad": 0.06,
+  "CriticoMultiplicador": 1.5,
+  "Penetracion": 0.02,
+  "Precision": 0.01,
+  "VelocidadAtaque": 1.0,
+  "BonificadoresAtributos": { "Destreza": 1 },
+  "BonificadoresEstadisticas": { "Defensa": 0 },
+  "Efectos": [
+    { "Tipo": "OnHit", "Nombre": "Sangrado", "Probabilidad": 0.03, "Potencia": 1, "DuracionTurnos": 2 }
+  ],
+  "HabilidadesOtorgadas": [],
+  "Requisitos": { "Destreza": 2, "Nivel": 1 },
+  "Peso": 1.2,
+  "Durabilidad": 55,
+  "Descripcion": "Arco básico, fácil de usar.",
+  "Tags": ["arco", "simple"]
+}

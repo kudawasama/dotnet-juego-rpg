@@ -4,12 +4,21 @@ namespace MiJuegoRPG.Objetos
 {
     public class Casco : Objeto, MiJuegoRPG.Interfaces.IBonificadorEstadistica
     {
-        public int Perfeccion { get; set; }
+        public int Perfeccion
+        {
+            get; set;
+        }
         public string TipoObjeto { get; set; } = "Casco";
-        public int Defensa { get; set; }
-        public int Nivel { get; set; }
+        public int Defensa
+        {
+            get; set;
+        }
+        public int Nivel
+        {
+            get; set;
+        }
 
-        public Casco(string nombre, int defensaBase, int nivel = 1, Rareza rareza = Rareza.Normal, string categoria = "Cabeza", int perfeccion = 50)
+        public Casco(string nombre, int defensaBase, int nivel = 1, string rareza = "Normal", string categoria = "Cabeza", int perfeccion = 50)
             : base(nombre, rareza, categoria)
         {
             Nivel = nivel;
@@ -17,14 +26,24 @@ namespace MiJuegoRPG.Objetos
             Perfeccion = perfeccion;
         }
 
-        public Casco() : base("", Rareza.Normal, "Cabeza") { }
+        public Casco()
+            : base("", "Normal", "Cabeza") { }
 
-        private int CalcularDefensa(int defensaBase, int nivel, Rareza rareza)
+        /// <summary>
+        /// Calcula la defensa del casco escalando por nivel y rareza dinámica.
+        /// Usa el multiplicador de rareza desde RarezaConfig (JSON), no hardcode.
+        /// </summary>
+        /// <param name="defensaBase">Defensa base del casco.</param>
+        /// <param name="nivel">Nivel del objeto.</param>
+        /// <param name="rareza">Rareza (string, dinámica).</param>
+        /// <returns>Defensa final escalada y ajustada por rareza.</returns>
+        private int CalcularDefensa(int defensaBase, int nivel, string rareza)
         {
             var random = MiJuegoRPG.Motor.Servicios.RandomService.Instancia;
             int defensaEscalada = defensaBase + (int)(defensaBase * (nivel - 1) * 0.5);
             double mult = 1.0;
-            // Puedes agregar lógica de multiplicadores por rareza si lo deseas
+            // Obtener multiplicador de rareza desde RarezaConfig
+            mult = MiJuegoRPG.Objetos.RarezaHelper.MultiplicadorBase(rareza);
             int defensaAleatoria = random.Next((int)(defensaEscalada * 0.9), (int)(defensaEscalada * 1.1) + 1);
             return (int)(defensaAleatoria * mult);
         }
@@ -36,8 +55,14 @@ namespace MiJuegoRPG.Objetos
         // Implementación de bonificador de estadística
         public double ObtenerBonificador(string estadistica)
         {
-            if (estadistica == "DefensaFisica" || estadistica == "Defensa")
+            if (string.IsNullOrWhiteSpace(estadistica))
+                return 0;
+            if (estadistica.Equals("Defensa", StringComparison.OrdinalIgnoreCase) ||
+                estadistica.Equals("DefensaFisica", StringComparison.OrdinalIgnoreCase) ||
+                estadistica.Equals("Defensa Física", StringComparison.OrdinalIgnoreCase))
+            {
                 return Defensa;
+            }
             return 0;
         }
     }

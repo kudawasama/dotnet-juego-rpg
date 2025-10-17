@@ -1,0 +1,12 @@
+{
+  "Nombre": "Aprendiz de Mago",
+  "Categoria": "Magica",
+  "Rareza": "Comun",
+  "Oculta": true,
+  "ClasesPrevias": [],
+  "NivelMinimo": 5,
+  "AtributosGanados": { "Inteligencia": 1, "Sabiduria": 1 },
+  "ActividadRequerida": { "Combate.HechizosLanzados": 15 },
+  "Tier": 1,
+  "Rama": "Magia"
+}

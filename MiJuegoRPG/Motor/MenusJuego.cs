@@ -25,22 +25,22 @@ namespace MiJuegoRPG.Motor
         public void MostrarMenuViajar()
         {
             // Recuperación pasiva de energía antes de mostrar menú
-            if (juego.jugador != null)
+            if (juego.Jugador != null)
             {
-                juego.energiaService.RecuperacionPasiva(juego.jugador);
+                juego.EnergiaService.RecuperacionPasiva(juego.Jugador);
             }
 
             //Console.Clear();
             juego.Ui.WriteLine(juego.FormatoRelojMundo);
             juego.Ui.WriteLine("--- Menú de Viaje ---");
-            if (juego.estadoMundo?.Ubicaciones == null || juego.estadoMundo.Ubicaciones.Count == 0)
+            if (juego.EstadoMundo?.Ubicaciones == null || juego.EstadoMundo.Ubicaciones.Count == 0)
             {
                 juego.Ui.WriteLine("No hay ubicaciones disponibles.");
                 InputService.Pausa("Presiona cualquier tecla para volver...");
                 return;
             }
             int i = 1;
-            foreach (var ubicacion in juego.estadoMundo.Ubicaciones)
+            foreach (var ubicacion in juego.EstadoMundo.Ubicaciones)
             {
                 if (ubicacion.Desbloqueada)
                     juego.Ui.WriteLine($"{i}. {ubicacion.Nombre} - {ubicacion.Descripcion}");
@@ -48,16 +48,16 @@ namespace MiJuegoRPG.Motor
             }
             juego.Ui.WriteLine("0. Volver");
             var opcion = InputService.LeerOpcion("Elige tu destino: ");
-            if (int.TryParse(opcion, out int seleccion) && seleccion > 0 && seleccion <= juego.estadoMundo.Ubicaciones.Count)
+            if (int.TryParse(opcion, out int seleccion) && seleccion > 0 && seleccion <= juego.EstadoMundo.Ubicaciones.Count)
             {
-                var destinoUbic = juego.estadoMundo.Ubicaciones[seleccion - 1];
+                var destinoUbic = juego.EstadoMundo.Ubicaciones[seleccion - 1];
                 if (destinoUbic.Desbloqueada)
                 {
                     // Buscar el SectorData correspondiente al destino
-                    var destinoSector = juego.mapa.ObtenerSectores().Find(s => s.Id == destinoUbic.Id);
+                    var destinoSector = juego.Mapa.ObtenerSectores().Find(s => s.Id == destinoUbic.Id);
                     if (destinoSector != null)
                     {
-                        juego.mapa.UbicacionActual = destinoSector;
+                        juego.Mapa.UbicacionActual = destinoSector;
                         juego.Ui.WriteLine($"Viajaste a {destinoSector.Nombre}.");
                         juego.Ui.WriteLine(destinoSector.Descripcion);
                     }
@@ -145,12 +145,12 @@ namespace MiJuegoRPG.Motor
         private void MostrarMisionesActivas()
         {
             juego.Ui.WriteLine("--- Misiones Activas ---");
-            if (juego.jugador == null || juego.jugador.MisionesActivas == null || juego.jugador.MisionesActivas.Count == 0)
+            if (juego.Jugador == null || juego.Jugador.MisionesActivas == null || juego.Jugador.MisionesActivas.Count == 0)
             {
                 juego.Ui.WriteLine("No tienes misiones activas.");
                 return;
             }
-            foreach (var m in juego.jugador.MisionesActivas)
+            foreach (var m in juego.Jugador.MisionesActivas)
             {
                 juego.Ui.WriteLine($"- {m.Nombre}: {m.Descripcion}");
                 var ubiId = CanonicalIdUbicacion(m.UbicacionNPC ?? string.Empty);
@@ -174,7 +174,7 @@ namespace MiJuegoRPG.Motor
         private void MostrarNPCsCiudadActual()
         {
             juego.Ui.WriteLine("--- NPCs de la ciudad actual ---");
-            var ciudadActual = juego.mapa.UbicacionActual?.Id ?? juego.mapa.UbicacionActual?.Nombre;
+            var ciudadActual = juego.Mapa.UbicacionActual?.Id ?? juego.Mapa.UbicacionActual?.Nombre;
             var ciudadActualId = CanonicalIdUbicacion(ciudadActual ?? string.Empty);
             // Intentar primera ruta dentro de MiJuegoRPG/DatosJuego y luego fallback a raíz/DatosJuego
             string rutaNPCs = MiJuegoRPG.Motor.Servicios.PathProvider.NpcsPath("NPC.json");
@@ -191,21 +191,21 @@ namespace MiJuegoRPG.Motor
             {
                 var json = File.ReadAllText(rutaNPCs);
                 var npcs = JsonSerializer.Deserialize<List<NPC>>(json);
-        var npcsCiudad = npcs?.FindAll(n => CanonicalIdUbicacion(n.Ubicacion) == ciudadActualId);
+                var npcsCiudad = npcs?.FindAll(n => CanonicalIdUbicacion(n.Ubicacion) == ciudadActualId);
                 if (npcsCiudad != null && npcsCiudad.Count > 0)
                 {
                     for (int i = 0; i < npcsCiudad.Count; i++)
                     {
                         var npc = npcsCiudad[i];
                         juego.Ui.Write($"{i + 1}. {npc.Nombre} ");
-            EscribirEtiquetaRepCortaColor(ciudadActualId);
+                        EscribirEtiquetaRepCortaColor(ciudadActualId);
                         juego.Ui.WriteLine();
                     }
                     if (int.TryParse(InputService.LeerOpcion("Selecciona un NPC para ver sus misiones: "), out int seleccion) && seleccion > 0 && seleccion <= npcsCiudad.Count)
                     {
                         var npcSeleccionado = npcsCiudad[seleccion - 1];
                         // Gating reputación negativa para interacción con NPC
-                        if (juego.jugador != null && !PuedeInteractuarConNPC(ciudadActualId, out var motivoNPC))
+                        if (juego.Jugador != null && !PuedeInteractuarConNPC(ciudadActualId, out var motivoNPC))
                         {
                             juego.Ui.WriteLine(motivoNPC);
                             return;
@@ -216,17 +216,17 @@ namespace MiJuegoRPG.Motor
                         // Mostrar solo misiones accesibles y permitir aceptar una
                         var misionesAccesibles = npcSeleccionado.Misiones
                             .Select(id => misiones.Find(m => m.Id == id))
-                            .Where(m => m != null && juego.jugador != null && juego.jugador.PuedeAccederMision(m))
+                            .Where(m => m != null && juego.Jugador != null && juego.Jugador.PuedeAccederMision(m))
                             .ToList();
                         // Buscar si el jugador tiene una misión activa asociada a este NPC para entregar
-                        var misionActivaEntregable = juego.jugador?.MisionesActivas.FirstOrDefault(ma => npcSeleccionado.Misiones.Contains(ma.Id));
+                        var misionActivaEntregable = juego.Jugador?.MisionesActivas.FirstOrDefault(ma => npcSeleccionado.Misiones.Contains(ma.Id));
                         if (misionActivaEntregable != null)
                         {
                             juego.Ui.WriteLine($"\nTienes una misión activa para entregar: {misionActivaEntregable.Nombre}");
                             var entregar = InputService.LeerOpcion("¿Deseas entregar la misión? (s/n): ");
                             if (entregar != null && entregar.Trim().ToLower() == "s")
                             {
-                                if (juego.jugador != null)
+                                if (juego.Jugador != null)
                                 {
                                     // Gating también al entregar
                                     if (!PuedeInteractuarConNPC(ciudadActualId, out var motivoEnt))
@@ -235,7 +235,7 @@ namespace MiJuegoRPG.Motor
                                     }
                                     else
                                     {
-                                        juego.jugador.CompletarMision(misionActivaEntregable.Id);
+                                        juego.Jugador.CompletarMision(misionActivaEntregable.Id);
                                     }
                                 }
                                 else
@@ -274,7 +274,7 @@ namespace MiJuegoRPG.Motor
                             {
                                 var misionSeleccionada = misionesAccesibles[idx - 1]!;
                                 // Agregar la misión a las activas del jugador
-                                if (juego.jugador != null)
+                                if (juego.Jugador != null)
                                 {
                                     // Gating también al aceptar misión
                                     if (!PuedeInteractuarConNPC(ciudadActualId, out var motivoAcep))
@@ -282,7 +282,7 @@ namespace MiJuegoRPG.Motor
                                         juego.Ui.WriteLine(motivoAcep);
                                         return;
                                     }
-                                    juego.jugador.MisionesActivas.Add(new MiJuegoRPG.Personaje.Personaje.MisionConId
+                                    juego.Jugador.MisionesActivas.Add(new MiJuegoRPG.Personaje.MisionConId
                                     {
                                         Id = misionSeleccionada.Id,
                                         Nombre = misionSeleccionada.Nombre,
@@ -345,12 +345,12 @@ namespace MiJuegoRPG.Motor
 
         public void MostrarInventario()
         {
-            if (juego.jugador == null)
+            if (juego.Jugador == null)
             {
                 juego.Ui.WriteLine("No hay personaje cargado.");
                 return;
             }
-            var inventario = juego.jugador.Inventario;
+            var inventario = juego.Jugador.Inventario;
             UIStyle.Header(juego.Ui, "Inventario");
             inventario.MostrarInventario();
             while (true)
@@ -370,7 +370,7 @@ namespace MiJuegoRPG.Motor
                         {
                             var objCant = inventario.NuevosObjetos[seleccion - 1];
                             // Usar según tipo
-                            objCant.Objeto.Usar(juego.jugador);
+                            objCant.Objeto.Usar(juego.Jugador);
                             // Consumir si corresponde (p. ej. pociones)
                             if (objCant.Objeto is MiJuegoRPG.Objetos.Pocion)
                             {
@@ -390,7 +390,7 @@ namespace MiJuegoRPG.Motor
                         if (int.TryParse(inputEq, out int selEq) && selEq > 0 && selEq <= inventario.NuevosObjetos.Count)
                         {
                             var objCant = inventario.NuevosObjetos[selEq - 1];
-                            inventario.EquiparObjeto(objCant.Objeto, juego.jugador);
+                            inventario.EquiparObjeto(objCant.Objeto, juego.Jugador);
                         }
                         else
                         {
@@ -404,17 +404,38 @@ namespace MiJuegoRPG.Motor
                         var eq = inventario.Equipo;
                         switch (deq)
                         {
-                            case "1": eq.Arma = null; break;
-                            case "2": eq.Casco = null; break;
-                            case "3": eq.Armadura = null; break;
-                            case "4": eq.Pantalon = null; break;
-                            case "5": eq.Zapatos = null; break;
-                            case "6": eq.Collar = null; break;
-                            case "7": eq.Cinturon = null; break;
-                            case "8": eq.Accesorio1 = null; break;
-                            case "9": eq.Accesorio2 = null; break;
-                            case "0": break;
-                            default: juego.Ui.WriteLine("Opción no válida."); break;
+                            case "1":
+                                eq.Arma = null;
+                                break;
+                            case "2":
+                                eq.Casco = null;
+                                break;
+                            case "3":
+                                eq.Armadura = null;
+                                break;
+                            case "4":
+                                eq.Pantalon = null;
+                                break;
+                            case "5":
+                                eq.Zapatos = null;
+                                break;
+                            case "6":
+                                eq.Collar = null;
+                                break;
+                            case "7":
+                                eq.Cinturon = null;
+                                break;
+                            case "8":
+                                eq.Accesorio1 = null;
+                                break;
+                            case "9":
+                                eq.Accesorio2 = null;
+                                break;
+                            case "0":
+                                break;
+                            default:
+                                juego.Ui.WriteLine("Opción no válida.");
+                                break;
                         }
                         break;
                     case "4":
@@ -449,18 +470,25 @@ namespace MiJuegoRPG.Motor
         private class BandaRepConfig
         {
             public string Nombre { get; set; } = string.Empty;
-            public int Min { get; set; }
-            public int Max { get; set; }
+            public int Min
+            {
+                get; set;
+            }
+            public int Max
+            {
+                get; set;
+            }
             public string Color { get; set; } = "Gray";
         }
 
-        private static List<BandaRepConfig>? _bandasConfig;
-        private static bool _bandasIntentadoCargar = false;
+        private static List<BandaRepConfig>? bandasConfig;
+        private static bool bandasIntentadoCargar = false;
 
         private static void CargarBandasConfig()
         {
-            if (_bandasIntentadoCargar) return;
-            _bandasIntentadoCargar = true;
+            if (bandasIntentadoCargar)
+                return;
+            bandasIntentadoCargar = true;
             try
             {
                 // Intentar cargar desde MiJuegoRPG/DatosJuego/config, luego fallback a DatosJuego/config
@@ -471,7 +499,7 @@ namespace MiJuegoRPG.Motor
                     var bandas = JsonSerializer.Deserialize<List<BandaRepConfig>>(json);
                     if (bandas != null && bandas.Count > 0)
                     {
-                        _bandasConfig = bandas;
+                        bandasConfig = bandas;
                     }
                 }
             }
@@ -483,24 +511,28 @@ namespace MiJuegoRPG.Motor
 
         private static ConsoleColor ParseColor(string? color)
         {
-            if (string.IsNullOrWhiteSpace(color)) return ConsoleColor.Gray;
+            if (string.IsNullOrWhiteSpace(color))
+                return ConsoleColor.Gray;
             return Enum.TryParse<ConsoleColor>(color, true, out var c) ? c : ConsoleColor.Gray;
         }
 
         private (string nombre, int valor, ConsoleColor color) BandaInfo(string ubicacion)
         {
-            if (juego.jugador == null) return (string.Empty, 0, ConsoleColor.Gray);
-            var pj = juego.jugador;
+            if (juego.Jugador == null)
+                return (string.Empty, 0, ConsoleColor.Gray);
+            var pj = juego.Jugador;
             string fac = MiJuegoRPG.Comercio.ShopService.FaccionPorUbicacion(ubicacion ?? string.Empty);
-            int repFac = 0; if (!string.IsNullOrWhiteSpace(fac)) pj.ReputacionesFaccion.TryGetValue(fac, out repFac);
+            int repFac = 0;
+            if (!string.IsNullOrWhiteSpace(fac))
+                pj.ReputacionesFaccion.TryGetValue(fac, out repFac);
             int repG = pj.Reputacion;
             int refRep = string.IsNullOrWhiteSpace(fac) ? repG : repFac;
 
             // Intentar con configuración
             CargarBandasConfig();
-            if (_bandasConfig != null && _bandasConfig.Count > 0)
+            if (bandasConfig != null && bandasConfig.Count > 0)
             {
-                foreach (var b in _bandasConfig)
+                foreach (var b in bandasConfig)
                 {
                     if (refRep >= b.Min && refRep <= b.Max)
                     {
@@ -511,10 +543,10 @@ namespace MiJuegoRPG.Motor
 
             // Fallback por defecto
             string nombre = refRep <= -150 ? "Perseguido"
-                           : refRep <= -50  ? "Hostil"
-                           : refRep < 0     ? "Tenso"
-                           : refRep < 50    ? "Neutral"
-                           : refRep < 100   ? "Amistoso"
+                           : refRep <= -50 ? "Hostil"
+                           : refRep < 0 ? "Tenso"
+                           : refRep < 50 ? "Neutral"
+                           : refRep < 100 ? "Amistoso"
                            : "Aliado";
             ConsoleColor col = nombre switch
             {
@@ -539,10 +571,16 @@ namespace MiJuegoRPG.Motor
         private bool PuedeInteractuarConNPC(string ubicacion, out string motivo)
         {
             motivo = string.Empty;
-            if (juego.jugador == null) { motivo = "No hay personaje."; return false; }
-            var pj = juego.jugador;
+            if (juego.Jugador == null)
+            {
+                motivo = "No hay personaje.";
+                return false;
+            }
+            var pj = juego.Jugador;
             string fac = MiJuegoRPG.Comercio.ShopService.FaccionPorUbicacion(ubicacion ?? string.Empty);
-            int repFac = 0; if (!string.IsNullOrWhiteSpace(fac)) pj.ReputacionesFaccion.TryGetValue(fac, out repFac);
+            int repFac = 0;
+            if (!string.IsNullOrWhiteSpace(fac))
+                pj.ReputacionesFaccion.TryGetValue(fac, out repFac);
             int repGlobal = pj.Reputacion;
             if (MiJuegoRPG.Motor.Servicios.ReputacionPoliticas.DebeBloquearNPC(repFac, repGlobal))
             {
@@ -564,15 +602,15 @@ namespace MiJuegoRPG.Motor
             juego.Ui.WriteLine("[Stub] CargarPartida: Implementar lógica de carga aquí.");
         }
 
-        private void MostrarEquipo()   // Método para mostrar el equipo del jugador
+        private void MostrarEquipo() // Método para mostrar el equipo del jugador
         {
-            if (juego.jugador == null)
+            if (juego.Jugador == null)
             {
                 juego.Ui.WriteLine("No hay personaje cargado.");
                 return;
             }
             juego.Ui.WriteLine("--- Equipo Equipado ---");
-            var eq = juego.jugador.Inventario.Equipo;
+            var eq = juego.Jugador.Inventario.Equipo;
             if (eq.Arma != null)
             {
                 juego.Ui.WriteLine($"Arma: {eq.Arma.Nombre}");
@@ -598,7 +636,10 @@ namespace MiJuegoRPG.Motor
                     juego.Ui.WriteLine($"  Perfección: {casco.Perfeccion}");
                 }
             }
-            else juego.Ui.WriteLine("Casco: Sin equipar");
+            else
+            {
+                juego.Ui.WriteLine("Casco: Sin equipar");
+            }
 
             // Armadura
             if (eq.Armadura != null)
@@ -610,7 +651,10 @@ namespace MiJuegoRPG.Motor
                     juego.Ui.WriteLine($"  Perfección: {armadura.Perfeccion}");
                 }
             }
-            else juego.Ui.WriteLine("Armadura: Sin equipar");
+            else
+            {
+                juego.Ui.WriteLine("Armadura: Sin equipar");
+            }
 
             // Pantalón
             if (eq.Pantalon != null)
@@ -622,7 +666,10 @@ namespace MiJuegoRPG.Motor
                     juego.Ui.WriteLine($"  Perfección: {pantalon.Perfeccion}");
                 }
             }
-            else juego.Ui.WriteLine("Pantalón: Sin equipar");
+            else
+            {
+                juego.Ui.WriteLine("Pantalón: Sin equipar");
+            }
 
             // Zapatos
             if (eq.Zapatos != null)
@@ -634,7 +681,10 @@ namespace MiJuegoRPG.Motor
                     juego.Ui.WriteLine($"  Perfección: {botas.Perfeccion}");
                 }
             }
-            else juego.Ui.WriteLine("Zapatos: Sin equipar");
+            else
+            {
+                juego.Ui.WriteLine("Zapatos: Sin equipar");
+            }
 
             // Collar
             if (eq.Collar != null)
@@ -646,7 +696,10 @@ namespace MiJuegoRPG.Motor
                     juego.Ui.WriteLine($"  Perfección: {collar.Perfeccion}");
                 }
             }
-            else juego.Ui.WriteLine("Collar: Sin equipar");
+            else
+            {
+                juego.Ui.WriteLine("Collar: Sin equipar");
+            }
 
             // Cinturón
             if (eq.Cinturon != null)
@@ -658,7 +711,10 @@ namespace MiJuegoRPG.Motor
                     juego.Ui.WriteLine($"  Perfección: {cinturon.Perfeccion}");
                 }
             }
-            else juego.Ui.WriteLine("Cinturón: Sin equipar");
+            else
+            {
+                juego.Ui.WriteLine("Cinturón: Sin equipar");
+            }
 
             // Accesorio 1
             if (eq.Accesorio1 != null)
@@ -670,7 +726,10 @@ namespace MiJuegoRPG.Motor
                     juego.Ui.WriteLine($"  Perfección: {acc1.Perfeccion}");
                 }
             }
-            else juego.Ui.WriteLine("Accesorio 1: Sin equipar");
+            else
+            {
+                juego.Ui.WriteLine("Accesorio 1: Sin equipar");
+            }
 
             // Accesorio 2
             if (eq.Accesorio2 != null)
@@ -682,17 +741,20 @@ namespace MiJuegoRPG.Motor
                     juego.Ui.WriteLine($"  Perfección: {acc2.Perfeccion}");
                 }
             }
-            else juego.Ui.WriteLine("Accesorio 2: Sin equipar");
+            else
+            {
+                juego.Ui.WriteLine("Accesorio 2: Sin equipar");
+            }
         }
 
         private void MostrarInformacionPersonaje()
         {
-            if (juego.jugador == null)
+            if (juego.Jugador == null)
             {
                 juego.Ui.WriteLine("No hay personaje cargado.");
                 return;
             }
-            var pj = juego.jugador;
+            var pj = juego.Jugador;
             juego.Ui.WriteLine($"--- Información de {pj.Nombre} ---");
             juego.Ui.WriteLine($"Nivel: {pj.Nivel}  Exp: {pj.Experiencia}/{pj.ExperienciaSiguienteNivel}");
             juego.Ui.WriteLine($"Vida: {pj.Vida}/{pj.VidaMaxima}  Oro: {pj.Oro}");
@@ -776,9 +838,9 @@ namespace MiJuegoRPG.Motor
         {
             while (true)
             {
-        var ciudadId = CanonicalIdUbicacion(ciudad);
-        juego.Ui.Write($"\n=== Menú de Ciudad: {ciudad} ");
-        EscribirEtiquetaRepCortaColor(ciudadId);
+                var ciudadId = CanonicalIdUbicacion(ciudad);
+                juego.Ui.Write($"\n=== Menú de Ciudad: {ciudad} ");
+                EscribirEtiquetaRepCortaColor(ciudadId);
                 juego.Ui.WriteLine(" ===");
                 juego.Ui.WriteLine("1. Explorar sector (NPC y misiones)");
                 juego.Ui.WriteLine("2. Ver misiones activas");
@@ -795,7 +857,7 @@ namespace MiJuegoRPG.Motor
                         MostrarMisionesActivas();
                         break;
                     case "3":
-            MostrarMenuTienda(ciudadId);
+                        MostrarMenuTienda(ciudadId);
                         break;
                     case "4":
                         MostrarMenuPrincipalFijo();
@@ -809,35 +871,43 @@ namespace MiJuegoRPG.Motor
             }
         }
 
-        private void MostrarMenuCombate()
+        /// <summary>
+        /// Muestra el menú de combate principal, recibiendo el enemigo actual como parámetro.
+        /// </summary>
+        /// <param name="enemigoActual">Instancia del enemigo actual en combate.</param>
+        public void MostrarMenuCombate(Enemigo enemigoActual)
         {
             while (true)
             {
-                juego.Ui.WriteLine("\n=== Combate ===");
+                juego.Ui.WriteLine("\n=== MENÚ DE COMBATE ===");
                 juego.Ui.WriteLine("1. Atacar");
-                juego.Ui.WriteLine("2. Usar habilidad");
-                juego.Ui.WriteLine("3. Usar objeto");
-                juego.Ui.WriteLine("4. Huir");
-                juego.Ui.WriteLine("5. Menú principal (fijo)");
-                var opcion = InputService.LeerOpcion("Seleccione una opción: ");
+                juego.Ui.WriteLine("2. Hechizo/Habilidades");
+                juego.Ui.WriteLine("3. Defenderse");
+                juego.Ui.WriteLine("4. Observar");
+                juego.Ui.WriteLine("5. Usar objeto especial");
+                juego.Ui.WriteLine("6. Cambiar de posición");
+                juego.Ui.WriteLine("7. Huir");
+                juego.Ui.WriteLine("8. Acciones");
+                juego.Ui.WriteLine("9. Menú principal (fijo)");
+                var opcion = InputService.LeerOpcion("Elige una acción: ");
                 switch (opcion)
                 {
                     case "1":
                         // Lógica de ataque
                         break;
                     case "2":
-                        // Usar habilidad
-                        if (juego.jugador == null || juego.jugador.Habilidades == null || juego.jugador.Habilidades.Count == 0)
+                        // Hechizo/Habilidades
+                        if (juego.Jugador == null || juego.Jugador.Habilidades == null || juego.Jugador.Habilidades.Count == 0)
                         {
                             juego.Ui.WriteLine("No tienes habilidades disponibles.");
                             break;
                         }
                         juego.Ui.WriteLine("Elige una habilidad:");
                         int idx = 1;
-                        var listaHab = new List<string>(juego.jugador.Habilidades.Keys);
+                        var listaHab = new List<string>(juego.Jugador.Habilidades.Keys);
                         foreach (var habId in listaHab)
                         {
-                            var hab = juego.jugador.Habilidades[habId];
+                            var hab = juego.Jugador.Habilidades[habId];
                             juego.Ui.WriteLine($"{idx}. {hab.Nombre} (Nv {hab.Nivel}, Exp {hab.Exp})");
                             idx++;
                         }
@@ -845,7 +915,7 @@ namespace MiJuegoRPG.Motor
                         if (int.TryParse(input, out int seleccion) && seleccion > 0 && seleccion <= listaHab.Count)
                         {
                             var habId = listaHab[seleccion - 1];
-                            juego.jugador.UsarHabilidad(habId);
+                            juego.Jugador.UsarHabilidad(habId);
                         }
                         else
                         {
@@ -853,12 +923,32 @@ namespace MiJuegoRPG.Motor
                         }
                         break;
                     case "3":
-                        // Lógica de objeto
+                        juego.Ui.WriteLine("Te pones en guardia y aumentas tu defensa temporalmente.");
+                        // Aquí se integrará la lógica real de defenderse
                         break;
                     case "4":
-                        // Lógica de huida
-                        return;
+                        juego.Ui.WriteLine("Observas cuidadosamente al enemigo...");
+                        // Aquí se integrará la lógica real de observar
+                        break;
                     case "5":
+                        juego.Ui.WriteLine("Usas un objeto especial...");
+                        // Aquí se integrará la lógica real de usar objeto especial
+                        break;
+                    case "6":
+                        juego.Ui.WriteLine("Cambias de posición en el campo de batalla.");
+                        // Aquí se integrará la lógica real de cambiar de posición
+                        break;
+                    case "7":
+                        juego.Ui.WriteLine("Intentas huir del combate...");
+                        // Aquí se integrará la lógica real de huida
+                        return;
+                    case "8":
+                        if (juego.Jugador is MiJuegoRPG.Personaje.Personaje pjConcreto)
+                            MiJuegoRPG.Motor.Menus.MenuCombateAvanzado.Mostrar(pjConcreto, enemigoActual, string.Empty);
+                        else
+                            juego.Ui.WriteLine("Error: El jugador no es del tipo esperado para el menú avanzado.");
+                        break;
+                    case "9":
                         MostrarMenuPrincipalFijo();
                         break;
                     default:
@@ -869,14 +959,18 @@ namespace MiJuegoRPG.Motor
         }
 
         // Servicio de tienda integrado
-        private readonly MiJuegoRPG.Comercio.ShopService _shop = new(new MiJuegoRPG.Comercio.PriceService());
+        private readonly MiJuegoRPG.Comercio.ShopService shop = new(new MiJuegoRPG.Comercio.PriceService());
 
         public void MostrarMenuTienda(string ubicacionClave)
         {
             // Ahora se pasa el ID del sector; ShopService es tolerante a ID/Nombre
-            var vendor = _shop.GetVendorPorUbicacion(CanonicalIdUbicacion(ubicacionClave));
-            if (vendor == null) { juego.Ui.WriteLine("No hay mercader en esta zona."); return; }
-            if (juego.jugador != null && !_shop.PuedeAtender(juego.jugador, vendor, out var motivo))
+            var vendor = shop.GetVendorPorUbicacion(CanonicalIdUbicacion(ubicacionClave));
+            if (vendor == null)
+            {
+                juego.Ui.WriteLine("No hay mercader en esta zona.");
+                return;
+            }
+            if (juego.Jugador != null && !shop.PuedeAtender(juego.Jugador, vendor, out var motivo))
             {
                 juego.Ui.WriteLine(motivo);
                 return;
@@ -886,45 +980,54 @@ namespace MiJuegoRPG.Motor
             {
                 juego.Ui.Write($"\n=== Tienda: {vendor.Nombre} ({vendor.Ubicacion}) ");
                 EscribirEtiquetaRepCortaColor(vendor.Ubicacion ?? CanonicalIdUbicacion(ubicacionClave));
-                juego.Ui.WriteLine($" === Oro: {juego.jugador?.Oro}");
+                juego.Ui.WriteLine($" === Oro: {juego.Jugador?.Oro}");
                 for (int i = 0; i < vendor.Stock.Count; i++)
                 {
                     var si = vendor.Stock[i];
                     var pBase = new MiJuegoRPG.Comercio.PriceService().PrecioDe(si.Item);
-                    var p = _shop.GetPrecioCompra(juego.jugador!, vendor, si.Item);
+                    var p = shop.GetPrecioCompra(juego.Jugador!, vendor, si.Item);
                     juego.Ui.WriteLine($"{i + 1}. {si.Item.Nombre} x{si.Cantidad}  [{p} oro] (base {pBase})");
                 }
                 juego.Ui.WriteLine("C. Comprar | V. Vender | S. Salir");
                 var op = InputService.LeerOpcion("> ")?.Trim().ToUpperInvariant();
-                if (op == "S") break;
-                if (juego.jugador == null) { juego.Ui.WriteLine("No hay personaje."); continue; }
+                if (op == "S")
+                    break;
+                if (juego.Jugador == null)
+                {
+                    juego.Ui.WriteLine("No hay personaje.");
+                    continue;
+                }
 
                 if (op == "C")
                 {
                     int.TryParse(InputService.LeerOpcion("Índice a comprar: "), out var idx);
                     int.TryParse(InputService.LeerOpcion("Cantidad: "), out var cant);
-                    if (_shop.Comprar(juego.jugador, vendor, idx - 1, cant, out var msg)) juego.Ui.WriteLine(msg);
-                    else juego.Ui.WriteLine($"No se pudo comprar: {msg}");
+                    if (shop.Comprar(juego.Jugador, vendor, idx - 1, cant, out var msg))
+                        juego.Ui.WriteLine(msg);
+                    else
+                        juego.Ui.WriteLine($"No se pudo comprar: {msg}");
                 }
                 else if (op == "V")
                 {
-                    var inv = juego.jugador.Inventario.NuevosObjetos;
+                    var inv = juego.Jugador.Inventario.NuevosObjetos;
                     for (int i = 0; i < inv.Count; i++)
                     {
                         var si = inv[i];
                         var prBase = new MiJuegoRPG.Comercio.PriceService().PrecioReventa(si.Objeto);
-                        var pr = _shop.GetPrecioVenta(juego.jugador!, vendor, si.Objeto);
+                        var pr = shop.GetPrecioVenta(juego.Jugador!, vendor, si.Objeto);
                         juego.Ui.WriteLine($"{i + 1}. {si.Objeto.Nombre} x{si.Cantidad}  [vende: {pr}] (base {prBase})");
                     }
                     int.TryParse(InputService.LeerOpcion("Índice a vender: "), out var idx);
                     int.TryParse(InputService.LeerOpcion("Cantidad: "), out var cant);
-                    if (_shop.Vender(juego.jugador, vendor, idx - 1, cant, out var msg)) juego.Ui.WriteLine(msg);
-                    else juego.Ui.WriteLine($"No se pudo vender: {msg}");
+                    if (shop.Vender(juego.Jugador, vendor, idx - 1, cant, out var msg))
+                        juego.Ui.WriteLine(msg);
+                    else
+                        juego.Ui.WriteLine($"No se pudo vender: {msg}");
                 }
             }
         }
 
-    // Descuento movido a ShopService para unificar la lógica de precios
+        // Descuento movido a ShopService para unificar la lógica de precios
         private void MostrarMenuMisiones()
         {
             while (true)
@@ -960,8 +1063,8 @@ namespace MiJuegoRPG.Motor
             while (true)
             {
                 // Gating por reputación para diálogos generales del NPC (ubicación actual)
-                var ubic = CanonicalIdUbicacion(juego.mapa.UbicacionActual?.Id ?? juego.mapa.UbicacionActual?.Nombre ?? string.Empty);
-                if (juego.jugador != null && !PuedeInteractuarConNPC(ubic, out var motivo))
+                var ubic = CanonicalIdUbicacion(juego.Mapa.UbicacionActual?.Id ?? juego.Mapa.UbicacionActual?.Nombre ?? string.Empty);
+                if (juego.Jugador != null && !PuedeInteractuarConNPC(ubic, out var motivo))
                 {
                     juego.Ui.WriteLine(motivo);
                     return;
@@ -995,7 +1098,7 @@ namespace MiJuegoRPG.Motor
         }
         public void MostrarMenuRecoleccion()
         {
-            juego.recoleccionService.MostrarMenu();
+            juego.RecoleccionService.MostrarMenu();
         }
 
         // Normaliza una ubicación (Id o Nombre) al Id de sector si existe
@@ -1003,15 +1106,17 @@ namespace MiJuegoRPG.Motor
         {
             try
             {
-                var sectores = juego?.mapa?.ObtenerSectores();
+                var sectores = juego?.Mapa?.ObtenerSectores();
                 if (sectores != null)
                 {
                     // Buscar por Id exacto primero
                     var s = sectores.FirstOrDefault(s => string.Equals(s.Id, ubicacion, StringComparison.OrdinalIgnoreCase));
-                    if (s != null) return s.Id;
+                    if (s != null)
+                        return s.Id;
                     // Luego por Nombre
                     s = sectores.FirstOrDefault(s => string.Equals(s.Nombre, ubicacion, StringComparison.OrdinalIgnoreCase));
-                    if (s != null) return s.Id;
+                    if (s != null)
+                        return s.Id;
                 }
             }
             catch { }

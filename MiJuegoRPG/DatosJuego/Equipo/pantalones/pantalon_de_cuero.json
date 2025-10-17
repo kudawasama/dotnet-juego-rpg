@@ -1,0 +1,21 @@
+﻿{
+  "Nombre": "Pantalon de Cuero",
+  "Defensa": 3,
+  "DefensaMin": 2,
+  "DefensaMax": 4,
+  "Nivel": 2,
+  "NivelMin": 2,
+  "NivelMax": 3,
+  "TipoObjeto": "Pantalon",
+  "Rareza": "Normal",
+  "RarezasPermitidasCsv": "Normal, Superior, Rara",
+  "Perfeccion": 60,
+  "PerfeccionMin": 50,
+  "PerfeccionMax": 70,
+  "Valor": 10,
+  "ValorVenta": 3,
+  "Peso": 1.0,
+  "Durabilidad": 35,
+  "Descripcion": "Pantalón resistente de cuero flexible.",
+  "Tags": ["pantalon", "cuero"]
+}

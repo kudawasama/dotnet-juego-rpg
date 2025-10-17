@@ -2,14 +2,23 @@ using System;
 
 namespace MiJuegoRPG.Objetos
 {
-    public class Cinturon : Objeto
+    public class Cinturon : Objeto, MiJuegoRPG.Interfaces.IBonificadorEstadistica
     {
         public string TipoObjeto { get; set; } = "Cinturon";
-        public int BonificacionCarga { get; set; }
-        public int Nivel { get; set; }
-        public int Perfeccion { get; set; }
+        public int BonificacionCarga
+        {
+            get; set;
+        }
+        public int Nivel
+        {
+            get; set;
+        }
+        public int Perfeccion
+        {
+            get; set;
+        }
 
-        public Cinturon(string nombre, int bonifCarga, int nivel = 1, Rareza rareza = Rareza.Normal, string categoria = "Cinturon", int perfeccion = 50)
+        public Cinturon(string nombre, int bonifCarga, int nivel = 1, string rareza = "Normal", string categoria = "Cinturon", int perfeccion = 50)
             : base(nombre, rareza, categoria)
         {
             Nivel = nivel;
@@ -17,7 +26,8 @@ namespace MiJuegoRPG.Objetos
             Perfeccion = perfeccion;
         }
 
-        public Cinturon() : base("", Rareza.Normal, "Cinturon") { }
+        public Cinturon()
+            : base("", "Normal", "Cinturon") { }
 
         private int CalcularBonificacion(int baseValor, int perfeccion)
         {
@@ -27,6 +37,22 @@ namespace MiJuegoRPG.Objetos
         public override void Usar(MiJuegoRPG.Personaje.Personaje personaje)
         {
             Console.WriteLine($"{personaje.Nombre} equipa el cinturón {this.Nombre}.");
+        }
+
+        /// <summary>
+        /// Bonificador de estadísticas para el cinturón.
+        /// Aporta a "Carga" (capacidad de carga). Case-insensitive.
+        /// </summary>
+        /// <returns></returns>
+        public double ObtenerBonificador(string estadistica)
+        {
+            if (string.IsNullOrWhiteSpace(estadistica))
+                return 0;
+            if (estadistica.Equals("Carga", StringComparison.OrdinalIgnoreCase))
+            {
+                return BonificacionCarga;
+            }
+            return 0;
         }
     }
 }

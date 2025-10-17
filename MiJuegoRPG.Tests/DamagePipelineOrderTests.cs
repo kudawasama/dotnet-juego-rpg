@@ -32,17 +32,21 @@ namespace MiJuegoRPG.Tests
         public void RecibirDanioFisico(int danioFisico)
         {
             int real = danioFisico - Defensa;
-            if (real < 1) real = 1;
+            if (real < 1)
+                real = 1;
             Vida -= real;
-            if (Vida < 0) Vida = 0;
+            if (Vida < 0)
+                Vida = 0;
         }
 
         public void RecibirDanioMagico(int danioMagico)
         {
             int real = danioMagico - DefensaMagica;
-            if (real < 1) real = 1;
+            if (real < 1)
+                real = 1;
             Vida -= real;
-            if (Vida < 0) Vida = 0;
+            if (Vida < 0)
+                Vida = 0;
         }
     }
 

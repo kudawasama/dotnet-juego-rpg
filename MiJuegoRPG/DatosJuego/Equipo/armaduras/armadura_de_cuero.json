@@ -1,0 +1,21 @@
+﻿{
+  "Nombre": "Armadura de Cuero",
+  "Defensa": 3,
+  "DefensaMin": 2,
+  "DefensaMax": 4,
+  "Nivel": 1,
+  "NivelMin": 1,
+  "NivelMax": 2,
+  "TipoObjeto": "Armadura",
+  "Rareza": "Normal",
+  "RarezasPermitidasCsv": "Pobre, Normal, Superior",
+  "Perfeccion": 50,
+  "PerfeccionMin": 45,
+  "PerfeccionMax": 65,
+  "Valor": 6,
+  "ValorVenta": 3,
+  "Peso": 3.2,
+  "Durabilidad": 40,
+  "Descripcion": "Ligera y flexible; ofrenda protección básica sin penalizar movilidad.",
+  "Tags": ["armadura", "cuero"]
+}

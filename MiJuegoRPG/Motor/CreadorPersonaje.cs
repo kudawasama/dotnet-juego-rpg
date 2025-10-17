@@ -3,7 +3,7 @@ using System.IO;
 using System.Text.Json;
 using MiJuegoRPG.Personaje;
 
-namespace MiJuegoRPG.Motor  // Debe ser este espacio de nombres
+namespace MiJuegoRPG.Motor // Debe ser este espacio de nombres
 {
     public class CreadorPersonaje
     {
@@ -57,10 +57,10 @@ namespace MiJuegoRPG.Motor  // Debe ser este espacio de nombres
             }
 
             string json = File.ReadAllText(rutaArchivo);
-         var opciones = new JsonSerializerOptions();
-         opciones.Converters.Add(new MiJuegoRPG.Personaje.ObjetoPolimorficoConverter());
-         return JsonSerializer.Deserialize<MiJuegoRPG.Personaje.Personaje>(json, opciones)
-             ?? throw new InvalidOperationException("No se pudo deserializar el personaje.");
+            var opciones = new JsonSerializerOptions();
+            opciones.Converters.Add(new MiJuegoRPG.Personaje.ObjetoPolimorficoConverter());
+            return JsonSerializer.Deserialize<MiJuegoRPG.Personaje.Personaje>(json, opciones)
+                ?? throw new InvalidOperationException("No se pudo deserializar el personaje.");
         }
 
         public static void MostrarPersonaje(MiJuegoRPG.Personaje.Personaje personaje)
@@ -83,7 +83,8 @@ namespace MiJuegoRPG.Motor  // Debe ser este espacio de nombres
         {
             Console.WriteLine("Nombre de tu personaje:");
             string nombre = InputService.LeerOpcion();
-            if (string.IsNullOrWhiteSpace(nombre)) nombre = "Héroe Sin Nombre";
+            if (string.IsNullOrWhiteSpace(nombre))
+                nombre = "Héroe Sin Nombre";
 
             // Atributos base neutros
             var atributosBase = new AtributosBase(5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5);

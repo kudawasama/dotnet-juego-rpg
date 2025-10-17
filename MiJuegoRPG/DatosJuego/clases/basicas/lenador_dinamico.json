@@ -1,0 +1,15 @@
+{
+  "Nombre": "Leñador",
+  "Categoria": "Profesión",
+  "Rareza": "Comun",
+  "Oculta": false,
+  "ClasesPrevias": [],
+  "NivelMinimo": 3,
+  "AtributosRequeridos": { "Fuerza": 3, "Destreza": 3 },
+  "MisionesRequeridas": ["Cortar 10 árboles"],
+  "AtributosGanados": { "Fuerza": 1, "Destreza": 2 },
+  "ActividadRequerida": { "Recoleccion.Talar": 25 },
+  "Bonificadores": { "Energia.ModAccion.Talar": -0.12 },
+  "Tier": 1,
+  "Rama": "Oficio"
+}

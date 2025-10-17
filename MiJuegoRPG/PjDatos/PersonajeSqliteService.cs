@@ -11,15 +11,16 @@ namespace MiJuegoRPG.PjDatos
     public class PersonajeSqliteService
     {
         // Ruta al archivo de base de datos SQLite (por defecto juego.db en la carpeta de salida)
-        private readonly string _dbPath;
+        private readonly string dbPath;
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="PersonajeSqliteService"/> class.
         /// Inicializa el servicio y crea la tabla si no existe.
         /// </summary>
-        /// <param name="dbPath">Ruta personalizada al archivo .db (opcional)</param>
+        /// <param name="dbPath">Ruta personalizada al archivo .db (opcional).</param>
         public PersonajeSqliteService(string? dbPath = null)
         {
-            _dbPath = dbPath ?? Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", "DatosCompartidos", "juego.db");
+            this.dbPath = dbPath ?? Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", "DatosCompartidos", "juego.db");
             Inicializar();
         }
 
@@ -28,7 +29,7 @@ namespace MiJuegoRPG.PjDatos
         /// </summary>
         private void Inicializar()
         {
-            using var con = new SqliteConnection($"Data Source={_dbPath}");
+            using var con = new SqliteConnection($"Data Source={dbPath}");
             con.Open();
             var cmd = con.CreateCommand();
             cmd.CommandText = @"CREATE TABLE IF NOT EXISTS personajes (
@@ -42,7 +43,7 @@ namespace MiJuegoRPG.PjDatos
         /// <summary>
         /// Guarda o actualiza un personaje en la base de datos.
         /// </summary>
-        /// <param name="pj">El personaje a guardar</param>
+        /// <param name="pj">El personaje a guardar.</param>
         public void Guardar(Personaje.Personaje pj)
         {
             // Serializa el personaje a JSON
@@ -50,7 +51,7 @@ namespace MiJuegoRPG.PjDatos
             // Registrar el converter polimórfico para Objeto
             options.Converters.Add(new MiJuegoRPG.Objetos.ObjetoJsonConverter());
             var json = JsonSerializer.Serialize(pj, options);
-            using var con = new SqliteConnection($"Data Source={_dbPath}");
+            using var con = new SqliteConnection($"Data Source={dbPath}");
             con.Open();
             var cmd = con.CreateCommand();
             // Inserta o actualiza por nombre
@@ -64,11 +65,11 @@ namespace MiJuegoRPG.PjDatos
         /// <summary>
         /// Carga un personaje por nombre desde la base de datos.
         /// </summary>
-        /// <param name="nombre">Nombre del personaje</param>
-        /// <returns>El personaje o null si no existe</returns>
+        /// <param name="nombre">Nombre del personaje.</param>
+        /// <returns>El personaje o null si no existe.</returns>
         public Personaje.Personaje? Cargar(string nombre)
         {
-            using var con = new SqliteConnection($"Data Source={_dbPath}");
+            using var con = new SqliteConnection($"Data Source={dbPath}");
             con.Open();
             var cmd = con.CreateCommand();
             cmd.CommandText = "SELECT datos FROM personajes WHERE nombre = $nombre";
@@ -87,11 +88,11 @@ namespace MiJuegoRPG.PjDatos
         /// <summary>
         /// Lista los nombres de todos los personajes guardados.
         /// </summary>
-        /// <returns>Lista de nombres</returns>
+        /// <returns>Lista de nombres.</returns>
         public List<string> ListarNombres()
         {
             var lista = new List<string>();
-            using var con = new SqliteConnection($"Data Source={_dbPath}");
+            using var con = new SqliteConnection($"Data Source={dbPath}");
             con.Open();
             var cmd = con.CreateCommand();
             cmd.CommandText = "SELECT nombre FROM personajes ORDER BY nombre";

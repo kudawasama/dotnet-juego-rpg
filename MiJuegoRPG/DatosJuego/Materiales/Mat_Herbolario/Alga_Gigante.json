@@ -1,0 +1,8 @@
+{
+  "id": "alga_gigante",
+  "nombre": "Alga Gigante",
+  "descripcion": "Alga de gran tamaño, apreciada por sus nutrientes y usos medicinales.",
+  "rareza": "comun",
+  "categoria": "alga",
+  "especialidad": "herbolario"
+}

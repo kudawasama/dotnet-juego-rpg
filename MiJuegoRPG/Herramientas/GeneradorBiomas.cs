@@ -10,7 +10,7 @@ namespace MiJuegoRPG.Herramientas
     /// <summary>
     /// Asigna biomas por bandas en función de la distancia a los bordes del mapa (definido por mapa.txt).
     /// Regla por defecto:
-    /// - Borde exterior (distancia <= anchoOceanoLejano-1): "Oceano Lejano"
+    /// - Borde exterior (distancia. <= anchoOceanoLejano-1): "Oceano Lejano"
     /// - Siguiente banda (distancia <= anchoOceanoLejano + anchoOceano - 1): "Oceano"
     /// - Interior: conserva bioma existente; si no hay, usa "Campo".
     /// Preserva sectores de tipo "Ciudad" para no sobreescribirlos.
@@ -37,7 +37,8 @@ namespace MiJuegoRPG.Herramientas
                 var celdas = linea.Split(new char[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries)
                                   .Select(c => c.Trim())
                                   .ToList();
-                if (celdas.Count > 0) grid.Add(celdas);
+                if (celdas.Count > 0)
+                    grid.Add(celdas);
             }
 
             int filas = grid.Count;
@@ -55,7 +56,8 @@ namespace MiJuegoRPG.Herramientas
                 for (int c = 0; c < cols; c++)
                 {
                     var id = grid[r][c];
-                    if (!IdRegex.IsMatch(id)) continue;
+                    if (!IdRegex.IsMatch(id))
+                        continue;
                     int d = Math.Min(Math.Min(r, c), Math.Min(filas - 1 - r, cols - 1 - c));
                     distBorde[id] = d;
                 }
@@ -76,7 +78,8 @@ namespace MiJuegoRPG.Herramientas
                     {
                         id = idEl.GetString() ?? id;
                     }
-                    if (!distBorde.ContainsKey(id)) continue; // fuera de grilla o inválido
+                    if (!distBorde.ContainsKey(id))
+                        continue; // fuera de grilla o inválido
 
                     // Si es ciudad, no tocar bioma
                     string tipo = ExtraerString(raw, "tipo");

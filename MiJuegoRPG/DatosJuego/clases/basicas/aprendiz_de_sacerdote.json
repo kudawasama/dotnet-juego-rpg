@@ -1,0 +1,13 @@
+{
+  "Nombre": "Aprendiz de Sacerdote",
+  "Categoria": "Magica",
+  "Rareza": "Comun",
+  "Oculta": true,
+  "ClasesPrevias": [],
+  "NivelMinimo": 5,
+  "AtributosRequeridos": {},
+  "EstadisticasRequeridas": {},
+  "MisionesRequeridas": [],
+  "ReputacionMinima": 0,
+  "AtributosGanados": {"Fe": 1, "Sabiduría": 1}
+}

@@ -1,3 +1,4 @@
+<!-- Última actualización: 2025-10-08 -->
 # Documentación detallada de progression.json
 
 Este documento define, con precisión operativa, los parámetros de balance para la progresión de atributos por actividad y la regeneración de maná, incluyendo fórmulas en orden de aplicación, valores recomendados, ejemplos numéricos paso a paso, y notas de integración con los servicios del juego.
@@ -5,6 +6,7 @@ Este documento define, con precisión operativa, los parámetros de balance para
 Referencias cruzadas:
 
 - Arquitectura y pipeline: `./Arquitectura_y_Funcionamiento.md`
+- Flujo de juego (menús y navegación): `./Flujo.md`
 - Pruebas relacionadas: [`MiJuegoRPG.Tests/ProgressionServiceTests.cs`](../../MiJuegoRPG.Tests/ProgressionServiceTests.cs)
 - Servicio: [`ProgressionService`](../Motor/Servicios/ProgressionService.cs)
 
@@ -77,6 +79,36 @@ Ejemplo base:
    }
 }
 ```
+
+---
+
+### 1.6 ActionPoints (PA)
+
+Parámetros para calcular los Puntos de Acción por turno de un personaje, controlando un escalado lento y data‑driven. La meta es iniciar en ~3 PA y, con estadísticas/atributos y nivel altos, alcanzar ~6 PA como tope razonable.
+
+- `ActionPoints.BasePA`: base de PA al inicio (recomendado: 2–3; default 3)
+- `ActionPoints.PAMax`: techo duro de PA por turno (recomendado: 5–7; default 6)
+- `ActionPoints.DivAgi`: divisor para el aporte de Agilidad (recomendado: 25–45; default 30)
+- `ActionPoints.DivDex`: divisor para el aporte de Destreza (recomendado: 35–50; default 40)
+- `ActionPoints.DivNivel`: divisor para el aporte de Nivel (recomendado: 8–12; default 10)
+
+Fórmula propuesta (orden inmutable, clamps cerrados):
+
+$$
+\mathrm{PA} = \mathrm{clamp}\Big( \mathrm{BasePA} + \left\lfloor\frac{\mathrm{Agilidad}}{\mathrm{DivAgi}}\right\rfloor + \left\lfloor\frac{\mathrm{Destreza}}{\mathrm{DivDex}}\right\rfloor + \left\lfloor\frac{\mathrm{Nivel}}{\mathrm{DivNivel}}\right\rfloor,\ 1,\ \mathrm{PAMax}\Big)
+$$
+
+Compatibilidad con Maná: cada Acción consume PA; las Habilidades además consumen Maná. Mantener costes de Maná por habilidad y caps de regeneración asegura que PA altos no permitan agotar Maná en un solo turno sin trade‑offs.
+
+Ejemplos:
+
+- PJ nuevo (Agilidad=10, Destreza=8, Nivel=1) con defaults → $\mathrm{PA} = 3$.
+- PJ avanzado (Agilidad=90, Destreza=80, Nivel=90) con defaults → $\mathrm{PA} = 6$ (por clamp a `PAMax`).
+
+Notas de tuning:
+
+- Ajustar primero `Div*` antes de tocar `BasePA`/`PAMax` para conservar sensación de progresión lenta.
+- Los aportes por atributo usan pisos discretos (floor) para evitar micro‑saltos poco legibles.
 
 ---
 
@@ -213,6 +245,14 @@ Estructura mínima en `DatosJuego/progression.json`:
    "ManaRegenFueraFactor": 0.05,
    "ManaRegenFueraMaxPorTick": 3.0,
 
+   "ActionPoints": {
+      "BasePA": 3,
+      "PAMax": 6,
+      "DivAgi": 30,
+      "DivDex": 40,
+      "DivNivel": 10
+   },
+
     "Indices": { },
     "StatsCaps": {
        "PrecisionMax": 0.95,
@@ -231,6 +271,7 @@ Reglas de validación:
 - `ManaRegen*Max >= ManaRegen*Base`.
 - `Indices`: claves deben ser atributos válidos; valores `> 0`.
 - `StatsCaps` (opcional): si no está presente, se usan defaults conservadores indicados arriba. Valores fuera de rango se clampean a `[0..1]` donde aplique.
+- `ActionPoints` (opcional): si falta, se usan defaults sugeridos; validar `BasePA>=1`, `PAMax>=BasePA`, divisores `>0`.
 
 ---
 
@@ -238,7 +279,9 @@ Reglas de validación:
 
 - `ProgressionService`: aplica las fórmulas de 2.x para otorgar EXP a atributos tras acciones de recolección, entrenamiento y exploración.
 - `EnergiaService`: usa `Indices` y bonificadores de clases (ver `Arquitectura_y_Funcionamiento.md` §5.1 y §15) para coste y progresión relacionada.
+- `ActionPointService`: consume `ActionPoints` para computar PA por turno a partir de atributos y nivel, aplicando clamps indicados.
 - `CombatePorTurnos`/`ActionRulesService`: consultan los parámetros de regeneración de maná (combate/fuera) combinados con penalizaciones de Supervivencia.
+- Habilidades del catálogo: cuando una `HabilidadData` define `CostoMana`, el `HabilidadAccionMapper` lo aplica envolviendo la acción base (`AccionCompuestaSimple`). Si existen evoluciones con `CostoMana`, se toma el mínimo entre la base y evoluciones desbloqueadas. Esto mantiene consistencia entre datos y runtime.
 
 ---
 
@@ -248,6 +291,10 @@ Reglas de validación:
 - Entrenamiento: al duplicar `ValorActual` del atributo, la EXP por minuto se reduce aproximadamente a la mitad cuando el término `1 + 0.05·Valor` domina.
 - Exploración: primera visita otorga +50% a Agilidad respecto a Percepción base.
 - Regeneración: nunca supera los `MaxPorTurno/PorTick` y responde linealmente al cambiar `RegeneracionMana`.
+- PA (ActionPoints):
+      - Inicio: con defaults (Agi=10, Dex=8, Nivel=1) → 3 PA.
+      - Late: (Agi=90, Dex=80, Nivel=90) → clamp en `PAMax=6`.
+      - Borde: divisores y BasePA inválidos caen a defaults o se clampéan por validación.
 
 Para determinismo: usar `RandomService.SetSeed` cuando se combine con acciones aleatorias (no aplica directamente a estas fórmulas, pero sí a pipelines que las rodean).
 
@@ -283,6 +330,11 @@ Nota pipeline: aplicar en el paso 5 del orden descrito en `Arquitectura_y_Funcio
 
 - 5.10: parametrizar curvas y caps para `Precision`, `CritChance`, `CritMult`, `Penetracion` aquí y consumir en el pipeline de combate.
 - 9.4: ampliar suite de pruebas de progresión (ver §6).
+
+Notas vinculadas a equipo (15.4):
+
+- La generación de equipo usa una base de perfección Normal=50% para escalar valores: $valor_{final} = \operatorname{round}(valor_{base} \cdot (Perfeccion/50.0))$.
+- La aparición por rareza es ponderada y ahora data-driven a través de `DatosJuego/Equipo/rareza_pesos.json`.
 
 ---
 

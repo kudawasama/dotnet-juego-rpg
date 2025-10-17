@@ -1,0 +1,8 @@
+{
+  "id": "flor_azul",
+  "nombre": "Flor Azul",
+  "descripcion": "Flor silvestre de color azul, apreciada por alquimistas y herbolarios.",
+  "rareza": "comun",
+  "categoria": "flor",
+  "especialidad": "herbolario"
+}

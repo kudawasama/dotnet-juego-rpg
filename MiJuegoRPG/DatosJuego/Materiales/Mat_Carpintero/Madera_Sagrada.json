@@ -1,0 +1,8 @@
+{
+  "id": "madera_sagrada",
+  "nombre": "Madera Sagrada",
+  "descripcion": "Madera venerada por su pureza, usada en artefactos y reliquias.",
+  "rareza": "raro",
+  "categoria": "madera",
+  "especialidad": "carpintero"
+}

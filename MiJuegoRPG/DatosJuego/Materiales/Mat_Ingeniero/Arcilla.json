@@ -1,0 +1,8 @@
+{
+  "id": "arcilla",
+  "nombre": "Arcilla",
+  "descripcion": "Material maleable, usado en cerámica y construcción.",
+  "rareza": "comun",
+  "categoria": "mineral",
+  "especialidad": "ingeniero"
+}

@@ -1,0 +1,8 @@
+{
+  "id": "espinas_de_cactus",
+  "nombre": "Espinas de Cactus",
+  "descripcion": "Espinas recolectadas de cactus, útiles para tintes y pociones.",
+  "rareza": "comun",
+  "categoria": "espina",
+  "especialidad": "curtidor"
+}

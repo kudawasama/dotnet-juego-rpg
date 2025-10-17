@@ -1,0 +1,19 @@
+{
+  "Nombre": "Cinturon DIVINO GM GOD",
+  "SetId": "GM",
+  "BonificacionCarga": 15000,
+  "Nivel": 200,
+  "NivelMin": 200,
+  "NivelMax": 200,
+  "TipoObjeto": "Cinturon",
+  "Rareza": "Ornamentada",
+  "RarezasPermitidasCsv": "Ornamentada, Legendaria",
+  "Perfeccion": 100,
+  "PerfeccionMin": 100,
+  "PerfeccionMax": 100,
+  "Valor": 0,
+  "ValorVenta": 0,
+  "Durabilidad": -1,
+  "Descripcion": "Cinturón GM con capacidad de carga colosal y parámetros bloqueados para testeo.",
+  "Tags": ["gm", "divino", "creador", "legendario", "ornamentada"]
+}

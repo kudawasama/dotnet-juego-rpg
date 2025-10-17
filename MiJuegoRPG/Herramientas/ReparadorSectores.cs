@@ -8,18 +8,39 @@ namespace MiJuegoRPG.Herramientas
 {
     public class SectorDataNuevo
     {
-        public required string Id { get; set; }
-        public required string nombre { get; set; }
-        public required string bioma { get; set; }
-        public required string parteCiudad { get; set; }
-        public required bool ciudadPrincipal { get; set; }
-        public required bool esCentroCiudad { get; set; }
-        public List<string> nodosRecoleccion { get; set; } = new();
+        public required string Id
+        {
+            get; set;
+        }
+        public required string Nombre
+        {
+            get; set;
+        }
+        public required string Bioma
+        {
+            get; set;
+        }
+        public required string ParteCiudad
+        {
+            get; set;
+        }
+        public required bool CiudadPrincipal
+        {
+            get; set;
+        }
+        public required bool EsCentroCiudad
+        {
+            get; set;
+        }
+        public List<string> NodosRecoleccion { get; set; } = new();
         public Dictionary<string, object> Requisitos { get; set; } = new();
-        public List<string> enemigos { get; set; } = new();
+        public List<string> Enemigos { get; set; } = new();
         public List<string> Conexiones { get; set; } = new();
-        public List<string> eventos { get; set; } = new();
-        public required string descripcion { get; set; }
+        public List<string> Eventos { get; set; } = new();
+        public required string Descripcion
+        {
+            get; set;
+        }
     }
 
     public static class ReparadorSectores
@@ -32,24 +53,28 @@ namespace MiJuegoRPG.Herramientas
                 {
                     var json = File.ReadAllText(file);
                     SectorDataNuevo? sector = null;
-                    try { sector = JsonSerializer.Deserialize<SectorDataNuevo>(json); } catch { }
+                    try
+                    {
+                        sector = JsonSerializer.Deserialize<SectorDataNuevo>(json);
+                    }
+                    catch { }
                     if (sector == null)
                     {
                         var nombreArchivo = Path.GetFileNameWithoutExtension(file);
                         sector = new SectorDataNuevo
                         {
                             Id = nombreArchivo,
-                            nombre = $"Sector {nombreArchivo}",
-                            bioma = "Campo",
-                            parteCiudad = "",
-                            ciudadPrincipal = false,
-                            esCentroCiudad = false,
-                            nodosRecoleccion = new List<string>(),
+                            Nombre = $"Sector {nombreArchivo}",
+                            Bioma = "Campo",
+                            ParteCiudad = "",
+                            CiudadPrincipal = false,
+                            EsCentroCiudad = false,
+                            NodosRecoleccion = new List<string>(),
                             Requisitos = new Dictionary<string, object>(),
-                            enemigos = new List<string>(),
+                            Enemigos = new List<string>(),
                             Conexiones = new List<string>(),
-                            eventos = new List<string>(),
-                            descripcion = "Sector autocompletado."
+                            Eventos = new List<string>(),
+                            Descripcion = "Sector autocompletado."
                         };
                         var opciones = new JsonSerializerOptions { WriteIndented = true };
                         File.WriteAllText(file, JsonSerializer.Serialize(sector, opciones));

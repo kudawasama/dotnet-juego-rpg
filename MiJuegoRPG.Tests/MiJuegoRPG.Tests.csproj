@@ -13,10 +13,15 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+    <!-- FluentAssertions reference added if not already present -->
+    <PackageReference Include="FluentAssertions" Version="6.12.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="9.0.0" PrivateAssets="all" />
+    <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.556" PrivateAssets="all" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\MiJuegoRPG\MiJuegoRPG.csproj" />
+    <ProjectReference Include="..\MiJuegoRPG.Core\MiJuegoRPG.Core.csproj" />
   </ItemGroup>
 
   <!-- Copiar assets de datos del juego al output de tests (estructura recursiva) -->

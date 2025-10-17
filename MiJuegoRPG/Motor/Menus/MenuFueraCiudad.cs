@@ -7,7 +7,6 @@ namespace MiJuegoRPG.Motor.Menus
 {
     public class MenuFueraCiudad
     {
-        
         private Juego juego;
         public MenuFueraCiudad(Juego juego)
         {
@@ -16,16 +15,16 @@ namespace MiJuegoRPG.Motor.Menus
         public void MostrarMenuFueraCiudad(ref bool salir)
         {
             // Recuperación pasiva de energía antes de mostrar menú
-            if (juego.jugador != null)
+            if (juego.Jugador != null)
             {
-                juego.energiaService.RecuperacionPasiva(juego.jugador);
+                juego.EnergiaService.RecuperacionPasiva(juego.Jugador);
             }
 
             string opcion = "";
             while (!salir)
             {
                 UIStyle.Header(juego.Ui, "Fuera de Ciudad");
-                UIStyle.SubHeader(juego.Ui, $"Ubicación: {juego.mapa.UbicacionActual.Nombre}");
+                UIStyle.SubHeader(juego.Ui, $"Ubicación: {juego.Mapa.UbicacionActual.Nombre}");
                 UIStyle.Hint(juego.Ui, juego.FormatoRelojMundo);
                 // Indicador compacto de supervivencia (hambre/sed/fatiga/temp)
                 UIStyle.SurvivalCompact(juego.Ui, juego);
@@ -38,13 +37,15 @@ namespace MiJuegoRPG.Motor.Menus
                 opcion = InputService.LeerOpcion();
                 switch (opcion)
                 {
-                    case "1": juego.ExplorarSector(); break;
+                    case "1":
+                        juego.ExplorarSector();
+                        break;
                     case "2":
                         // Nuevo menú híbrido de recolección
-                        juego.recoleccionService.MostrarMenu();
+                        juego.RecoleccionService.MostrarMenu();
                         break;
                     case "3":
-                        if (juego.jugador == null)
+                        if (juego.Jugador == null)
                         {
                             juego.Ui.WriteLine("No hay personaje cargado.");
                             InputService.Pausa();
@@ -52,8 +53,8 @@ namespace MiJuegoRPG.Motor.Menus
                         }
                         try
                         {
-                            var enemigo = GeneradorEnemigos.GenerarEnemigoAleatorio(juego.jugador);
-                            GeneradorEnemigos.IniciarCombate(juego.jugador, enemigo);
+                            var enemigo = GeneradorEnemigos.GenerarEnemigoAleatorio(juego.Jugador);
+                            GeneradorEnemigos.IniciarCombate(juego.Jugador, enemigo);
                         }
                         catch (Exception ex)
                         {
@@ -64,8 +65,11 @@ namespace MiJuegoRPG.Motor.Menus
                     case "5":
                         juego.MostrarMenuRutas();
                         return;
-                    case "9": juego.MostrarMenuFijo(ref salir); break;
-                    case "0": return;
+                    case "9":
+                        juego.MostrarMenuFijo(ref salir);
+                        break;
+                    case "0":
+                        return;
                     default:
                         juego.Ui.WriteLine("Opción no válida.");
                         InputService.Pausa();

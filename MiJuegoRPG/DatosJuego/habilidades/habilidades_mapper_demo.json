@@ -1,0 +1,15 @@
+[
+  {
+    "Id": "descarga_arcana",
+    "Nombre": "Descarga Arcana",
+    "Tipo": "Activa",
+    "Categoria": "Magia",
+    "Descripcion": "Canaliza una descarga de energía arcana hacia un objetivo.",
+    "CostoMana": 8,
+    "AccionId": "ataque_magico",
+    "Condiciones": [ { "Tipo": "Nivel", "Cantidad": 1 } ],
+    "Evoluciones": [
+      { "Id": "descarga_arcana_2", "Nombre": "Descarga Arcana II", "CostoMana": 10, "Condiciones": [ { "Tipo": "NvHabilidad", "Cantidad": 2 } ] }
+    ]
+  }
+]

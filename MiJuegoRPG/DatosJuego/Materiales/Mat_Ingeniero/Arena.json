@@ -1,0 +1,8 @@
+{
+  "id": "arena",
+  "nombre": "Arena",
+  "descripcion": "Material granular, base para vidrio y construcción.",
+  "rareza": "comun",
+  "categoria": "mineral",
+  "especialidad": "ingeniero"
+}

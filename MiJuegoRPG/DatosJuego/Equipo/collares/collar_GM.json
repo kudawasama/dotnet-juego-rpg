@@ -1,0 +1,20 @@
+{
+  "Nombre": "Collar DIVINO GM GOD",
+  "SetId": "GM",
+  "BonificacionDefensa": 20000,
+  "BonificacionEnergia": 50000,
+  "Nivel": 200,
+  "NivelMin": 200,
+  "NivelMax": 200,
+  "TipoObjeto": "Collar",
+  "Rareza": "Ornamentada",
+  "RarezasPermitidasCsv": "Ornamentada, Legendaria",
+  "Perfeccion": 100,
+  "PerfeccionMin": 100,
+  "PerfeccionMax": 100,
+  "Valor": 0,
+  "ValorVenta": 0,
+  "Durabilidad": -1,
+  "Descripcion": "Collar GM con energía masiva y defensa sobresaliente; parámetros bloqueados para QA.",
+  "Tags": ["gm", "divino", "creador", "legendario", "ornamentada"]
+}

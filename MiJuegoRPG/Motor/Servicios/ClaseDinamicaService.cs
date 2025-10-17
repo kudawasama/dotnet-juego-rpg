@@ -9,9 +9,12 @@ namespace MiJuegoRPG.Motor.Servicios
     {
         private List<ClaseData> defs = new();
         private bool cargado = false;
-        private readonly object _lock = new();
+        private readonly object @lock = new();
         private readonly Juego juego;
-        public ClaseDinamicaService(Juego juego) { this.juego = juego; }
+        public ClaseDinamicaService(Juego juego)
+        {
+            this.juego = juego;
+        }
 
         private string RutaJson()
         {
@@ -20,10 +23,12 @@ namespace MiJuegoRPG.Motor.Servicios
 
         public void Cargar()
         {
-            if (cargado) return;
-            lock (_lock)
+            if (cargado)
+                return;
+            lock (@lock)
             {
-                if (cargado) return;
+                if (cargado)
+                    return;
                 try
                 {
                     var ruta = RutaJson();
@@ -32,7 +37,8 @@ namespace MiJuegoRPG.Motor.Servicios
                         var json = System.IO.File.ReadAllText(ruta);
                         var opciones = new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true };
                         var lista = System.Text.Json.JsonSerializer.Deserialize<List<ClaseData>>(json, opciones);
-                        if (lista != null) defs = lista;
+                        if (lista != null)
+                            defs = lista;
                     }
                 }
                 catch { }
@@ -48,19 +54,23 @@ namespace MiJuegoRPG.Motor.Servicios
 
         public bool Evaluar(Personaje.Personaje pj)
         {
-            if (pj == null) return false;
+            if (pj == null)
+                return false;
             Cargar();
             bool algunCambio = false;
             foreach (var def in defs)
             {
-                if (pj.TieneClase(def.Nombre)) continue;
-                if (BloqueadaPorExclusion(pj, def)) continue;
+                if (pj.TieneClase(def.Nombre))
+                    continue;
+                if (BloqueadaPorExclusion(pj, def))
+                    continue;
                 if (!CumpleHardRequirements(pj, def))
                 {
                     // Chequear modo emergente si definido
                     if (def.PesoEmergenteMin > 0 && CalculaScoreEmergente(pj, def) >= def.PesoEmergenteMin)
                     {
-                        if (pj.DesbloquearClase(def.Nombre)) algunCambio = true;
+                        if (pj.DesbloquearClase(def.Nombre))
+                            algunCambio = true;
                     }
                     continue;
                 }
@@ -75,9 +85,14 @@ namespace MiJuegoRPG.Motor.Servicios
 
         private bool BloqueadaPorExclusion(Personaje.Personaje pj, ClaseData def)
         {
-            if (def.ClasesExcluidas == null || def.ClasesExcluidas.Count == 0) return false;
+            if (def.ClasesExcluidas == null || def.ClasesExcluidas.Count == 0)
+                return false;
             foreach (var ex in def.ClasesExcluidas)
-                if (pj.TieneClase(ex)) return true;
+            {
+                if (pj.TieneClase(ex))
+                    return true;
+            }
+
             return false;
         }
 
@@ -87,22 +102,28 @@ namespace MiJuegoRPG.Motor.Servicios
             if (def.ClasesPrevias != null && def.ClasesPrevias.Count > 0)
             {
                 foreach (var c in def.ClasesPrevias)
-                    if (!pj.TieneClase(c)) return false;
+                {
+                    if (!pj.TieneClase(c))
+                        return false;
+                }
             }
             // Clases alguna
             if (def.ClasesAlguna != null && def.ClasesAlguna.Count > 0)
             {
-                if (!def.ClasesAlguna.Any(c => pj.TieneClase(c))) return false;
+                if (!def.ClasesAlguna.Any(c => pj.TieneClase(c)))
+                    return false;
             }
             // Nivel mínimo
-            if (def.NivelMinimo > 0 && pj.Nivel < def.NivelMinimo) return false;
+            if (def.NivelMinimo > 0 && pj.Nivel < def.NivelMinimo)
+                return false;
             // Atributos
             if (def.AtributosRequeridos != null && def.AtributosRequeridos.Count > 0)
             {
                 foreach (var kv in def.AtributosRequeridos)
                 {
                     double valor = ObtenerAtributoActual(pj, kv.Key);
-                    if (valor < kv.Value) return false;
+                    if (valor < kv.Value)
+                        return false;
                 }
             }
             // Actividad
@@ -111,7 +132,8 @@ namespace MiJuegoRPG.Motor.Servicios
                 foreach (var kv in def.ActividadRequerida)
                 {
                     pj.ContadoresActividad.TryGetValue(kv.Key, out var v);
-                    if (v < kv.Value) return false;
+                    if (v < kv.Value)
+                        return false;
                 }
             }
             // Habilidades nivel (placeholder: si no hay sistema detallado, se ignora hasta que exista)
@@ -119,7 +141,8 @@ namespace MiJuegoRPG.Motor.Servicios
             {
                 foreach (var kv in def.HabilidadesNivelRequerido)
                 {
-                    if (!pj.Habilidades.TryGetValue(kv.Key, out var hab) || hab.Nivel < kv.Value) return false;
+                    if (!pj.Habilidades.TryGetValue(kv.Key, out var hab) || hab.Nivel < kv.Value)
+                        return false;
                 }
             }
             // Estadísticas requeridas
@@ -128,14 +151,16 @@ namespace MiJuegoRPG.Motor.Servicios
                 foreach (var kv in def.EstadisticasRequeridas)
                 {
                     double valor = ObtenerEstadisticaActual(pj, kv.Key);
-                    if (valor < kv.Value) return false;
+                    if (valor < kv.Value)
+                        return false;
                 }
             }
             // Reputación mínima (stub hasta que exista propiedad real)
             if (def.ReputacionMinima != 0)
             {
                 int reputacionActual = ObtenerReputacion(pj);
-                if (reputacionActual < def.ReputacionMinima) return false;
+                if (reputacionActual < def.ReputacionMinima)
+                    return false;
             }
             // Reputación por facción
             if (def.ReputacionFaccionMin != null && def.ReputacionFaccionMin.Count > 0)
@@ -143,7 +168,8 @@ namespace MiJuegoRPG.Motor.Servicios
                 foreach (var kv in def.ReputacionFaccionMin)
                 {
                     int actual = ObtenerReputacionFaccion(pj, kv.Key);
-                    if (actual < kv.Value) return false;
+                    if (actual < kv.Value)
+                        return false;
                 }
             }
             // Misiones requeridas
@@ -151,32 +177,39 @@ namespace MiJuegoRPG.Motor.Servicios
             {
                 foreach (var m in def.MisionesRequeridas)
                 {
-                    if (!TieneMisionCompletada(pj, m)) return false;
+                    if (!TieneMisionCompletada(pj, m))
+                        return false;
                 }
             }
             // Misión única
             if (!string.IsNullOrWhiteSpace(def.MisionUnica))
             {
-                if (!TieneMisionCompletada(pj, def.MisionUnica)) return false;
+                if (!TieneMisionCompletada(pj, def.MisionUnica))
+                    return false;
             }
             // Objeto único
             if (!string.IsNullOrWhiteSpace(def.ObjetoUnico))
             {
-                if (!TieneObjeto(pj, def.ObjetoUnico)) return false;
+                if (!TieneObjeto(pj, def.ObjetoUnico))
+                    return false;
             }
             return true;
         }
 
         private double CalculaScoreEmergente(Personaje.Personaje pj, ClaseData def)
         {
-            double totalPesos = 0; double sumCumplido = 0;
+            double totalPesos = 0;
+            double sumCumplido = 0;
             if (def.ActividadRequerida != null)
             {
                 foreach (var kv in def.ActividadRequerida)
                 {
                     totalPesos += 1;
                     pj.ContadoresActividad.TryGetValue(kv.Key, out var v);
-                    if (v >= kv.Value) sumCumplido += 1; else sumCumplido += Math.Min(1.0, (double)v / Math.Max(1, kv.Value));
+                    if (v >= kv.Value)
+                        sumCumplido += 1;
+                    else
+                        sumCumplido += Math.Min(1.0, (double)v / Math.Max(1, kv.Value));
                 }
             }
             if (def.AtributosRequeridos != null)
@@ -185,10 +218,14 @@ namespace MiJuegoRPG.Motor.Servicios
                 {
                     totalPesos += 1;
                     double valor = ObtenerAtributoActual(pj, kv.Key);
-                    if (valor >= kv.Value) sumCumplido += 1; else sumCumplido += Math.Min(1.0, valor / Math.Max(1, kv.Value));
+                    if (valor >= kv.Value)
+                        sumCumplido += 1;
+                    else
+                        sumCumplido += Math.Min(1.0, valor / Math.Max(1, kv.Value));
                 }
             }
-            if (totalPesos <= 0) return 0;
+            if (totalPesos <= 0)
+                return 0;
             return sumCumplido / totalPesos;
         }
 
@@ -219,27 +256,60 @@ namespace MiJuegoRPG.Motor.Servicios
 
         private void AplicarBonosAtributoInicial(Personaje.Personaje pj, ClaseData def)
         {
-            if (def.AtributosGanados == null) return;
+            if (def.AtributosGanados == null)
+                return;
             foreach (var kv in def.AtributosGanados)
             {
                 switch (kv.Key.ToLower())
                 {
-                    case "fuerza": pj.AtributosBase.Fuerza += kv.Value; break;
-                    case "inteligencia": pj.AtributosBase.Inteligencia += kv.Value; break;
-                    case "destreza": pj.AtributosBase.Destreza += kv.Value; break;
-                    case "resistencia": pj.AtributosBase.Resistencia += kv.Value; break;
-                    case "defensa": pj.AtributosBase.Defensa += kv.Value; break;
-                    case "vitalidad": pj.AtributosBase.Vitalidad += kv.Value; break;
-                    case "agilidad": pj.AtributosBase.Agilidad += kv.Value; break;
-                    case "suerte": pj.AtributosBase.Suerte += kv.Value; break;
-                    case "percepcion": pj.AtributosBase.Percepcion += kv.Value; break;
-                    case "sabiduria": pj.AtributosBase.Sabiduría += kv.Value; break;
-                    case "fe": pj.AtributosBase.Fe += kv.Value; break;
-                    case "carisma": pj.AtributosBase.Carisma += kv.Value; break;
-                    case "liderazgo": pj.AtributosBase.Liderazgo += kv.Value; break;
-                    case "persuasion": pj.AtributosBase.Persuasion += kv.Value; break;
-                    case "voluntad": pj.AtributosBase.Voluntad += kv.Value; break;
-                    case "oscuridad": pj.AtributosBase.Oscuridad += kv.Value; break;
+                    case "fuerza":
+                        pj.AtributosBase.Fuerza += kv.Value;
+                        break;
+                    case "inteligencia":
+                        pj.AtributosBase.Inteligencia += kv.Value;
+                        break;
+                    case "destreza":
+                        pj.AtributosBase.Destreza += kv.Value;
+                        break;
+                    case "resistencia":
+                        pj.AtributosBase.Resistencia += kv.Value;
+                        break;
+                    case "defensa":
+                        pj.AtributosBase.Defensa += kv.Value;
+                        break;
+                    case "vitalidad":
+                        pj.AtributosBase.Vitalidad += kv.Value;
+                        break;
+                    case "agilidad":
+                        pj.AtributosBase.Agilidad += kv.Value;
+                        break;
+                    case "suerte":
+                        pj.AtributosBase.Suerte += kv.Value;
+                        break;
+                    case "percepcion":
+                        pj.AtributosBase.Percepcion += kv.Value;
+                        break;
+                    case "sabiduria":
+                        pj.AtributosBase.Sabiduría += kv.Value;
+                        break;
+                    case "fe":
+                        pj.AtributosBase.Fe += kv.Value;
+                        break;
+                    case "carisma":
+                        pj.AtributosBase.Carisma += kv.Value;
+                        break;
+                    case "liderazgo":
+                        pj.AtributosBase.Liderazgo += kv.Value;
+                        break;
+                    case "persuasion":
+                        pj.AtributosBase.Persuasion += kv.Value;
+                        break;
+                    case "voluntad":
+                        pj.AtributosBase.Voluntad += kv.Value;
+                        break;
+                    case "oscuridad":
+                        pj.AtributosBase.Oscuridad += kv.Value;
+                        break;
                 }
             }
             // Clamp >= 0 tras aplicar bonos
@@ -262,13 +332,15 @@ namespace MiJuegoRPG.Motor.Servicios
             a.Oscuridad = Math.Max(0, a.Oscuridad);
         }
 
-        public IEnumerable<KeyValuePair<string,double>> Bonificadores(Personaje.Personaje pj)
+        public IEnumerable<KeyValuePair<string, double>> Bonificadores(Personaje.Personaje pj)
         {
             Cargar();
             foreach (var def in defs)
             {
-                if (!pj.TieneClase(def.Nombre)) continue;
-                if (def.Bonificadores == null) continue;
+                if (!pj.TieneClase(def.Nombre))
+                    continue;
+                if (def.Bonificadores == null)
+                    continue;
                 foreach (var kv in def.Bonificadores)
                     yield return kv;
             }
@@ -279,17 +351,28 @@ namespace MiJuegoRPG.Motor.Servicios
             var e = pj.Estadisticas;
             switch (nombre.ToLower())
             {
-                case "critico": return e.Critico;
-                case "ataque": return e.Ataque;
-                case "poderofensivomagico": return e.PoderOfensivoMagico;
-                case "podermagico": return e.PoderMagico;
-                case "podercurativo": return e.PoderCurativo;
-                case "poderofensivofisico": return e.PoderOfensivoFisico;
-                case "defensafisica": return e.DefensaFisica;
-                case "poderdeinvocacion": return e.PoderDeInvocacion;
-                case "poderelemental": return e.PoderElemental;
-                case "poderdivino": return e.PoderEspiritual; // alias
-                default: return 0;
+                case "critico":
+                    return e.Critico;
+                case "ataque":
+                    return e.Ataque;
+                case "poderofensivomagico":
+                    return e.PoderOfensivoMagico;
+                case "podermagico":
+                    return e.PoderMagico;
+                case "podercurativo":
+                    return e.PoderCurativo;
+                case "poderofensivofisico":
+                    return e.PoderOfensivoFisico;
+                case "defensafisica":
+                    return e.DefensaFisica;
+                case "poderdeinvocacion":
+                    return e.PoderDeInvocacion;
+                case "poderelemental":
+                    return e.PoderElemental;
+                case "poderdivino":
+                    return e.PoderEspiritual; // alias
+                default:
+                    return 0;
             }
         }
         private int ObtenerReputacion(Personaje.Personaje pj)
@@ -298,18 +381,21 @@ namespace MiJuegoRPG.Motor.Servicios
         }
         private int ObtenerReputacionFaccion(Personaje.Personaje pj, string faccion)
         {
-            if (string.IsNullOrWhiteSpace(faccion)) return 0;
+            if (string.IsNullOrWhiteSpace(faccion))
+                return 0;
             pj.ReputacionesFaccion.TryGetValue(faccion, out var v);
             return v;
         }
         private bool TieneMisionCompletada(Personaje.Personaje pj, string nombre)
         {
-            if (string.IsNullOrWhiteSpace(nombre)) return false;
+            if (string.IsNullOrWhiteSpace(nombre))
+                return false;
             return pj.MisionesCompletadas.Any(m => string.Equals(m.Nombre, nombre, StringComparison.OrdinalIgnoreCase) || string.Equals(m.Id, nombre, StringComparison.OrdinalIgnoreCase));
         }
         private bool TieneObjeto(Personaje.Personaje pj, string nombre)
         {
-            if (string.IsNullOrWhiteSpace(nombre)) return false;
+            if (string.IsNullOrWhiteSpace(nombre))
+                return false;
             return pj.Inventario.NuevosObjetos.Any(o => string.Equals(o.Objeto.Nombre, nombre, StringComparison.OrdinalIgnoreCase));
         }
     }

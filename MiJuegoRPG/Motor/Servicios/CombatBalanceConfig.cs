@@ -8,7 +8,7 @@ namespace MiJuegoRPG.Motor.Servicios
     /// </summary>
     public static class CombatBalanceConfig
     {
-        private static bool _loaded = false;
+        private static bool loaded = false;
 
         // Defaults conservadores (alineados con Docs/progression_config.md)
         public static double PrecisionMax { get; private set; } = 0.95;
@@ -19,16 +19,34 @@ namespace MiJuegoRPG.Motor.Servicios
 
         private class StatsCapsDto
         {
-            public double? PrecisionMax { get; set; }
-            public double? CritChanceMax { get; set; }
-            public double? CritMultMin { get; set; }
-            public double? CritMultMax { get; set; }
-            public double? PenetracionMax { get; set; }
+            public double? PrecisionMax
+            {
+                get; set;
+            }
+            public double? CritChanceMax
+            {
+                get; set;
+            }
+            public double? CritMultMin
+            {
+                get; set;
+            }
+            public double? CritMultMax
+            {
+                get; set;
+            }
+            public double? PenetracionMax
+            {
+                get; set;
+            }
         }
 
         private class ProgressionDto
         {
-            public StatsCapsDto? StatsCaps { get; set; }
+            public StatsCapsDto? StatsCaps
+            {
+                get; set;
+            }
         }
 
         /// <summary>
@@ -36,7 +54,8 @@ namespace MiJuegoRPG.Motor.Servicios
         /// </summary>
         public static void EnsureLoaded()
         {
-            if (_loaded) return;
+            if (loaded)
+                return;
             try
             {
                 var ruta = PathProvider.CombineData("progression.json");
@@ -47,11 +66,16 @@ namespace MiJuegoRPG.Motor.Servicios
                     var caps = cfg?.StatsCaps;
                     if (caps != null)
                     {
-                        if (caps.PrecisionMax.HasValue) PrecisionMax = Clamp01(caps.PrecisionMax.Value, 0.95);
-                        if (caps.CritChanceMax.HasValue) CritChanceMax = Clamp01(caps.CritChanceMax.Value, 0.50);
-                        if (caps.CritMultMin.HasValue) CritMultMin = Math.Max(1.0, caps.CritMultMin.Value);
-                        if (caps.CritMultMax.HasValue) CritMultMax = Math.Max(CritMultMin, caps.CritMultMax.Value);
-                        if (caps.PenetracionMax.HasValue) PenetracionMax = Clamp01(caps.PenetracionMax.Value, 0.25);
+                        if (caps.PrecisionMax.HasValue)
+                            PrecisionMax = Clamp01(caps.PrecisionMax.Value, 0.95);
+                        if (caps.CritChanceMax.HasValue)
+                            CritChanceMax = Clamp01(caps.CritChanceMax.Value, 0.50);
+                        if (caps.CritMultMin.HasValue)
+                            CritMultMin = Math.Max(1.0, caps.CritMultMin.Value);
+                        if (caps.CritMultMax.HasValue)
+                            CritMultMax = Math.Max(CritMultMin, caps.CritMultMax.Value);
+                        if (caps.PenetracionMax.HasValue)
+                            PenetracionMax = Clamp01(caps.PenetracionMax.Value, 0.25);
                     }
                 }
             }
@@ -61,13 +85,14 @@ namespace MiJuegoRPG.Motor.Servicios
             }
             finally
             {
-                _loaded = true;
+                loaded = true;
             }
         }
 
         private static double Clamp01(double v, double fallback)
         {
-            if (double.IsNaN(v) || double.IsInfinity(v)) return fallback;
+            if (double.IsNaN(v) || double.IsInfinity(v))
+                return fallback;
             return Math.Clamp(v, 0.0, 1.0);
         }
 
@@ -81,6 +106,23 @@ namespace MiJuegoRPG.Motor.Servicios
         {
             EnsureLoaded();
             return Math.Clamp(c, 0.0, CritChanceMax);
+        }
+
+        /// <summary>
+        /// Aplica diminishing returns a una probabilidad de crítico en escala 0..1 usando fórmula cap * (stat*100 / (stat*100 + K)).
+        /// </summary>
+        /// <returns></returns>
+        public static double CritChanceWithDR(double critChanceRaw, double cap, double k)
+        {
+            if (critChanceRaw <= 0)
+                return 0;
+            if (k <= 0)
+                return Math.Clamp(critChanceRaw, 0, cap);
+            double stat = critChanceRaw * 100.0; // reinterpretar como “puntos” para suavizar
+            double eff = cap * (stat / (stat + k));
+            if (eff < 0)
+                eff = 0;
+            return Math.Min(eff, cap);
         }
 
         public static double ClampCritMult(double m)

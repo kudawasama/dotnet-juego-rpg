@@ -1,0 +1,19 @@
+{
+  "Nombre": "Pantalon DIVINO GM GOD",
+  "SetId": "GM",
+  "Defensa": 30000,
+  "Nivel": 200,
+  "NivelMin": 200,
+  "NivelMax": 200,
+  "TipoObjeto": "Pantalon",
+  "Rareza": "Ornamentada",
+  "RarezasPermitidasCsv": "Ornamentada, Legendaria",
+  "Perfeccion": 100,
+  "PerfeccionMin": 100,
+  "PerfeccionMax": 100,
+  "Valor": 0,
+  "ValorVenta": 0,
+  "Durabilidad": -1,
+  "Descripcion": "Pantalón GM con defensa extrema y parámetros bloqueados para QA.",
+  "Tags": ["gm", "divino", "creador", "legendario", "ornamentada"]
+}

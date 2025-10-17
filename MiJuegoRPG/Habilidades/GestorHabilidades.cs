@@ -4,13 +4,13 @@ using MiJuegoRPG.Personaje;
 
 namespace MiJuegoRPG.Habilidades
 {
-    
     public class GestorHabilidades
     {
         // Sube experiencia, nivel y evalúa evolución de la habilidad
         public void UsarHabilidad(HabilidadProgreso habilidad, Personaje.Personaje personaje, double expGanada = 1.0)
         {
-            if (habilidad == null) return;
+            if (habilidad == null)
+                return;
 
             // Sumar experiencia
             habilidad.Exp += (int)expGanada;
@@ -19,7 +19,7 @@ namespace MiJuegoRPG.Habilidades
             while (habilidad.Exp >= ExpParaNivel(habilidad.Nivel))
             {
                 habilidad.Exp -= (int)ExpParaNivel(habilidad.Nivel);
-                
+
                 Console.WriteLine($"¡{habilidad.Nombre} subió a nivel {habilidad.Nivel}!");
             }
 
@@ -38,17 +38,18 @@ namespace MiJuegoRPG.Habilidades
         }
 
         // Experiencia necesaria para subir de nivel (puedes ajustar la fórmula)
-            // Experiencia necesaria para subir de nivel (progresión exponencial)
-            private double ExpParaNivel(int nivel)
-            {
-                // Puedes ajustar el 1.2 para más o menos dificultad
-                return 10 * Math.Pow(1.4, nivel);
-            }
+        // Experiencia necesaria para subir de nivel (progresión exponencial)
+        private double ExpParaNivel(int nivel)
+        {
+            // Puedes ajustar el 1.2 para más o menos dificultad
+            return 10 * Math.Pow(1.4, nivel);
+        }
 
         // Verifica si cumple condiciones de evolución
         private bool PuedeEvolucionar(HabilidadProgreso habilidad, Personaje.Personaje personaje)
         {
-            if (habilidad.Evoluciones == null) return false;
+            if (habilidad.Evoluciones == null)
+                return false;
             foreach (var cond in habilidad.Evoluciones[0].Condiciones)
             {
                 // Ejemplo: condición por nivel

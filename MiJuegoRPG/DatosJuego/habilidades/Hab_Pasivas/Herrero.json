@@ -1,0 +1,213 @@
+[
+    {
+        "Id": "Paciencia_Herrero",
+        "Nombre": "Paciencia de Herrero",
+        "Descripcion": "Aumenta la eficiencia en la forja, reduciendo el tiempo de crafteo.",
+        "Efecto": "Reduce el tiempo de crafteo en un 15%.",
+        "Duracion": "Permanente",
+        "Tipo": "Pasiva",
+        "Requisitos": {
+            "clase": "Herrero",
+            "HabilidadesPrevias": []
+        },
+        "Condiciones": 
+        [
+            {"Tipo": "Crafteo", "Accion": "Forjar", "Cantidad": 100},
+            {"Tipo": "Crafteo", "Accion": "CrearObjeto", "Cantidad": 100},
+            {"Tipo": "Crafteo", "Accion": "UsarHorno", "Cantidad": 100},
+            {"Tipo": "Crafteo", "Accion": "UsarYunque", "Cantidad": 50},
+            {"Tipo": "Crafteo", "Accion": "MejorarEquipo", "Cantidad": 75},
+            {"NivelPersonaje": 10}
+        ],
+        "Bonificadores": 
+        {
+            "Tiempo.Crafteo": -0.15
+        },
+        "Rareza": "Comun",
+        "Tier": 1,
+        "Categoria": "Habilidad Pasiva",
+        "Evolucion": 
+        [
+            {
+                "Id": "Paciencia_Herrero_2",
+                "Nombre": "Paciencia de Herrero Avanzada",
+                "Descripcion": "Aumenta significativamente la eficiencia en la forja, reduciendo el tiempo de crafteo.",
+                "Efecto": "Reduce el tiempo de crafteo en un 30%.",
+                "Duracion": "Permanente",
+                "Tipo": "Pasiva",
+                "Requisitos": 
+                {
+                    "clase": "Herrero",
+                    "HabilidadesPrevias": ["Paciencia_Herrero"]
+                },
+                "Condiciones": 
+                [
+                    {"Tipo": "Crafteo", "Accion": "Forjar", "Cantidad": 300},
+                    {"Tipo": "Crafteo", "Accion": "CrearObjeto", "Cantidad": 300},
+                    {"Tipo": "Crafteo", "Accion": "UsarHorno", "Cantidad": 300},
+                    {"Tipo": "Crafteo", "Accion": "UsarYunque", "Cantidad": 150},
+                    {"Tipo": "Crafteo", "Accion": "MejorarEquipo", "Cantidad": 200},
+                    {"NivelPersonaje": 20}
+                ],
+                "Bonificadores": 
+                {
+                    "Tiempo.Crafteo": -0.30
+                },
+                "Rareza": "Raro",
+                "Tier": 2,
+                "Categoria": "Habilidad Pasiva"
+            },
+            {
+                "Id": "Paciencia_Herrero_3",
+                "Nombre": "Maestría de Herrero",
+                "Descripcion": "Domina el arte de la forja, reduciendo drásticamente el tiempo de crafteo.",
+                "Efecto": "Reduce el tiempo de crafteo en un 50%.",
+                "Duracion": "Permanente",
+                "Tipo": "Pasiva",
+                "Requisitos": 
+                {
+                    "clase": "Herrero",
+                    "HabilidadesPrevias": ["Paciencia_Herrero_2"]
+                },
+                "Condiciones": 
+                [
+                    {"Tipo": "Crafteo", "Accion": "Forjar", "Cantidad": 600},
+                    {"Tipo": "Crafteo", "Accion": "CrearObjeto", "Cantidad": 600},
+                    {"Tipo": "Crafteo", "Accion": "UsarHorno", "Cantidad": 600},
+                    {"Tipo": "Crafteo", "Accion": "UsarYunque", "Cantidad": 300},
+                    {"Tipo": "Crafteo", "Accion": "MejorarEquipo", "Cantidad": 400},
+                    {"NivelPersonaje": 30}
+                ],
+                "Bonificadores": 
+                {
+                    "Tiempo.Crafteo": -0.50
+                },
+                "Rareza": "Epico",
+                "Tier": 3,
+                "Categoria": "Habilidad Pasiva"
+            }
+        ]
+    },
+    {
+        "Id": "Manos_Herrero",
+        "Nombre": "Manos de Herrero",
+        "Descripcion": "Aumenta la calidad de los objetos forjados.",
+        "Efecto": "Incrementa la calidad de los objetos forjados en un 10%.",
+        "Duracion": "Permanente",
+        "Tipo": "Pasiva",
+        "Requisitos": {
+            "clase": "Herrero",
+            "HabilidadesPrevias": []
+        },
+        "Condiciones": 
+        [
+            {"Tipo": "Crafteo", "Accion": "Forjar", "Cantidad": 100},
+            {"Tipo": "Crafteo", "Accion": "CrearObjeto", "Cantidad": 100},
+            {"Tipo": "Crafteo", "Accion": "UsarHorno", "Cantidad": 100},
+            {"Tipo": "Crafteo", "Accion": "UsarYunque", "Cantidad": 50},
+            {"Tipo": "Crafteo", "Accion": "MejorarEquipo", "Cantidad": 75},
+            {"NivelPersonaje": 10}
+        ],
+        "Bonificadores": 
+        {
+            "Calidad.Crafteo": 0.10
+        },
+        "Rareza": "Comun",
+        "Tier": 1,
+        "Categoria": "Habilidad Pasiva",
+        "Evolucion": 
+        [
+            {
+                "Id": "Manos_Herrero_2",
+                "Nombre": "Manos de Herrero Avanzadas",
+                "Descripcion": "Aumenta significativamente la calidad de los objetos forjados.",
+                "Efecto": "Incrementa la calidad de los objetos forjados en un 25%.",
+                "Duracion": "Permanente",
+                "Tipo": "Pasiva",
+                "Requisitos": 
+                {
+                    "clase": "Herrero",
+                    "HabilidadesPrevias": ["Manos_Herrero"]
+                },
+                "Condiciones": 
+                [
+                    {"Tipo": "Crafteo", "Accion": "Forjar", "Cantidad": 300},
+                    {"Tipo": "Crafteo", "Accion": "CrearObjeto", "Cantidad": 300},
+                    {"Tipo": "Crafteo", "Accion": "UsarHorno", "Cantidad": 300},
+                    {"Tipo": "Crafteo", "Accion": "UsarYunque", "Cantidad": 150},
+                    {"Tipo": "Crafteo", "Accion": "MejorarEquipo", "Cantidad": 200},
+                    {"NivelPersonaje": 20}  
+                ],
+                "Bonificadores": 
+                {
+                    "Calidad.Crafteo": 0.25
+                },
+                "Rareza": "Raro",
+                "Tier": 2,
+                "Categoria": "Habilidad Pasiva"
+            }
+        ]
+    },
+    {
+        "Id": "Forja_Rapida",
+        "Nombre": "Forja Rápida",
+        "Descripcion": "Aumenta la velocidad de forja.",
+        "Efecto": "Incrementa la velocidad de forja en un 20%.",
+        "Duracion": "Permanente",
+        "Tipo": "Pasiva",
+        "Requisitos": {
+            "clase": "Herrero",
+            "HabilidadesPrevias": []
+        },
+        "Condiciones": 
+        [
+            {"Tipo": "Crafteo", "Accion": "Forjar", "Cantidad": 100},
+            {"Tipo": "Crafteo", "Accion": "CrearObjeto", "Cantidad": 100},
+            {"Tipo": "Crafteo", "Accion": "UsarHorno", "Cantidad": 100},
+            {"Tipo": "Crafteo", "Accion": "UsarYunque", "Cantidad": 50},
+            {"Tipo": "Crafteo", "Accion": "MejorarEquipo", "Cantidad": 75},
+            {"NivelPersonaje": 10}
+        ],
+        "Bonificadores": 
+        {
+            "Velocidad.Crafteo": 0.20
+        },
+        "Rareza": "Comun",
+        "Tier": 1,
+        "Categoria": "Habilidad Pasiva",
+        
+        "Evolucion": 
+        [
+            {
+                "Id": "Forja_Rapida_2",
+                "Nombre": "Forja Rápida Avanzada",
+                "Descripcion": "Aumenta significativamente la velocidad de forja.",
+                "Efecto": "Incrementa la velocidad de forja en un 40%.",
+                "Duracion": "Permanente",
+                "Tipo": "Pasiva",
+                "Requisitos": 
+                {
+                    "clase": "Herrero",
+                    "HabilidadesPrevias": ["Forja_Rapida"]
+                },
+                "Condiciones": 
+                [
+                    {"Tipo": "Crafteo", "Accion": "Forjar", "Cantidad": 300},
+                    {"Tipo": "Crafteo", "Accion": "CrearObjeto", "Cantidad": 300},
+                    {"Tipo": "Crafteo", "Accion": "UsarHorno", "Cantidad": 300},
+                    {"Tipo": "Crafteo", "Accion": "UsarYunque", "Cantidad": 150},
+                    {"Tipo": "Crafteo", "Accion": "MejorarEquipo", "Cantidad": 200},
+                    {"NivelPersonaje": 20}  
+                ],
+                "Bonificadores": 
+                {
+                    "Velocidad.Crafteo": 0.40
+                },
+                "Rareza": "Raro",
+                "Tier": 2,
+                "Categoria": "Habilidad Pasiva"
+            }
+        ]
+
+    }
+]

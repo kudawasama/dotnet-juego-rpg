@@ -6,10 +6,17 @@ namespace MiJuegoRPG.Habilidades
 {
     public class AtaqueMagico : Habilidad
     {
-        public int DanioMagico { get; set; }
-        public int CostoMana { get; set; }
+        public int DanioMagico
+        {
+            get; set;
+        }
+        public int CostoMana
+        {
+            get; set;
+        }
 
-        public AtaqueMagico(int danioMagico, int costoMana) : base("Ataque Mágico", costoMana)
+        public AtaqueMagico(int danioMagico, int costoMana)
+            : base("Ataque Mágico", costoMana)
         {
             DanioMagico = danioMagico;
             CostoMana = costoMana;

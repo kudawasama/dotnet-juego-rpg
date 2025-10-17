@@ -1,0 +1,13 @@
+{
+  "Nombre": "Pescador",
+  "Categoria": "Profesión",
+  "Rareza": "Comun",
+  "Oculta": false,
+  "ClasesPrevias": [],
+  "NivelMinimo": 3,
+  "AtributosRequeridos": {"Destreza": 4, "Suerte": 3},
+  "EstadisticasRequeridas": {},
+  "MisionesRequeridas": ["Pescar 5 peces"],
+  "ReputacionMinima": 0,
+  "AtributosGanados": {"Destreza": 2, "Suerte": 2}
+}

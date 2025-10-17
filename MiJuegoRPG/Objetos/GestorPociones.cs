@@ -8,7 +8,7 @@ namespace MiJuegoRPG.Objetos
 {
     public static class GestorPociones
     {
-    public static string RutaPocionesJson = MiJuegoRPG.Motor.Servicios.PathProvider.PjDatosPath("pociones.json");
+        public static string RutaPocionesJson = MiJuegoRPG.Motor.Servicios.PathProvider.PjDatosPath("pociones.json");
         public static List<Pocion> PocionesDisponibles = new List<Pocion>();
 
         public static void GuardarPocionSiNoExiste(Pocion pocion)
@@ -47,12 +47,24 @@ namespace MiJuegoRPG.Objetos
         {
             if (!Path.IsPathRooted(rutaArchivo))
             {
-                var dir = Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory);
-                string rutaBase = dir?.Parent?.Parent != null ? dir.Parent.Parent.FullName : AppDomain.CurrentDomain.BaseDirectory;
-                rutaArchivo = Path.Combine(rutaBase, "MiJuegoRPG", "PjDatos", rutaArchivo);
+                rutaArchivo = MiJuegoRPG.Motor.Servicios.PathProvider.PjDatosPath(rutaArchivo);
             }
             try
             {
+                if (!File.Exists(rutaArchivo))
+                {
+                    // Fallback: DatosJuego/pociones/pociones.json
+                    var alternativa = MiJuegoRPG.Motor.Servicios.PathProvider.PocionesPath(Path.GetFileName(rutaArchivo));
+                    if (File.Exists(alternativa))
+                    {
+                        rutaArchivo = alternativa;
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Error al cargar pociones: No existe el archivo '{rutaArchivo}'");
+                        return;
+                    }
+                }
                 string jsonString = File.ReadAllText(rutaArchivo);
                 var options = new JsonSerializerOptions();
                 options.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
@@ -66,8 +78,7 @@ namespace MiJuegoRPG.Objetos
                             pocion.Nombre,
                             pocion.Curacion,
                             pocion.Rareza,
-                            pocion.Categoria
-                        ));
+                            pocion.Categoria));
                     }
                 }
             }
@@ -80,9 +91,18 @@ namespace MiJuegoRPG.Objetos
 
     public class PocionJson
     {
-        public required string Nombre { get; set; }
-        public int Curacion { get; set; }
-        public Rareza Rareza { get; set; }
-        public required string Categoria { get; set; }
+        public required string Nombre
+        {
+            get; set;
+        }
+        public int Curacion
+        {
+            get; set;
+        }
+        public string Rareza { get; set; } = "Normal";
+        public required string Categoria
+        {
+            get; set;
+        }
     }
 }

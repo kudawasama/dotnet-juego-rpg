@@ -1,0 +1,8 @@
+{
+  "id": "estrella_de_mar",
+  "nombre": "Estrella de Mar",
+  "descripcion": "Animal marino de cinco brazos, usado en pociones y amuletos.",
+  "rareza": "raro",
+  "categoria": "animal",
+  "especialidad": "alquimista"
+}

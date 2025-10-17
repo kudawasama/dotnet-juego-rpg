@@ -1,0 +1,8 @@
+{
+  "id": "planta_resistente",
+  "nombre": "Planta Resistente",
+  "descripcion": "Planta adaptada a climas extremos, base para fibras y medicinas.",
+  "rareza": "comun",
+  "categoria": "planta",
+  "especialidad": "curtidor"
+}

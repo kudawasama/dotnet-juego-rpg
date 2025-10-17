@@ -1,0 +1,14 @@
+{
+  "Nombre": "Explorador",
+  "Categoria": "Profesión",
+  "Rareza": "Rara",
+  "Oculta": true,
+  "ClasesPrevias": [],
+  "NivelMinimo": 8,
+  "AtributosRequeridos": { "Agilidad": 10, "Percepcion": 8 },
+  "MisionesRequeridas": ["Descubrir una zona secreta"],
+  "AtributosGanados": { "Agilidad": 2, "Percepcion": 2 },
+  "ActividadRequerida": { "Exploracion.ZonasDescubiertas": 5 },
+  "Tier": 1,
+  "Rama": "Oficio"
+}

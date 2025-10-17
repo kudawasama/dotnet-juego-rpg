@@ -1,0 +1,8 @@
+{
+  "id": "mineral_de_carbon",
+  "nombre": "Mineral de Carbon",
+  "descripcion": "Mineral usado como combustible y en forja.",
+  "rareza": "comun",
+  "categoria": "mineral",
+  "especialidad": "herrero"
+}

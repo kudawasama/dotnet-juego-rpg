@@ -1,0 +1,8 @@
+{
+  "id": "hoja_magica",
+  "nombre": "Hoja Mágica",
+  "descripcion": "Hoja recolectada de árboles mágicos, útil en pociones y rituales.",
+  "rareza": "comun",
+  "categoria": "planta",
+  "especialidad": "herbolario"
+}

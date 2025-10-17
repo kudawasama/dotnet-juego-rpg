@@ -23,23 +23,53 @@ namespace MiJuegoRPG.Motor.Servicios
 
     public class EntradaEncuentro
     {
-        public TipoEncuentro Tipo { get; set; }
-        public int Peso { get; set; } // peso relativo
+        public TipoEncuentro Tipo
+        {
+            get; set;
+        }
+        public int Peso
+        {
+            get; set;
+        } // peso relativo
         // Parámetros opcionales (p. ej., subtipos: "raton","lobo","cofre_pequeno")
-        public string? Param { get; set; }
+        public string? Param
+        {
+            get; set;
+        }
         // Requisitos suaves (nivel mínimo, killcount, hora del día, reputación, etc.)
-        public int? MinNivel { get; set; }
-        public int? MinKills { get; set; }
+        public int? MinNivel
+        {
+            get; set;
+        }
+        public int? MinKills
+        {
+            get; set;
+        }
         // Franja horaria opcional [0-23]. Si ambos null → sin restricción.
         // Si HoraMin <= HoraMax: ventana directa (p.ej., 6..18). Si cruza medianoche (HoraMin > HoraMax): válido si hora >= HoraMin o hora <= HoraMax.
-        public int? HoraMin { get; set; }
-        public int? HoraMax { get; set; }
+        public int? HoraMin
+        {
+            get; set;
+        }
+        public int? HoraMax
+        {
+            get; set;
+        }
         // Probabilidad directa de activación (0..1). Si se define, se evalúa primero y, si pasa el roll, se prioriza este encuentro.
-        public double? Chance { get; set; }
+        public double? Chance
+        {
+            get; set;
+        }
         // Prioridad opcional para resolver colisiones entre múltiples entradas con Chance. Mayor → más prioridad.
-        public int? Prioridad { get; set; }
+        public int? Prioridad
+        {
+            get; set;
+        }
         // Cooldown opcional en minutos: si se define, tras activarse este encuentro no puede volver a salir hasta que pase el tiempo indicado.
-        public int? CooldownMinutos { get; set; }
+        public int? CooldownMinutos
+        {
+            get; set;
+        }
     }
 
     public class TablaEncuentrosBioma
@@ -50,21 +80,33 @@ namespace MiJuegoRPG.Motor.Servicios
 
     public class EncuentroResuelto
     {
-        public TipoEncuentro Tipo { get; set; }
-        public string? Param { get; set; }
+        public TipoEncuentro Tipo
+        {
+            get; set;
+        }
+        public string? Param
+        {
+            get; set;
+        }
     }
 
     public class EncuentrosService
     {
-        private readonly Dictionary<string, TablaEncuentrosBioma> _tablas = new(StringComparer.OrdinalIgnoreCase);
-        private readonly RandomService _rng = RandomService.Instancia;
+        private readonly Dictionary<string, TablaEncuentrosBioma> tablas = new(StringComparer.OrdinalIgnoreCase);
+        private readonly RandomService rng = RandomService.Instancia;
         // Para pruebas/QA: permite inyectar la hora actual sin depender de Juego/DateTime.Now
-        public Func<int>? HoraActualProvider { get; set; }
+        public Func<int>? HoraActualProvider
+        {
+            get; set;
+        }
         // Para pruebas/QA: permite inyectar la fecha/hora actual completa para evaluar cooldowns
-        public Func<DateTime>? FechaActualProvider { get; set; }
+        public Func<DateTime>? FechaActualProvider
+        {
+            get; set;
+        }
 
         // Registro de último disparo por clave (bioma|tipo|param)
-        private readonly Dictionary<string, DateTime> _ultimoDisparo = new();
+        private readonly Dictionary<string, DateTime> ultimoDisparo = new();
 
         private int ObtenerHoraActual()
         {
@@ -88,9 +130,10 @@ namespace MiJuegoRPG.Motor.Servicios
 
         private bool EstaEnCooldown(string bioma, EntradaEncuentro e, DateTime ahora)
         {
-            if (e.CooldownMinutos == null || e.CooldownMinutos!.Value <= 0) return false;
+            if (e.CooldownMinutos == null || e.CooldownMinutos!.Value <= 0)
+                return false;
             var clave = ClaveEncuentro(bioma, e);
-            if (_ultimoDisparo.TryGetValue(clave, out var t))
+            if (ultimoDisparo.TryGetValue(clave, out var t))
             {
                 var dt = ahora - t;
                 return dt.TotalMinutes < e.CooldownMinutos!.Value;
@@ -100,24 +143,26 @@ namespace MiJuegoRPG.Motor.Servicios
 
         private void RegistrarDisparo(string bioma, EntradaEncuentro e, DateTime ahora)
         {
-            if (e.CooldownMinutos == null || e.CooldownMinutos!.Value <= 0) return;
+            if (e.CooldownMinutos == null || e.CooldownMinutos!.Value <= 0)
+                return;
             var clave = ClaveEncuentro(bioma, e);
-            _ultimoDisparo[clave] = ahora;
+            ultimoDisparo[clave] = ahora;
         }
 
         // Persistencia ligera (para guardado/carga): exportar/importar registro de últimos disparos
         public Dictionary<string, DateTime> ExportarCooldowns()
         {
-            return new Dictionary<string, DateTime>(_ultimoDisparo);
+            return new Dictionary<string, DateTime>(ultimoDisparo);
         }
 
         public void ImportarCooldowns(Dictionary<string, DateTime> data)
         {
-            _ultimoDisparo.Clear();
-            if (data == null) return;
+            ultimoDisparo.Clear();
+            if (data == null)
+                return;
             foreach (var kv in data)
             {
-                _ultimoDisparo[kv.Key] = kv.Value;
+                ultimoDisparo[kv.Key] = kv.Value;
             }
         }
 
@@ -126,11 +171,26 @@ namespace MiJuegoRPG.Motor.Servicios
         {
             public string Clave { get; set; } = string.Empty; // bioma|tipo|param
             public string Bioma { get; set; } = string.Empty;
-            public TipoEncuentro Tipo { get; set; }
-            public string? Param { get; set; }
-            public DateTime UltimoDisparo { get; set; }
-            public int? CooldownMinutos { get; set; }
-            public double RestanteMinutos { get; set; }
+            public TipoEncuentro Tipo
+            {
+                get; set;
+            }
+            public string? Param
+            {
+                get; set;
+            }
+            public DateTime UltimoDisparo
+            {
+                get; set;
+            }
+            public int? CooldownMinutos
+            {
+                get; set;
+            }
+            public double RestanteMinutos
+            {
+                get; set;
+            }
         }
 
         // Listado de cooldowns con restante calculado según tablas cargadas
@@ -138,7 +198,7 @@ namespace MiJuegoRPG.Motor.Servicios
         {
             var ahora = ObtenerFechaActual();
             var lista = new List<EncuentroCooldownEstado>();
-            foreach (var kv in _ultimoDisparo)
+            foreach (var kv in ultimoDisparo)
             {
                 var partes = kv.Key.Split('|');
                 string bioma = partes.Length > 0 ? partes[0] : string.Empty;
@@ -146,7 +206,7 @@ namespace MiJuegoRPG.Motor.Servicios
                 string? param = partes.Length > 2 ? partes[2] : null;
                 TipoEncuentro tipo = Enum.TryParse<TipoEncuentro>(tipoStr, true, out var t) ? t : TipoEncuentro.Nada;
                 int? cd = null;
-                if (_tablas.TryGetValue(bioma, out var tabla))
+                if (tablas.TryGetValue(bioma, out var tabla))
                 {
                     var e = tabla.Entradas.FirstOrDefault(x => x.Tipo == tipo && string.Equals(x.Param ?? string.Empty, param ?? string.Empty, StringComparison.OrdinalIgnoreCase));
                     cd = e?.CooldownMinutos;
@@ -178,11 +238,11 @@ namespace MiJuegoRPG.Motor.Servicios
             int removidos = 0;
             if (!soloVencidos)
             {
-                removidos = _ultimoDisparo.Count;
-                _ultimoDisparo.Clear();
+                removidos = ultimoDisparo.Count;
+                ultimoDisparo.Clear();
                 return removidos;
             }
-            var claves = _ultimoDisparo.Keys.ToList();
+            var claves = ultimoDisparo.Keys.ToList();
             foreach (var clave in claves)
             {
                 var partes = clave.Split('|');
@@ -191,7 +251,7 @@ namespace MiJuegoRPG.Motor.Servicios
                 string? param = partes.Length > 2 ? partes[2] : null;
                 TipoEncuentro tipo = Enum.TryParse<TipoEncuentro>(tipoStr, true, out var t) ? t : TipoEncuentro.Nada;
                 int? cd = null;
-                if (_tablas.TryGetValue(bioma, out var tabla))
+                if (tablas.TryGetValue(bioma, out var tabla))
                 {
                     var e = tabla.Entradas.FirstOrDefault(x => x.Tipo == tipo && string.Equals(x.Param ?? string.Empty, param ?? string.Empty, StringComparison.OrdinalIgnoreCase));
                     cd = e?.CooldownMinutos;
@@ -199,16 +259,16 @@ namespace MiJuegoRPG.Motor.Servicios
                 if (!cd.HasValue || cd.Value <= 0)
                 {
                     // Si no hay cooldown configurado, considerar no vigente → limpiar
-                    _ultimoDisparo.Remove(clave);
+                    ultimoDisparo.Remove(clave);
                     removidos++;
                 }
                 else
                 {
-                    var t0 = _ultimoDisparo[clave];
+                    var t0 = ultimoDisparo[clave];
                     var dt = ahora - t0;
                     if (dt.TotalMinutes >= cd.Value)
                     {
-                        _ultimoDisparo.Remove(clave);
+                        ultimoDisparo.Remove(clave);
                         removidos++;
                     }
                 }
@@ -218,7 +278,7 @@ namespace MiJuegoRPG.Motor.Servicios
 
         public void RegistrarTabla(TablaEncuentrosBioma tabla)
         {
-            _tablas[tabla.Bioma] = tabla;
+            tablas[tabla.Bioma] = tabla;
         }
 
         public bool CargarDesdeJsonPorDefecto()
@@ -226,14 +286,16 @@ namespace MiJuegoRPG.Motor.Servicios
             try
             {
                 var ruta = PathProvider.CombineData("eventos", "encuentros.json");
-                if (!File.Exists(ruta)) return false;
+                if (!File.Exists(ruta))
+                    return false;
                 var json = File.ReadAllText(ruta);
                 var opts = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
                 opts.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
                 var tablas = JsonSerializer.Deserialize<List<TablaEncuentrosBioma>>(json, opts) ?? new List<TablaEncuentrosBioma>();
-                _tablas.Clear();
-                foreach (var t in tablas) RegistrarTabla(t);
-                Logger.Info($"[Encuentros] Tablas cargadas desde JSON ({_tablas.Count} biomas). Ruta: {ruta}");
+                this.tablas.Clear();
+                foreach (var t in tablas)
+                    RegistrarTabla(t);
+                Logger.Info($"[Encuentros] Tablas cargadas desde JSON ({this.tablas.Count} biomas). Ruta: {ruta}");
                 return true;
             }
             catch (Exception ex)
@@ -282,9 +344,9 @@ namespace MiJuegoRPG.Motor.Servicios
         }
 
         // Resolver clásico (compatibilidad): sin stats del jugador
-        public EncuentroResuelto Resolver(string bioma, int nivelJugador, Func<string,int?> getKillCount)
+        public EncuentroResuelto Resolver(string bioma, int nivelJugador, Func<string, int?> getKillCount)
         {
-            if (!_tablas.TryGetValue(bioma, out var tabla))
+            if (!tablas.TryGetValue(bioma, out var tabla))
             {
                 // Fallback si no hay tabla: preferir comunes
                 tabla = new TablaEncuentrosBioma
@@ -317,7 +379,7 @@ namespace MiJuegoRPG.Motor.Servicios
             foreach (var e in conChance)
             {
                 double p = Math.Clamp(e.Chance!.Value, 0.0, 1.0);
-                if (_rng.NextDouble() < p)
+                if (rng.NextDouble() < p)
                     pasaron.Add(e);
             }
             if (pasaron.Count > 0)
@@ -333,8 +395,9 @@ namespace MiJuegoRPG.Motor.Servicios
             // 2) Fallback: selección ponderada entre las entradas sin Chance
             var sinChance = candidatas.Where(e => e.Chance == null).ToList();
             int totalPeso = sinChance.Sum(e => Math.Max(0, e.Peso));
-            if (totalPeso <= 0) return new EncuentroResuelto { Tipo = TipoEncuentro.Nada };
-            int r = _rng.Next(1, totalPeso + 1);
+            if (totalPeso <= 0)
+                return new EncuentroResuelto { Tipo = TipoEncuentro.Nada };
+            int r = rng.Next(1, totalPeso + 1);
             int acumulado = 0;
             foreach (var e in sinChance)
             {
@@ -349,12 +412,12 @@ namespace MiJuegoRPG.Motor.Servicios
         }
 
         // Resolver con modificadores por estadísticas/habilidades/clase y kills
-    public EncuentroResuelto Resolver(string bioma, PersonajeModel jugador, Func<string,int?> getKillCount)
+        public EncuentroResuelto Resolver(string bioma, PersonajeModel jugador, Func<string, int?> getKillCount)
         {
-            if (!_tablas.TryGetValue(bioma, out var tabla))
+            if (!tablas.TryGetValue(bioma, out var tabla))
             {
                 RegistrarTablasPorDefecto();
-                _tablas.TryGetValue(bioma, out tabla);
+                tablas.TryGetValue(bioma, out tabla);
             }
             if (tabla == null)
             {
@@ -379,7 +442,7 @@ namespace MiJuegoRPG.Motor.Servicios
             foreach (var e in conChance)
             {
                 double p = Math.Clamp(e.Chance!.Value, 0.0, 1.0);
-                if (_rng.NextDouble() < p)
+                if (rng.NextDouble() < p)
                     activadas.Add(e);
             }
             if (activadas.Count > 0)
@@ -399,11 +462,13 @@ namespace MiJuegoRPG.Motor.Servicios
             {
                 double mod = CalcularModificador(e, jugador, getKillCount, bioma);
                 int p = (int)Math.Round(Math.Max(0, e.Peso) * mod);
-                if (p > 0) pesos.Add((e, p));
+                if (p > 0)
+                    pesos.Add((e, p));
             }
             int total = pesos.Sum(x => x.peso);
-            if (total <= 0) return new EncuentroResuelto { Tipo = TipoEncuentro.Nada };
-            int r = _rng.Next(1, total + 1);
+            if (total <= 0)
+                return new EncuentroResuelto { Tipo = TipoEncuentro.Nada };
+            int r = rng.Next(1, total + 1);
             int acc = 0;
             foreach (var par in pesos)
             {
@@ -421,19 +486,25 @@ namespace MiJuegoRPG.Motor.Servicios
 
         private static bool CumpleHora(EntradaEncuentro e, int hora)
         {
-            if (e.HoraMin == null && e.HoraMax == null) return true;
-            int? min = e.HoraMin; int? max = e.HoraMax;
-            if (min == null && max != null) return hora <= max.Value; // Solo límite superior
-            if (min != null && max == null) return hora >= min.Value; // Solo límite inferior
-            if (min == null && max == null) return true;
+            if (e.HoraMin == null && e.HoraMax == null)
+                return true;
+            int? min = e.HoraMin;
+            int? max = e.HoraMax;
+            if (min == null && max != null)
+                return hora <= max.Value; // Solo límite superior
+            if (min != null && max == null)
+                return hora >= min.Value; // Solo límite inferior
+            if (min == null && max == null)
+                return true;
             int mi = Math.Clamp(min!.Value, 0, 23);
             int ma = Math.Clamp(max!.Value, 0, 23);
-            if (mi <= ma) return hora >= mi && hora <= ma; // ventana directa
+            if (mi <= ma)
+                return hora >= mi && hora <= ma; // ventana directa
             // Cruza medianoche (ej.: 20..4) → válido si hora >= mi o hora <= ma
             return hora >= mi || hora <= ma;
         }
 
-    private double CalcularModificador(EntradaEncuentro e, PersonajeModel jugador, Func<string,int?> getKillCount, string bioma)
+        private double CalcularModificador(EntradaEncuentro e, PersonajeModel jugador, Func<string, int?> getKillCount, string bioma)
         {
             // Base 1.0, aumentos suaves por atributos/skills (sin romper progresión lenta)
             double f = 1.0;
@@ -464,9 +535,10 @@ namespace MiJuegoRPG.Motor.Servicios
                         int req = e.MinKills ?? 0;
                         string clave = e.Param?.Split(':').Last() ?? string.Empty; // p.ej., "lobo"
                         int k = string.IsNullOrWhiteSpace(clave) ? 0 : (getKillCount(clave) ?? 0);
-                        if (k < req) return 0.0; // no elegible
+                        if (k < req)
+                            return 0.0; // no elegible
                         int extra = Math.Max(0, k - req);
-                        f += Clamp(0.02 * extra + suerte / 500.0, 0.0, 0.5); // máx. +50%
+                        f += Clamp((0.02 * extra) + (suerte / 500.0), 0.0, 0.5); // máx. +50%
                     }
                     break;
             }

@@ -12,6 +12,13 @@
   "ManaRegenFueraBase": 0.5,
   "ManaRegenFueraFactor": 0.05,
   "ManaRegenFueraMaxPorTick": 3.0,
+  "ActionPoints": {
+    "BasePA": 3,
+    "PAMax": 6,
+    "DivAgi": 30,
+    "DivDex": 40,
+    "DivNivel": 10
+  },
   "Indices": {
     "Fuerza": 3.0,
     "Inteligencia": 8.0,

@@ -1,0 +1,48 @@
+{
+    "version": "1.0",
+    "descripcion": "Archivo de definición de mochilas para el juego RPG.",
+    "mochilas": [
+        {
+            "id": 1,
+            "nombre": "Mochila Muy Amplia",
+            "capacidad": 100,
+            "pesoMaximo": 50.0,
+            "precio": 2000,
+            "material": "Cuero reforzado",
+            "color": "Negro",
+            "resistenciaAgua": true,
+            "compartimentos": [
+                {
+                    "nombre": "Principal",
+                    "capacidad": 60
+                },
+                {
+                    "nombre": "Frontal",
+                    "capacidad": 20
+                },
+                {
+                    "nombre": "Lateral Izquierdo",
+                    "capacidad": 10
+                },
+                {
+                    "nombre": "Lateral Derecho",
+                    "capacidad": 10
+                }
+            ],
+            "pesoVacio": 2.5,
+            
+            "HabilidadesOtorgadas": [
+                {
+                    "nombre": "Resistencia al Agua",
+                    "descripcion": "Protege los objetos dentro de la mochila de daños por agua."
+                }
+                
+                
+            ],
+            "nivelRequerido": 5,
+            "durabilidad": 100,
+            "marca": "Aventurero Pro",
+            "descripcion": "Mochila diseñada para largas travesías, con gran capacidad y múltiples compartimentos."
+        }
+    ]
+}

@@ -2,40 +2,56 @@ using System;
 
 namespace MiJuegoRPG.Motor.Servicios
 {
-    /// Servicio centralizado para generación aleatoria.
-    /// Permite inyectar una semilla futura para pruebas deterministas.
+    // Servicio centralizado para generación aleatoria.
+    // Permite inyectar una semilla futura para pruebas deterministas.
     public sealed class RandomService
     {
-        private static readonly Lazy<RandomService> _instancia = new(() => new RandomService());
-        public static RandomService Instancia => _instancia.Value;
+        private static readonly Lazy<RandomService> instancia = new(() => new RandomService(true));
+        public static RandomService Instancia => instancia.Value;
 
-    private Random _random;
-    private readonly object _lock = new();
+        private Random random;
+        private readonly object @lock = new();
 
-        private RandomService()
+        // Constructor público para tests
+        public RandomService()
         {
-            _random = new Random();
+            random = new Random();
+        }
+
+        // Constructor para singleton (interno)
+        private RandomService(bool singleton)
+        {
+            random = new Random();
         }
 
         public void SetSeed(int seed)
         {
-            lock (_lock)
+            lock (@lock)
             {
-                _random = new Random(seed);
+                random = new Random(seed);
             }
         }
 
         public int Next(int max)
         {
-            lock (_lock) { return _random.Next(max); }
+            lock (@lock)
+            {
+                return random.Next(max);
+            }
         }
         public int Next(int min, int max)
         {
-            lock (_lock) { return _random.Next(min, max); }
+            lock (@lock)
+            {
+                return random.Next(min, max);
+            }
         }
         public double NextDouble()
         {
-            lock (_lock) { return _random.NextDouble(); }
+            lock (@lock)
+            {
+                return random.NextDouble();
+            }
         }
     }
 }

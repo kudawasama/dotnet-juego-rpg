@@ -41,7 +41,11 @@ namespace MiJuegoRPG.Motor
                 Console.WriteLine("Opción no válida.");
                 return;
             }
-            if (sel == 0) { Console.WriteLine("Saliendo..."); return; }
+            if (sel == 0)
+            {
+                Console.WriteLine("Saliendo...");
+                return;
+            }
             var mapping = new (int key, MiJuegoRPG.Dominio.Atributo atr)[] {
                 (1, MiJuegoRPG.Dominio.Atributo.Fuerza),
                 (2, MiJuegoRPG.Dominio.Atributo.Inteligencia),
@@ -62,19 +66,22 @@ namespace MiJuegoRPG.Motor
                 return;
             }
             bool cancelado = false;
-        var progService = juego.ProgressionService;
-        for (int i = 0; i < minutos && !cancelado; i++)
+            var progService = juego.ProgressionService;
+            for (int i = 0; i < minutos && !cancelado; i++)
             {
                 for (int s = 0; s < 60 && !cancelado; s++)
                 {
-                    if (juego.jugador != null)
-                        progService?.AplicarEntrenamiento(juego.jugador, atrSel, 1);
-                    DateTime tiempoActual = juego.FechaInicio.AddSeconds(juego.MinutosMundo * 60 + s);
+                    if (juego.Jugador != null)
+                        progService?.AplicarEntrenamiento(juego.Jugador, atrSel, 1);
+                    DateTime tiempoActual = juego.FechaInicio.AddSeconds((juego.MinutosMundo * 60) + s);
                     Console.WriteLine($"Reloj mundial: [{tiempoActual:dd-MM-yyyy // HH:mm:ss}]");
                     for (int t = 0; t < 10; t++)
                     {
                         if (Console.KeyAvailable && Console.ReadKey(true).Key == ConsoleKey.C)
-                        { cancelado = true; break; }
+                        {
+                            cancelado = true;
+                            break;
+                        }
                         Thread.Sleep(100);
                     }
                 }

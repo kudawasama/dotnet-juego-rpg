@@ -18,16 +18,19 @@ namespace MiJuegoRPG.Motor.Servicios
         /// <summary>
         /// Obtiene la penetración efectiva (clamp defensivo 0..0.9) y la limpia opcionalmente.
         /// </summary>
+        /// <returns></returns>
         public static double GetPenetracion(bool clear = false)
         {
             double val = Math.Clamp(AttackerPenetracion ?? 0.0, 0.0, 0.9);
-            if (clear) AttackerPenetracion = null;
+            if (clear)
+                AttackerPenetracion = null;
             return val;
         }
 
         /// <summary>
         /// Helper para ejecutar una acción con una penetración temporal establecida.
         /// </summary>
+        /// <returns></returns>
         public static T WithPenetracion<T>(double pen, Func<T> action)
         {
             var prev = AttackerPenetracion;

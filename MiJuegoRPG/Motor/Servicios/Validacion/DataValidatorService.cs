@@ -17,8 +17,14 @@ namespace MiJuegoRPG.Motor.Servicios.Validacion
     {
         public class Resultado
         {
-            public int Errores { get; set; }
-            public int Advertencias { get; set; }
+            public int Errores
+            {
+                get; set;
+            }
+            public int Advertencias
+            {
+                get; set;
+            }
             public List<string> Mensajes { get; } = new();
             public bool IsOk => Errores == 0;
         }
@@ -97,7 +103,8 @@ namespace MiJuegoRPG.Motor.Servicios.Validacion
                         }
                         foreach (var m in lista)
                         {
-                            if (m == null) continue;
+                            if (m == null)
+                                continue;
                             // UbicacionNPC puede ser nombre o id; si parece id de sector, validar
                             if (!string.IsNullOrWhiteSpace(m.UbicacionNPC) && EsSectorId(m.UbicacionNPC!) && !idsMapa.Contains(m.UbicacionNPC!))
                             {
@@ -124,7 +131,8 @@ namespace MiJuegoRPG.Motor.Servicios.Validacion
                             {
                                 foreach (var c in m.Condiciones)
                                 {
-                                    if (string.IsNullOrWhiteSpace(c)) continue;
+                                    if (string.IsNullOrWhiteSpace(c))
+                                        continue;
                                     const string pref = "Completar ";
                                     if (c.StartsWith(pref, StringComparison.OrdinalIgnoreCase))
                                     {
@@ -170,18 +178,19 @@ namespace MiJuegoRPG.Motor.Servicios.Validacion
                             if (!string.IsNullOrWhiteSpace(npc?.Ubicacion) && EsSectorId(npc.Ubicacion!) && !idsMapa.Contains(npc.Ubicacion!))
                             {
                                 res.Errores++;
-                                res.Mensajes.Add($"[Validador][ERR] NPC {(npc.Id ?? "<sin-id>")} referencia sector inexistente en Ubicacion: {npc.Ubicacion}");
+                                res.Mensajes.Add($"[Validador][ERR] NPC {npc.Id ?? "<sin-id>"} referencia sector inexistente en Ubicacion: {npc.Ubicacion}");
                             }
 
                             if (npc?.Misiones != null)
                             {
                                 foreach (var mid in npc.Misiones)
                                 {
-                                    if (string.IsNullOrWhiteSpace(mid)) continue;
+                                    if (string.IsNullOrWhiteSpace(mid))
+                                        continue;
                                     if (!idsMisiones.Contains(mid))
                                     {
                                         res.Errores++;
-                                        res.Mensajes.Add($"[Validador][ERR] NPC {(npc.Id ?? "<sin-id>")} refiere misión inexistente: {mid}");
+                                        res.Mensajes.Add($"[Validador][ERR] NPC {npc.Id ?? "<sin-id>"} refiere misión inexistente: {mid}");
                                     }
                                 }
                             }
@@ -209,7 +218,8 @@ namespace MiJuegoRPG.Motor.Servicios.Validacion
                         try
                         {
                             var texto = File.ReadAllText(archivo);
-                            if (string.IsNullOrWhiteSpace(texto)) continue;
+                            if (string.IsNullOrWhiteSpace(texto))
+                                continue;
                             var sector = JsonSerializer.Deserialize<PjDatos.SectorData>(texto, opciones);
                             if (sector != null && sector.NodosRecoleccion != null)
                             {
@@ -226,7 +236,7 @@ namespace MiJuegoRPG.Motor.Servicios.Validacion
                                     if (nodo.Materiales == null)
                                     {
                                         res.Advertencias++;
-                                        res.Mensajes.Add($"[Validador][WARN] Nodo '{nodo.Nombre ?? ("#"+idxNodo)}' en {sector.Id} sin lista de Materiales ({archivo})");
+                                        res.Mensajes.Add($"[Validador][WARN] Nodo '{nodo.Nombre ?? ("#" + idxNodo)}' en {sector.Id} sin lista de Materiales ({archivo})");
                                         continue;
                                     }
                                     foreach (var mat in nodo.Materiales)
@@ -234,18 +244,18 @@ namespace MiJuegoRPG.Motor.Servicios.Validacion
                                         if (mat == null)
                                         {
                                             res.Errores++;
-                                            res.Mensajes.Add($"[Validador][ERR] Nodo '{nodo.Nombre ?? ("#"+idxNodo)}' en {sector.Id} contiene material nulo ({archivo})");
+                                            res.Mensajes.Add($"[Validador][ERR] Nodo '{nodo.Nombre ?? ("#" + idxNodo)}' en {sector.Id} contiene material nulo ({archivo})");
                                             continue;
                                         }
                                         if (string.IsNullOrWhiteSpace(mat.Nombre))
                                         {
                                             res.Errores++;
-                                            res.Mensajes.Add($"[Validador][ERR] Nodo '{nodo.Nombre ?? ("#"+idxNodo)}' en {sector.Id} contiene material con Nombre vacío ({archivo})");
+                                            res.Mensajes.Add($"[Validador][ERR] Nodo '{nodo.Nombre ?? ("#" + idxNodo)}' en {sector.Id} contiene material con Nombre vacío ({archivo})");
                                         }
                                         if (mat.Cantidad <= 0)
                                         {
                                             res.Advertencias++;
-                                            res.Mensajes.Add($"[Validador][WARN] Nodo '{nodo.Nombre ?? ("#"+idxNodo)}' en {sector.Id} contiene material '{mat.Nombre}' con Cantidad <= 0 ({archivo})");
+                                            res.Mensajes.Add($"[Validador][WARN] Nodo '{nodo.Nombre ?? ("#" + idxNodo)}' en {sector.Id} contiene material '{mat.Nombre}' con Cantidad <= 0 ({archivo})");
                                         }
                                     }
                                 }
@@ -270,12 +280,43 @@ namespace MiJuegoRPG.Motor.Servicios.Validacion
                     // Merge resultados
                     res.Errores += resEnem.Errores;
                     res.Advertencias += resEnem.Advertencias;
-                    foreach (var m in resEnem.Mensajes) res.Mensajes.Add(m);
+                    foreach (var m in resEnem.Mensajes)
+                        res.Mensajes.Add(m);
                 }
                 catch (Exception ex)
                 {
                     res.Advertencias++;
                     res.Mensajes.Add($"[Validador][WARN] No se pudo validar enemigos: {ex.Message}");
+                }
+
+                // 7) Armas: rareza y perfección
+                try
+                {
+                    var resArmas = ValidarArmasBasico();
+                    res.Errores += resArmas.Errores;
+                    res.Advertencias += resArmas.Advertencias;
+                    foreach (var m in resArmas.Mensajes)
+                        res.Mensajes.Add(m);
+                }
+                catch (Exception ex)
+                {
+                    res.Advertencias++;
+                    res.Mensajes.Add($"[Validador][WARN] No se pudo validar armas: {ex.Message}");
+                }
+
+                // 8) Pociones: duplicados por nombre
+                try
+                {
+                    var resPoc = ValidarPocionesBasico();
+                    res.Errores += resPoc.Errores;
+                    res.Advertencias += resPoc.Advertencias;
+                    foreach (var m in resPoc.Mensajes)
+                        res.Mensajes.Add(m);
+                }
+                catch (Exception ex)
+                {
+                    res.Advertencias++;
+                    res.Mensajes.Add($"[Validador][WARN] No se pudo validar pociones: {ex.Message}");
                 }
             }
             catch (Exception ex)
@@ -288,7 +329,8 @@ namespace MiJuegoRPG.Motor.Servicios.Validacion
                 if (!res.IsOk)
                 {
                     Console.WriteLine($"[Validador] Finalizado con {res.Errores} errores y {res.Advertencias} advertencias");
-                    foreach (var m in res.Mensajes) Console.WriteLine(m);
+                    foreach (var m in res.Mensajes)
+                        Console.WriteLine(m);
                 }
                 else
                 {
@@ -327,13 +369,157 @@ namespace MiJuegoRPG.Motor.Servicios.Validacion
         }
 
         /// <summary>
+        /// Valida armas en Equipo/armas.json (si existe):
+        /// - Duplicados por Nombre
+        /// - Perfeccion fuera de [0..100] -> advertencia (no error para permitir overquality legacy)
+        /// - Rareza no en catálogo -> advertencia y sugiere minúscula.
+        /// </summary>
+        /// <returns></returns>
+        public static Resultado ValidarArmasBasico()
+        {
+            var res = new Resultado();
+            var ruta = PathProvider.EquipoPath("armas.json");
+            if (!File.Exists(ruta))
+            {
+                res.Advertencias++;
+                res.Mensajes.Add($"[Armas][WARN] No existe archivo armas.json en {ruta}");
+                return res;
+            }
+            try
+            {
+                var json = File.ReadAllText(ruta);
+                if (string.IsNullOrWhiteSpace(json))
+                    return res;
+                using var doc = JsonDocument.Parse(json);
+                if (doc.RootElement.ValueKind != JsonValueKind.Array)
+                {
+                    res.Errores++;
+                    res.Mensajes.Add("[Armas][ERR] Raíz no es array");
+                    return res;
+                }
+                var nombres = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                foreach (var el in doc.RootElement.EnumerateArray())
+                {
+                    string nombre = el.TryGetProperty("Nombre", out var pn) ? pn.GetString() ?? "" : "";
+                    string rareza = el.TryGetProperty("Rareza", out var pr) ? pr.GetString() ?? "" : "";
+                    int perfeccion = el.TryGetProperty("Perfeccion", out var pp) && pp.TryGetInt32(out var pf) ? pf : 50;
+                    if (string.IsNullOrWhiteSpace(nombre))
+                    {
+                        res.Errores++;
+                        res.Mensajes.Add("[Armas][ERR] Arma sin Nombre");
+                    }
+                    else if (!nombres.Add(nombre))
+                    {
+                        res.Errores++;
+                        res.Mensajes.Add($"[Armas][ERR] Nombre duplicado '{nombre}'");
+                    }
+                    if (perfeccion < 0 || perfeccion > 200) // límite duro para detectar corrupciones
+                    {
+                        res.Errores++;
+                        res.Mensajes.Add($"[Armas][ERR] Perfeccion fuera de [0..200] en '{nombre}' ({perfeccion})");
+                    }
+                    else if (perfeccion > 100)
+                    {
+                        res.Advertencias++;
+                        res.Mensajes.Add($"[Armas][WARN] Perfeccion >100 en '{nombre}' ({perfeccion}) (overquality legacy)");
+                    }
+                    if (!string.IsNullOrWhiteSpace(rareza))
+                    {
+                        var norm = rareza.Trim();
+                        // Catálogo mínimo conocido (sin forzar error si aparecen otras futuras)
+                        var catalogo = new[] { "Rota", "Pobre", "Normal", "Superior", "Rara", "Epica", "Legendaria", "Ornamentada" };
+                        if (!catalogo.Contains(norm, StringComparer.OrdinalIgnoreCase))
+                        {
+                            res.Advertencias++;
+                            res.Mensajes.Add($"[Armas][WARN] Rareza desconocida '{rareza}' en '{nombre}'");
+                        }
+                    }
+                }
+                res.Mensajes.Add($"[Armas] Validadas {nombres.Count} armas");
+            }
+            catch (Exception ex)
+            {
+                res.Errores++;
+                res.Mensajes.Add($"[Armas][ERR] Excepción leyendo armas.json: {ex.Message}");
+            }
+            return res;
+        }
+
+        /// <summary>
+        /// Valida pociones en pociones/pociones.json:
+        /// - Duplicados por Nombre (error)
+        /// - Rareza vacía -> advertencia.
+        /// </summary>
+        /// <returns></returns>
+        public static Resultado ValidarPocionesBasico()
+        {
+            var res = new Resultado();
+            var ruta = PathProvider.PocionesPath("pociones.json");
+            if (!File.Exists(ruta))
+            {
+                res.Advertencias++;
+                res.Mensajes.Add($"[Pociones][WARN] No existe pociones.json en {ruta}");
+                return res;
+            }
+            try
+            {
+                var json = File.ReadAllText(ruta);
+                if (string.IsNullOrWhiteSpace(json))
+                    return res;
+                using var doc = JsonDocument.Parse(json);
+                if (doc.RootElement.ValueKind != JsonValueKind.Array)
+                {
+                    res.Errores++;
+                    res.Mensajes.Add("[Pociones][ERR] Raíz no es array");
+                    return res;
+                }
+                var nombres = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+                foreach (var el in doc.RootElement.EnumerateArray())
+                {
+                    var nombre = el.TryGetProperty("Nombre", out var pn) ? pn.GetString() ?? "" : "";
+                    var rareza = el.TryGetProperty("Rareza", out var pr) ? pr.GetString() ?? "" : "";
+                    if (string.IsNullOrWhiteSpace(nombre))
+                    {
+                        res.Errores++;
+                        res.Mensajes.Add("[Pociones][ERR] Pocion sin Nombre");
+                        continue;
+                    }
+                    if (!nombres.ContainsKey(nombre))
+                        nombres[nombre] = 0;
+                    nombres[nombre]++;
+                    if (string.IsNullOrWhiteSpace(rareza))
+                    {
+                        res.Advertencias++;
+                        res.Mensajes.Add($"[Pociones][WARN] Rareza vacía en '{nombre}'");
+                    }
+                }
+                foreach (var kv in nombres)
+                {
+                    if (kv.Value > 1)
+                    {
+                        res.Errores++;
+                        res.Mensajes.Add($"[Pociones][ERR] Nombre duplicado '{kv.Key}' (x{kv.Value})");
+                    }
+                }
+                res.Mensajes.Add($"[Pociones] Validadas {nombres.Count} pociones");
+            }
+            catch (Exception ex)
+            {
+                res.Errores++;
+                res.Mensajes.Add($"[Pociones][ERR] Excepción leyendo pociones.json: {ex.Message}");
+            }
+            return res;
+        }
+
+        /// <summary>
         /// Valida los datos de enemigos bajo DatosJuego/enemigos (recursivo):
         /// - Campos básicos válidos (Nombre, VidaBase>0, AtaqueBase>=1, defensas >=0, Nivel>=1)
         /// - Mitigaciones y resistencias en [0..0.9]; daño elemental base >= 0
         /// - Duplicados por Nombre o Id (si existe)
         /// - Advertencias informativas por NoMuerto sin inmunidad explícita a veneno (se aplicará por defecto en runtime)
-        /// - Ignora por convención los JSONs en la raíz de cada carpeta nivel_* bajo por_bioma
+        /// - Ignora por convención los JSONs en la raíz de cada carpeta nivel_* bajo por_bioma.
         /// </summary>
+        /// <returns></returns>
         public static Resultado ValidarEnemigosBasico()
         {
             var res = new Resultado();
@@ -356,7 +542,8 @@ namespace MiJuegoRPG.Motor.Servicios.Validacion
                 try
                 {
                     var json = File.ReadAllText(file);
-                    if (string.IsNullOrWhiteSpace(json)) continue;
+                    if (string.IsNullOrWhiteSpace(json))
+                        continue;
                     archivosLeidos++;
 
                     if (DebeIgnorarseArchivoEnemigoPorConvencion(file))
@@ -372,7 +559,8 @@ namespace MiJuegoRPG.Motor.Servicios.Validacion
                         var lista = JsonSerializer.Deserialize<List<EnemigoData>>(json, opciones);
                         if (lista != null)
                         {
-                            foreach (var e in lista) ValidarUno(e, file, res, porNombre, porId);
+                            foreach (var e in lista)
+                                ValidarUno(e, file, res, porNombre, porId);
                         }
                         else
                         {
@@ -383,7 +571,10 @@ namespace MiJuegoRPG.Motor.Servicios.Validacion
                     else if (kind == JsonValueKind.Object)
                     {
                         var uno = JsonSerializer.Deserialize<EnemigoData>(json, opciones);
-                        if (uno != null) ValidarUno(uno, file, res, porNombre, porId);
+                        if (uno != null)
+                        {
+                            ValidarUno(uno, file, res, porNombre, porId);
+                        }
                         else
                         {
                             res.Errores++;
@@ -579,7 +770,8 @@ namespace MiJuegoRPG.Motor.Servicios.Validacion
                     return false;
 
                 var fileDir = Path.GetDirectoryName(filePath);
-                if (string.IsNullOrEmpty(fileDir)) return false;
+                if (string.IsNullOrEmpty(fileDir))
+                    return false;
                 var dirInfo = new DirectoryInfo(fileDir);
                 // Si el directorio inmediato es 'nivel_*', entonces el archivo está en la raíz del nivel
                 if (dirInfo.Name.StartsWith("nivel_", StringComparison.OrdinalIgnoreCase))
@@ -594,7 +786,8 @@ namespace MiJuegoRPG.Motor.Servicios.Validacion
         private static HashSet<string> CargarIdsMapa(string carpetaMapas)
         {
             var ids = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-            if (!Directory.Exists(carpetaMapas)) return ids;
+            if (!Directory.Exists(carpetaMapas))
+                return ids;
             var archivos = Directory.GetFiles(carpetaMapas, "*.json", SearchOption.AllDirectories);
             var opciones = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
             foreach (var archivo in archivos)
@@ -602,12 +795,14 @@ namespace MiJuegoRPG.Motor.Servicios.Validacion
                 try
                 {
                     var texto = File.ReadAllText(archivo);
-                    if (string.IsNullOrWhiteSpace(texto)) continue;
+                    if (string.IsNullOrWhiteSpace(texto))
+                        continue;
                     // intentar objeto
                     try
                     {
                         var uno = JsonSerializer.Deserialize<PjDatos.SectorData>(texto, opciones);
-                        if (uno?.Id != null) ids.Add(uno.Id);
+                        if (uno?.Id != null)
+                            ids.Add(uno.Id);
                     }
                     catch
                     {
@@ -617,7 +812,8 @@ namespace MiJuegoRPG.Motor.Servicios.Validacion
                         {
                             foreach (var s in lista)
                             {
-                                if (!string.IsNullOrWhiteSpace(s?.Id)) ids.Add(s.Id);
+                                if (!string.IsNullOrWhiteSpace(s?.Id))
+                                    ids.Add(s.Id);
                             }
                         }
                     }
@@ -632,25 +828,48 @@ namespace MiJuegoRPG.Motor.Servicios.Validacion
 
         private static bool EsSectorId(string? valor)
         {
-            if (string.IsNullOrWhiteSpace(valor)) return false;
+            if (string.IsNullOrWhiteSpace(valor))
+                return false;
             var parts = valor.Split('_');
-            if (parts.Length != 2) return false;
+            if (parts.Length != 2)
+                return false;
             return int.TryParse(parts[0], out _) && int.TryParse(parts[1], out _);
         }
 
         private class NpcEntry
         {
-            public string? Id { get; set; }
-            public string? Ubicacion { get; set; }
-            public List<string>? Misiones { get; set; }
+            public string? Id
+            {
+                get; set;
+            }
+            public string? Ubicacion
+            {
+                get; set;
+            }
+            public List<string>? Misiones
+            {
+                get; set;
+            }
         }
 
         private class MisionEntry
         {
-            public string? Id { get; set; }
-            public string? UbicacionNPC { get; set; }
-            public string? SiguienteMisionId { get; set; }
-            public List<string>? Condiciones { get; set; }
+            public string? Id
+            {
+                get; set;
+            }
+            public string? UbicacionNPC
+            {
+                get; set;
+            }
+            public string? SiguienteMisionId
+            {
+                get; set;
+            }
+            public List<string>? Condiciones
+            {
+                get; set;
+            }
         }
     }
 }

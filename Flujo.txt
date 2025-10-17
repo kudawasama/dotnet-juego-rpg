@@ -48,12 +48,28 @@
    └─ 0. Volver
 
 # MENÚ DE COMBATE (base actual)
-└─ "=== Combate ==="
+
+└─ "=== MENÚ DE COMBATE ==="
    ├─ 1. Atacar
-   ├─ 2. Usar habilidad (lista habilidades del jugador)
-   ├─ 3. Usar objeto (placeholder base en este menú; uso real integrado en combate por turnos)
-   ├─ 4. Huir
-   └─ 5. Menú principal (fijo)
+   ├─ 2. Hechizo/Habilidades
+   ├─ 3. Defenderse
+   ├─ 4. Observar
+   ├─ 5. Usar objeto especial
+   ├─ 6. Cambiar de posición
+   ├─ 7. Huir
+   ├─ 8. Acciones
+        ├─ 1. Provocar
+        ├─ 2. Preparar contraataque
+        ├─ 3. Lanzar trampa
+        ├─ 4. Usar habilidad especial
+        ├─ 5. Intercambiar equipo
+        ├─ 6. Hablar/Intimidar
+        ├─ 7. Esperar
+        ├─ 8. Analizar entorno
+        ├─ 9. Pedir ayuda
+        └─ 10. Rendirse
+
+   Elige una acción: _
 
 # MENÚ ENTRE COMBATES (MenuEntreCombate)
 └─ Opciones:

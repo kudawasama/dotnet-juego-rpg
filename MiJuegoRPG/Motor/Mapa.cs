@@ -3,21 +3,14 @@ using System.Collections.Generic;
 
 namespace MiJuegoRPG.Motor
 {
-    public class Sector
-    {
-        public required string Nombre { get; set; }
-        public required string Descripcion { get; set; }
-        public bool Descubierto { get; set; } = false;
-        public List<string> Eventos { get; set; } = new List<string>();
-        public List<string> EnemigosPosibles { get; set; } = new List<string>();
-        public List<string> ObjetosPosibles { get; set; } = new List<string>();
-        public List<string> Conexiones { get; set; } = new List<string>();
-    }
-
+    // SA1402: Sector se movió a Sector.cs para cumplir con SA1402 (un tipo por archivo)
     public class Mapa
-    {   
+    {
         private Dictionary<string, PjDatos.SectorData> sectores = new Dictionary<string, PjDatos.SectorData>();
-        public PjDatos.SectorData UbicacionActual { get; set; }
+        public PjDatos.SectorData UbicacionActual
+        {
+            get; set;
+        }
         public Dictionary<string, bool> SectoresDescubiertos { get; private set; } = new Dictionary<string, bool>();
 
         public List<PjDatos.SectorData> ObtenerSectores()
@@ -25,7 +18,7 @@ namespace MiJuegoRPG.Motor
             return new List<PjDatos.SectorData>(sectores.Values);
         }
 
-    public bool MoverseA(string idSectorDestino)
+        public bool MoverseA(string idSectorDestino)
         {
             if (sectores.TryGetValue(idSectorDestino, out var sectorDestino))
             {
@@ -34,7 +27,11 @@ namespace MiJuegoRPG.Motor
                     UbicacionActual = sectorDestino;
                     // Notificar cambio de sector para restaurar cooldowns
                     var juego = Juego.ObtenerInstanciaActual();
-                    try { juego?.recoleccionService?.AlEntrarSector(UbicacionActual.Id); } catch { }
+                    try
+                    {
+                        juego?.RecoleccionService?.AlEntrarSector(UbicacionActual.Id);
+                    }
+                    catch { }
                     if (!SectoresDescubiertos.ContainsKey(UbicacionActual.Id))
                         SectoresDescubiertos[UbicacionActual.Id] = true;
                     return true;

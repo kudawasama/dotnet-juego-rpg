@@ -20,7 +20,8 @@ namespace MiJuegoRPG.Tests
             // Penetración 20%
             pj.Estadisticas.Penetracion = 0.20;
             // Asegurar daño base 100 para facilidad
-            pj.AtributosBase.Fuerza = 100; pj.Estadisticas.Ataque = 0;
+            pj.AtributosBase.Fuerza = 100;
+            pj.Estadisticas.Ataque = 0;
 
             var objetivo = new EnemigoEstandar("Dummy", 1, 0, 30, 0, 0, 0, 0) { Vida = 1000, VidaMaxima = 1000 };
             objetivo.MitigacionFisicaPorcentaje = 0.10;
@@ -43,7 +44,8 @@ namespace MiJuegoRPG.Tests
             pj.Estadisticas.CritChance = 1.0; // crítico forzado
             pj.Estadisticas.Penetracion = 0.25;
             // daño mágico efectivo ~100 (Inteligencia + PoderMágico), fijamos Inteligencia=100
-            pj.AtributosBase.Inteligencia = 100; pj.Estadisticas.PoderMagico = 0;
+            pj.AtributosBase.Inteligencia = 100;
+            pj.Estadisticas.PoderMagico = 0;
 
             var objetivo = new EnemigoEstandar("Mob", 1, 0, 0, 20, 0, 0, 0) { Vida = 1000, VidaMaxima = 1000 };
             objetivo.EstablecerMitigacionElemental("magia", 0.30);

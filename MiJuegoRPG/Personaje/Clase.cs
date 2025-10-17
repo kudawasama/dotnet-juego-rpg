@@ -7,7 +7,10 @@ namespace MiJuegoRPG.Personaje
         public string Nombre { get; set; } = string.Empty;
         public string Descripcion { get; set; } = string.Empty;
         public AtributosBase Atributos { get; set; } = new AtributosBase();
-        public Estadisticas Estadisticas { get; set; }
+        public Estadisticas Estadisticas
+        {
+            get; set;
+        }
 
         public Clase(string nombre, AtributosBase atributos, Estadisticas estadisticas)
         {
@@ -16,7 +19,7 @@ namespace MiJuegoRPG.Personaje
             Estadisticas = estadisticas;
         }
 
-        public Clase() 
+        public Clase()
         {
             Estadisticas = new Estadisticas(new AtributosBase());
         }

@@ -15,6 +15,9 @@ namespace MiJuegoRPG.Enemigos
             // No se necesita lógica adicional aquí, ya que el comportamiento es estándar.
         }
 
-    public MiJuegoRPG.Objetos.Arma? ArmaEquipada { get; set; }
+        public MiJuegoRPG.Objetos.Arma? ArmaEquipada
+        {
+            get; set;
+        }
     }
 }

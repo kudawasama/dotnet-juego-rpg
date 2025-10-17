@@ -1,0 +1,14 @@
+{
+  "Nombre": "Alquimista",
+  "Categoria": "Profesión",
+  "Rareza": "Rara",
+  "Oculta": true,
+  "ClasesPrevias": [],
+  "NivelMinimo": 15,
+  "AtributosRequeridos": { "Inteligencia": 6, "Suerte": 4 },
+  "MisionesRequeridas": ["Crear una poción especial"],
+  "AtributosGanados": { "Inteligencia": 2, "Suerte": 2 },
+  "ActividadRequerida": { "Craft.Pociones": 15 },
+  "Tier": 2,
+  "Rama": "Oficio"
+}
